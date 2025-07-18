@@ -1,0 +1,4 @@
+{
+  "name": "@lib/buf",
+  "exports": "./mod.ts"
+}
