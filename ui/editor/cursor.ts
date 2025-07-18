@@ -54,7 +54,8 @@ export class Cursor {
       col: old_col,
     } = this;
 
-    this.#set_cursor(ln, col);
+    this.#set_ln(ln);
+    this.#set_col(col);
 
     this.#set_range(old_ln, old_col, this.ln, this.col, sel);
 
@@ -62,18 +63,19 @@ export class Cursor {
       this.col !== old_col;
   }
 
-  #set_cursor(ln: number, col: number): void {
-    const { buf } = this.#editor;
-
-    let max_ln = buf.ln_count - 1;
+  #set_ln(ln: number): void {
+    let max_ln = this.#editor.buf.ln_count - 1;
     if (max_ln < 0) {
       max_ln = 0;
     }
 
-    const line = buf.line_graphemes(this.ln).toArray();
+    this.ln = clamp(ln, 0, max_ln);
+  }
+
+  #set_col(col: number): void {
+    const line = this.#editor.buf.line_graphemes(this.ln).toArray();
     const max_col = line.findLastIndex((x) => !x.is_eol) + 1;
 
-    this.ln = clamp(ln, 0, max_ln);
     this.col = clamp(col, 0, max_col);
   }
 
