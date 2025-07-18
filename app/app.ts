@@ -57,8 +57,9 @@ export class App {
       this.header.set_has_changes(x);
     };
 
-    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
+    this.editor.on_react = (x) => this.debug.set_editor_react_time(x);
     this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
+    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
   }
 
   async run(): Promise<void> {

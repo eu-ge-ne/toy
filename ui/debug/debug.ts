@@ -2,9 +2,10 @@ import { Area, Pane } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 
-export const DebugArea = new Area(0, 0, 15, 3);
+export const DebugArea = new Area(0, 0, 15, 4);
 
 export class Debug extends Pane {
+  #editor_react_time = 0;
   #editor_render_time = 0;
 
   render(): void {
@@ -18,8 +19,15 @@ export class Debug extends Pane {
       vt.cursor.save,
       DEBUG_BG,
       ...vt.clear(y0, x0, h, w),
-      vt.cursor.set(y0 + 1, x0 + 1),
       DEBUG_COLORS,
+      vt.cursor.set(y0 + 1, x0 + 1),
+      ...vt.fmt.text(
+        { len: w - 1 },
+        "React : ",
+        this.#editor_react_time.toString(),
+        " ms",
+      ),
+      vt.cursor.set(y0 + 2, x0 + 1),
       ...vt.fmt.text(
         { len: w - 1 },
         "Render: ",
@@ -28,6 +36,13 @@ export class Debug extends Pane {
       ),
       vt.cursor.restore,
     );
+  }
+
+  set_editor_react_time(x: number): void {
+    if (this.enabled) {
+      this.#editor_react_time = x;
+      this.render();
+    }
   }
 
   set_editor_render_time(x: number): void {

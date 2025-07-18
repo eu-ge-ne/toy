@@ -17,6 +17,7 @@ interface EditorOptions {
 }
 
 export class Editor extends Pane {
+  on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
   on_change?: (_: boolean) => void;
@@ -108,22 +109,28 @@ export class Editor extends Pane {
       return;
     }
 
-    if (typeof key === "string") {
-      this.insert(key);
-      this.render();
-      return;
-    }
+    const started = Date.now();
 
-    if (typeof key.text === "string") {
-      this.insert(key.text);
-      this.render();
-      return;
-    }
+    try {
+      if (typeof key === "string") {
+        this.insert(key);
+        this.render();
+        return;
+      }
 
-    const handler = this.#handlers.find((x) => x.match(key));
-    if (handler) {
-      handler.handle(key);
-      this.render();
+      if (typeof key.text === "string") {
+        this.insert(key.text);
+        this.render();
+        return;
+      }
+
+      const handler = this.#handlers.find((x) => x.match(key));
+      if (handler) {
+        handler.handle(key);
+        this.render();
+      }
+    } finally {
+      this.on_react?.(Date.now() - started);
     }
   }
 
