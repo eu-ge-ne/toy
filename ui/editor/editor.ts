@@ -1,7 +1,9 @@
 import { Buf } from "@lib/buf";
-import { GraphemeSegmenter } from "@lib/grapheme";
+import { Grapheme, GraphemeSegmenter } from "@lib/grapheme";
 import { Key } from "@lib/input";
 import { Area, Pane } from "@lib/ui";
+import * as vt from "@lib/vt";
+import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
 import { Cursor } from "./cursor.ts";
@@ -131,6 +133,36 @@ export class Editor extends Pane {
       }
     } finally {
       this.on_react?.(Date.now() - started);
+    }
+  }
+
+  *line(
+    ln: number,
+    wrap_width: number,
+  ): Generator<{ g: Grapheme; col: number; c: number; wrap: boolean }> {
+    let col = 0;
+    let c = 0;
+    let w = 0;
+
+    for (const g of this.buf.line_graphemes(ln)) {
+      if (typeof g.vt_width === "undefined") {
+        vt.end_write();
+        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
+        vt.begin_write();
+      }
+
+      const wrap = (w + g.vt_width) > wrap_width;
+
+      if (wrap) {
+        c = 0;
+        w = 0;
+      }
+
+      yield { g, col, c, wrap };
+
+      col += 1;
+      c += 1;
+      w += 1;
     }
   }
 

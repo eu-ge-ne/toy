@@ -8,7 +8,6 @@ import {
   EDITOR_LINE_INDEX_COLORS,
   EDITOR_SELECTED_CHAR_COLORS,
   EDITOR_SELECTED_INVISIBLE_COLORS,
-  VT_WIDTH_COLORS,
 } from "@ui/theme";
 
 import { Editor } from "./editor.ts";
@@ -78,38 +77,24 @@ export class Render {
 
   // TODO: review
   #render_line(span: vt.fmt.Span): void {
-    const { buf, scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
+    const { scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
 
     this.#render_line_index(span);
 
-    let col = 0;
-    let c = 0;
-    let w = 0;
-
-    for (const g of buf.line_graphemes(this.#ln)) {
-      if (typeof g.vt_width === "undefined") {
-        vt.end_write();
-        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
-        vt.begin_write();
-      }
-
-      if ((w + g.vt_width) > wrap_width) {
+    for (const { g, col, c, wrap } of this.#editor.line(this.#ln, wrap_width)) {
+      if (wrap) {
         if (this.#end_ln()) {
           return;
         }
-        c = 0;
-        w = 0;
         span = this.#begin_ln();
         this.#blank_line_index(span);
       }
 
       if (c < scroll.col) {
-        col += 1;
-        c += 1;
         continue;
       }
 
-      if (g.vt_width > span.len) {
+      if (g.vt_width! > span.len) {
         break;
       }
 
@@ -129,11 +114,7 @@ export class Render {
 
       vt.write(color, g.bytes);
 
-      span.len -= g.vt_width;
-
-      col += 1;
-      c += 1;
-      w += 1;
+      span.len -= g.vt_width!;
     }
   }
 
