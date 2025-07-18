@@ -79,12 +79,11 @@ export class Render {
   #render_line(span: vt.fmt.Span): void {
     const { buf, scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
 
-    const start_col = scroll.col;
-
     this.#render_line_index(span);
 
-    let col = 0;
-    let x = 0;
+    let c_c = 0;
+    let c = 0;
+    let w = 0;
 
     for (const g of buf.line_graphemes(this.#ln)) {
       if (typeof g.vt_width === "undefined") {
@@ -93,18 +92,19 @@ export class Render {
         vt.begin_write();
       }
 
-      if ((x + g.vt_width) > wrap_width) {
+      if ((w + g.vt_width) > wrap_width) {
         if (this.#end_ln()) {
           return;
         }
-        col = 0;
-        x = 0;
+        c = 0;
+        w = 0;
         span = this.#begin_ln();
         this.#blank_line_index(span);
       }
 
-      if (col < start_col) {
-        col += 1;
+      if (c < scroll.col) {
+        c_c += 1;
+        c += 1;
         continue;
       }
 
@@ -114,7 +114,7 @@ export class Render {
 
       let color: Uint8Array;
 
-      if (cursor.is_selected(this.#ln, col)) {
+      if (cursor.is_selected(this.#ln, c_c)) {
         color = g.is_whitespace
           ? EDITOR_SELECTED_INVISIBLE_COLORS
           : EDITOR_SELECTED_CHAR_COLORS;
@@ -130,8 +130,9 @@ export class Render {
 
       span.len -= g.vt_width;
 
-      col += 1;
-      x += 1;
+      c_c += 1;
+      c += 1;
+      w += 1;
     }
   }
 
