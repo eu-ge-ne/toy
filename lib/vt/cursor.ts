@@ -12,19 +12,19 @@ import {
 
 import { flush } from "./write.ts";
 
-export const save_cursor = decsc;
-export const restore_cursor = decrc;
+export const save = decsc;
+export const restore = decrc;
 
-export const hide_cursor = decrst(DECResetMode.DECTCEM);
-export const show_cursor = decset(DECSetMode.DECTCEM);
+export const hide = decrst(DECResetMode.DECTCEM);
+export const show = decset(DECSetMode.DECTCEM);
 
-export function set_cursor(y: number, x: number): Uint8Array {
+export function set(y: number, x: number): Uint8Array {
   return cup(y + 1, x + 1);
 }
 
 const buf = new Uint8Array(1024);
 
-export function get_cursor(): [number, number] {
+export function get(): [number, number] {
   flush(cpr_req);
 
   for (let i = 0; i < 4; i += 1) {

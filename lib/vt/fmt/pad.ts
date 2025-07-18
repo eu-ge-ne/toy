@@ -1,9 +1,9 @@
 import { Chunks, chunks_length } from "./chunks.ts";
-import { fmt_space } from "./space.ts";
-import { fmt_text } from "./text.ts";
+import { space } from "./space.ts";
+import { text } from "./text.ts";
 import { Span } from "./span.ts";
 
-export function* fmt_lpad(
+export function* lpad(
   span: Span,
   pad: number,
   ...chunks: Chunks
@@ -11,8 +11,8 @@ export function* fmt_lpad(
   const len = chunks_length(chunks);
 
   if (len < pad) {
-    yield fmt_space(span, pad - len);
+    yield space(span, pad - len);
   }
 
-  yield* fmt_text(span, ...chunks);
+  yield* text(span, ...chunks);
 }

@@ -1,7 +1,7 @@
 import { DECResetMode, decrst, decset, DECSetMode } from "@eu-ge-ne/ctlseqs";
 import { set_flags } from "@eu-ge-ne/kitty-keys";
 
-import { show_cursor } from "./cursor.ts";
+import * as cursor from "./cursor.ts";
 import { flush } from "./write.ts";
 
 export function init_vt(): void {
@@ -19,5 +19,8 @@ export function init_vt(): void {
 }
 
 export function restore_vt(): void {
-  flush(decrst(DECResetMode.ALTSCR), show_cursor);
+  flush(
+    decrst(DECResetMode.ALTSCR),
+    cursor.show,
+  );
 }

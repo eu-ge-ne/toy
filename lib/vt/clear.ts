@@ -1,6 +1,6 @@
 import { cud1, ech } from "@eu-ge-ne/ctlseqs";
 
-import { set_cursor } from "./cursor.ts";
+import * as cursor from "./cursor.ts";
 
 export function* clear(
   y: number,
@@ -8,7 +8,7 @@ export function* clear(
   h: number,
   w: number,
 ): Generator<Uint8Array> {
-  yield set_cursor(y, x);
+  yield cursor.set(y, x);
 
   for (let i = h; i > 0; i -= 1) {
     yield ech(w);

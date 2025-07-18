@@ -3,10 +3,7 @@ import { Span } from "./span.ts";
 
 const encoder = new TextEncoder();
 
-export function* fmt_text(
-  span: Span,
-  ...chunks: Chunks
-): Generator<Uint8Array> {
+export function* text(span: Span, ...chunks: Chunks): Generator<Uint8Array> {
   for (let chunk of chunks) {
     if (typeof chunk !== "string") {
       yield chunk;

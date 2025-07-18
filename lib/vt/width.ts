@@ -1,13 +1,17 @@
-import { get_cursor, hide_cursor, set_cursor } from "./cursor.ts";
+import * as cursor from "./cursor.ts";
 import { flush } from "./write.ts";
 
-export function vt_width(...bytes: Uint8Array[]): number {
-  const pos = get_cursor();
+export function width(...bytes: Uint8Array[]): number {
+  const pos = cursor.get();
 
-  flush(hide_cursor, set_cursor(0, 0), ...bytes);
-  const [, x] = get_cursor();
+  flush(
+    cursor.hide,
+    cursor.set(0, 0),
+    ...bytes,
+  );
+  const [, x] = cursor.get();
 
-  flush(set_cursor(...pos));
+  flush(cursor.set(...pos));
 
   return x;
 }
