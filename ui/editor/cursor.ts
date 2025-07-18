@@ -66,11 +66,10 @@ export class Cursor {
       max_ln = 0;
     }
 
+    const line = buf.line_graphemes(this.ln).toArray();
+    const max_col = line.findLastIndex((x) => !x.is_eol) + 1;
+
     this.ln = clamp(ln, 0, max_ln);
-
-    const max_col =
-      buf.line_graphemes(this.ln).toArray().findLastIndex((x) => !x.is_eol) + 1;
-
     this.col = clamp(col, 0, max_col);
   }
 
