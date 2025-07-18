@@ -76,12 +76,13 @@ export class Render {
     return this.#y === y1;
   }
 
+  // TODO: review
   #render_line(span: vt.fmt.Span): void {
     const { buf, scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
 
     this.#render_line_index(span);
 
-    let c_c = 0;
+    let col = 0;
     let c = 0;
     let w = 0;
 
@@ -103,7 +104,7 @@ export class Render {
       }
 
       if (c < scroll.col) {
-        c_c += 1;
+        col += 1;
         c += 1;
         continue;
       }
@@ -114,7 +115,7 @@ export class Render {
 
       let color: Uint8Array;
 
-      if (cursor.is_selected(this.#ln, c_c)) {
+      if (cursor.is_selected(this.#ln, col)) {
         color = g.is_whitespace
           ? EDITOR_SELECTED_INVISIBLE_COLORS
           : EDITOR_SELECTED_CHAR_COLORS;
@@ -130,7 +131,7 @@ export class Render {
 
       span.len -= g.vt_width;
 
-      c_c += 1;
+      col += 1;
       c += 1;
       w += 1;
     }
