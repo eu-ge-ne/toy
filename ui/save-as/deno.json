@@ -1,0 +1,4 @@
+{
+  "name": "@ui/save-as",
+  "exports": "./mod.ts"
+}

@@ -1,0 +1,4 @@
+{
+  "name": "@ui/theme",
+  "exports": "./mod.ts"
+}
