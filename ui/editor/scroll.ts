@@ -141,6 +141,7 @@ export class Scroll {
     return height;
   }
 
+  // TODO: review
   *#fold_line(ln: number, max_width: number): Generator<number[]> {
     let ww: number[] = [];
 
