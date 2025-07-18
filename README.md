@@ -2,6 +2,18 @@
 
 Minimalistic TUI text editor.
 
+- [Installation](#installation)
+  - [Homebrew (macOS only)](#homebrew-macos-only)
+- [Features](#features)
+- [Supported terminal emulators](#supported-terminal-emulators)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Navigate](#navigate)
+  - [Select](#select)
+  - [Edit](#edit)
+  - [Other](#other)
+  - [Roadmap](#roadmap)
+- [License](#license)
+
 ## Installation
 
 ### Homebrew (macOS only)
@@ -85,65 +97,6 @@ brew install eu-ge-ne/tap/toy
 - `F3` -- Find next
 - `⇧+F3` -- Find previous
 
-## Changelog
+## License
 
-### v0.0.10
-
-- Improve invisible characters colors
-- Improve line index colors
-
-### v0.0.9
-
-- Fix scrolling
-- `F5` -- Toggle invisible characters
-
-### v0.0.8
-
-- Accurate handling of Unicode grapheme clusters
-  ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
-
-### v0.0.7
-
-- `F6` -- Toggle word wrapping
-- `⌃+C` -- Copy selected text
-- `F10` -- Exit
-- `Delete` -- Delete the character to the left of the cursor
-- `Fn+Delete` -- Delete the character under the cursor
-
-### v0.0.6
-
-- Fix parsing `Esc`, `F2` keys in terminals which do not support Kitty keyboard
-  protocol
-- Fix deleting text selection
-
-### v0.0.5
-
-- Copy to system clipboard (OSC52)
-
-### v0.0.4
-
-- `⌃+A`, `⌘+A`
-- `⇧+Home`, `⇧+Fn+Left`, `⇧+⌘+Left`
-- `⇧+End`, `⇧+Fn+Right`, `⇧+⌘+Right`
-- `⇧+⌘+Up`
-- `⇧+⌘+Down`
-- `⇧+Page Up`, `⇧+Fn+Up`
-- `⇧+Page Down`, `⇧+Fn+Down`
-
-### v0.0.3
-
-- Fix text insertion
-- `⌘+Z`
-- `⌘+Y`
-- `⌃+C`, `⌘+C`
-- ️`⌃+X`, `⌘+X`
-- `⌃+V`, `⌘+V`
-
-### v0.0.2
-
-- `⌘+Up`, `⌘+Down`, `⌘+Left`, `⌘+Right`
-- `⇧+Up`, `⇧+Down`, `⇧+Left`, `⇧+Right`
-
-### v0.0.1
-
-- Initial release
+[MIT](https://choosealicense.com/licenses/mit)
