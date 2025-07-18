@@ -49,13 +49,17 @@ export class Cursor {
   }
 
   #set(ln: number, col: number, sel: boolean): boolean {
-    const { ln: old_ln, col: old_col } = this;
+    const {
+      ln: old_ln,
+      col: old_col,
+    } = this;
 
     this.#set_cursor(ln, col);
 
     this.#set_range(old_ln, old_col, this.ln, this.col, sel);
 
-    return this.ln !== old_ln || this.col !== old_col;
+    return this.ln !== old_ln ||
+      this.col !== old_col;
   }
 
   #set_cursor(ln: number, col: number): void {
