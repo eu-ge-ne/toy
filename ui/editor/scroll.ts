@@ -33,7 +33,10 @@ export class Scroll {
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.#folded_height(i, wrap_width);
+      const h = this.#editor.line(i, wrap_width).reduce(
+        (a, x) => a + (x.wrap ? 1 : 0),
+        1,
+      );
       if (h > height) {
         break;
       }
@@ -60,7 +63,10 @@ export class Scroll {
 
     const min_height = area.h;
     const height_arr = range(this.ln, cursor.ln).map((i) =>
-      this.#folded_height(i, wrap_width)
+      this.#editor.line(i, wrap_width).reduce(
+        (a, x) => a + (x.wrap ? 1 : 0),
+        1,
+      )
     );
     let height = sum(height_arr);
 
@@ -118,27 +124,6 @@ export class Scroll {
     }
 
     this.cursor_x += width;
-  }
-
-  #folded_height(ln: number, max_width: number): number {
-    let height = 1;
-
-    let width = max_width;
-
-    for (const g of this.#editor.buf.line_graphemes(ln)) {
-      if (typeof g.vt_width === "undefined") {
-        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
-      }
-
-      if (g.vt_width > width) {
-        height += 1;
-        width = max_width;
-      }
-
-      width -= g.vt_width;
-    }
-
-    return height;
   }
 
   // TODO: review, refactor/inline into #horizontal
