@@ -1,12 +1,5 @@
 import { Pane } from "@lib/ui";
-import {
-  clear,
-  fmt_center,
-  restore_cursor,
-  save_cursor,
-  set_cursor,
-  sync_write,
-} from "@lib/vt";
+import * as vt from "@lib/vt";
 import {
   HEADER_BG,
   HEADER_FILE_PATH_COLORS,
@@ -23,19 +16,19 @@ export class Header extends Pane {
   render(): void {
     const { y0, x0, h, w } = this.area;
 
-    sync_write(
-      save_cursor,
+    vt.sync_write(
+      vt.cursor.save,
       HEADER_BG,
-      ...clear(y0, x0, h, w),
-      set_cursor(y0, x0),
-      ...fmt_center(
+      ...vt.clear(y0, x0, h, w),
+      vt.cursor.set(y0, x0),
+      ...vt.fmt.center(
         { len: w },
         HEADER_FILE_PATH_COLORS,
         this.#file_path,
         this.#has_changes ? HEADER_FLAG_ON_COLORS : HEADER_FLAG_OFF_COLORS,
         FLAG,
       ),
-      restore_cursor,
+      vt.cursor.restore,
     );
   }
 

@@ -1,14 +1,6 @@
 import { read_input } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
-import {
-  begin_write,
-  clear,
-  end_write,
-  fmt_center,
-  hide_cursor,
-  set_cursor,
-  write,
-} from "@lib/vt";
+import * as vt from "@lib/vt";
 import { ASK_BG, ASK_COLORS } from "@ui/theme";
 
 export class Ask extends Modal<[string], boolean> {
@@ -48,10 +40,10 @@ export class Ask extends Modal<[string], boolean> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    begin_write(
-      hide_cursor,
+    vt.begin_write(
+      vt.cursor.hide,
       ASK_BG,
-      ...clear(y0, x0, h, w),
+      ...vt.clear(y0, x0, h, w),
     );
 
     let pos = 0;
@@ -66,16 +58,16 @@ export class Ask extends Modal<[string], boolean> {
 
       pos += line.length;
 
-      write(
-        set_cursor(y, x0 + 1),
+      vt.write(
+        vt.cursor.set(y, x0 + 1),
         ASK_COLORS,
-        ...fmt_center(space, line),
+        ...vt.fmt.center(space, line),
       );
     }
 
-    end_write(
-      set_cursor(y1 - 2, x0),
-      ...fmt_center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+    vt.end_write(
+      vt.cursor.set(y1 - 2, x0),
+      ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
     );
   }
 }

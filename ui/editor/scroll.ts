@@ -1,4 +1,4 @@
-import { vt_width } from "@lib/vt";
+import * as vt from "@lib/vt";
 import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import { Editor } from "./editor.ts";
@@ -127,7 +127,7 @@ export class Scroll {
 
     for (const g of this.#editor.buf.line_graphemes(ln)) {
       if (typeof g.vt_width === "undefined") {
-        g.vt_width = vt_width(VT_WIDTH_COLORS, g.bytes);
+        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
       }
 
       if (width < g.vt_width) {

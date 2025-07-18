@@ -1,14 +1,5 @@
 import { Pane } from "@lib/ui";
-import {
-  begin_write,
-  clear,
-  end_write,
-  fmt_space,
-  fmt_text,
-  restore_cursor,
-  save_cursor,
-  set_cursor,
-} from "@lib/vt";
+import * as vt from "@lib/vt";
 import {
   FOOTER_BG,
   FOOTER_CURSOR_COLORS,
@@ -32,34 +23,34 @@ export class Footer extends Pane {
     const { y0, x0, h, w } = this.area;
     const space = { len: w };
 
-    begin_write(
-      save_cursor,
+    vt.begin_write(
+      vt.cursor.save,
       FOOTER_BG,
-      ...clear(y0, x0, h, w),
-      set_cursor(y0, x0),
+      ...vt.clear(y0, x0, h, w),
+      vt.cursor.set(y0, x0),
       FOOTER_MESSAGE_COLORS,
-      ...fmt_text(space, this.#input_message),
+      ...vt.fmt.text(space, this.#input_message),
     );
 
     const data = [
-      fmt_space(space, 1),
+      vt.fmt.space(space, 1),
       this.#invisible_status
         ? FOOTER_INVISIBLE_ON_COLORS
         : FOOTER_INVISIBLE_OFF_COLORS,
-      ...fmt_text(space, INVISIBLE_FLAG),
-      fmt_space(space, 1),
+      ...vt.fmt.text(space, INVISIBLE_FLAG),
+      vt.fmt.space(space, 1),
       this.#wrap_status ? FOOTER_WRAP_ON_COLORS : FOOTER_WRAP_OFF_COLORS,
-      ...fmt_text(space, WRAP_FLAG),
-      fmt_space(space, 2),
+      ...vt.fmt.text(space, WRAP_FLAG),
+      vt.fmt.space(space, 2),
       FOOTER_CURSOR_COLORS,
-      ...fmt_text(space, this.#cursor_status),
-      fmt_space(space, 1),
+      ...vt.fmt.text(space, this.#cursor_status),
+      vt.fmt.space(space, 1),
     ];
 
-    end_write(
-      set_cursor(y0, x0 + space.len),
+    vt.end_write(
+      vt.cursor.set(y0, x0 + space.len),
       ...data,
-      restore_cursor,
+      vt.cursor.restore,
     );
   }
 

@@ -1,17 +1,4 @@
-import {
-  begin_write,
-  clear,
-  end_write,
-  fmt_lpad,
-  fmt_space,
-  restore_cursor,
-  save_cursor,
-  set_cursor,
-  show_cursor,
-  Span,
-  vt_width,
-  write,
-} from "@lib/vt";
+import * as vt from "@lib/vt";
 import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
@@ -40,10 +27,10 @@ export class Render {
     const { buf, enabled, scroll } = this.#editor;
     const { y0, x0, h, w } = this.#editor.area;
 
-    begin_write(
-      ...(enabled ? [] : [save_cursor]),
+    vt.begin_write(
+      ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
-      ...clear(y0, x0, h, w),
+      ...vt.clear(y0, x0, h, w),
     );
 
     this.#y = y0;
@@ -68,18 +55,18 @@ export class Render {
     }
 
     if (enabled) {
-      end_write(
-        show_cursor,
-        set_cursor(scroll.cursor_y, scroll.cursor_x),
+      vt.end_write(
+        vt.cursor.show,
+        vt.cursor.set(scroll.cursor_y, scroll.cursor_x),
       );
     } else {
-      end_write(restore_cursor);
+      vt.end_write(vt.cursor.restore);
     }
   }
 
-  #begin_ln(): Span {
+  #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.#editor.area;
-    write(set_cursor(this.#y, x0));
+    vt.write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -89,7 +76,7 @@ export class Render {
     return this.#y === y1;
   }
 
-  #render_line(span: Span): void {
+  #render_line(span: vt.fmt.Span): void {
     const { buf, scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
 
     const start_col = scroll.col;
@@ -101,9 +88,9 @@ export class Render {
 
     for (const g of buf.line_graphemes(this.#ln)) {
       if (typeof g.vt_width === "undefined") {
-        end_write();
-        g.vt_width = vt_width(VT_WIDTH_COLORS, g.bytes);
-        begin_write();
+        vt.end_write();
+        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
+        vt.begin_write();
       }
 
       if ((x + g.vt_width) > wrap_width) {
@@ -139,7 +126,7 @@ export class Render {
           : EDITOR_CHAR_COLORS;
       }
 
-      write(color, g.bytes);
+      vt.write(color, g.bytes);
 
       span.len -= g.vt_width;
 
@@ -148,23 +135,23 @@ export class Render {
     }
   }
 
-  #render_line_index(span: Span): void {
+  #render_line_index(span: vt.fmt.Span): void {
     const { ln_index_width } = this.#editor;
 
     if (ln_index_width > 0) {
-      write(
+      vt.write(
         EDITOR_LINE_INDEX_COLORS,
-        ...fmt_lpad(span, ln_index_width, `${this.#ln + 1} `),
+        ...vt.fmt.lpad(span, ln_index_width, `${this.#ln + 1} `),
       );
     }
   }
 
-  #blank_line_index(span: Span): void {
+  #blank_line_index(span: vt.fmt.Span): void {
     const { ln_index_width } = this.#editor;
 
-    write(
+    vt.write(
       EDITOR_BLANK_LINE_INDEX_COLORS,
-      fmt_space(span, ln_index_width),
+      vt.fmt.space(span, ln_index_width),
     );
   }
 }

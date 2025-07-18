@@ -2,13 +2,7 @@ import { Buf } from "@lib/buf";
 import { GraphemePool, GraphemeSegmenter } from "@lib/grapheme";
 import { read_input } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
-import {
-  clear,
-  fmt_center,
-  hide_cursor,
-  set_cursor,
-  sync_write,
-} from "@lib/vt";
+import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 
@@ -74,15 +68,15 @@ export class SaveAs extends Modal<[string], string> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    sync_write(
-      hide_cursor,
+    vt.sync_write(
+      vt.cursor.hide,
       SAVE_AS_BG,
-      ...clear(y0, x0, h, w),
-      set_cursor(y0 + 1, x0),
+      ...vt.clear(y0, x0, h, w),
+      vt.cursor.set(y0 + 1, x0),
       SAVE_AS_COLORS,
-      ...fmt_center({ len: w }, "Save As"),
-      set_cursor(y1 - 2, x0),
-      ...fmt_center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+      ...vt.fmt.center({ len: w }, "Save As"),
+      vt.cursor.set(y1 - 2, x0),
+      ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
     );
 
     this.#editor.render();
