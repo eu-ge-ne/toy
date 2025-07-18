@@ -81,8 +81,10 @@ export class Render {
 
     this.#render_line_index(span);
 
-    for (const { g, col, c, wrap } of this.#editor.line(this.#ln, wrap_width)) {
-      if (wrap) {
+    for (
+      const { g, col, c, newln } of this.#editor.line(this.#ln, wrap_width)
+    ) {
+      if (newln) {
         if (this.#end_ln()) {
           return;
         }
@@ -94,6 +96,7 @@ export class Render {
         continue;
       }
 
+      // TODO: refactor
       if (g.vt_width! > span.len) {
         break;
       }
