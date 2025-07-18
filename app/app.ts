@@ -1,6 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 
 import { Buf } from "@lib/buf";
+import { editor_segmenter } from "@lib/grapheme";
 import { Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import { init_vt } from "@lib/vt";
@@ -20,14 +21,13 @@ import { InvisibleAction } from "./invisible.ts";
 import { LoadAction } from "./load.ts";
 import { SaveAsAction } from "./save-as.ts";
 import { SaveAction } from "./save.ts";
-import { segmenter } from "./segmenter.ts";
 import { WrapAction } from "./wrap.ts";
 
 export class App {
   file_path = "";
-  buf = new Buf(segmenter);
+  buf = new Buf(editor_segmenter);
 
-  editor = new Editor(segmenter, this.buf, {
+  editor = new Editor(editor_segmenter, this.buf, {
     multi_line: true,
     show_ln_index: true,
   });
