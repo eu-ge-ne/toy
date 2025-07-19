@@ -76,14 +76,16 @@ export class App {
       : Promise.resolve("");
 
     init_vt();
-
     globalThis.addEventListener("unload", exit);
 
     this.editor.enabled = true;
     this.header.enabled = true;
     this.footer.enabled = true;
 
-    Deno.addSignalListener("SIGWINCH", this.resize);
+    Deno.addSignalListener("SIGWINCH", () => {
+      this.resize();
+      this.render();
+    });
     this.resize();
 
     if (typeof file_path === "string") {
@@ -99,7 +101,7 @@ export class App {
     }
   }
 
-  resize = () => {
+  resize(): void {
     const screen = Area.from_screen();
 
     const [header_area, a0] = screen.div_y(1);
@@ -113,8 +115,6 @@ export class App {
     this.save_as.resize(screen);
     this.alert.resize(screen);
     this.ask.resize(screen);
-
-    this.render();
   };
 
   render(): void {
