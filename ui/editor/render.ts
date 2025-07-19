@@ -13,18 +13,15 @@ import {
 import { Editor } from "./editor.ts";
 
 export class Render {
-  #editor: Editor;
-
   #y = 0;
   #ln = 0;
 
-  constructor(editor: Editor) {
-    this.#editor = editor;
+  constructor(private editor: Editor) {
   }
 
   render(): void {
-    const { buffer, enabled, scroll } = this.#editor;
-    const { y0, x0, h, w } = this.#editor.area;
+    const { buffer, enabled, scroll } = this.editor;
+    const { y0, x0, h, w } = this.editor.area;
 
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -64,19 +61,19 @@ export class Render {
   }
 
   #begin_ln(): vt.fmt.Span {
-    const { x0, w } = this.#editor.area;
+    const { x0, w } = this.editor.area;
     vt.write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
   #end_ln(): boolean {
-    const { y1 } = this.#editor.area;
+    const { y1 } = this.editor.area;
     this.#y = Math.min(this.#y + 1, y1);
     return this.#y === y1;
   }
 
   #render_line(span: vt.fmt.Span): void {
-    const { shaper, scroll, cursor, invisible_enabled } = this.#editor;
+    const { shaper, scroll, cursor, invisible_enabled } = this.editor;
 
     this.#render_line_index(span);
 
@@ -118,7 +115,7 @@ export class Render {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    const { ln_index_width } = this.#editor;
+    const { ln_index_width } = this.editor;
 
     if (ln_index_width > 0) {
       vt.write(
@@ -129,7 +126,7 @@ export class Render {
   }
 
   #blank_line_index(span: vt.fmt.Span): void {
-    const { ln_index_width } = this.#editor;
+    const { ln_index_width } = this.editor;
 
     vt.write(
       EDITOR_BLANK_LINE_INDEX_COLORS,
