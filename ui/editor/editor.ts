@@ -1,13 +1,13 @@
 import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
+import { History } from "@lib/history";
 import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
 import { Area, Pane } from "@lib/ui";
 import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
-import { History } from "./history.ts";
 import { Render } from "./render.ts";
 import { Scroll } from "./scroll.ts";
 
