@@ -1,11 +1,11 @@
+import { Cursor } from "@lib/cursor";
+import { Shaper } from "@lib/shaper";
 import { Area } from "@lib/ui";
 
-import { Editor } from "./editor.ts";
 import { range } from "./range.ts";
 import { sum } from "./sum.ts";
 
 export class Scroll {
-  #editor: Editor;
   #area!: Area;
   wrap_width!: number;
 
@@ -14,8 +14,7 @@ export class Scroll {
   cursor_y = 0;
   cursor_x = 0;
 
-  constructor(editor: Editor) {
-    this.#editor = editor;
+  constructor(private shaper: Shaper, private cursor: Cursor) {
   }
 
   resize(area: Area, wrap_enabled: boolean): void {
@@ -33,12 +32,10 @@ export class Scroll {
   }
 
   center(): void {
-    const { shaper, cursor } = this.#editor;
-
     let height = Math.trunc(this.#area.h / 2);
 
-    for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = shaper.line(i, this.wrap_width)
+    for (let i = this.cursor.ln - 1; i >= 0; i -= 1) {
+      const h = this.shaper.line(i, this.wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
       if (h > height) {
         break;
@@ -50,24 +47,22 @@ export class Scroll {
   }
 
   #vertical(): void {
-    const { shaper, cursor } = this.#editor;
-
-    const delta_ln = cursor.ln - this.ln;
+    const delta_ln = this.cursor.ln - this.ln;
 
     // Did the cursor move above the scroll line?
     if (delta_ln <= 0) {
-      this.ln = cursor.ln;
+      this.ln = this.cursor.ln;
       return;
     }
 
     // Did the cursor move below the scroll area?
 
     if (delta_ln > this.#area.h) {
-      this.ln = cursor.ln - this.#area.h;
+      this.ln = this.cursor.ln - this.#area.h;
     }
 
-    const height_arr = range(this.ln, cursor.ln).map((i) =>
-      shaper.line(i, this.wrap_width)
+    const height_arr = range(this.ln, this.cursor.ln).map((i) =>
+      this.shaper.line(i, this.wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
     );
     let height = sum(height_arr);
@@ -85,18 +80,16 @@ export class Scroll {
   }
 
   #horizontal(): void {
-    const { shaper, cursor } = this.#editor;
-
     let c = 0; // c = f(cursor.col)
 
-    const line = shaper.line(cursor.ln, this.wrap_width).toArray();
+    const line = this.shaper.line(this.cursor.ln, this.wrap_width).toArray();
     if (line.length > 0) {
-      let cell = line[cursor.col];
+      let cell = line[this.cursor.col];
       if (cell) {
         c = cell.c;
         this.cursor_y += cell.l;
       } else {
-        cell = line[cursor.col - 1];
+        cell = line[this.cursor.col - 1];
         if (cell) {
           c = cell.c + 1;
           this.cursor_y += cell.l;
@@ -114,7 +107,7 @@ export class Scroll {
 
     // Did the cursor move to the right of the scroll area?
 
-    const width_arr = line.slice(cursor.col - delta_col, cursor.col)
+    const width_arr = line.slice(this.cursor.col - delta_col, this.cursor.col)
       .map((x) => x.g.width);
     let width = sum(width_arr);
 
