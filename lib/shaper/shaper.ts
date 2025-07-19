@@ -1,17 +1,20 @@
 import { Buffer } from "@lib/buffer";
 import { Grapheme, GraphemePool } from "@lib/grapheme";
 import * as vt from "@lib/vt";
-import { VT_WIDTH_COLORS } from "@ui/theme";
 
 export class Shaper {
-  constructor(private graphemes: GraphemePool, private buffer: Buffer) {
+  constructor(
+    private graphemes: GraphemePool,
+    private buffer: Buffer,
+    private colors: Uint8Array,
+  ) {
   }
 
   *line(
     ln: number,
     width = Number.MAX_SAFE_INTEGER,
   ): Generator<{ g: Grapheme; i: number; l: number; c: number }> {
-    const { buffer, graphemes } = this;
+    const { buffer, graphemes, colors } = this;
 
     let i = 0;
     let w = 0;
@@ -23,7 +26,7 @@ export class Shaper {
 
       if (g.width < 0) {
         vt.end_write();
-        g.width = vt.width(VT_WIDTH_COLORS, g.bytes);
+        g.width = vt.width(colors, g.bytes);
         vt.begin_write();
       }
 
