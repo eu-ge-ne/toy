@@ -64,20 +64,23 @@ export class Cursor {
   }
 
   #set_ln(ln: number): void {
-    let max_ln = this.#editor.buf.ln_count - 1;
-    if (max_ln < 0) {
-      max_ln = 0;
+    let max = this.#editor.buf.ln_count - 1;
+    if (max < 0) {
+      max = 0;
     }
 
-    this.ln = clamp(ln, 0, max_ln);
+    this.ln = clamp(ln, 0, max);
   }
 
   #set_col(col: number): void {
-    // TODO
-    const line = this.#editor.line(this.ln).toArray();
-    const max_col = line.findLastIndex((x) => !x.g.is_eol) + 1;
+    let max = 0;
+    for (const { g, i } of this.#editor.line(this.ln)) {
+      if (!g.is_eol) {
+        max = i;
+      }
+    }
 
-    this.col = clamp(col, 0, max_col);
+    this.col = clamp(col, 0, max + 1);
   }
 
   #set_range(
