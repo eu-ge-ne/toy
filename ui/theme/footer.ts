@@ -1,9 +1,9 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { BOTTOM, DARK, DARKER } from "./tokens.ts";
+import { DARK, DARKER, LOWEST } from "./tokens.ts";
 
 export const FOOTER_BG = new Uint8Array([
-  ...sgr(["bg", ...BOTTOM]),
+  ...sgr(["bg", ...LOWEST]),
 ]);
 
 export const FOOTER_MESSAGE_COLORS = new Uint8Array([

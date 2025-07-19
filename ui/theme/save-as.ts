@@ -1,9 +1,9 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { LIGHTEST, TOP } from "./tokens.ts";
+import { HIGHEST, LIGHTEST } from "./tokens.ts";
 
 export const SAVE_AS_BG = new Uint8Array([
-  ...sgr(["bg", ...TOP]),
+  ...sgr(["bg", ...HIGHEST]),
 ]);
 
 export const SAVE_AS_COLORS = new Uint8Array([

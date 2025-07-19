@@ -15,11 +15,11 @@ const RED_900 = [0x7f, 0x1d, 0x1d] as const;
 
 export const DANGER = RED_900;
 
-export const HI = NEUTRAL_500;
-export const TOP = NEUTRAL_700;
-export const ABOVE = NEUTRAL_800;
-export const BELOW = NEUTRAL_900;
-export const BOTTOM = NEUTRAL_950;
+export const TOP = NEUTRAL_500;
+export const HIGHEST = NEUTRAL_700;
+export const HIGHER = NEUTRAL_800;
+export const LOWER = NEUTRAL_900;
+export const LOWEST = NEUTRAL_950;
 
 export const BRIGHT = NEUTRAL_100;
 export const LIGHTEST = NEUTRAL_200;
