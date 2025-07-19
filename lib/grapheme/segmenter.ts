@@ -39,25 +39,6 @@ export class GraphemeSegmenter {
     }
   }
 
-  unit_index(text: string, grapheme_index: number): number {
-    let unit_index = 0;
-
-    let i = 0;
-    for (const { segment } of this.#segmenter.segment(text)) {
-      if (i === grapheme_index) {
-        break;
-      }
-
-      if (i < grapheme_index) {
-        unit_index += segment.length;
-      }
-
-      i += 1;
-    }
-
-    return unit_index;
-  }
-
   #get(seg: string): Grapheme {
     let grapheme = this.#pool.get(seg);
 

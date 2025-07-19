@@ -6,6 +6,7 @@ export type Snapshot = InstanceType<typeof TextBuf>["root"];
 type Pos = [number, number];
 
 export class Buf {
+  #segmenter = new Intl.Segmenter();
   #buf = new TextBuf();
 
   constructor(private segmenter: GraphemeSegmenter) {
@@ -36,22 +37,41 @@ export class Buf {
   }
 
   insert([ln, col]: Pos, text: string): void {
-    const col0 = this.segmenter.unit_index(this.line(ln), col);
+    const col0 = this.#unit_index(this.line(ln), col);
 
     this.#buf.insert([ln, col0], text);
   }
 
   delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
-    const col0 = this.segmenter.unit_index(this.line(from_ln), from_col);
-    const col1 = this.segmenter.unit_index(this.line(to_ln), to_col + 1);
+    const col0 = this.#unit_index(this.line(from_ln), from_col);
+    const col1 = this.#unit_index(this.line(to_ln), to_col + 1);
 
     this.#buf.delete([from_ln, col0], [to_ln, col1]);
   }
 
   copy([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): string {
-    const col0 = this.segmenter.unit_index(this.line(from_ln), from_col);
-    const col1 = this.segmenter.unit_index(this.line(to_ln), to_col + 1);
+    const col0 = this.#unit_index(this.line(from_ln), from_col);
+    const col1 = this.#unit_index(this.line(to_ln), to_col + 1);
 
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
+  }
+
+  #unit_index(text: string, grapheme_index: number): number {
+    let unit_index = 0;
+
+    let i = 0;
+    for (const { segment } of this.#segmenter.segment(text)) {
+      if (i === grapheme_index) {
+        break;
+      }
+
+      if (i < grapheme_index) {
+        unit_index += segment.length;
+      }
+
+      i += 1;
+    }
+
+    return unit_index;
   }
 }
