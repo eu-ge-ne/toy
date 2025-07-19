@@ -1,6 +1,3 @@
-import * as vt from "@lib/vt";
-import { VT_WIDTH_COLORS } from "@ui/theme";
-
 import { Editor } from "./editor.ts";
 import { range } from "./range.ts";
 import { sum } from "./sum.ts";
@@ -81,22 +78,20 @@ export class Scroll {
   #horizontal(): void {
     const { area, cursor, wrap_width, ln_index_width } = this.#editor;
 
-    const fold = this.#fold_line(cursor.ln, wrap_width).toArray();
-
-    let l = 0;
     let c = 0; // c = f(cursor.col)
     const { value: p } = this.#editor.line(cursor.ln, wrap_width).drop(
       cursor.col,
     )
       .next();
     if (p) {
-      l = p.l;
       c = p.c;
       this.cursor_y += p.l;
     }
 
+    const delta_col = c - this.col;
+
     // Did the cursor move to the left of the scroll column?
-    if (c <= this.col) {
+    if (delta_col <= 0) {
       this.col = c;
       return;
     }
@@ -104,7 +99,9 @@ export class Scroll {
     // Did the cursor move to the right of the scroll area?
 
     const min_width = area.w - ln_index_width;
-    const width_arr = fold[l]!.slice(this.col, c);
+    const width_arr = this.#editor.line(cursor.ln, wrap_width).drop(
+      cursor.col - delta_col,
+    ).take(delta_col).map((x) => x.g.vt_width!).toArray();
     let width = sum(width_arr);
 
     for (const w of width_arr) {
@@ -117,34 +114,5 @@ export class Scroll {
     }
 
     this.cursor_x += width;
-  }
-
-  // TODO: review, refactor/inline into #horizontal
-  *#fold_line(ln: number, max_width: number): Generator<number[]> {
-    let ww: number[] = [];
-
-    let width = max_width;
-
-    for (const g of this.#editor.buf.line_graphemes(ln)) {
-      if (typeof g.vt_width === "undefined") {
-        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
-      }
-
-      if (width < g.vt_width) {
-        yield ww;
-        ww = [];
-        width = max_width;
-      }
-
-      ww.push(g.vt_width);
-      width -= g.vt_width;
-    }
-
-    if (width === 0) {
-      yield ww;
-      ww = [];
-    }
-
-    yield ww;
   }
 }
