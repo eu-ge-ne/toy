@@ -10,9 +10,17 @@ export class Shaper {
   ) {
   }
 
-  *line(
+  count_wraps(
     ln: number,
-    width = Number.MAX_SAFE_INTEGER,
+    wrap_width: number,
+  ): number {
+    return this.wrap_line(ln, wrap_width)
+      .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
+  }
+
+  *wrap_line(
+    ln: number,
+    wrap_width = Number.MAX_SAFE_INTEGER,
   ): Generator<{ g: Grapheme; i: number; l: number; c: number }> {
     const { buffer, graphemes, colors } = this;
 
@@ -36,7 +44,7 @@ export class Shaper {
       c += 1;
       w += g.width;
 
-      if (w >= width) {
+      if (w >= wrap_width) {
         w = 0;
         l += 1;
         c = 0;

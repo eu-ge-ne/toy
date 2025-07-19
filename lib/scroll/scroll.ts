@@ -35,8 +35,7 @@ export class Scroll {
     let height = Math.trunc(this.#area.h / 2);
 
     for (let i = this.cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.shaper.line(i, this.wrap_width)
-        .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
+      const h = this.shaper.count_wraps(i, this.wrap_width);
       if (h > height) {
         break;
       }
@@ -62,8 +61,7 @@ export class Scroll {
     }
 
     const height_arr = range(this.ln, this.cursor.ln).map((i) =>
-      this.shaper.line(i, this.wrap_width)
-        .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
+      this.shaper.count_wraps(i, this.wrap_width)
     );
     let height = sum(height_arr);
 
@@ -82,7 +80,8 @@ export class Scroll {
   #horizontal(): void {
     let c = 0; // c = f(cursor.col)
 
-    const line = this.shaper.line(this.cursor.ln, this.wrap_width).toArray();
+    const line = this.shaper.wrap_line(this.cursor.ln, this.wrap_width)
+      .toArray();
     if (line.length > 0) {
       let cell = line[this.cursor.col];
       if (cell) {

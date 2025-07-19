@@ -77,7 +77,7 @@ export class Render {
 
     this.#render_line_index(span);
 
-    for (const { g, i, c } of shaper.line(this.#ln, scroll.wrap_width)) {
+    for (const { g, i, c } of shaper.wrap_line(this.#ln, scroll.wrap_width)) {
       if (i > 0 && c === 0) {
         if (this.#end_ln()) {
           return;
