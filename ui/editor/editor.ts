@@ -180,9 +180,7 @@ export class Editor extends Pane {
       cursor.set(...cursor.from, false);
     }
 
-    // TODO
-    buf.insert([cursor.ln, cursor.col], text);
-    const [ln, col] = buf.measure(text);
+    const [ln, col] = buf.insert([cursor.ln, cursor.col], text);
 
     if (ln === 0) {
       cursor.move(0, col, false);

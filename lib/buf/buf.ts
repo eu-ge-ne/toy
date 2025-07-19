@@ -40,10 +40,21 @@ export class Buf {
     return this.#count_segments(this.#line_text(ln));
   }
 
-  insert([ln, col]: Pos, text: string): void {
+  insert([ln, col]: Pos, text: string): [number, number] {
     const col0 = this.#line_unit_index(ln, col);
 
     this.#buf.insert([ln, col0], text);
+
+    const eols = text.matchAll(EOL_RE).toArray();
+
+    if (eols.length === 0) {
+      return [0, this.#count_segments(text)];
+    } else {
+      const eol = eols.at(-1)!;
+      const last_line = text.slice(eol.index + eol[0].length);
+
+      return [eols.length, this.#count_segments(last_line)];
+    }
   }
 
   delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
@@ -58,19 +69,6 @@ export class Buf {
     const col1 = this.#line_unit_index(to_ln, to_col + 1);
 
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
-  }
-
-  measure(text: string): [number, number] {
-    const eols = text.matchAll(EOL_RE).toArray();
-
-    if (eols.length === 0) {
-      return [0, this.#count_segments(text)];
-    } else {
-      const eol = eols.at(-1)!;
-      const last_line = text.slice(eol.index + eol[0].length);
-
-      return [eols.length, this.#count_segments(last_line)];
-    }
   }
 
   #line_text(ln: number): string {
