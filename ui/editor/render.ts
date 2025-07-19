@@ -75,7 +75,6 @@ export class Render {
     return this.#y === y1;
   }
 
-  // TODO: review
   #render_line(span: vt.fmt.Span): void {
     const { scroll, wrap_width, cursor, invisible_enabled } = this.#editor;
 
@@ -94,7 +93,6 @@ export class Render {
         continue;
       }
 
-      // TODO: refactor
       if (g.width > span.len) {
         break;
       }
