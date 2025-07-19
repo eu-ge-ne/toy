@@ -1,7 +1,6 @@
-import { GraphemePool } from "./pool.ts";
 import { GraphemeSegmenter } from "./segmenter.ts";
 
-const pool = new GraphemePool({
+export const editor_segmenter = new GraphemeSegmenter({
   overrides: new Map([
     ["\u0000", "␀"],
     ["\u0001", "␁"],
@@ -46,5 +45,3 @@ const pool = new GraphemePool({
     ["\r\n", "␍␊"],
   ]),
 });
-
-export const editor_segmenter = new GraphemeSegmenter(pool);

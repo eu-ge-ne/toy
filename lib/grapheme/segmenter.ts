@@ -1,15 +1,24 @@
 import { EOL_RE, Grapheme } from "./grapheme.ts";
-import { GraphemePool } from "./pool.ts";
+
+interface GraphemeSegmenterOptions {
+  overrides?: Map<string, string>;
+}
 
 export class GraphemeSegmenter {
   #segmenter = new Intl.Segmenter();
+  #pool = new Map<string, Grapheme>();
 
-  constructor(private pool: GraphemePool) {
+  constructor({ overrides }: GraphemeSegmenterOptions = {}) {
+    if (overrides) {
+      for (const [seg, override] of overrides) {
+        this.#pool.set(seg, new Grapheme(seg, override));
+      }
+    }
   }
 
   *graphemes(text: string): Generator<Grapheme> {
     for (const { segment } of this.#segmenter.segment(text)) {
-      yield this.pool.grapheme(segment);
+      yield this.#get(segment);
     }
   }
 
@@ -47,5 +56,25 @@ export class GraphemeSegmenter {
     }
 
     return unit_index;
+  }
+
+  #get(seg: string): Grapheme {
+    let grapheme = this.#pool.get(seg);
+
+    if (!grapheme) {
+      grapheme = new Grapheme(seg);
+
+      // Printable ASCII excluding DEL(0x7f) ?
+      if ([...seg].length === 1) {
+        const cp = seg.codePointAt(0);
+        if (typeof cp === "number" && cp >= 0x20 && cp < 0x7f) {
+          grapheme.width = 1;
+        }
+      }
+
+      this.#pool.set(seg, grapheme);
+    }
+
+    return grapheme;
   }
 }

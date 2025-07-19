@@ -1,5 +1,5 @@
 import { Buf } from "@lib/buf";
-import { GraphemePool, GraphemeSegmenter } from "@lib/grapheme";
+import { GraphemeSegmenter } from "@lib/grapheme";
 import { read_input } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -9,7 +9,7 @@ import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 40, 10);
 
-  #segmenter = new GraphemeSegmenter(new GraphemePool());
+  #segmenter = new GraphemeSegmenter();
   #buf = new Buf(this.#segmenter);
   #editor = new Editor(this.#segmenter, this.#buf, {
     multi_line: false,
