@@ -78,6 +78,7 @@ export class Scroll {
   #horizontal(): void {
     const { area, cursor, wrap_width, ln_index_width } = this.#editor;
 
+    // TODO: !!!!!!!
     let c = 0; // c = f(cursor.col)
     const { value: p } = this.#editor.fold_line(cursor.ln, wrap_width).drop(
       cursor.col,
