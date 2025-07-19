@@ -138,13 +138,14 @@ export class Editor extends Pane {
 
   *line(
     ln: number,
-    wrap_width: number,
+    width: number,
   ): Generator<
-    { g: Grapheme; col: number; c: number; endln: boolean; newln: boolean }
+    { g: Grapheme; i: number; l: number; c: number }
   > {
-    let col = 0;
-    let c = 0;
+    let i = 0;
     let w = 0;
+    let l = 0;
+    let c = 0;
 
     for (const g of this.buf.line_graphemes(ln)) {
       if (typeof g.vt_width === "undefined") {
@@ -153,19 +154,17 @@ export class Editor extends Pane {
         vt.begin_write();
       }
 
-      const endln = w + g.vt_width === wrap_width;
-      const newln = w + g.vt_width > wrap_width;
+      yield { g, i, l, c };
 
-      if (newln) {
-        c = 0;
-        w = 0;
-      }
-
-      yield { g, col, c, endln, newln };
-
-      col += 1;
+      i += 1;
       c += 1;
       w += g.vt_width;
+
+      if (w >= width) {
+        w = 0;
+        l += 1;
+        c = 0;
+      }
     }
   }
 
