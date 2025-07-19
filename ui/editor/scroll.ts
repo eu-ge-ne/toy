@@ -83,23 +83,6 @@ export class Scroll {
 
     const fold = this.#fold_line(cursor.ln, wrap_width).toArray();
 
-    /*
-    let folded_ln = 0;
-    let folded_col = cursor.col;
-
-    if (fold.length > 1) {
-      for (; folded_ln < fold.length - 1; folded_ln += 1) {
-        const len = fold[folded_ln]!.length;
-        if (len > folded_col) {
-          break;
-        }
-
-        folded_col -= len;
-        this.cursor_y += 1;
-      }
-    }
-    */
-
     let l = 0;
     let c = 0; // c = f(cursor.col)
     const p = this.#editor.line(cursor.ln, wrap_width).drop(cursor.col).take(1)
