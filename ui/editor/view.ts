@@ -40,11 +40,10 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled } = this.editor;
-    const { y0, x0, h, w } = this.editor.area;
+    const { buffer, enabled, area } = this.editor;
 
-    this.#cursor_y = y0;
-    this.#cursor_x = x0 + this.#ln_index_width;
+    this.#cursor_y = area.y0;
+    this.#cursor_x = area.x0 + this.#ln_index_width;
 
     this.#scroll_vertical();
     this.#scroll_horizontal();
@@ -52,10 +51,10 @@ export class View {
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
-      ...vt.clear(y0, x0, h, w),
+      ...vt.clear(area.y0, area.x0, area.h, area.w),
     );
 
-    this.#y = y0;
+    this.#y = area.y0;
     this.#ln = this.scroll_ln;
 
     let span = { len: 0 };
