@@ -1,7 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
 import { Buf } from "@lib/buf";
-import { editor_segmenter } from "@lib/grapheme";
 import { Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import { init_vt } from "@lib/vt";
@@ -17,6 +16,7 @@ import deno from "../deno.json" with { type: "json" };
 import { Action } from "./action.ts";
 import { DebugAction } from "./debug.ts";
 import { exit, ExitAction } from "./exit.ts";
+import { editor_graphemes } from "./graphemes.ts";
 import { InvisibleAction } from "./invisible.ts";
 import { LoadAction } from "./load.ts";
 import { SaveAsAction } from "./save-as.ts";
@@ -27,7 +27,7 @@ export class App {
   file_path = "";
   buf = new Buf();
 
-  editor = new Editor(editor_segmenter, this.buf, {
+  editor = new Editor(editor_graphemes, this.buf, {
     multi_line: true,
     show_ln_index: true,
   });

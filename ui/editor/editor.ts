@@ -1,5 +1,5 @@
 import { Buf } from "@lib/buf";
-import { Grapheme, GraphemeSegmenter } from "@lib/grapheme";
+import { Grapheme, GraphemePool } from "@lib/grapheme";
 import { Key } from "@lib/input";
 import { Area, Pane } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -65,7 +65,7 @@ export class Editor extends Pane {
   clipboard = "";
 
   constructor(
-    readonly segmenter: GraphemeSegmenter,
+    readonly graphemes: GraphemePool,
     readonly buf: Buf,
     readonly opts: EditorOptions,
   ) {
@@ -137,25 +137,21 @@ export class Editor extends Pane {
   }
 
   line(ln: number): IteratorObject<Grapheme> {
-    const { buf, segmenter } = this;
+    const { buf, graphemes } = this;
 
-    return segmenter.graphemes(buf.line(ln));
+    return buf.line_segments(ln).map((x) => graphemes.get(x));
   }
 
   *fold_line(
     ln: number,
     width: number,
-  ): Generator<
-    { g: Grapheme; i: number; l: number; c: number }
-  > {
-    const { buf, segmenter } = this;
-
+  ): Generator<{ g: Grapheme; i: number; l: number; c: number }> {
     let i = 0;
     let w = 0;
     let l = 0;
     let c = 0;
 
-    for (const g of segmenter.graphemes(buf.line(ln))) {
+    for (const g of this.line(ln)) {
       if (g.width < 0) {
         vt.end_write();
         g.width = vt.width(VT_WIDTH_COLORS, g.bytes);
