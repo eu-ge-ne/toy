@@ -20,7 +20,6 @@ const LN_INDEX_WIDTH = 1 + 6 + 1;
 export class View {
   #ln_index_width = 0;
 
-  #scroll_area!: Area;
   scroll_wrap_width!: number;
 
   scroll_ln = 0;
@@ -36,15 +35,8 @@ export class View {
   }
 
   resize(area: Area): void {
-    this.#scroll_area = new Area(
-      area.x0 + this.#ln_index_width,
-      area.y0,
-      area.w - this.#ln_index_width,
-      area.h,
-    );
-
     this.scroll_wrap_width = this.editor.wrap_enabled
-      ? this.#scroll_area.w
+      ? area.w - this.#ln_index_width
       : Number.MAX_SAFE_INTEGER;
   }
 
@@ -164,17 +156,19 @@ export class View {
   }
 
   scroll(): void {
-    this.scroll_cursor_y = this.#scroll_area.y0;
-    this.scroll_cursor_x = this.#scroll_area.x0;
+    const { y0, x0 } = this.editor.area;
+
+    this.scroll_cursor_y = y0;
+    this.scroll_cursor_x = x0 + this.#ln_index_width;
 
     this.#scroll_vertical();
     this.#scroll_horizontal();
   }
 
   center(): void {
-    const { shaper, cursor } = this.editor;
+    const { shaper, cursor, area } = this.editor;
 
-    let height = Math.trunc(this.#scroll_area.h / 2);
+    let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
       const h = shaper.count_wraps(i, this.scroll_wrap_width);
@@ -188,7 +182,7 @@ export class View {
   }
 
   #scroll_vertical(): void {
-    const { shaper, cursor } = this.editor;
+    const { shaper, cursor, area } = this.editor;
 
     const delta_ln = cursor.ln - this.scroll_ln;
 
@@ -200,8 +194,8 @@ export class View {
 
     // Did the cursor move below the scroll area?
 
-    if (delta_ln > this.#scroll_area.h) {
-      this.scroll_ln = cursor.ln - this.#scroll_area.h;
+    if (delta_ln > area.h) {
+      this.scroll_ln = cursor.ln - area.h;
     }
 
     const height_arr = range(this.scroll_ln, cursor.ln).map((i) =>
@@ -210,7 +204,7 @@ export class View {
     let height = sum(height_arr);
 
     for (const h of height_arr) {
-      if (height < this.#scroll_area.h) {
+      if (height < area.h) {
         break;
       }
 
@@ -257,7 +251,7 @@ export class View {
     let width = sum(width_arr);
 
     for (const w of width_arr) {
-      if (width < this.#scroll_area.w) {
+      if (width < (this.editor.area.w - this.#ln_index_width)) {
         break;
       }
 
