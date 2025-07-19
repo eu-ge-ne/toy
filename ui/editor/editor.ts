@@ -1,11 +1,11 @@
 import { Buf } from "@lib/buf";
+import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
 import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
 import { Area, Pane } from "@lib/ui";
 
 import * as key from "./key/mod.ts";
-import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
 import { Render } from "./render.ts";
 import { Scroll } from "./scroll.ts";
@@ -24,10 +24,10 @@ export class Editor extends Pane {
   on_change?: (_: boolean) => void;
 
   readonly shaper: Shaper;
+  readonly cursor: Cursor;
   readonly buf = new Buf();
-  readonly cursor = new Cursor(this);
   readonly scroll = new Scroll(this);
-  readonly history = new History(this);
+  readonly history: History;
   #render = new Render(this);
 
   #handlers: key.KeyHandler[] = [
@@ -72,6 +72,8 @@ export class Editor extends Pane {
     super();
 
     this.shaper = new Shaper(graphemes, this.buf);
+    this.cursor = new Cursor(this.shaper, this.buf);
+    this.history = new History(this);
 
     this.ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
   }

@@ -1,0 +1,4 @@
+{
+  "name": "@lib/cursor",
+  "exports": "./mod.ts"
+}
