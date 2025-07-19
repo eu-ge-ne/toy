@@ -23,8 +23,8 @@ export class View {
 
   scroll_ln = 0;
   scroll_col = 0;
-  scroll_cursor_y = 0;
-  scroll_cursor_x = 0;
+  #cursor_y = 0;
+  #cursor_x = 0;
 
   #y = 0;
   #ln = 0;
@@ -40,10 +40,14 @@ export class View {
   }
 
   render(): void {
-    this.scroll();
-
     const { buffer, enabled } = this.editor;
     const { y0, x0, h, w } = this.editor.area;
+
+    this.#cursor_y = y0;
+    this.#cursor_x = x0 + this.#ln_index_width;
+
+    this.#scroll_vertical();
+    this.#scroll_horizontal();
 
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -75,7 +79,7 @@ export class View {
     if (enabled) {
       vt.end_write(
         vt.cursor.show,
-        vt.cursor.set(this.scroll_cursor_y, this.scroll_cursor_x),
+        vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
       vt.end_write(vt.cursor.restore);
@@ -152,16 +156,6 @@ export class View {
     );
   }
 
-  scroll(): void {
-    const { y0, x0 } = this.editor.area;
-
-    this.scroll_cursor_y = y0;
-    this.scroll_cursor_x = x0 + this.#ln_index_width;
-
-    this.#scroll_vertical();
-    this.#scroll_horizontal();
-  }
-
   center(): void {
     const { shaper, cursor, area } = this.editor;
 
@@ -209,7 +203,7 @@ export class View {
       height -= h;
     }
 
-    this.scroll_cursor_y += height;
+    this.#cursor_y += height;
   }
 
   #scroll_horizontal(): void {
@@ -223,12 +217,12 @@ export class View {
       let cell = line[cursor.col];
       if (cell) {
         c = cell.c;
-        this.scroll_cursor_y += cell.l;
+        this.#cursor_y += cell.l;
       } else {
         cell = line[cursor.col - 1];
         if (cell) {
           c = cell.c + 1;
-          this.scroll_cursor_y += cell.l;
+          this.#cursor_y += cell.l;
         }
       }
     }
@@ -256,6 +250,6 @@ export class View {
       width -= w;
     }
 
-    this.scroll_cursor_x += width;
+    this.#cursor_x += width;
   }
 }
