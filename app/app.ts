@@ -115,7 +115,7 @@ export class App {
     this.save_as.resize(screen);
     this.alert.resize(screen);
     this.ask.resize(screen);
-  };
+  }
 
   render(): void {
     this.header.render();
@@ -136,18 +136,19 @@ export class App {
       switch (key.name) {
         case "F2":
           await this.#act(this.action.save);
-          break;
+          return;
         case "F5":
           await this.#act(this.action.invisible);
-          break;
+          return;
         case "F6":
           await this.#act(this.action.wrap);
-          break;
+          return;
         case "F9":
           await this.#act(this.action.debug);
-          break;
+          return;
         case "F10":
           await this.#act(this.action.exit);
+          return;
       }
     }
 
