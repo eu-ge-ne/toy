@@ -57,7 +57,7 @@ export class App {
       this.header.set_has_changes(x);
     };
 
-    this.editor.on_react = (x) => this.debug.set_editor_react_time(x);
+    this.editor.on_react = (x) => this.debug.set_react_time(x);
     this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
   }
@@ -137,11 +137,9 @@ export class App {
         case "F2":
           await this.#act(this.action.save);
           return;
-        // TODO: move to editor
         case "F5":
           await this.#act(this.action.invisible);
           return;
-        // TODO: move to editor
         case "F6":
           await this.#act(this.action.wrap);
           return;
@@ -159,6 +157,8 @@ export class App {
 
   // deno-lint-ignore no-explicit-any
   async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
+    const started = Date.now();
+
     try {
       this.on_input_key_busy = true;
       this.editor.enabled = false;
@@ -169,6 +169,8 @@ export class App {
       this.editor.enabled = true;
 
       this.render();
+
+      this.debug.set_react_time(Date.now() - started);
     }
   }
 

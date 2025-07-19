@@ -5,7 +5,7 @@ import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 export const DebugArea = new Area(0, 0, 15, 4);
 
 export class Debug extends Pane {
-  #editor_react_time = 0;
+  #react_time = 0;
   #editor_render_time = 0;
 
   render(): void {
@@ -24,7 +24,7 @@ export class Debug extends Pane {
       ...vt.fmt.text(
         { len: w - 1 },
         "React : ",
-        this.#editor_react_time.toString(),
+        this.#react_time.toString(),
         " ms",
       ),
       vt.cursor.set(y0 + 2, x0 + 1),
@@ -38,9 +38,9 @@ export class Debug extends Pane {
     );
   }
 
-  set_editor_react_time(x: number): void {
+  set_react_time(x: number): void {
     if (this.enabled) {
-      this.#editor_react_time = x;
+      this.#react_time = x;
       this.render();
     }
   }
