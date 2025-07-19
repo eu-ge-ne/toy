@@ -62,7 +62,6 @@ export class Editor extends Pane {
 
   invisible_enabled = false;
   wrap_enabled = false;
-  wrap_width = Number.MAX_SAFE_INTEGER;
 
   clipboard = "";
 
@@ -83,10 +82,6 @@ export class Editor extends Pane {
   override resize(area: Area): void {
     super.resize(area);
 
-    this.wrap_width = this.wrap_enabled
-      ? this.area.w - this.ln_index_width
-      : Number.MAX_SAFE_INTEGER;
-
     this.scroll.resize(
       new Area(
         area.x0 + this.ln_index_width,
@@ -94,6 +89,7 @@ export class Editor extends Pane {
         area.w - this.ln_index_width,
         area.h,
       ),
+      this.wrap_enabled,
     );
   }
 

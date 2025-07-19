@@ -76,12 +76,11 @@ export class Render {
   }
 
   #render_line(span: vt.fmt.Span): void {
-    const { shaper, scroll, wrap_width, cursor, invisible_enabled } =
-      this.#editor;
+    const { shaper, scroll, cursor, invisible_enabled } = this.#editor;
 
     this.#render_line_index(span);
 
-    for (const { g, i, c } of shaper.line(this.#ln, wrap_width)) {
+    for (const { g, i, c } of shaper.line(this.#ln, scroll.wrap_width)) {
       if (i > 0 && c === 0) {
         if (this.#end_ln()) {
           return;
