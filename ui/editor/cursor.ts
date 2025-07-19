@@ -73,7 +73,7 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    const line = this.#editor.buf.line_graphemes(this.ln).toArray();
+    const line = this.#editor.line(this.ln).toArray();
     const max_col = line.findLastIndex((x) => !x.is_eol) + 1;
 
     this.col = clamp(col, 0, max_col);
