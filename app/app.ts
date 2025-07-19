@@ -137,9 +137,11 @@ export class App {
         case "F2":
           await this.#act(this.action.save);
           return;
+        // TODO: move to editor
         case "F5":
           await this.#act(this.action.invisible);
           return;
+        // TODO: move to editor
         case "F6":
           await this.#act(this.action.wrap);
           return;
