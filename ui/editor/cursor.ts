@@ -73,8 +73,8 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    const line = this.#editor.line(this.ln).toArray();
-    const max_col = line.findLastIndex((x) => !x.is_eol) + 1;
+    const line = this.#editor.fold_line(this.ln).toArray();
+    const max_col = line.findLastIndex((x) => !x.g.is_eol) + 1;
 
     this.col = clamp(col, 0, max_col);
   }
