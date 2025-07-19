@@ -136,7 +136,7 @@ export class Editor extends Pane {
     }
   }
 
-  *fold_line(
+  *line(
     ln: number,
     width = Number.MAX_SAFE_INTEGER,
   ): Generator<{ g: Grapheme; i: number; l: number; c: number }> {

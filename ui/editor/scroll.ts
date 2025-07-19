@@ -30,7 +30,7 @@ export class Scroll {
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.#editor.fold_line(i, wrap_width)
+      const h = this.#editor.line(i, wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
       if (h > height) {
         break;
@@ -60,7 +60,7 @@ export class Scroll {
 
     const min_height = area.h;
     const height_arr = range(this.ln, cursor.ln).map((i) =>
-      this.#editor.fold_line(i, wrap_width)
+      this.#editor.line(i, wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
     );
     let height = sum(height_arr);
@@ -82,7 +82,7 @@ export class Scroll {
 
     let c = 0; // c = f(cursor.col)
 
-    const line = this.#editor.fold_line(cursor.ln, wrap_width).toArray();
+    const line = this.#editor.line(cursor.ln, wrap_width).toArray();
     if (line.length > 0) {
       let cell = line[cursor.col];
       if (cell) {

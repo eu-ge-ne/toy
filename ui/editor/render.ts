@@ -80,7 +80,7 @@ export class Render {
 
     this.#render_line_index(span);
 
-    for (const { g, i, c } of this.#editor.fold_line(this.#ln, wrap_width)) {
+    for (const { g, i, c } of this.#editor.line(this.#ln, wrap_width)) {
       if (i > 0 && c === 0) {
         if (this.#end_ln()) {
           return;
