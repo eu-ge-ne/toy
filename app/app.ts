@@ -1,6 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Buf } from "@lib/buf";
 import { Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import { init_vt } from "@lib/vt";
@@ -25,9 +24,8 @@ import { WrapAction } from "./wrap.ts";
 
 export class App {
   file_path = "";
-  buf = new Buf();
 
-  editor = new Editor(editor_graphemes, this.buf, {
+  editor = new Editor(editor_graphemes, {
     multi_line: true,
     show_ln_index: true,
   });

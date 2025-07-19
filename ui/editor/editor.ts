@@ -24,6 +24,7 @@ export class Editor extends Pane {
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
   on_change?: (_: boolean) => void;
 
+  readonly buf = new Buf();
   readonly cursor = new Cursor(this);
   readonly scroll = new Scroll(this);
   readonly history = new History(this);
@@ -66,7 +67,6 @@ export class Editor extends Pane {
 
   constructor(
     readonly graphemes: GraphemePool,
-    readonly buf: Buf,
     readonly opts: EditorOptions,
   ) {
     super();

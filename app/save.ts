@@ -2,13 +2,13 @@ import { Action } from "./action.ts";
 
 export class SaveAction extends Action<[]> {
   async run(): Promise<void> {
-    const { buf, file_path, alert, action } = this.app;
+    const { editor, file_path, alert, action } = this.app;
 
     if (file_path.length === 0) {
       await action.save_as.run();
     } else {
       try {
-        await Deno.writeTextFile(file_path, buf.get_text());
+        await Deno.writeTextFile(file_path, editor.buf.get_text());
       } catch (err) {
         await alert.open(err);
 

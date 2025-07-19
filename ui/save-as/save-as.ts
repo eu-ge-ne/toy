@@ -1,4 +1,3 @@
-import { Buf } from "@lib/buf";
 import { GraphemePool } from "@lib/grapheme";
 import { read_input } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
@@ -9,8 +8,7 @@ import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 40, 10);
 
-  #buf = new Buf();
-  #editor = new Editor(new GraphemePool(), this.#buf, {
+  #editor = new Editor(new GraphemePool(), {
     multi_line: false,
     show_ln_index: false,
   });
@@ -22,7 +20,7 @@ export class SaveAs extends Modal<[string], string> {
       this.#opened = true;
       this.#editor.enabled = true;
 
-      this.#buf.set_text(file_path);
+      this.#editor.buf.set_text(file_path);
       this.#editor.reset();
 
       this.render();
@@ -34,7 +32,7 @@ export class SaveAs extends Modal<[string], string> {
               case "ESC":
                 return "";
               case "ENTER": {
-                const new_file_path = this.#buf.get_text();
+                const new_file_path = this.#editor.buf.get_text();
                 if (new_file_path.length > 0) {
                   return new_file_path;
                 }

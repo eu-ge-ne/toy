@@ -2,7 +2,7 @@ import { Action } from "./action.ts";
 
 export class SaveAsAction extends Action<[]> {
   async run(): Promise<void> {
-    const { buf, file_path, alert, save_as } = this.app;
+    const { editor, file_path, alert, save_as } = this.app;
 
     while (true) {
       const path = await save_as.open(file_path);
@@ -11,7 +11,7 @@ export class SaveAsAction extends Action<[]> {
       }
 
       try {
-        await Deno.writeTextFile(path, buf.get_text());
+        await Deno.writeTextFile(path, editor.buf.get_text());
 
         this.app.set_file_path(path);
       } catch (err) {
