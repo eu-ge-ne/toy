@@ -201,10 +201,7 @@ export class Editor extends Pane {
     const { cursor, buf, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      // TODO
-      const char_count = buf.count_graphemes(buf.line(cursor.ln));
-
-      switch (char_count) {
+      switch (buf.line_length(cursor.ln)) {
         case 1: {
           buf.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 

@@ -34,6 +34,10 @@ export class Buf {
     return this.#buf.read([ln, 0], [ln + 1, 0]);
   }
 
+  line_length(ln: number): number {
+    return this.#count_segments(this.#buf.read([ln, 0], [ln + 1, 0]));
+  }
+
   insert([ln, col]: Pos, text: string): void {
     const col0 = this.#unit_index(this.line(ln), col);
 
@@ -54,21 +58,21 @@ export class Buf {
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
   }
 
-  count_graphemes(text: string): number {
-    return [...this.#segmenter.segment(text)].length;
-  }
-
   measure(text: string): [number, number] {
     const eols = text.matchAll(EOL_RE).toArray();
 
     if (eols.length === 0) {
-      return [0, this.count_graphemes(text)];
+      return [0, this.#count_segments(text)];
     } else {
       const eol = eols.at(-1)!;
       const last_line = text.slice(eol.index + eol[0].length);
 
-      return [eols.length, this.count_graphemes(last_line)];
+      return [eols.length, this.#count_segments(last_line)];
     }
+  }
+
+  #count_segments(text: string): number {
+    return [...this.#segmenter.segment(text)].length;
   }
 
   #unit_index(text: string, grapheme_index: number): number {
