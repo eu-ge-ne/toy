@@ -14,7 +14,7 @@ export class Grapheme {
   readonly is_whitespace: boolean;
   readonly is_eol: boolean;
 
-  vt_width?: number;
+  width = -1;
 
   constructor(readonly seg: string, override = seg) {
     this.bytes = encoder.encode(override);

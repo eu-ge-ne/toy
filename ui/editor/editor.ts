@@ -148,9 +148,9 @@ export class Editor extends Pane {
     let c = 0;
 
     for (const g of this.buf.line_graphemes(ln)) {
-      if (typeof g.vt_width === "undefined") {
+      if (g.width < 0) {
         vt.end_write();
-        g.vt_width = vt.width(VT_WIDTH_COLORS, g.bytes);
+        g.width = vt.width(VT_WIDTH_COLORS, g.bytes);
         vt.begin_write();
       }
 
@@ -158,7 +158,7 @@ export class Editor extends Pane {
 
       i += 1;
       c += 1;
-      w += g.vt_width;
+      w += g.width;
 
       if (w >= width) {
         w = 0;

@@ -101,7 +101,7 @@ export class Scroll {
     const min_width = area.w - ln_index_width;
     const width_arr = this.#editor.line(cursor.ln, wrap_width).drop(
       cursor.col - delta_col,
-    ).take(delta_col).map((x) => x.g.vt_width!).toArray();
+    ).take(delta_col).map((x) => x.g.width).toArray();
     let width = sum(width_arr);
 
     for (const w of width_arr) {

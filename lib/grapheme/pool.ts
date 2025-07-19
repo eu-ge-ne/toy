@@ -25,7 +25,7 @@ export class GraphemePool {
       if ([...seg].length === 1) {
         const cp = seg.codePointAt(0);
         if (typeof cp === "number" && cp >= 0x20 && cp < 0x7f) {
-          grapheme.vt_width = 1;
+          grapheme.width = 1;
         }
       }
 

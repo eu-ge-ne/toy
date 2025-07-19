@@ -97,7 +97,7 @@ export class Render {
       }
 
       // TODO: refactor
-      if (g.vt_width! > span.len) {
+      if (g.width > span.len) {
         break;
       }
 
@@ -117,7 +117,7 @@ export class Render {
 
       vt.write(color, g.bytes);
 
-      span.len -= g.vt_width!;
+      span.len -= g.width;
     }
   }
 
