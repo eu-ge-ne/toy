@@ -30,7 +30,7 @@ export class Scroll {
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.#editor.line(i, wrap_width)
+      const h = this.#editor.fold_line(i, wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
       if (h > height) {
         break;
@@ -58,7 +58,7 @@ export class Scroll {
 
     const min_height = area.h;
     const height_arr = range(this.ln, cursor.ln).map((i) =>
-      this.#editor.line(i, wrap_width)
+      this.#editor.fold_line(i, wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
     );
     let height = sum(height_arr);
@@ -79,7 +79,7 @@ export class Scroll {
     const { area, cursor, wrap_width, ln_index_width } = this.#editor;
 
     let c = 0; // c = f(cursor.col)
-    const { value: p } = this.#editor.line(cursor.ln, wrap_width).drop(
+    const { value: p } = this.#editor.fold_line(cursor.ln, wrap_width).drop(
       cursor.col,
     )
       .next();
@@ -99,7 +99,7 @@ export class Scroll {
     // Did the cursor move to the right of the scroll area?
 
     const min_width = area.w - ln_index_width;
-    const width_arr = this.#editor.line(cursor.ln, wrap_width).drop(
+    const width_arr = this.#editor.fold_line(cursor.ln, wrap_width).drop(
       cursor.col - delta_col,
     ).take(delta_col).map((x) => x.g.width).toArray();
     let width = sum(width_arr);
