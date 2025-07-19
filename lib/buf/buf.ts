@@ -43,22 +43,21 @@ export class Buf {
   }
 
   insert([ln, col]: Pos, text: string): void {
-    // TODO
-    const col0 = this.#unit_index(this.#line(ln), col);
+    const col0 = this.#line_unit_index(ln, col);
 
     this.#buf.insert([ln, col0], text);
   }
 
   delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
-    const col0 = this.#unit_index(this.#line(from_ln), from_col);
-    const col1 = this.#unit_index(this.#line(to_ln), to_col + 1);
+    const col0 = this.#line_unit_index(from_ln, from_col);
+    const col1 = this.#line_unit_index(to_ln, to_col + 1);
 
     this.#buf.delete([from_ln, col0], [to_ln, col1]);
   }
 
   copy([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): string {
-    const col0 = this.#unit_index(this.#line(from_ln), from_col);
-    const col1 = this.#unit_index(this.#line(to_ln), to_col + 1);
+    const col0 = this.#line_unit_index(from_ln, from_col);
+    const col1 = this.#line_unit_index(to_ln, to_col + 1);
 
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
   }
@@ -76,15 +75,13 @@ export class Buf {
     }
   }
 
-  #line(ln: number): string {
-    return this.#buf.read([ln, 0], [ln + 1, 0]);
-  }
-
   #count_segments(text: string): number {
     return [...this.#segmenter.segment(text)].length;
   }
 
-  #unit_index(text: string, grapheme_index: number): number {
+  #line_unit_index(ln: number, grapheme_index: number): number {
+    const text = this.#buf.read([ln, 0], [ln + 1, 0]);
+
     let unit_index = 0;
 
     let i = 0;
