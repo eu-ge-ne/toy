@@ -1,39 +1,33 @@
-import { Snapshot } from "@lib/buffer";
-
-import { Editor } from "./editor.ts";
+import { Buffer, Snapshot } from "@lib/buffer";
+import { Cursor } from "@lib/cursor";
 
 export class History {
   #entries: { ln: number; col: number; snapshot: Snapshot }[] = [];
   #index = -1;
 
-  constructor(private editor: Editor) {
-    this.reset();
+  constructor(private buffer: Buffer, private cursor: Cursor) {
   }
 
-  get #has_changes(): boolean {
+  get has_changes(): boolean {
     return this.#index > 0;
   }
 
   reset(): void {
-    const { cursor: { ln, col }, buffer } = this.editor;
-    const snapshot = buffer.get_snapshot();
+    const snapshot = this.buffer.get_snapshot();
+    const { ln, col } = this.cursor;
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
-
-    this.editor.on_change?.(this.#has_changes);
   }
 
   push(): void {
-    const { cursor: { ln, col }, buffer } = this.editor;
-    const snapshot = buffer.get_snapshot();
+    const snapshot = this.buffer.get_snapshot();
+    const { ln, col } = this.cursor;
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
 
     this.#entries.length = this.#index + 1;
-
-    this.editor.on_change?.(this.#has_changes);
   }
 
   undo(): void {
@@ -53,13 +47,9 @@ export class History {
   }
 
   #restore(): void {
-    const { cursor, buffer } = this.editor;
-
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    buffer.set_snapshot(snapshot);
-    cursor.set(ln, col, false);
-
-    this.editor.on_change?.(this.#has_changes);
+    this.buffer.set_snapshot(snapshot);
+    this.cursor.set(ln, col, false);
   }
 }

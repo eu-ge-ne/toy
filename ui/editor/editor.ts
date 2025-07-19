@@ -74,7 +74,8 @@ export class Editor extends Pane {
 
     this.shaper = new Shaper(graphemes, this.buffer, VT_WIDTH_COLORS);
     this.cursor = new Cursor(this.shaper, this.buffer);
-    this.history = new History(this);
+    this.history = new History(this.buffer, this.cursor);
+    this.history.reset();
 
     this.ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
   }
@@ -109,6 +110,7 @@ export class Editor extends Pane {
     }
 
     this.history.reset();
+    this.on_change?.(this.history.has_changes);
   }
 
   on_key(key: Key | string): void {
@@ -158,6 +160,7 @@ export class Editor extends Pane {
     }
 
     history.push();
+    this.on_change?.(this.history.has_changes);
   }
 
   backspace(): void {
@@ -185,6 +188,7 @@ export class Editor extends Pane {
     }
 
     history.push();
+    this.on_change?.(this.history.has_changes);
   }
 
   delete_char(): void {
@@ -193,6 +197,7 @@ export class Editor extends Pane {
     buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 
     history.push();
+    this.on_change?.(this.history.has_changes);
   }
 
   delete_selection(): void {
@@ -202,6 +207,7 @@ export class Editor extends Pane {
     cursor.set(...cursor.from, false);
 
     history.push();
+    this.on_change?.(this.history.has_changes);
   }
 
   toggle_invisible(): void {
