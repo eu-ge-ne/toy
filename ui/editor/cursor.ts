@@ -73,7 +73,7 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    let max = 0;
+    let max = -1;
     for (const { g, i } of this.#editor.line(this.ln)) {
       if (!g.is_eol) {
         max = i;

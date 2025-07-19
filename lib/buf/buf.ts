@@ -15,7 +15,7 @@ export class Buf {
   }
 
   set_text(x: string): void {
-    this.#buf = new TextBuf(x);
+    this.#buf.insert(0, x);
   }
 
   get_snapshot(): Snapshot {
