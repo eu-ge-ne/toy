@@ -21,8 +21,8 @@ export class View {
   #ln_index_width = 0;
   #wrap_width!: number;
 
-  scroll_ln = 0;
-  scroll_col = 0;
+  #scroll_ln = 0;
+  #scroll_col = 0;
   #cursor_y = 0;
   #cursor_x = 0;
 
@@ -55,7 +55,7 @@ export class View {
     );
 
     this.#y = area.y0;
-    this.#ln = this.scroll_ln;
+    this.#ln = this.#scroll_ln;
 
     let span = { len: 0 };
 
@@ -111,7 +111,7 @@ export class View {
         this.#blank_line_index(span);
       }
 
-      if (c < this.scroll_col) {
+      if (c < this.#scroll_col) {
         continue;
       }
 
@@ -167,28 +167,28 @@ export class View {
       }
 
       height -= h;
-      this.scroll_ln = i;
+      this.#scroll_ln = i;
     }
   }
 
   #scroll_vertical(): void {
     const { shaper, cursor, area } = this.editor;
 
-    const delta_ln = cursor.ln - this.scroll_ln;
+    const delta_ln = cursor.ln - this.#scroll_ln;
 
     // Did the cursor move above the scroll line?
     if (delta_ln <= 0) {
-      this.scroll_ln = cursor.ln;
+      this.#scroll_ln = cursor.ln;
       return;
     }
 
     // Did the cursor move below the scroll area?
 
     if (delta_ln > area.h) {
-      this.scroll_ln = cursor.ln - area.h;
+      this.#scroll_ln = cursor.ln - area.h;
     }
 
-    const height_arr = range(this.scroll_ln, cursor.ln).map((i) =>
+    const height_arr = range(this.#scroll_ln, cursor.ln).map((i) =>
       shaper.count_wraps(i, this.#wrap_width)
     );
     let height = sum(height_arr);
@@ -198,7 +198,7 @@ export class View {
         break;
       }
 
-      this.scroll_ln += 1;
+      this.#scroll_ln += 1;
       height -= h;
     }
 
@@ -226,11 +226,11 @@ export class View {
       }
     }
 
-    const delta_col = c - this.scroll_col;
+    const delta_col = c - this.#scroll_col;
 
     // Did the cursor move to the left of the scroll column?
     if (delta_col <= 0) {
-      this.scroll_col = c;
+      this.#scroll_col = c;
       return;
     }
 
@@ -245,7 +245,7 @@ export class View {
         break;
       }
 
-      this.scroll_col += 1;
+      this.#scroll_col += 1;
       width -= w;
     }
 
