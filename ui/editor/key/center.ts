@@ -6,10 +6,10 @@ export class Center extends KeyHandler {
   ];
 
   handle(): void {
-    const { opts, scroll } = this.editor;
+    const { opts, view } = this.editor;
 
     if (opts.multi_line) {
-      scroll.center();
+      view.center();
     }
   }
 }

@@ -3,13 +3,12 @@ import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/input";
-import { Scroll } from "@lib/scroll";
 import { Shaper } from "@lib/shaper";
 import { Area, Pane } from "@lib/ui";
 import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
-import { Render } from "./render.ts";
+import { View } from "./view.ts";
 
 const LN_INDEX_WIDTH = 1 + 6 + 1;
 
@@ -27,9 +26,8 @@ export class Editor extends Pane {
   readonly buffer = new Buffer();
   readonly shaper: Shaper;
   readonly cursor: Cursor;
-  readonly scroll: Scroll;
   readonly history: History;
-  #render = new Render(this);
+  readonly view = new View(this);
 
   #handlers: key.KeyHandler[] = [
     new key.Left(this),
@@ -73,7 +71,6 @@ export class Editor extends Pane {
 
     this.shaper = new Shaper(graphemes, this.buffer, VT_WIDTH_COLORS);
     this.cursor = new Cursor(this.shaper, this.buffer);
-    this.scroll = new Scroll(this.shaper, this.cursor);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();
 
@@ -83,7 +80,7 @@ export class Editor extends Pane {
   override resize(area: Area): void {
     super.resize(area);
 
-    this.scroll.resize(
+    this.view.resize(
       new Area(
         area.x0 + this.ln_index_width,
         area.y0,
@@ -97,8 +94,7 @@ export class Editor extends Pane {
   render(): void {
     const started = Date.now();
 
-    this.scroll.scroll();
-    this.#render.render();
+    this.view.render();
     this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.ln_count });
 
     this.on_render?.(Date.now() - started);
