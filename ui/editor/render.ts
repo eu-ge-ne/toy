@@ -82,9 +82,9 @@ export class Render {
     this.#render_line_index(span);
 
     for (
-      const { g, col, c, newln } of this.#editor.line(this.#ln, wrap_width)
+      const { g, i, c } of this.#editor.line(this.#ln, wrap_width)
     ) {
-      if (newln) {
+      if (i > 0 && c === 0) {
         if (this.#end_ln()) {
           return;
         }
@@ -103,7 +103,7 @@ export class Render {
 
       let color: Uint8Array;
 
-      if (cursor.is_selected(this.#ln, col)) {
+      if (cursor.is_selected(this.#ln, i)) {
         color = g.is_whitespace
           ? EDITOR_SELECTED_INVISIBLE_COLORS
           : EDITOR_SELECTED_CHAR_COLORS;
