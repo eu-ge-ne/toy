@@ -30,16 +30,14 @@ export class Buf {
     return this.#buf.line_count;
   }
 
-  *line_segments(ln: number): Generator<string> {
-    const text = this.#buf.read([ln, 0], [ln + 1, 0]);
-
-    for (const { segment } of this.#segmenter.segment(text)) {
+  *line(ln: number): Generator<string> {
+    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
       yield segment;
     }
   }
 
   line_length(ln: number): number {
-    return this.#count_segments(this.#buf.read([ln, 0], [ln + 1, 0]));
+    return this.#count_segments(this.#line_text(ln));
   }
 
   insert([ln, col]: Pos, text: string): void {
@@ -75,17 +73,19 @@ export class Buf {
     }
   }
 
+  #line_text(ln: number): string {
+    return this.#buf.read([ln, 0], [ln + 1, 0]);
+  }
+
   #count_segments(text: string): number {
     return [...this.#segmenter.segment(text)].length;
   }
 
   #line_unit_index(ln: number, grapheme_index: number): number {
-    const text = this.#buf.read([ln, 0], [ln + 1, 0]);
-
     let unit_index = 0;
 
     let i = 0;
-    for (const { segment } of this.#segmenter.segment(text)) {
+    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
       if (i === grapheme_index) {
         break;
       }

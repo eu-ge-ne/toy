@@ -139,7 +139,7 @@ export class Editor extends Pane {
   line(ln: number): IteratorObject<Grapheme> {
     const { buf, graphemes } = this;
 
-    return buf.line_segments(ln).map((x) => graphemes.get(x));
+    return buf.line(ln).map((x) => graphemes.get(x));
   }
 
   *fold_line(
