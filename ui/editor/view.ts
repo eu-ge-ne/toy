@@ -15,7 +15,11 @@ import { Editor } from "./editor.ts";
 import { range } from "./range.ts";
 import { sum } from "./sum.ts";
 
+const LN_INDEX_WIDTH = 1 + 6 + 1;
+
 export class View {
+  #ln_index_width = 0;
+
   #scroll_area!: Area;
   scroll_wrap_width!: number;
 
@@ -28,13 +32,19 @@ export class View {
   #ln = 0;
 
   constructor(private editor: Editor) {
+    this.#ln_index_width = editor.opts.show_ln_index ? LN_INDEX_WIDTH : 0;
   }
 
   resize(area: Area): void {
-    this.#scroll_area = area;
+    this.#scroll_area = new Area(
+      area.x0 + this.#ln_index_width,
+      area.y0,
+      area.w - this.#ln_index_width,
+      area.h,
+    );
 
     this.scroll_wrap_width = this.editor.wrap_enabled
-      ? area.w
+      ? this.#scroll_area.w
       : Number.MAX_SAFE_INTEGER;
   }
 
@@ -138,22 +148,18 @@ export class View {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    const { ln_index_width } = this.editor;
-
-    if (ln_index_width > 0) {
+    if (this.#ln_index_width > 0) {
       vt.write(
         EDITOR_LINE_INDEX_COLORS,
-        ...vt.fmt.lpad(span, ln_index_width, `${this.#ln + 1} `),
+        ...vt.fmt.lpad(span, this.#ln_index_width, `${this.#ln + 1} `),
       );
     }
   }
 
   #blank_line_index(span: vt.fmt.Span): void {
-    const { ln_index_width } = this.editor;
-
     vt.write(
       EDITOR_BLANK_LINE_INDEX_COLORS,
-      vt.fmt.space(span, ln_index_width),
+      vt.fmt.space(span, this.#ln_index_width),
     );
   }
 

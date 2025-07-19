@@ -10,8 +10,6 @@ import { VT_WIDTH_COLORS } from "@ui/theme";
 import * as key from "./key/mod.ts";
 import { View } from "./view.ts";
 
-const LN_INDEX_WIDTH = 1 + 6 + 1;
-
 interface EditorOptions {
   multi_line: boolean;
   show_ln_index: boolean;
@@ -56,11 +54,8 @@ export class Editor extends Pane {
     new key.Center(this),
   ];
 
-  ln_index_width = 0;
-
   invisible_enabled = false;
   wrap_enabled = false;
-
   clipboard = "";
 
   constructor(
@@ -73,21 +68,11 @@ export class Editor extends Pane {
     this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();
-
-    this.ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
   }
 
   override resize(area: Area): void {
     super.resize(area);
-
-    this.view.resize(
-      new Area(
-        area.x0 + this.ln_index_width,
-        area.y0,
-        area.w - this.ln_index_width,
-        area.h,
-      ),
-    );
+    this.view.resize(area);
   }
 
   render(): void {
