@@ -19,8 +19,7 @@ const LN_INDEX_WIDTH = 1 + 6 + 1;
 
 export class View {
   #ln_index_width = 0;
-
-  scroll_wrap_width!: number;
+  #wrap_width!: number;
 
   scroll_ln = 0;
   scroll_col = 0;
@@ -35,7 +34,7 @@ export class View {
   }
 
   resize(area: Area): void {
-    this.scroll_wrap_width = this.editor.wrap_enabled
+    this.#wrap_width = this.editor.wrap_enabled
       ? area.w - this.#ln_index_width
       : Number.MAX_SAFE_INTEGER;
   }
@@ -100,9 +99,7 @@ export class View {
 
     this.#render_line_index(span);
 
-    for (
-      const { g, i, c } of shaper.wrap_line(this.#ln, this.scroll_wrap_width)
-    ) {
+    for (const { g, i, c } of shaper.wrap_line(this.#ln, this.#wrap_width)) {
       if (i > 0 && c === 0) {
         if (this.#end_ln()) {
           return;
@@ -171,7 +168,7 @@ export class View {
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = shaper.count_wraps(i, this.scroll_wrap_width);
+      const h = shaper.count_wraps(i, this.#wrap_width);
       if (h > height) {
         break;
       }
@@ -199,7 +196,7 @@ export class View {
     }
 
     const height_arr = range(this.scroll_ln, cursor.ln).map((i) =>
-      shaper.count_wraps(i, this.scroll_wrap_width)
+      shaper.count_wraps(i, this.#wrap_width)
     );
     let height = sum(height_arr);
 
@@ -220,7 +217,7 @@ export class View {
 
     let c = 0; // c = f(cursor.col)
 
-    const line = shaper.wrap_line(cursor.ln, this.scroll_wrap_width)
+    const line = shaper.wrap_line(cursor.ln, this.#wrap_width)
       .toArray();
     if (line.length > 0) {
       let cell = line[cursor.col];
