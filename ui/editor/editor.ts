@@ -86,6 +86,15 @@ export class Editor extends Pane {
     this.wrap_width = this.wrap_enabled
       ? this.area.w - this.ln_index_width
       : Number.MAX_SAFE_INTEGER;
+
+    this.scroll.resize(
+      new Area(
+        area.x0 + this.ln_index_width,
+        area.y0,
+        area.w - this.ln_index_width,
+        area.h,
+      ),
+    );
   }
 
   render(): void {
