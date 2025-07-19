@@ -87,7 +87,6 @@ export class Editor extends Pane {
         area.w - this.ln_index_width,
         area.h,
       ),
-      this.wrap_enabled,
     );
   }
 

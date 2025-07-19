@@ -30,10 +30,12 @@ export class View {
   constructor(private editor: Editor) {
   }
 
-  resize(area: Area, wrap_enabled: boolean): void {
+  resize(area: Area): void {
     this.#scroll_area = area;
 
-    this.scroll_wrap_width = wrap_enabled ? area.w : Number.MAX_SAFE_INTEGER;
+    this.scroll_wrap_width = this.editor.wrap_enabled
+      ? area.w
+      : Number.MAX_SAFE_INTEGER;
   }
 
   render(): void {
