@@ -65,7 +65,7 @@ export class Editor extends Pane {
   clipboard = "";
 
   constructor(
-    readonly seg: GraphemeSegmenter,
+    readonly segmenter: GraphemeSegmenter,
     readonly buf: Buf,
     readonly opts: EditorOptions,
   ) {
@@ -136,18 +136,26 @@ export class Editor extends Pane {
     }
   }
 
-  *line(
+  line(ln: number): IteratorObject<Grapheme> {
+    const { buf, segmenter } = this;
+
+    return segmenter.graphemes(buf.line(ln));
+  }
+
+  *fold_line(
     ln: number,
     width: number,
   ): Generator<
     { g: Grapheme; i: number; l: number; c: number }
   > {
+    const { buf, segmenter } = this;
+
     let i = 0;
     let w = 0;
     let l = 0;
     let c = 0;
 
-    for (const g of this.buf.line_graphemes(ln)) {
+    for (const g of segmenter.graphemes(buf.line(ln))) {
       if (g.width < 0) {
         vt.end_write();
         g.width = vt.width(VT_WIDTH_COLORS, g.bytes);
@@ -169,7 +177,7 @@ export class Editor extends Pane {
   }
 
   insert(text: string): void {
-    const { cursor, buf, history, seg } = this;
+    const { cursor, buf, history, segmenter } = this;
 
     if (cursor.selecting) {
       buf.delete(cursor.from, cursor.to);
@@ -178,7 +186,7 @@ export class Editor extends Pane {
 
     buf.insert([cursor.ln, cursor.col], text);
 
-    const [ln, col] = seg.measure(text);
+    const [ln, col] = segmenter.measure(text);
     if (ln === 0) {
       cursor.move(0, col, false);
     } else {
@@ -189,10 +197,10 @@ export class Editor extends Pane {
   }
 
   backspace(): void {
-    const { cursor, buf, history, seg } = this;
+    const { cursor, buf, history, segmenter } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      const char_count = seg.count_graphemes(buf.line_text(cursor.ln));
+      const char_count = segmenter.count_graphemes(buf.line(cursor.ln));
 
       switch (char_count) {
         case 1: {
