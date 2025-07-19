@@ -102,8 +102,8 @@ export class View {
 
     this.#render_line_index(span);
 
-    for (const { g, i, c } of shaper.wrap_line(this.#ln, this.#wrap_width)) {
-      if (i > 0 && c === 0) {
+    for (const cell of shaper.line(this.#ln, this.#wrap_width)) {
+      if (cell.i > 0 && cell.col === 0) {
         if (this.#end_ln()) {
           return;
         }
@@ -111,31 +111,31 @@ export class View {
         this.#blank_line_index(span);
       }
 
-      if (c < this.#scroll_col) {
+      if (cell.col < this.#scroll_col) {
         continue;
       }
 
-      if (g.width > span.len) {
+      if (cell.grapheme.width > span.len) {
         break;
       }
 
       let color: Uint8Array;
 
-      if (cursor.is_selected(this.#ln, i)) {
-        color = g.is_whitespace
+      if (cursor.is_selected(this.#ln, cell.i)) {
+        color = cell.grapheme.is_whitespace
           ? EDITOR_SELECTED_INVISIBLE_COLORS
           : EDITOR_SELECTED_CHAR_COLORS;
       } else {
-        color = g.is_whitespace
+        color = cell.grapheme.is_whitespace
           ? invisible_enabled
             ? EDITOR_INVISIBLE_ON_COLORS
             : EDITOR_INVISIBLE_OFF_COLORS
           : EDITOR_CHAR_COLORS;
       }
 
-      vt.write(color, g.bytes);
+      vt.write(color, cell.grapheme.bytes);
 
-      span.len -= g.width;
+      span.len -= cell.grapheme.width;
     }
   }
 
@@ -210,19 +210,12 @@ export class View {
 
     let c = 0; // c = f(cursor.col)
 
-    const line = shaper.wrap_line(cursor.ln, this.#wrap_width)
-      .toArray();
+    const line = shaper.line(cursor.ln, this.#wrap_width, true).toArray();
     if (line.length > 0) {
-      let cell = line[cursor.col];
+      const cell = line[cursor.col];
       if (cell) {
-        c = cell.c;
-        this.#cursor_y += cell.l;
-      } else {
-        cell = line[cursor.col - 1];
-        if (cell) {
-          c = cell.c + 1;
-          this.#cursor_y += cell.l;
-        }
+        c = cell.col;
+        this.#cursor_y += cell.ln;
       }
     }
 
@@ -237,7 +230,7 @@ export class View {
     // Did the cursor move to the right of the scroll area?
 
     const width_arr = line.slice(cursor.col - delta_col, cursor.col)
-      .map((x) => x.g.width);
+      .map((x) => x.grapheme.width);
     let width = sum(width_arr);
 
     for (const w of width_arr) {

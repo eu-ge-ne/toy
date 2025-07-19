@@ -73,8 +73,8 @@ export class Cursor {
 
   #set_col(col: number): void {
     let max = -1;
-    for (const { g, i } of this.shaper.wrap_line(this.ln)) {
-      if (!g.is_eol) {
+    for (const { grapheme, i } of this.shaper.line(this.ln)) {
+      if (!grapheme.is_eol) {
         max = i;
       }
     }
