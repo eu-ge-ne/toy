@@ -25,12 +25,12 @@ export class Scroll {
   }
 
   center(): void {
-    const { area, cursor, wrap_width } = this.#editor;
+    const { shaper, area, cursor, wrap_width } = this.#editor;
 
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.#editor.line(i, wrap_width)
+      const h = shaper.line(i, wrap_width)
         .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
       if (h > height) {
         break;
@@ -42,7 +42,7 @@ export class Scroll {
   }
 
   #vertical(): void {
-    const { area, cursor, wrap_width } = this.#editor;
+    const { shaper, area, cursor, wrap_width } = this.#editor;
 
     const delta_ln = cursor.ln - this.ln;
 
@@ -60,8 +60,7 @@ export class Scroll {
 
     const min_height = area.h;
     const height_arr = range(this.ln, cursor.ln).map((i) =>
-      this.#editor.line(i, wrap_width)
-        .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
+      shaper.line(i, wrap_width).reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
     );
     let height = sum(height_arr);
 
@@ -78,11 +77,11 @@ export class Scroll {
   }
 
   #horizontal(): void {
-    const { area, cursor, wrap_width, ln_index_width } = this.#editor;
+    const { shaper, area, cursor, wrap_width, ln_index_width } = this.#editor;
 
     let c = 0; // c = f(cursor.col)
 
-    const line = this.#editor.line(cursor.ln, wrap_width).toArray();
+    const line = shaper.line(cursor.ln, wrap_width).toArray();
     if (line.length > 0) {
       let cell = line[cursor.col];
       if (cell) {

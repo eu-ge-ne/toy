@@ -1,0 +1,4 @@
+{
+  "name": "@lib/shaper",
+  "exports": "./mod.ts"
+}

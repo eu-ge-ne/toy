@@ -2,8 +2,6 @@ import { clamp } from "./clamp.ts";
 import { Editor } from "./editor.ts";
 
 export class Cursor {
-  #editor: Editor;
-
   ln = 0;
   col = 0;
   selecting = false;
@@ -13,8 +11,7 @@ export class Cursor {
   #start_ln = 0;
   #start_col = 0;
 
-  constructor(editor: Editor) {
-    this.#editor = editor;
+  constructor(private editor: Editor) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
@@ -64,7 +61,7 @@ export class Cursor {
   }
 
   #set_ln(ln: number): void {
-    let max = this.#editor.buf.ln_count - 1;
+    let max = this.editor.buf.ln_count - 1;
     if (max < 0) {
       max = 0;
     }
@@ -73,8 +70,10 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
+    const { shaper } = this.editor;
+
     let max = -1;
-    for (const { g, i } of this.#editor.line(this.ln)) {
+    for (const { g, i } of shaper.line(this.ln)) {
       if (!g.is_eol) {
         max = i;
       }

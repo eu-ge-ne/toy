@@ -1,9 +1,8 @@
 import { Buf } from "@lib/buf";
-import { Grapheme, GraphemePool } from "@lib/grapheme";
+import { GraphemePool } from "@lib/grapheme";
 import { Key } from "@lib/input";
+import { Shaper } from "@lib/shaper";
 import { Area, Pane } from "@lib/ui";
-import * as vt from "@lib/vt";
-import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
 import { Cursor } from "./cursor.ts";
@@ -24,6 +23,7 @@ export class Editor extends Pane {
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
   on_change?: (_: boolean) => void;
 
+  readonly shaper: Shaper;
   readonly buf = new Buf();
   readonly cursor = new Cursor(this);
   readonly scroll = new Scroll(this);
@@ -70,6 +70,8 @@ export class Editor extends Pane {
     readonly opts: EditorOptions,
   ) {
     super();
+
+    this.shaper = new Shaper(graphemes, this.buf);
 
     this.ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
   }
@@ -133,40 +135,6 @@ export class Editor extends Pane {
       }
     } finally {
       this.on_react?.(Date.now() - started);
-    }
-  }
-
-  *line(
-    ln: number,
-    width = Number.MAX_SAFE_INTEGER,
-  ): Generator<{ g: Grapheme; i: number; l: number; c: number }> {
-    const { buf, graphemes } = this;
-
-    let i = 0;
-    let w = 0;
-    let l = 0;
-    let c = 0;
-
-    for (const seg of buf.line(ln)) {
-      const g = graphemes.get(seg);
-
-      if (g.width < 0) {
-        vt.end_write();
-        g.width = vt.width(VT_WIDTH_COLORS, g.bytes);
-        vt.begin_write();
-      }
-
-      yield { g, i, l, c };
-
-      i += 1;
-      c += 1;
-      w += g.width;
-
-      if (w >= width) {
-        w = 0;
-        l += 1;
-        c = 0;
-      }
     }
   }
 
