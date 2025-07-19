@@ -85,8 +85,10 @@ export class Scroll {
 
     let l = 0;
     let c = 0; // c = f(cursor.col)
-    const p = this.#editor.line(cursor.ln, wrap_width).drop(cursor.col).take(1)
-      .toArray()[0];
+    const { value: p } = this.#editor.line(cursor.ln, wrap_width).drop(
+      cursor.col,
+    )
+      .next();
     if (p) {
       l = p.l;
       c = p.c;
