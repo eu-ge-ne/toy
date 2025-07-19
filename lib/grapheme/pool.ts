@@ -1,14 +1,13 @@
 import { Grapheme } from "./grapheme.ts";
 
-interface GraphemeSegmenterOptions {
+interface GraphemePoolOptions {
   overrides?: Map<string, string>;
 }
 
-export class GraphemeSegmenter {
-  #segmenter = new Intl.Segmenter();
+export class GraphemePool {
   #pool = new Map<string, Grapheme>();
 
-  constructor({ overrides }: GraphemeSegmenterOptions = {}) {
+  constructor({ overrides }: GraphemePoolOptions = {}) {
     if (overrides) {
       for (const [seg, override] of overrides) {
         this.#pool.set(seg, new Grapheme(seg, override));
@@ -16,13 +15,7 @@ export class GraphemeSegmenter {
     }
   }
 
-  *graphemes(text: string): Generator<Grapheme> {
-    for (const { segment } of this.#segmenter.segment(text)) {
-      yield this.#get(segment);
-    }
-  }
-
-  #get(seg: string): Grapheme {
+  get(seg: string): Grapheme {
     let grapheme = this.#pool.get(seg);
 
     if (!grapheme) {
