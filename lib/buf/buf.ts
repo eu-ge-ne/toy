@@ -30,8 +30,12 @@ export class Buf {
     return this.#buf.line_count;
   }
 
-  line(ln: number): string {
-    return this.#buf.read([ln, 0], [ln + 1, 0]);
+  *line_segments(ln: number): Generator<string> {
+    const text = this.#buf.read([ln, 0], [ln + 1, 0]);
+
+    for (const { segment } of this.#segmenter.segment(text)) {
+      yield segment;
+    }
   }
 
   line_length(ln: number): number {
@@ -39,21 +43,22 @@ export class Buf {
   }
 
   insert([ln, col]: Pos, text: string): void {
-    const col0 = this.#unit_index(this.line(ln), col);
+    // TODO
+    const col0 = this.#unit_index(this.#line(ln), col);
 
     this.#buf.insert([ln, col0], text);
   }
 
   delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
-    const col0 = this.#unit_index(this.line(from_ln), from_col);
-    const col1 = this.#unit_index(this.line(to_ln), to_col + 1);
+    const col0 = this.#unit_index(this.#line(from_ln), from_col);
+    const col1 = this.#unit_index(this.#line(to_ln), to_col + 1);
 
     this.#buf.delete([from_ln, col0], [to_ln, col1]);
   }
 
   copy([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): string {
-    const col0 = this.#unit_index(this.line(from_ln), from_col);
-    const col1 = this.#unit_index(this.line(to_ln), to_col + 1);
+    const col0 = this.#unit_index(this.#line(from_ln), from_col);
+    const col1 = this.#unit_index(this.#line(to_ln), to_col + 1);
 
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
   }
@@ -69,6 +74,10 @@ export class Buf {
 
       return [eols.length, this.#count_segments(last_line)];
     }
+  }
+
+  #line(ln: number): string {
+    return this.#buf.read([ln, 0], [ln + 1, 0]);
   }
 
   #count_segments(text: string): number {
