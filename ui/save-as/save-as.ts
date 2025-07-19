@@ -10,7 +10,7 @@ export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 40, 10);
 
   #segmenter = new GraphemeSegmenter();
-  #buf = new Buf(this.#segmenter);
+  #buf = new Buf();
   #editor = new Editor(this.#segmenter, this.#buf, {
     multi_line: false,
     show_ln_index: false,

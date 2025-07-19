@@ -1,4 +1,4 @@
-import { EOL_RE, Grapheme } from "./grapheme.ts";
+import { Grapheme } from "./grapheme.ts";
 
 interface GraphemeSegmenterOptions {
   overrides?: Map<string, string>;
@@ -19,23 +19,6 @@ export class GraphemeSegmenter {
   *graphemes(text: string): Generator<Grapheme> {
     for (const { segment } of this.#segmenter.segment(text)) {
       yield this.#get(segment);
-    }
-  }
-
-  count_graphemes(text: string): number {
-    return [...this.#segmenter.segment(text)].length;
-  }
-
-  measure(text: string): [number, number] {
-    const eols = text.matchAll(EOL_RE).toArray();
-
-    if (eols.length === 0) {
-      return [0, this.count_graphemes(text)];
-    } else {
-      const eol = eols.at(-1)!;
-      const last_line = text.slice(eol.index + eol[0].length);
-
-      return [eols.length, this.count_graphemes(last_line)];
     }
   }
 

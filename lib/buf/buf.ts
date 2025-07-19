@@ -1,16 +1,14 @@
 import { TextBuf } from "@eu-ge-ne/text-buf";
-import { GraphemeSegmenter } from "@lib/grapheme";
 
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
 type Pos = [number, number];
 
+const EOL_RE = /\r?\n/gm;
+
 export class Buf {
   #segmenter = new Intl.Segmenter();
   #buf = new TextBuf();
-
-  constructor(private segmenter: GraphemeSegmenter) {
-  }
 
   get_text(): string {
     return this.#buf.read(0);
@@ -54,6 +52,23 @@ export class Buf {
     const col1 = this.#unit_index(this.line(to_ln), to_col + 1);
 
     return this.#buf.read([from_ln, col0], [to_ln, col1]);
+  }
+
+  count_graphemes(text: string): number {
+    return [...this.#segmenter.segment(text)].length;
+  }
+
+  measure(text: string): [number, number] {
+    const eols = text.matchAll(EOL_RE).toArray();
+
+    if (eols.length === 0) {
+      return [0, this.count_graphemes(text)];
+    } else {
+      const eol = eols.at(-1)!;
+      const last_line = text.slice(eol.index + eol[0].length);
+
+      return [eols.length, this.count_graphemes(last_line)];
+    }
   }
 
   #unit_index(text: string, grapheme_index: number): number {

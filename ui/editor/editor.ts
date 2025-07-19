@@ -177,16 +177,17 @@ export class Editor extends Pane {
   }
 
   insert(text: string): void {
-    const { cursor, buf, history, segmenter } = this;
+    const { cursor, buf, history } = this;
 
     if (cursor.selecting) {
       buf.delete(cursor.from, cursor.to);
       cursor.set(...cursor.from, false);
     }
 
+    // TODO
     buf.insert([cursor.ln, cursor.col], text);
+    const [ln, col] = buf.measure(text);
 
-    const [ln, col] = segmenter.measure(text);
     if (ln === 0) {
       cursor.move(0, col, false);
     } else {
@@ -197,10 +198,11 @@ export class Editor extends Pane {
   }
 
   backspace(): void {
-    const { cursor, buf, history, segmenter } = this;
+    const { cursor, buf, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      const char_count = segmenter.count_graphemes(buf.line(cursor.ln));
+      // TODO
+      const char_count = buf.count_graphemes(buf.line(cursor.ln));
 
       switch (char_count) {
         case 1: {

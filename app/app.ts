@@ -25,7 +25,7 @@ import { WrapAction } from "./wrap.ts";
 
 export class App {
   file_path = "";
-  buf = new Buf(editor_segmenter);
+  buf = new Buf();
 
   editor = new Editor(editor_segmenter, this.buf, {
     multi_line: true,
