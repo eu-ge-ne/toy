@@ -44,15 +44,17 @@ export class Scroll {
   #vertical(): void {
     const { area, cursor, wrap_width } = this.#editor;
 
+    const delta_ln = cursor.ln - this.ln;
+
     // Did the cursor move above the scroll line?
-    if (cursor.ln <= this.ln) {
+    if (delta_ln <= 0) {
       this.ln = cursor.ln;
       return;
     }
 
     // Did the cursor move below the scroll area?
 
-    if (cursor.ln - this.ln > area.h) {
+    if (delta_ln > area.h) {
       this.ln = cursor.ln - area.h;
     }
 
@@ -78,15 +80,21 @@ export class Scroll {
   #horizontal(): void {
     const { area, cursor, wrap_width, ln_index_width } = this.#editor;
 
-    // TODO: !!!!!!!
     let c = 0; // c = f(cursor.col)
-    const { value: p } = this.#editor.fold_line(cursor.ln, wrap_width).drop(
-      cursor.col,
-    )
-      .next();
-    if (p) {
-      c = p.c;
-      this.cursor_y += p.l;
+
+    const line = this.#editor.fold_line(cursor.ln, wrap_width).toArray();
+    if (line.length > 0) {
+      let cell = line[cursor.col];
+      if (cell) {
+        c = cell.c;
+        this.cursor_y += cell.l;
+      } else {
+        cell = line[cursor.col - 1];
+        if (cell) {
+          c = cell.c + 1;
+          this.cursor_y += cell.l;
+        }
+      }
     }
 
     const delta_col = c - this.col;
@@ -100,9 +108,8 @@ export class Scroll {
     // Did the cursor move to the right of the scroll area?
 
     const min_width = area.w - ln_index_width;
-    const width_arr = this.#editor.fold_line(cursor.ln, wrap_width).drop(
-      cursor.col - delta_col,
-    ).take(delta_col).map((x) => x.g.width).toArray();
+    const width_arr = line.slice(cursor.col - delta_col, cursor.col)
+      .map((x) => x.g.width);
     let width = sum(width_arr);
 
     for (const w of width_arr) {
