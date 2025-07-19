@@ -1,4 +1,4 @@
-import { Buf } from "@lib/buf";
+import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
 import { Key } from "@lib/input";
@@ -25,7 +25,7 @@ export class Editor extends Pane {
 
   readonly shaper: Shaper;
   readonly cursor: Cursor;
-  readonly buf = new Buf();
+  readonly buffer = new Buffer();
   readonly scroll = new Scroll(this);
   readonly history: History;
   #render = new Render(this);
@@ -71,8 +71,8 @@ export class Editor extends Pane {
   ) {
     super();
 
-    this.shaper = new Shaper(graphemes, this.buf);
-    this.cursor = new Cursor(this.shaper, this.buf);
+    this.shaper = new Shaper(graphemes, this.buffer);
+    this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this);
 
     this.ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
@@ -91,7 +91,7 @@ export class Editor extends Pane {
 
     this.scroll.scroll();
     this.#render.render();
-    this.on_cursor?.({ ...this.cursor, ln_count: this.buf.ln_count });
+    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.ln_count });
 
     this.on_render?.(Date.now() - started);
   }
@@ -141,14 +141,14 @@ export class Editor extends Pane {
   }
 
   insert(text: string): void {
-    const { cursor, buf, history } = this;
+    const { cursor, buffer, history } = this;
 
     if (cursor.selecting) {
-      buf.delete(cursor.from, cursor.to);
+      buffer.delete(cursor.from, cursor.to);
       cursor.set(...cursor.from, false);
     }
 
-    const [ln, col] = buf.insert([cursor.ln, cursor.col], text);
+    const [ln, col] = buffer.insert([cursor.ln, cursor.col], text);
 
     if (ln === 0) {
       cursor.move(0, col, false);
@@ -160,12 +160,12 @@ export class Editor extends Pane {
   }
 
   backspace(): void {
-    const { cursor, buf, history } = this;
+    const { cursor, buffer, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      switch (buf.line_length(cursor.ln)) {
+      switch (buffer.line_length(cursor.ln)) {
         case 1: {
-          buf.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+          buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
 
@@ -174,11 +174,11 @@ export class Editor extends Pane {
         default: {
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
 
-          buf.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+          buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
         }
       }
     } else {
-      buf.delete([cursor.ln, cursor.col - 1], [cursor.ln, cursor.col - 1]);
+      buffer.delete([cursor.ln, cursor.col - 1], [cursor.ln, cursor.col - 1]);
 
       cursor.move(0, -1, false);
     }
@@ -187,17 +187,17 @@ export class Editor extends Pane {
   }
 
   delete_char(): void {
-    const { cursor, buf, history } = this;
+    const { cursor, buffer, history } = this;
 
-    buf.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+    buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 
     history.push();
   }
 
   delete_selection(): void {
-    const { cursor, buf, history } = this;
+    const { cursor, buffer, history } = this;
 
-    buf.delete(cursor.from, cursor.to);
+    buffer.delete(cursor.from, cursor.to);
     cursor.set(...cursor.from, false);
 
     history.push();

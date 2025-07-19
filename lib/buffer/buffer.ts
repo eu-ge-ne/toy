@@ -6,7 +6,7 @@ type Pos = [number, number];
 
 const EOL_RE = /\r?\n/gm;
 
-export class Buf {
+export class Buffer {
   #segmenter = new Intl.Segmenter();
   #buf = new TextBuf();
 

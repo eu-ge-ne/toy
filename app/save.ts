@@ -8,7 +8,7 @@ export class SaveAction extends Action<[]> {
       await action.save_as.run();
     } else {
       try {
-        await Deno.writeTextFile(file_path, editor.buf.get_text());
+        await Deno.writeTextFile(file_path, editor.buffer.get_text());
       } catch (err) {
         await alert.open(err);
 

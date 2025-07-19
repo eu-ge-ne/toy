@@ -1,4 +1,4 @@
-import { Buf } from "@lib/buf";
+import { Buffer } from "@lib/buffer";
 import { Shaper } from "@lib/shaper";
 
 import { clamp } from "./clamp.ts";
@@ -13,7 +13,7 @@ export class Cursor {
   #start_ln = 0;
   #start_col = 0;
 
-  constructor(private shaper: Shaper, private buf: Buf) {
+  constructor(private shaper: Shaper, private buffer: Buffer) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
@@ -63,7 +63,7 @@ export class Cursor {
   }
 
   #set_ln(ln: number): void {
-    let max = this.buf.ln_count - 1;
+    let max = this.buffer.ln_count - 1;
     if (max < 0) {
       max = 0;
     }

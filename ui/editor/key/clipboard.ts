@@ -9,14 +9,14 @@ export class Copy extends KeyHandler {
   ];
 
   handle(): void {
-    const { cursor, buf } = this.editor;
+    const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
-      this.editor.clipboard = buf.copy(cursor.from, cursor.to);
+      this.editor.clipboard = buffer.copy(cursor.from, cursor.to);
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.editor.clipboard = buf.copy([cursor.ln, cursor.col], [
+      this.editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
         cursor.ln,
         cursor.col,
       ]);
@@ -33,14 +33,14 @@ export class Cut extends KeyHandler {
   ];
 
   handle(): void {
-    const { cursor, buf } = this.editor;
+    const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
-      this.editor.clipboard = buf.copy(cursor.from, cursor.to);
+      this.editor.clipboard = buffer.copy(cursor.from, cursor.to);
 
       this.editor.delete_selection();
     } else {
-      this.editor.clipboard = buf.copy([cursor.ln, cursor.col], [
+      this.editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
         cursor.ln,
         cursor.col,
       ]);

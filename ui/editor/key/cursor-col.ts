@@ -26,11 +26,11 @@ export class Right extends KeyHandler {
   ];
 
   handle({ shift }: Key): void {
-    const { cursor, buf } = this.editor;
+    const { cursor, buffer } = this.editor;
 
     const select = Boolean(shift);
 
-    if (!cursor.move(0, 1, select) && cursor.ln < (buf.ln_count - 1)) {
+    if (!cursor.move(0, 1, select) && cursor.ln < (buffer.ln_count - 1)) {
       cursor.move(1, Number.MIN_SAFE_INTEGER, select);
     }
   }

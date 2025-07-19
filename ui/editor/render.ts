@@ -23,7 +23,7 @@ export class Render {
   }
 
   render(): void {
-    const { buf, enabled, scroll } = this.#editor;
+    const { buffer, enabled, scroll } = this.#editor;
     const { y0, x0, h, w } = this.#editor.area;
 
     vt.begin_write(
@@ -40,7 +40,7 @@ export class Render {
     while (true) {
       span = this.#begin_ln();
 
-      if (this.#ln < buf.ln_count) {
+      if (this.#ln < buffer.ln_count) {
         this.#render_line(span);
       } else {
         this.#blank_line_index(span);

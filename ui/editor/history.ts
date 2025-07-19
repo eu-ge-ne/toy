@@ -1,4 +1,4 @@
-import { Snapshot } from "@lib/buf";
+import { Snapshot } from "@lib/buffer";
 
 import { Editor } from "./editor.ts";
 
@@ -15,8 +15,8 @@ export class History {
   }
 
   reset(): void {
-    const { cursor: { ln, col }, buf } = this.editor;
-    const snapshot = buf.get_snapshot();
+    const { cursor: { ln, col }, buffer } = this.editor;
+    const snapshot = buffer.get_snapshot();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
@@ -25,8 +25,8 @@ export class History {
   }
 
   push(): void {
-    const { cursor: { ln, col }, buf } = this.editor;
-    const snapshot = buf.get_snapshot();
+    const { cursor: { ln, col }, buffer } = this.editor;
+    const snapshot = buffer.get_snapshot();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
@@ -53,11 +53,11 @@ export class History {
   }
 
   #restore(): void {
-    const { cursor, buf } = this.editor;
+    const { cursor, buffer } = this.editor;
 
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    buf.set_snapshot(snapshot);
+    buffer.set_snapshot(snapshot);
     cursor.set(ln, col, false);
 
     this.editor.on_change?.(this.#has_changes);

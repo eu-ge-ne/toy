@@ -6,7 +6,7 @@ export class LoadAction extends Action<[string, Promise<string>]> {
     const { editor, alert } = this.app;
 
     try {
-      editor.buf.set_text(await text);
+      editor.buffer.set_text(await text);
       editor.reset();
 
       this.app.set_file_path(path);

@@ -16,11 +16,13 @@ export class SaveAs extends Modal<[string], string> {
   #opened = false;
 
   async open(file_path: string): Promise<string> {
+    const { buffer } = this.#editor;
+
     try {
       this.#opened = true;
       this.#editor.enabled = true;
 
-      this.#editor.buf.set_text(file_path);
+      buffer.set_text(file_path);
       this.#editor.reset();
 
       this.render();
@@ -32,7 +34,7 @@ export class SaveAs extends Modal<[string], string> {
               case "ESC":
                 return "";
               case "ENTER": {
-                const new_file_path = this.#editor.buf.get_text();
+                const new_file_path = buffer.get_text();
                 if (new_file_path.length > 0) {
                   return new_file_path;
                 }
