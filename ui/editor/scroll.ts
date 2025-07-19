@@ -33,10 +33,8 @@ export class Scroll {
     let height = Math.trunc(area.h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = this.#editor.line(i, wrap_width).reduce(
-        (a, x) => a + (x.wrap ? 1 : 0),
-        1,
-      );
+      const h = this.#editor.line(i, wrap_width)
+        .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0);
       if (h > height) {
         break;
       }
@@ -63,10 +61,8 @@ export class Scroll {
 
     const min_height = area.h;
     const height_arr = range(this.ln, cursor.ln).map((i) =>
-      this.#editor.line(i, wrap_width).reduce(
-        (a, x) => a + (x.wrap ? 1 : 0),
-        1,
-      )
+      this.#editor.line(i, wrap_width)
+        .reduce((a, x) => a + (x.c === 0 ? 1 : 0), 0)
     );
     let height = sum(height_arr);
 
@@ -87,6 +83,7 @@ export class Scroll {
 
     const fold = this.#fold_line(cursor.ln, wrap_width).toArray();
 
+    /*
     let folded_ln = 0;
     let folded_col = cursor.col;
 
@@ -101,17 +98,28 @@ export class Scroll {
         this.cursor_y += 1;
       }
     }
+    */
+
+    let l = 0;
+    let c = 0; // c = f(cursor.col)
+    const p = this.#editor.line(cursor.ln, wrap_width).drop(cursor.col).take(1)
+      .toArray()[0];
+    if (p) {
+      l = p.l;
+      c = p.c;
+      this.cursor_y += p.l;
+    }
 
     // Did the cursor move to the left of the scroll column?
-    if (folded_col <= this.col) {
-      this.col = folded_col;
+    if (c <= this.col) {
+      this.col = c;
       return;
     }
 
     // Did the cursor move to the right of the scroll area?
 
     const min_width = area.w - ln_index_width;
-    const width_arr = fold[folded_ln]!.slice(this.col, folded_col);
+    const width_arr = fold[l]!.slice(this.col, c);
     let width = sum(width_arr);
 
     for (const w of width_arr) {
