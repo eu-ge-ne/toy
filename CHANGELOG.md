@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.11
+
+- Enhance support for large files
+
 ## v0.0.10
 
 - Improve invisible characters colors
