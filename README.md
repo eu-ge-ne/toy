@@ -29,10 +29,8 @@ brew install eu-ge-ne/tap/toy
 - Written in Deno/TypeScript
 - No 3d-party dependencies
 - 256 colors
-- Accurate handling of Unicode grapheme clusters
-  ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
-- [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-  support
+- Accurate handling of Unicode grapheme clusters ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
+- [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol) support
 - Copy to system clipboard (OSC52)
 - Line wrapping
 
@@ -59,14 +57,10 @@ brew install eu-ge-ne/tap/toy
 
 - `⇧+Left` -- Extend text selection one character to the left
 - `⇧+Right` -- Extend text selection one character to the right
-- `⇧+Up` -- Extend text selection to the nearest character at the same
-  horizontal location on the line above
-- `⇧+Down` -- Extend text selection to the nearest character at the same
-  horizontal location on the line below
-- `⇧+Home`, `⇧+Fn+Left`, `⇧+⌘+Left` -- Select the text between the cursor and
-  the beginning of the current line
-- `⇧+End`, `⇧+Fn+Right`, `⇧+⌘+Right` -- Select the text between the cursor and
-  the end of the current line
+- `⇧+Up` -- Extend text selection to the nearest character at the same horizontal location on the line above
+- `⇧+Down` -- Extend text selection to the nearest character at the same horizontal location on the line below
+- `⇧+Home`, `⇧+Fn+Left`, `⇧+⌘+Left` -- Select the text between the cursor and the beginning of the current line
+- `⇧+End`, `⇧+Fn+Right`, `⇧+⌘+Right` -- Select the text between the cursor and the end of the current line
 - `⇧+Page Up`, `⇧+Fn+Up` -- Select a frame of text above the cursor
 - `⇧+Page Down`, `⇧+Fn+Down` -- Select a frame of text below the cursor
 - `⇧+⌘+Up` -- Select the text between the cursor and the beginning of the text

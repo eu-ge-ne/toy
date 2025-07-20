@@ -34,9 +34,7 @@ export class View {
   }
 
   resize(area: Area): void {
-    this.#wrap_width = this.editor.wrap_enabled
-      ? area.w - this.#ln_index_width
-      : Number.MAX_SAFE_INTEGER;
+    this.#wrap_width = this.editor.wrap_enabled ? area.w - this.#ln_index_width : Number.MAX_SAFE_INTEGER;
   }
 
   render(): void {
@@ -122,14 +120,10 @@ export class View {
       let color: Uint8Array;
 
       if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_whitespace
-          ? EDITOR_SELECTED_INVISIBLE_COLORS
-          : EDITOR_SELECTED_CHAR_COLORS;
+        color = cell.grapheme.is_whitespace ? EDITOR_SELECTED_INVISIBLE_COLORS : EDITOR_SELECTED_CHAR_COLORS;
       } else {
         color = cell.grapheme.is_whitespace
-          ? invisible_enabled
-            ? EDITOR_INVISIBLE_ON_COLORS
-            : EDITOR_INVISIBLE_OFF_COLORS
+          ? invisible_enabled ? EDITOR_INVISIBLE_ON_COLORS : EDITOR_INVISIBLE_OFF_COLORS
           : EDITOR_CHAR_COLORS;
       }
 
@@ -188,9 +182,7 @@ export class View {
       this.#scroll_ln = cursor.ln - area.h;
     }
 
-    const height_arr = range(this.#scroll_ln, cursor.ln).map((i) =>
-      shaper.count_wraps(i, this.#wrap_width)
-    );
+    const height_arr = range(this.#scroll_ln, cursor.ln).map((i) => shaper.count_wraps(i, this.#wrap_width));
     let height = sum(height_arr);
 
     for (const h of height_arr) {

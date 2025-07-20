@@ -12,8 +12,7 @@
 
 ## v0.0.8
 
-- Accurate handling of Unicode grapheme clusters
-  ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
+- Accurate handling of Unicode grapheme clusters ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
 
 ## v0.0.7
 
@@ -25,8 +24,7 @@
 
 ## v0.0.6
 
-- Fix parsing `Esc`, `F2` keys in terminals which do not support Kitty keyboard
-  protocol
+- Fix parsing `Esc`, `F2` keys in terminals which do not support Kitty keyboard protocol
 - Fix deleting text selection
 
 ## v0.0.5
