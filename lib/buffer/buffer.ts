@@ -42,14 +42,14 @@ export class Buffer {
     });
 
     const stream = new TextEncoderStream();
-
-    stream.readable.pipeTo(file.writable);
-
+    const done = stream.readable.pipeTo(file.writable);
     const writer = stream.writable.getWriter();
 
     for (const text of this.#buf.read(0)) {
-      await writer.write(text);
+      writer.write(text);
     }
+
+    await done;
   }
 
   get_snapshot(): Snapshot {
