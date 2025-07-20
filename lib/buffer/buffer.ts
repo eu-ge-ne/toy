@@ -19,7 +19,7 @@ export class Buffer {
 
     const info = await file.stat();
     if (!info.isFile) {
-      throw new Error(`${path} not found`);
+      throw new Error(`${path} is not a file`);
     }
 
     const stream = file.readable.pipeThrough(new TextDecoderStream());
