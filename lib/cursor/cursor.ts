@@ -1,7 +1,6 @@
 import { Buffer } from "@lib/buffer";
 import { Shaper } from "@lib/shaper";
-
-import { clamp } from "./clamp.ts";
+import { clamp } from "@lib/std";
 
 export class Cursor {
   ln = 0;
