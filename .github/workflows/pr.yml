@@ -19,6 +19,7 @@ jobs:
         with:
           deno-version: v2.x
 
+      - run: deno check --all --frozen --reload
       - run: deno fmt --check
       - run: deno lint
 
