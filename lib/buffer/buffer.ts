@@ -14,8 +14,17 @@ export class Buffer {
     return this.#buf.read(0);
   }
 
-  set_text(x: string): void {
-    this.#buf.insert(0, x);
+  async set_stream(stream: ReadableStream<string>): Promise<void> {
+    const reader = stream.getReader();
+
+    while (true) {
+      const result = await reader.read();
+      if (result.done) {
+        break;
+      }
+
+      this.#buf.insert(this.#buf.count, result.value);
+    }
   }
 
   get_snapshot(): Snapshot {

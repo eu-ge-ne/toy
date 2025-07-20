@@ -1,12 +1,22 @@
 import { Action } from "./action.ts";
 import { exit } from "./exit.ts";
 
-export class LoadAction extends Action<[string, Promise<string>]> {
-  async run(path: string, text: Promise<string>): Promise<void> {
+export class LoadAction extends Action<[string]> {
+  async run(path: string): Promise<void> {
     const { editor, alert } = this.app;
 
     try {
-      editor.buffer.set_text(await text);
+      using file = await Deno.open(path, { read: true });
+
+      const info = await file.stat();
+      if (!info.isFile) {
+        throw new Error(`${path} not found`);
+      }
+
+      const stream = file.readable.pipeThrough(new TextDecoderStream());
+
+      await editor.buffer.set_stream(stream);
+
       editor.reset();
 
       this.app.set_file_path(path);
