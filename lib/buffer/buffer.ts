@@ -14,7 +14,11 @@ export class Buffer {
     return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
-  async set_stream(stream: ReadableStream<string>): Promise<void> {
+  *pipe(): Generator<string> {
+    yield* this.#buf.read(0);
+  }
+
+  async pipe_from(stream: ReadableStream<string>): Promise<void> {
     const reader = stream.getReader();
 
     while (true) {

@@ -15,7 +15,7 @@ export class LoadAction extends Action<[string]> {
 
       const stream = file.readable.pipeThrough(new TextDecoderStream());
 
-      await editor.buffer.set_stream(stream);
+      await editor.buffer.pipe_from(stream);
 
       editor.reset();
 
