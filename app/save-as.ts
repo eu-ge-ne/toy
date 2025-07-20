@@ -11,7 +11,9 @@ export class SaveAsAction extends Action<[]> {
       }
 
       try {
-        await Deno.writeTextFile(path, editor.buffer.get_text());
+        await editor.buffer.save(file_path);
+
+        editor.reset(false);
 
         this.app.set_file_path(path);
       } catch (err) {

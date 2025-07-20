@@ -26,13 +26,15 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
-- Written in Deno/TypeScript
-- No 3d-party dependencies
-- 256 colors
-- Accurate handling of Unicode grapheme clusters ([see](https://mitchellh.com/writing/grapheme-clusters-in-terminals))
-- [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol) support
-- Copy to system clipboard (OSC52)
-- Line wrapping
+- Built with Deno and TypeScript
+- Zero third-party dependencies
+- Accurate handling of Unicode grapheme clusters
+- Efficiently opens large files
+- Utilizes the 256-color terminal palette
+- Supports the [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol) support
+- System clipboard integration via OSC52
+- Automatic line wrapping
+- Renders invisible characters (e.g., spaces, tabs)
 
 ## Supported terminal emulators
 

@@ -11,11 +11,43 @@ export class Buffer {
   #buf = new TextBuf();
 
   get_text(): string {
-    return this.#buf.read(0);
+    return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
-  set_text(x: string): void {
-    this.#buf.insert(0, x);
+  async load(path: string): Promise<void> {
+    using file = await Deno.open(path, { read: true });
+
+    const info = await file.stat();
+    if (!info.isFile) {
+      throw new Error(`${path} is not a file`);
+    }
+
+    const reader = file.readable.pipeThrough(new TextDecoderStream()).getReader();
+
+    while (true) {
+      const result = await reader.read();
+      if (result.done) {
+        break;
+      }
+
+      this.#buf.insert(this.#buf.count, result.value);
+    }
+  }
+
+  async save(path: string): Promise<void> {
+    using file = await Deno.open(path, {
+      create: true,
+      write: true,
+      truncate: true,
+    });
+
+    const stream = new TextEncoderStream();
+    stream.readable.pipeTo(file.writable);
+    const writer = stream.writable.getWriter();
+
+    for (const text of this.#buf.read(0)) {
+      await writer.write(text);
+    }
   }
 
   get_snapshot(): Snapshot {
@@ -68,11 +100,11 @@ export class Buffer {
     const col0 = this.#line_unit_index(from_ln, from_col);
     const col1 = this.#line_unit_index(to_ln, to_col + 1);
 
-    return this.#buf.read([from_ln, col0], [to_ln, col1]);
+    return this.#buf.read([from_ln, col0], [to_ln, col1]).reduce((a, x) => a + x, "");
   }
 
   #line_text(ln: number): string {
-    return this.#buf.read([ln, 0], [ln + 1, 0]);
+    return this.#buf.read([ln, 0], [ln + 1, 0]).reduce((a, x) => a + x, "");
   }
 
   #count_segments(text: string): number {

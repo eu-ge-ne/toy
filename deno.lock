@@ -3,7 +3,7 @@
   "specifiers": {
     "jsr:@eu-ge-ne/ctlseqs@^0.0.16": "0.0.16",
     "jsr:@eu-ge-ne/kitty-keys@~0.5.2": "0.5.2",
-    "jsr:@eu-ge-ne/text-buf@~0.11.1": "0.11.1",
+    "jsr:@eu-ge-ne/text-buf@0.12": "0.12.0",
     "jsr:@std/cli@^1.0.20": "1.0.20"
   },
   "jsr": {
@@ -13,8 +13,8 @@
     "@eu-ge-ne/kitty-keys@0.5.2": {
       "integrity": "726f8007805625f6e6aa3ad408b12d3fb5ed3a588ca52b45ca897f1ddbdcfaf7"
     },
-    "@eu-ge-ne/text-buf@0.11.1": {
-      "integrity": "95e53cbe2092e926193c08a4549913588919070768fade833dd76029bf845fab"
+    "@eu-ge-ne/text-buf@0.12.0": {
+      "integrity": "a0b6ea16a8012dd768836be35b72bc2582c7005f395f070418423a3dd2f15d6c"
     },
     "@std/cli@1.0.20": {
       "integrity": "a8c384a2c98cec6ec6a2055c273a916e2772485eb784af0db004c5ab8ba52333"
@@ -24,7 +24,7 @@
     "dependencies": [
       "jsr:@eu-ge-ne/ctlseqs@^0.0.16",
       "jsr:@eu-ge-ne/kitty-keys@~0.5.2",
-      "jsr:@eu-ge-ne/text-buf@~0.11.1",
+      "jsr:@eu-ge-ne/text-buf@0.12",
       "jsr:@std/cli@^1.0.20"
     ]
   }

@@ -1,13 +1,14 @@
 import { Action } from "./action.ts";
 import { exit } from "./exit.ts";
 
-export class LoadAction extends Action<[string, Promise<string>]> {
-  async run(path: string, text: Promise<string>): Promise<void> {
+export class LoadAction extends Action<[string]> {
+  async run(path: string): Promise<void> {
     const { editor, alert } = this.app;
 
     try {
-      editor.buffer.set_text(await text);
-      editor.reset();
+      await editor.buffer.load(path);
+
+      editor.reset(true);
 
       this.app.set_file_path(path);
     } catch (err) {

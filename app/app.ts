@@ -69,9 +69,6 @@ export class App {
     }
 
     const file_path = args._[0];
-    const file_text: Promise<string> = typeof file_path === "string"
-      ? Deno.readTextFile(file_path)
-      : Promise.resolve("");
 
     init_vt();
     globalThis.addEventListener("unload", exit);
@@ -87,7 +84,7 @@ export class App {
     this.resize();
 
     if (typeof file_path === "string") {
-      await this.#act(new LoadAction(this), file_path, file_text);
+      await this.#act(new LoadAction(this), file_path);
     }
 
     this.render();

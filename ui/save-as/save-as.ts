@@ -22,8 +22,8 @@ export class SaveAs extends Modal<[string], string> {
       this.#opened = true;
       this.#editor.enabled = true;
 
-      buffer.set_text(file_path);
-      this.#editor.reset();
+      buffer.insert([0, 0], file_path);
+      this.#editor.reset(true);
 
       this.render();
 
