@@ -6,16 +6,7 @@ export class LoadAction extends Action<[string]> {
     const { editor, alert } = this.app;
 
     try {
-      using file = await Deno.open(path, { read: true });
-
-      const info = await file.stat();
-      if (!info.isFile) {
-        throw new Error(`${path} not found`);
-      }
-
-      const stream = file.readable.pipeThrough(new TextDecoderStream());
-
-      await editor.buffer.pipe_from(stream);
+      await editor.buffer.load(path);
 
       editor.reset();
 

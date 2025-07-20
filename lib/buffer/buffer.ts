@@ -14,11 +14,16 @@ export class Buffer {
     return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
-  *pipe(): Generator<string> {
-    yield* this.#buf.read(0);
-  }
+  async load(path: string): Promise<void> {
+    using file = await Deno.open(path, { read: true });
 
-  async pipe_from(stream: ReadableStream<string>): Promise<void> {
+    const info = await file.stat();
+    if (!info.isFile) {
+      throw new Error(`${path} not found`);
+    }
+
+    const stream = file.readable.pipeThrough(new TextDecoderStream());
+
     const reader = stream.getReader();
 
     while (true) {
@@ -28,6 +33,24 @@ export class Buffer {
       }
 
       this.#buf.insert(this.#buf.count, result.value);
+    }
+  }
+
+  async save(path: string): Promise<void> {
+    using file = await Deno.open(path, {
+      create: true,
+      write: true,
+      truncate: true,
+    });
+
+    const stream = new TextEncoderStream();
+
+    stream.readable.pipeTo(file.writable);
+
+    const writer = stream.writable.getWriter();
+
+    for (const text of this.#buf.read(0)) {
+      await writer.write(text);
     }
   }
 
