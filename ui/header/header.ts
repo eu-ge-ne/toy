@@ -1,11 +1,6 @@
 import { Pane } from "@lib/ui";
 import * as vt from "@lib/vt";
-import {
-  HEADER_BG,
-  HEADER_FILE_PATH_COLORS,
-  HEADER_FLAG_OFF_COLORS,
-  HEADER_FLAG_ON_COLORS,
-} from "@ui/theme";
+import { HEADER_BG, HEADER_FILE_PATH_COLORS, HEADER_FLAG_OFF_COLORS, HEADER_FLAG_ON_COLORS } from "@ui/theme";
 
 const FLAG = "+";
 
