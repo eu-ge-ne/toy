@@ -22,9 +22,7 @@ export class Buffer {
       throw new Error(`${path} is not a file`);
     }
 
-    const stream = file.readable.pipeThrough(new TextDecoderStream());
-
-    const reader = stream.getReader();
+    const reader = file.readable.pipeThrough(new TextDecoderStream()).getReader();
 
     while (true) {
       const result = await reader.read();
