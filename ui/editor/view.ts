@@ -1,3 +1,4 @@
+import { range, sum } from "@lib/std";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import {
@@ -12,8 +13,6 @@ import {
 } from "@ui/theme";
 
 import { Editor } from "./editor.ts";
-import { range } from "./range.ts";
-import { sum } from "./sum.ts";
 
 const LN_INDEX_WIDTH = 1 + 6 + 1;
 
