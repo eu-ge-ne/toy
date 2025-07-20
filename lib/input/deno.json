@@ -1,0 +1,4 @@
+{
+  "name": "@lib/input",
+  "exports": "./mod.ts"
+}

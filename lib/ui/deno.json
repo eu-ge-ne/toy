@@ -1,0 +1,4 @@
+{
+  "name": "@lib/ui",
+  "exports": "./mod.ts"
+}

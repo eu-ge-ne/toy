@@ -1,0 +1,4 @@
+{
+  "name": "@lib/grapheme",
+  "exports": "./mod.ts"
+}

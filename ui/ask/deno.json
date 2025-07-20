@@ -1,0 +1,4 @@
+{
+  "name": "@ui/ask",
+  "exports": "./mod.ts"
+}
