@@ -47,7 +47,7 @@ jobs:
         with:
           name: dist
           path: |
-            dist/toy-aarch64-apple-darwin-$APP_V
-            dist/toy-x86_64-unknown-linux-gnu-$APP_V
-            dist/toy-x86_64-pc-windows-msvc-$APP_V.exe
+            dist/toy-aarch64-apple-darwin-${{ env.APP_V }}
+            dist/toy-x86_64-unknown-linux-gnu-${{ env.APP_V }}
+            dist/toy-x86_64-pc-windows-msvc-${{ env.APP_V }}.exe
           compression-level: 9
