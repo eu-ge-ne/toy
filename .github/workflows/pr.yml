@@ -38,9 +38,9 @@ jobs:
         with:
           deno-version: v2.x
 
-      - run: echo "{APP_V}={$(deno ./etc/version.ts)}" >> "$APP_V"
+      - run: echo "APP_V=$(deno ./etc/version.ts)" >> $APP_V
       - run: echo $APP_V
       - run: mkdir -p ./dist/
-      - run: deno compile --target aarch64-apple-darwin --frozen --reload --output dist/toy-aarch64-apple-darwin-$TOY_VERSION -RW main.ts
+      - run: deno compile --target aarch64-apple-darwin --frozen --reload --output dist/toy-aarch64-apple-darwin-$APP_V -RW main.ts
       - run: deno compile --target x86_64-unknown-linux-gnu --frozen --reload --output dist/toy-x86_64-unknown-linux-gnu -RW main.ts
       - run: deno compile --target x86_64-pc-windows-msvc --frozen --reload --output dist/toy-x86_64-pc-windows-msvc.exe -RW main.ts
