@@ -84,15 +84,17 @@ export class Editor extends Pane {
     this.on_render?.(Date.now() - started);
   }
 
-  reset(): void {
-    if (this.opts.multi_line) {
-      this.cursor.move(
-        -Number.MAX_SAFE_INTEGER,
-        -Number.MAX_SAFE_INTEGER,
-        false,
-      );
-    } else {
-      this.cursor.move(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+  reset(reset_cursor: boolean): void {
+    if (reset_cursor) {
+      if (this.opts.multi_line) {
+        this.cursor.move(
+          -Number.MAX_SAFE_INTEGER,
+          -Number.MAX_SAFE_INTEGER,
+          false,
+        );
+      } else {
+        this.cursor.move(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+      }
     }
 
     this.history.reset();

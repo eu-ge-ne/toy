@@ -23,7 +23,7 @@ export class SaveAs extends Modal<[string], string> {
       this.#editor.enabled = true;
 
       buffer.insert([0, 0], file_path);
-      this.#editor.reset();
+      this.#editor.reset(true);
 
       this.render();
 

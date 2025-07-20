@@ -8,7 +8,7 @@ export class LoadAction extends Action<[string]> {
     try {
       await editor.buffer.load(path);
 
-      editor.reset();
+      editor.reset(true);
 
       this.app.set_file_path(path);
     } catch (err) {

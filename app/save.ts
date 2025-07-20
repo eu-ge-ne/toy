@@ -12,7 +12,7 @@ export class SaveAction extends Action<[]> {
     try {
       await editor.buffer.save(file_path);
 
-      editor.reset();
+      editor.reset(false);
     } catch (err) {
       await alert.open(err);
 

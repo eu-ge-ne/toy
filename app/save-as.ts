@@ -13,7 +13,7 @@ export class SaveAsAction extends Action<[]> {
       try {
         await editor.buffer.save(file_path);
 
-        editor.reset();
+        editor.reset(false);
 
         this.app.set_file_path(path);
       } catch (err) {
