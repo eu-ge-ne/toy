@@ -39,9 +39,15 @@ jobs:
           deno-version: v2.x
 
       - run: echo "APP_V=$(deno ./etc/version.ts)" >> $GITHUB_ENV
-      - run: echo $APP_V
       - run: mkdir -p ./dist/
       - run: deno compile --target aarch64-apple-darwin --frozen --reload --output dist/toy-aarch64-apple-darwin-$APP_V -RW main.ts
       - run: deno compile --target x86_64-unknown-linux-gnu --frozen --reload --output dist/toy-x86_64-unknown-linux-gnu-$APP_V -RW main.ts
       - run: deno compile --target x86_64-pc-windows-msvc --frozen --reload --output dist/toy-x86_64-pc-windows-msvc-$APP_V.exe -RW main.ts
-      - run: ls -alh dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist/toy-aarch64-apple-darwin-$APP_V
+            dist/toy-x86_64-unknown-linux-gnu-$APP_V
+            dist/toy-x86_64-pc-windows-msvc-$APP_V.exe
+          compression-level: 9
