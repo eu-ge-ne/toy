@@ -38,7 +38,7 @@ jobs:
         with:
           deno-version: v2.x
 
-      - run: echo "APP_V=$(deno ./etc/version.ts)" >> $APP_V
+      - run: echo "APP_V=$(deno ./etc/version.ts)" >> $GITHUB_ENV
       - run: echo $APP_V
       - run: mkdir -p ./dist/
       - run: deno compile --target aarch64-apple-darwin --frozen --reload --output dist/toy-aarch64-apple-darwin-$APP_V -RW main.ts
