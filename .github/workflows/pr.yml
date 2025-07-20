@@ -39,4 +39,6 @@ jobs:
           deno-version: v2.x
 
       - run: mkdir -p ./dist/
-      - run: deno compile --frozen --reload --output dist/ -RW main.ts
+      - run: deno compile --target aarch64-apple-darwin --frozen --reload --output dist/toy-aarch64-apple-darwin -RW main.ts
+      - run: deno compile --target x86_64-unknown-linux-gnu --frozen --reload --output dist/toy-x86_64-unknown-linux-gnu -RW main.ts
+      - run: deno compile --target x86_64-pc-windows-msvc --frozen --reload --output dist/toy-x86_64-pc-windows-msvc.exe -RW main.ts
