@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.12
+
+- Fixed vertical scrolling
+
 ## v0.0.11
 
 - Enhanced support for large files
