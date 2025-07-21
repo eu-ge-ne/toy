@@ -130,9 +130,19 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#ln_index_width > 0) {
+      let index = `${this.#ln + 1} `;
+
+      const delta = this.#ln_index_width - index.length;
+
+      if (delta > 0) {
+        index = " ".repeat(delta) + index;
+      } else if (delta < 0) {
+        index = "." + index.slice(-delta + 1);
+      }
+
       vt.write(
         EDITOR_LINE_INDEX_COLORS,
-        ...vt.fmt.lpad(span, this.#ln_index_width, `${this.#ln + 1} `),
+        ...vt.fmt.text(span, index),
       );
     }
   }
