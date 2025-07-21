@@ -16,7 +16,8 @@ import { Editor } from "./editor.ts";
 const LN_INDEX_WIDTH = 1 + 6 + 1;
 
 export class View {
-  #ln_index_width!: number;
+  #index_width!: number;
+  #text_width!: number;
   #wrap_width!: number;
 
   #scroll_ln = 0;
@@ -33,11 +34,12 @@ export class View {
   render(): void {
     const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
 
-    this.#ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
-    this.#wrap_width = wrap_enabled ? area.w - this.#ln_index_width : Number.MAX_SAFE_INTEGER;
+    this.#index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
+    this.#text_width = area.w - this.#index_width;
+    this.#wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
 
     this.#cursor_y = area.y0;
-    this.#cursor_x = area.x0 + this.#ln_index_width;
+    this.#cursor_x = area.x0 + this.#index_width;
 
     this.#scroll_vertical();
     this.#scroll_horizontal();
@@ -126,10 +128,10 @@ export class View {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    if (this.#ln_index_width > 0) {
+    if (this.#index_width > 0) {
       let index = `${this.#ln + 1} `;
 
-      const delta = this.#ln_index_width - index.length;
+      const delta = this.#index_width - index.length;
 
       if (delta > 0) {
         index = " ".repeat(delta) + index;
@@ -147,7 +149,7 @@ export class View {
   #blank_line_index(span: vt.fmt.Span): void {
     vt.write(
       EDITOR_BLANK_LINE_INDEX_COLORS,
-      vt.fmt.space(span, this.#ln_index_width),
+      vt.fmt.space(span, this.#index_width),
     );
   }
 
@@ -228,7 +230,7 @@ export class View {
     let width = sum(width_arr);
 
     for (const w of width_arr) {
-      if (width < (this.editor.area.w - this.#ln_index_width)) {
+      if (width < this.#text_width) {
         break;
       }
 
