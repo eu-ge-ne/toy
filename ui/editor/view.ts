@@ -126,35 +126,21 @@ export class View {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    if (this.#index_width === 0) {
-      return;
+    if (this.#index_width > 0) {
+      vt.write(
+        EDITOR_LINE_INDEX_COLORS,
+        ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
+      );
     }
-
-    let index = `${this.#ln + 1} `;
-
-    const delta = this.#index_width - index.length;
-
-    if (delta > 0) {
-      index = " ".repeat(delta) + index;
-    } else if (delta < 0) {
-      index = "." + index.slice(-delta + 1);
-    }
-
-    vt.write(
-      EDITOR_LINE_INDEX_COLORS,
-      ...vt.fmt.text(span, index),
-    );
   }
 
   #blank_line_index(span: vt.fmt.Span): void {
-    if (this.#index_width === 0) {
-      return;
+    if (this.#index_width > 0) {
+      vt.write(
+        EDITOR_BLANK_LINE_INDEX_COLORS,
+        vt.fmt.space(span, this.#index_width),
+      );
     }
-
-    vt.write(
-      EDITOR_BLANK_LINE_INDEX_COLORS,
-      vt.fmt.space(span, this.#index_width),
-    );
   }
 
   center(): void {
