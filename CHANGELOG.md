@@ -5,7 +5,7 @@
 - Fixed line index rendering
 - Fixed vertical scrolling
 - Optimized file loading
-- Optimized grapheme measuring
+- Optimized grapheme width measuring
 
 ## v0.0.12
 
