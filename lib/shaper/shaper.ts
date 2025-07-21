@@ -40,9 +40,7 @@ export class Shaper {
       const grapheme = graphemes.get(seg);
 
       if (grapheme.width < 0) {
-        vt.end_write();
         grapheme.width = vt.width(colors, grapheme.bytes);
-        vt.begin_write();
       }
 
       w += grapheme.width;

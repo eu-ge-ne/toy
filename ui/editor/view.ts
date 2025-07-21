@@ -32,6 +32,12 @@ export class View {
   render(): void {
     const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
 
+    vt.begin_write(
+      ...(enabled ? [] : [vt.cursor.save]),
+      EDITOR_BG,
+      ...vt.clear(area.y0, area.x0, area.h, area.w),
+    );
+
     this.#index_width = 0;
     if (opts.show_ln_index && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
@@ -44,15 +50,8 @@ export class View {
 
     this.#cursor_y = area.y0;
     this.#cursor_x = area.x0 + this.#index_width;
-
     this.#scroll_vertical();
     this.#scroll_horizontal();
-
-    vt.begin_write(
-      ...(enabled ? [] : [vt.cursor.save]),
-      EDITOR_BG,
-      ...vt.clear(area.y0, area.x0, area.h, area.w),
-    );
 
     this.#y = area.y0;
     this.#ln = this.#scroll_ln;
