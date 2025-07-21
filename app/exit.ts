@@ -10,9 +10,9 @@ export function exit(): never {
 
 export class ExitAction extends Action<[], never> {
   async run(): Promise<never> {
-    const { unsaved, ask, action } = this.app;
+    const { unsaved_changes, ask, action } = this.app;
 
-    if (unsaved) {
+    if (unsaved_changes) {
       if (await ask.open("Save?")) {
         await action.save.run();
       }
