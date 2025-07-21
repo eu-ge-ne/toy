@@ -18,10 +18,17 @@ export class Shaper {
   }
 
   count_wraps(ln: number, wrap_width: number): number {
-    return this.line(ln, wrap_width).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
+    return this.line(ln, wrap_width).reduce(
+      (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
+      1,
+    );
   }
 
-  *line(ln: number, wrap_width = Number.MAX_SAFE_INTEGER, add_tail_cell = false): Generator<Cell> {
+  *line(
+    ln: number,
+    wrap_width = Number.MAX_SAFE_INTEGER,
+    add_tail_cell = false,
+  ): Generator<Cell> {
     const { buffer, graphemes, colors } = this;
 
     let i = 0;

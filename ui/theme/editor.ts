@@ -1,6 +1,14 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { DARK, DARKER, DARKEST, HIGHER, LIGHTEST, LOWER, TOP } from "./tokens.ts";
+import {
+  DARK,
+  DARKER,
+  DARKEST,
+  HIGHER,
+  LIGHTEST,
+  LOWER,
+  TOP,
+} from "./tokens.ts";
 
 export const EDITOR_BG = new Uint8Array([
   ...sgr(["bg", ...LOWER]),

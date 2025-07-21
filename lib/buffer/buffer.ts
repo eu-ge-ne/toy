@@ -110,7 +110,10 @@ export class Buffer {
     const col0 = this.#line_unit_index(from_ln, from_col);
     const col1 = this.#line_unit_index(to_ln, to_col + 1);
 
-    return this.#buf.read([from_ln, col0], [to_ln, col1]).reduce((a, x) => a + x, "");
+    return this.#buf.read([from_ln, col0], [to_ln, col1]).reduce(
+      (a, x) => a + x,
+      "",
+    );
   }
 
   #line_text(ln: number): string {
