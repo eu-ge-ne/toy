@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.13
+
+- Optimized file loading
+
 ## v0.0.12
 
 - Fixed vertical scrolling
