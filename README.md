@@ -83,7 +83,7 @@ brew install eu-ge-ne/tap/toy
 
 - `F2` -- Save
 - `F5` -- Toggle invisible characters
-- `F6` -- Toggle word wrapping
+- `F6` -- Toggle line wrapping
 - `F9` -- Toggle debug panel
 - `F10` -- Exit
 

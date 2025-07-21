@@ -32,7 +32,11 @@ export class View {
   render(): void {
     const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
 
-    this.#index_width = opts.show_ln_index ? Math.ceil(Math.log10(buffer.ln_count + 1)) + 2 : 0;
+    this.#index_width = 0;
+    if (opts.show_ln_index && buffer.ln_count > 0) {
+      this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+    }
+
     this.#text_width = area.w - this.#index_width;
     this.#wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
 
