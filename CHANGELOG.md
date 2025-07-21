@@ -2,7 +2,9 @@
 
 ## v0.0.11
 
-- Enhance support for large files
+- Enhanced support for large files
+- Fixed line wrapping
+- Optimized line index rendering
 
 ## v0.0.10
 
