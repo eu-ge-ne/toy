@@ -3,15 +3,14 @@ import * as vt from "@lib/vt";
 import {
   HEADER_BG,
   HEADER_FILE_PATH_COLORS,
-  HEADER_FLAG_OFF_COLORS,
-  HEADER_FLAG_ON_COLORS,
+  HEADER_UNSAVED_FLAG_COLORS,
 } from "@ui/theme";
 
-const FLAG = "+";
+const FLAG = " +";
 
 export class Header extends Pane {
   #file_path = "";
-  #has_changes = true;
+  #unsaved_flag = false;
 
   render(): void {
     const { y0, x0, h, w } = this.area;
@@ -25,8 +24,7 @@ export class Header extends Pane {
         { len: w },
         HEADER_FILE_PATH_COLORS,
         this.#file_path,
-        this.#has_changes ? HEADER_FLAG_ON_COLORS : HEADER_FLAG_OFF_COLORS,
-        FLAG,
+        ...(this.#unsaved_flag ? [HEADER_UNSAVED_FLAG_COLORS, FLAG] : []),
       ),
       vt.cursor.restore,
     );
@@ -37,8 +35,8 @@ export class Header extends Pane {
     this.render();
   }
 
-  set_has_changes(x: boolean): void {
-    this.#has_changes = x;
+  set_unsaved_flag(x: boolean): void {
+    this.#unsaved_flag = x;
     this.render();
   }
 }
