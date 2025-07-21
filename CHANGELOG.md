@@ -3,6 +3,7 @@
 ## v0.0.13
 
 - Optimized file loading
+- Fixed line index rendering
 
 ## v0.0.12
 
