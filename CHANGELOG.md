@@ -2,7 +2,7 @@
 
 ## v0.0.14
 
--
+- Removed flags for invisible chars and line wrapping
 
 ## v0.0.13
 
