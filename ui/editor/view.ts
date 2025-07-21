@@ -108,12 +108,8 @@ export class View {
         this.#blank_line_index(span);
       }
 
-      if (cell.col < this.#scroll_col) {
+      if ((cell.col < this.#scroll_col) || (cell.grapheme.width > span.len)) {
         continue;
-      }
-
-      if (cell.grapheme.width > span.len) {
-        break;
       }
 
       let color: Uint8Array;
