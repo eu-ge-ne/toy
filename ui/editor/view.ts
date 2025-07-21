@@ -1,5 +1,4 @@
 import { range, sum } from "@lib/std";
-import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import {
   EDITOR_BG,
@@ -17,7 +16,7 @@ import { Editor } from "./editor.ts";
 const LN_INDEX_WIDTH = 1 + 6 + 1;
 
 export class View {
-  #ln_index_width = 0;
+  #ln_index_width!: number;
   #wrap_width!: number;
 
   #scroll_ln = 0;
@@ -29,15 +28,13 @@ export class View {
   #ln = 0;
 
   constructor(private editor: Editor) {
-    this.#ln_index_width = editor.opts.show_ln_index ? LN_INDEX_WIDTH : 0;
-  }
-
-  resize(area: Area): void {
-    this.#wrap_width = this.editor.wrap_enabled ? area.w - this.#ln_index_width : Number.MAX_SAFE_INTEGER;
   }
 
   render(): void {
-    const { buffer, enabled, area } = this.editor;
+    const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
+
+    this.#ln_index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
+    this.#wrap_width = wrap_enabled ? area.w - this.#ln_index_width : Number.MAX_SAFE_INTEGER;
 
     this.#cursor_y = area.y0;
     this.#cursor_x = area.x0 + this.#ln_index_width;
