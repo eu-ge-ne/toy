@@ -17,19 +17,11 @@ export class Shaper {
   ) {
   }
 
-  count_wraps(
-    ln: number,
-    wrap_width: number,
-  ): number {
-    return this.line(ln, wrap_width)
-      .reduce((a, { col }) => a + (col === 0 ? 1 : 0), 0);
+  count_wraps(ln: number, wrap_width: number): number {
+    return this.line(ln, wrap_width).reduce((a, { col }) => a + (col === 0 ? 1 : 0), 0);
   }
 
-  *line(
-    ln: number,
-    wrap_width = Number.MAX_SAFE_INTEGER,
-    add_tail_cell = false,
-  ): Generator<Cell> {
+  *line(ln: number, wrap_width = Number.MAX_SAFE_INTEGER, add_tail_cell = false): Generator<Cell> {
     const { buffer, graphemes, colors } = this;
 
     let i = 0;
@@ -46,17 +38,17 @@ export class Shaper {
         vt.begin_write();
       }
 
+      w += grapheme.width;
+      if (w > wrap_width) {
+        w = grapheme.width;
+        l += 1;
+        c = 0;
+      }
+
       yield { grapheme, i, ln: l, col: c };
 
       i += 1;
       c += 1;
-      w += grapheme.width;
-
-      if (w >= wrap_width) {
-        w = 0;
-        l += 1;
-        c = 0;
-      }
     }
 
     if (add_tail_cell) {
