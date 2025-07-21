@@ -176,19 +176,18 @@ export class View {
       this.#scroll_ln = cursor.ln - area.h;
     }
 
-    const height_arr = range(this.#scroll_ln, cursor.ln).map((i) => shaper.count_wraps(i, this.#wrap_width));
-    let height = sum(height_arr);
+    const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) => shaper.count_wraps(i, this.#wrap_width));
 
-    for (const h of height_arr) {
-      if (height < area.h) {
-        break;
-      }
+    let i = 0;
 
+    for (let height = sum(hh); height > area.h; i += 1) {
+      height -= hh[i]!;
       this.#scroll_ln += 1;
-      height -= h;
     }
 
-    this.#cursor_y += height;
+    for (; i < hh.length - 1; i += 1) {
+      this.#cursor_y += hh[i]!;
+    }
   }
 
   #scroll_horizontal(): void {
@@ -215,11 +214,11 @@ export class View {
 
     // Did the cursor move to the right of the scroll area?
 
-    const width_arr = line.slice(cursor.col - delta_col, cursor.col)
-      .map((x) => x.grapheme.width);
-    let width = sum(width_arr);
+    const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) => x.grapheme.width);
 
-    for (const w of width_arr) {
+    let width = sum(ww);
+
+    for (const w of ww) {
       if (width < this.#text_width) {
         break;
       }
