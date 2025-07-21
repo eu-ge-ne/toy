@@ -1,5 +1,4 @@
 import { range, sum } from "@lib/std";
-import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import {
   EDITOR_BG,
@@ -14,10 +13,9 @@ import {
 
 import { Editor } from "./editor.ts";
 
-const LN_INDEX_WIDTH = 1 + 6 + 1;
-
 export class View {
-  #ln_index_width = 0;
+  #index_width!: number;
+  #text_width!: number;
   #wrap_width!: number;
 
   #scroll_ln = 0;
@@ -29,18 +27,17 @@ export class View {
   #ln = 0;
 
   constructor(private editor: Editor) {
-    this.#ln_index_width = editor.opts.show_ln_index ? LN_INDEX_WIDTH : 0;
-  }
-
-  resize(area: Area): void {
-    this.#wrap_width = this.editor.wrap_enabled ? area.w - this.#ln_index_width : Number.MAX_SAFE_INTEGER;
   }
 
   render(): void {
-    const { buffer, enabled, area } = this.editor;
+    const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
+
+    this.#index_width = opts.show_ln_index ? Math.ceil(Math.log10(buffer.ln_count + 1)) + 2 : 0;
+    this.#text_width = area.w - this.#index_width;
+    this.#wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
 
     this.#cursor_y = area.y0;
-    this.#cursor_x = area.x0 + this.#ln_index_width;
+    this.#cursor_x = area.x0 + this.#index_width;
 
     this.#scroll_vertical();
     this.#scroll_horizontal();
@@ -108,12 +105,8 @@ export class View {
         this.#blank_line_index(span);
       }
 
-      if (cell.col < this.#scroll_col) {
+      if ((cell.col < this.#scroll_col) || (cell.grapheme.width > span.len)) {
         continue;
-      }
-
-      if (cell.grapheme.width > span.len) {
-        break;
       }
 
       let color: Uint8Array;
@@ -133,19 +126,21 @@ export class View {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    if (this.#ln_index_width > 0) {
+    if (this.#index_width > 0) {
       vt.write(
         EDITOR_LINE_INDEX_COLORS,
-        ...vt.fmt.lpad(span, this.#ln_index_width, `${this.#ln + 1} `),
+        ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
     }
   }
 
   #blank_line_index(span: vt.fmt.Span): void {
-    vt.write(
-      EDITOR_BLANK_LINE_INDEX_COLORS,
-      vt.fmt.space(span, this.#ln_index_width),
-    );
+    if (this.#index_width > 0) {
+      vt.write(
+        EDITOR_BLANK_LINE_INDEX_COLORS,
+        vt.fmt.space(span, this.#index_width),
+      );
+    }
   }
 
   center(): void {
@@ -225,7 +220,7 @@ export class View {
     let width = sum(width_arr);
 
     for (const w of width_arr) {
-      if (width < (this.editor.area.w - this.#ln_index_width)) {
+      if (width < this.#text_width) {
         break;
       }
 

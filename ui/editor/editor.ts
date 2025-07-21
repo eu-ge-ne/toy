@@ -4,7 +4,7 @@ import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
-import { Area, Pane } from "@lib/ui";
+import { Pane } from "@lib/ui";
 import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
@@ -68,11 +68,6 @@ export class Editor extends Pane {
     this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();
-  }
-
-  override resize(area: Area): void {
-    super.resize(area);
-    this.view.resize(area);
   }
 
   render(): void {
