@@ -14,14 +14,7 @@ export class Buffer {
     return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
-  async load(path: string): Promise<void> {
-    using file = await Deno.open(path, { read: true });
-
-    const info = await file.stat();
-    if (!info.isFile) {
-      throw new Error(`${path} is not a file`);
-    }
-
+  async load(file: Deno.FsFile): Promise<void> {
     const decoder = new TextDecoder();
     const bytes = new Uint8Array(1024 * 1024 * 256);
 
@@ -44,13 +37,7 @@ export class Buffer {
     }
   }
 
-  async save(path: string): Promise<void> {
-    using file = await Deno.open(path, {
-      create: true,
-      write: true,
-      truncate: true,
-    });
-
+  async save(file: Deno.FsFile): Promise<void> {
     const stream = new TextEncoderStream();
     stream.readable.pipeTo(file.writable);
     const writer = stream.writable.getWriter();

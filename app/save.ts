@@ -4,13 +4,19 @@ export class SaveAction extends Action<[]> {
   async run(): Promise<void> {
     const { editor, file_path, alert, action } = this.app;
 
-    if (file_path.length === 0) {
+    if (!file_path) {
       await action.save_as.run();
       return;
     }
 
     try {
-      await editor.buffer.save(file_path);
+      using file = await Deno.open(file_path, {
+        create: true,
+        write: true,
+        truncate: true,
+      });
+
+      await editor.buffer.save(file);
 
       editor.reset(false);
     } catch (err) {
