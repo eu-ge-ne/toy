@@ -38,7 +38,9 @@ export class View {
     }
 
     this.#text_width = area.w - this.#index_width;
-    this.#wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
+    this.#wrap_width = wrap_enabled
+      ? this.#text_width
+      : Number.MAX_SAFE_INTEGER;
 
     this.#cursor_y = area.y0;
     this.#cursor_x = area.x0 + this.#index_width;
@@ -116,10 +118,14 @@ export class View {
       let color: Uint8Array;
 
       if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_whitespace ? EDITOR_SELECTED_INVISIBLE_COLORS : EDITOR_SELECTED_CHAR_COLORS;
+        color = cell.grapheme.is_whitespace
+          ? EDITOR_SELECTED_INVISIBLE_COLORS
+          : EDITOR_SELECTED_CHAR_COLORS;
       } else {
         color = cell.grapheme.is_whitespace
-          ? invisible_enabled ? EDITOR_INVISIBLE_ON_COLORS : EDITOR_INVISIBLE_OFF_COLORS
+          ? invisible_enabled
+            ? EDITOR_INVISIBLE_ON_COLORS
+            : EDITOR_INVISIBLE_OFF_COLORS
           : EDITOR_CHAR_COLORS;
       }
 
@@ -180,7 +186,9 @@ export class View {
       this.#scroll_ln = cursor.ln - area.h;
     }
 
-    const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) => shaper.count_wraps(i, this.#wrap_width));
+    const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) =>
+      shaper.count_wraps(i, this.#wrap_width)
+    );
 
     let i = 0;
 
@@ -218,7 +226,9 @@ export class View {
 
     // Did the cursor move to the right of the scroll area?
 
-    const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) => x.grapheme.width);
+    const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
+      x.grapheme.width
+    );
 
     let width = sum(ww);
 

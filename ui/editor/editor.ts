@@ -88,7 +88,11 @@ export class Editor extends Pane {
           false,
         );
       } else {
-        this.cursor.move(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+        this.cursor.move(
+          Number.MAX_SAFE_INTEGER,
+          Number.MAX_SAFE_INTEGER,
+          false,
+        );
       }
     }
 

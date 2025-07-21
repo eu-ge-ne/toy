@@ -1,4 +1,14 @@
-import { cpr_req, cup, decrc, DECResetMode, decrst, decsc, decset, DECSetMode, parse_cpr_res } from "@eu-ge-ne/ctlseqs";
+import {
+  cpr_req,
+  cup,
+  decrc,
+  DECResetMode,
+  decrst,
+  decsc,
+  decset,
+  DECSetMode,
+  parse_cpr_res,
+} from "@eu-ge-ne/ctlseqs";
 
 import { flush } from "./write.ts";
 
