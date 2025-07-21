@@ -22,15 +22,25 @@ export class Buffer {
       throw new Error(`${path} is not a file`);
     }
 
-    const reader = file.readable.pipeThrough(new TextDecoderStream()).getReader();
+    const decoder = new TextDecoder();
+    const bytes = new Uint8Array(1024 * 1024 * 256);
 
     while (true) {
-      const result = await reader.read();
-      if (result.done) {
+      const n = await file.read(bytes);
+      if (typeof n !== "number") {
         break;
       }
 
-      this.#buf.insert(this.#buf.count, result.value);
+      if (n > 0) {
+        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
+
+        this.#buf.insert(this.#buf.count, text);
+      }
+    }
+
+    const text = decoder.decode();
+    if (text.length > 0) {
+      this.#buf.insert(this.#buf.count, text);
     }
   }
 
