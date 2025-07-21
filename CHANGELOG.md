@@ -4,6 +4,7 @@
 
 - Fixed line index rendering
 - Fixed vertical scrolling
+- Fixed file opening
 - Optimized file loading
 - Optimized grapheme width measuring
 
