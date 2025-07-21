@@ -4,6 +4,7 @@
 
 - Optimized file loading
 - Fixed line index rendering
+- Fixed vertical scrolling
 
 ## v0.0.12
 
