@@ -9,7 +9,7 @@ export class Undo extends KeyHandler {
   handle(): void {
     this.editor.history.undo();
 
-    this.editor.on_change?.(this.editor.history.has_changes);
+    this.editor.on_has_changes?.(this.editor.history.has_changes);
   }
 }
 
@@ -22,6 +22,6 @@ export class Redo extends KeyHandler {
   handle(): void {
     this.editor.history.redo();
 
-    this.editor.on_change?.(this.editor.history.has_changes);
+    this.editor.on_has_changes?.(this.editor.history.has_changes);
   }
 }

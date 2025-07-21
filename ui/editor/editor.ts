@@ -19,7 +19,7 @@ export class Editor extends Pane {
   on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
-  on_change?: (_: boolean) => void;
+  on_has_changes?: (_: boolean) => void;
 
   readonly buffer = new Buffer();
   readonly shaper: Shaper;
@@ -97,7 +97,7 @@ export class Editor extends Pane {
     }
 
     this.history.reset();
-    this.on_change?.(this.history.has_changes);
+    this.on_has_changes?.(this.history.has_changes);
   }
 
   on_key(key: Key | string): void {
@@ -147,7 +147,7 @@ export class Editor extends Pane {
     }
 
     history.push();
-    this.on_change?.(this.history.has_changes);
+    this.on_has_changes?.(this.history.has_changes);
   }
 
   backspace(): void {
@@ -175,7 +175,7 @@ export class Editor extends Pane {
     }
 
     history.push();
-    this.on_change?.(this.history.has_changes);
+    this.on_has_changes?.(this.history.has_changes);
   }
 
   delete_char(): void {
@@ -184,7 +184,7 @@ export class Editor extends Pane {
     buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 
     history.push();
-    this.on_change?.(this.history.has_changes);
+    this.on_has_changes?.(this.history.has_changes);
   }
 
   delete_selection(): void {
@@ -194,7 +194,7 @@ export class Editor extends Pane {
     cursor.set(...cursor.from, false);
 
     history.push();
-    this.on_change?.(this.history.has_changes);
+    this.on_has_changes?.(this.history.has_changes);
   }
 
   toggle_invisible(): void {
