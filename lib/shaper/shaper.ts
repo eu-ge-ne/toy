@@ -52,7 +52,16 @@ export class Shaper {
     }
 
     if (add_tail_cell) {
-      yield { grapheme: graphemes.get(" "), i, ln: l, col: c };
+      const grapheme = graphemes.get(" ");
+
+      w += grapheme.width;
+      if (w > wrap_width) {
+        w = grapheme.width;
+        l += 1;
+        c = 0;
+      }
+
+      yield { grapheme, i, ln: l, col: c };
     }
   }
 }
