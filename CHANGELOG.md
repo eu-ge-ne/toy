@@ -2,9 +2,10 @@
 
 ## v0.0.13
 
-- Optimized file loading
 - Fixed line index rendering
 - Fixed vertical scrolling
+- Optimized file loading
+- Optimized grapheme measuring
 
 ## v0.0.12
 
