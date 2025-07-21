@@ -24,6 +24,7 @@ import { WrapAction } from "./wrap.ts";
 
 export class App {
   file_path = "";
+  unsaved_changes = true;
 
   editor = new Editor(editor_graphemes, {
     multi_line: true,
@@ -38,7 +39,6 @@ export class App {
   ask = new Ask();
 
   on_input_key_busy = false;
-  unsaved = false;
 
   action = {
     exit: new ExitAction(this),
@@ -49,17 +49,6 @@ export class App {
     invisible: new InvisibleAction(this),
   };
 
-  constructor() {
-    this.editor.on_change = (x) => {
-      this.unsaved = x;
-      this.header.set_has_changes(x);
-    };
-
-    this.editor.on_react = (x) => this.debug.set_react_time(x);
-    this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
-    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
-  }
-
   async run(): Promise<void> {
     const args = parseArgs(Deno.args);
 
@@ -68,8 +57,6 @@ export class App {
       Deno.exit();
     }
 
-    const file_path = args._[0];
-
     init_vt();
     globalThis.addEventListener("unload", exit);
 
@@ -77,17 +64,20 @@ export class App {
     this.header.enabled = true;
     this.footer.enabled = true;
 
-    Deno.addSignalListener("SIGWINCH", () => {
-      this.resize();
-      this.render();
-    });
-    this.resize();
+    this.editor.on_has_changes = (x) => {
+      this.unsaved_changes = x;
+      this.header.set_unsaved_flag(x);
+    };
+    this.editor.on_react = (x) => this.debug.set_react_time(x);
+    this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
+    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
 
-    if (typeof file_path === "string") {
-      await this.#act(new LoadAction(this), file_path);
+    Deno.addSignalListener("SIGWINCH", this.#refresh);
+    this.#refresh();
+
+    if (typeof args._[0] === "string") {
+      await this.#act(new LoadAction(this), args._[0]);
     }
-
-    this.render();
 
     while (true) {
       for await (const key of read_input()) {
@@ -121,6 +111,11 @@ export class App {
     this.alert.render();
     this.ask.render();
   }
+
+  #refresh = () => {
+    this.resize();
+    this.render();
+  };
 
   async #handle_key(key: Key | string): Promise<void> {
     if (this.on_input_key_busy) {
