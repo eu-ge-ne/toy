@@ -13,8 +13,6 @@ import {
 
 import { Editor } from "./editor.ts";
 
-const LN_INDEX_WIDTH = 1 + 6 + 1;
-
 export class View {
   #index_width!: number;
   #text_width!: number;
@@ -34,7 +32,7 @@ export class View {
   render(): void {
     const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
 
-    this.#index_width = opts.show_ln_index ? LN_INDEX_WIDTH : 0;
+    this.#index_width = opts.show_ln_index ? Math.ceil(Math.log10(buffer.ln_count + 1)) + 2 : 0;
     this.#text_width = area.w - this.#index_width;
     this.#wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
 
@@ -128,25 +126,31 @@ export class View {
   }
 
   #render_line_index(span: vt.fmt.Span): void {
-    if (this.#index_width > 0) {
-      let index = `${this.#ln + 1} `;
-
-      const delta = this.#index_width - index.length;
-
-      if (delta > 0) {
-        index = " ".repeat(delta) + index;
-      } else if (delta < 0) {
-        index = "." + index.slice(-delta + 1);
-      }
-
-      vt.write(
-        EDITOR_LINE_INDEX_COLORS,
-        ...vt.fmt.text(span, index),
-      );
+    if (this.#index_width === 0) {
+      return;
     }
+
+    let index = `${this.#ln + 1} `;
+
+    const delta = this.#index_width - index.length;
+
+    if (delta > 0) {
+      index = " ".repeat(delta) + index;
+    } else if (delta < 0) {
+      index = "." + index.slice(-delta + 1);
+    }
+
+    vt.write(
+      EDITOR_LINE_INDEX_COLORS,
+      ...vt.fmt.text(span, index),
+    );
   }
 
   #blank_line_index(span: vt.fmt.Span): void {
+    if (this.#index_width === 0) {
+      return;
+    }
+
     vt.write(
       EDITOR_BLANK_LINE_INDEX_COLORS,
       vt.fmt.space(span, this.#index_width),
