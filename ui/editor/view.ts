@@ -102,7 +102,7 @@ export class View {
 
     this.#render_line_index(span);
 
-    for (const cell of shaper.line(this.#ln, this.#wrap_width)) {
+    for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
       if (cell.i > 0 && cell.col === 0) {
         if (this.#end_ln()) {
           return;
@@ -207,7 +207,7 @@ export class View {
 
     let c = 0; // c = f(cursor.col)
 
-    const line = shaper.line(cursor.ln, this.#wrap_width, true).toArray();
+    const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
     if (line.length > 0) {
       const cell = line[cursor.col];
       if (cell) {
