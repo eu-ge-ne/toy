@@ -6,6 +6,10 @@ export class Footer extends Pane {
   #cursor_status = "";
 
   render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
     const { y0, x0, h, w } = this.area;
     const space = { len: w };
 

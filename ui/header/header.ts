@@ -13,6 +13,10 @@ export class Header extends Pane {
   #unsaved_flag = false;
 
   render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
     const { y0, x0, h, w } = this.area;
 
     vt.sync_write(
