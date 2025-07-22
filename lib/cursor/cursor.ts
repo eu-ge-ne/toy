@@ -71,14 +71,15 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    let max = -1;
-    for (const { grapheme, i } of this.shaper.line(this.ln)) {
-      if (!grapheme.is_eol) {
-        max = i;
+    let max = 0;
+
+    for (const { is_eol } of this.shaper.line(this.ln)) {
+      if (!is_eol) {
+        max += 1;
       }
     }
 
-    this.col = clamp(col, 0, max + 1);
+    this.col = clamp(col, 0, max);
   }
 
   #set_range(
