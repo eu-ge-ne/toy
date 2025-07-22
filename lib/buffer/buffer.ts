@@ -10,6 +10,11 @@ export class Buffer {
   #segmenter = new Intl.Segmenter();
   #buf = new TextBuf();
 
+  set_text(text: string): void {
+    this.#buf.delete(0);
+    this.#buf.insert(0, text);
+  }
+
   get_text(): string {
     return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
