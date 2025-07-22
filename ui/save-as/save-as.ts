@@ -8,10 +8,7 @@ import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 40, 10);
 
-  #editor = new Editor(new GraphemePool(), {
-    multi_line: false,
-    show_ln_index: false,
-  });
+  #editor = new Editor(new GraphemePool(), { multi_line: false });
 
   #opened = false;
 
