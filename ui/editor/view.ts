@@ -48,7 +48,6 @@ export class View {
     if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
     }
-
     this.#text_width = area.w - this.#index_width;
     this.#wrap_width = wrap_enabled
       ? this.#text_width
