@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.15
+
+- Improved performance of grapheme rendering
+
 ## v0.0.14
 
 - Removed flags for invisible chars and line wrapping
