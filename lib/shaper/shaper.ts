@@ -19,14 +19,18 @@ export class Shaper {
   ) {
   }
 
-  count_wraps(ln: number, wrap_width: number): number {
-    return this.line(ln, wrap_width).reduce(
-      (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-      1,
-    );
+  *line(ln: number): Generator<Grapheme> {
+    for (const seg of this.buffer.line(ln)) {
+      yield this.graphemes.get(seg);
+    }
   }
 
-  *line(
+  count_wraps(ln: number, wrap_width: number): number {
+    return this.wrap_line(ln, wrap_width)
+      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
+  }
+
+  *wrap_line(
     ln: number,
     wrap_width = Number.MAX_SAFE_INTEGER,
     add_tail_cell = false,
