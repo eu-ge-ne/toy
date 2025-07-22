@@ -118,15 +118,15 @@ export class View {
       let color: Uint8Array;
 
       if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_whitespace
-          ? EDITOR_SELECTED_INVISIBLE_COLORS
-          : EDITOR_SELECTED_CHAR_COLORS;
+        color = cell.grapheme.is_visible
+          ? EDITOR_SELECTED_CHAR_COLORS
+          : EDITOR_SELECTED_INVISIBLE_COLORS;
       } else {
-        color = cell.grapheme.is_whitespace
-          ? invisible_enabled
+        color = cell.grapheme.is_visible
+          ? EDITOR_CHAR_COLORS
+          : (invisible_enabled
             ? EDITOR_INVISIBLE_ON_COLORS
-            : EDITOR_INVISIBLE_OFF_COLORS
-          : EDITOR_CHAR_COLORS;
+            : EDITOR_INVISIBLE_OFF_COLORS);
       }
 
       vt.write(color, cell.grapheme.bytes);
