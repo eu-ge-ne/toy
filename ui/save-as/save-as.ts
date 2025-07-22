@@ -10,16 +10,14 @@ export class SaveAs extends Modal<[string], string> {
 
   #editor = new Editor(new GraphemePool(), { multi_line: false });
 
-  #opened = false;
-
   async open(file_path: string): Promise<string> {
     const { buffer } = this.#editor;
 
     try {
-      this.#opened = true;
+      this.enabled = true;
       this.#editor.enabled = true;
 
-      buffer.insert([0, 0], file_path);
+      buffer.set_text(file_path);
       this.#editor.reset(true);
 
       this.render();
@@ -44,7 +42,7 @@ export class SaveAs extends Modal<[string], string> {
         }
       }
     } finally {
-      this.#opened = false;
+      this.enabled = false;
       this.#editor.enabled = false;
     }
   }
@@ -58,7 +56,7 @@ export class SaveAs extends Modal<[string], string> {
   }
 
   render(): void {
-    if (!this.#opened) {
+    if (!this.enabled) {
       return;
     }
 
