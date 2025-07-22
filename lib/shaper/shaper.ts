@@ -10,10 +10,12 @@ interface Cell {
 }
 
 export class Shaper {
+  y!: number;
+  x!: number;
+
   constructor(
     private graphemes: GraphemePool,
     private buffer: Buffer,
-    private colors: Uint8Array,
   ) {
   }
 
@@ -29,7 +31,7 @@ export class Shaper {
     wrap_width = Number.MAX_SAFE_INTEGER,
     add_tail_cell = false,
   ): Generator<Cell> {
-    const { buffer, graphemes, colors } = this;
+    const { buffer, graphemes } = this;
 
     let i = 0;
     let w = 0;
@@ -40,7 +42,7 @@ export class Shaper {
       const grapheme = graphemes.get(seg);
 
       if (grapheme.width < 0) {
-        grapheme.width = vt.width(colors, grapheme.bytes);
+        grapheme.width = vt.width(this.y, this.x, grapheme.bytes);
       }
 
       w += grapheme.width;
