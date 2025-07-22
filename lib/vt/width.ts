@@ -1,17 +1,16 @@
-import * as cursor from "./cursor.ts";
+import { get, restore, save, set } from "./cursor.ts";
 import { flush } from "./write.ts";
 
 export function width(y: number, x: number, bytes: Uint8Array): number {
-  const pos = cursor.get();
-
   flush(
-    cursor.set(y, x),
+    save,
+    set(y, x),
     bytes,
   );
 
-  const [, w] = cursor.get();
+  const [, w] = get();
 
-  flush(cursor.set(...pos));
+  flush(restore);
 
   return w;
 }
