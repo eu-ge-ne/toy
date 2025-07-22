@@ -37,6 +37,7 @@ brew install eu-ge-ne/tap/toy
 - System clipboard integration via OSC52
 - Automatic line wrapping
 - Renders invisible characters (e.g., spaces, tabs)
+- Zen mode (enabled by default)
 
 ## Supported terminal emulators
 
