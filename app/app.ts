@@ -21,16 +21,14 @@ import { LoadAction } from "./load.ts";
 import { SaveAsAction } from "./save-as.ts";
 import { SaveAction } from "./save.ts";
 import { WrapAction } from "./wrap.ts";
+import { ZenAction } from "./zen.ts";
 
 export class App {
+  zen = true;
   file_path = "";
   unsaved_changes = true;
 
-  editor = new Editor(editor_graphemes, {
-    multi_line: true,
-    show_ln_index: true,
-  });
-
+  editor = new Editor(editor_graphemes, { multi_line: true });
   header = new Header();
   footer = new Footer();
   save_as = new SaveAs();
@@ -47,6 +45,7 @@ export class App {
     save: new SaveAction(this),
     wrap: new WrapAction(this),
     invisible: new InvisibleAction(this),
+    zen: new ZenAction(this),
   };
 
   async run(): Promise<void> {
@@ -60,9 +59,9 @@ export class App {
     init_vt();
     globalThis.addEventListener("unload", exit);
 
-    this.editor.enabled = true;
-    this.header.enabled = true;
-    this.footer.enabled = true;
+    this.header.enabled = !this.zen;
+    this.footer.enabled = !this.zen;
+    this.editor.line_index_enabled = !this.zen;
 
     this.editor.on_has_changes = (x) => {
       this.unsaved_changes = x;
@@ -89,14 +88,20 @@ export class App {
   resize(): void {
     const screen = Area.from_screen();
 
-    const [header_area, a0] = screen.div_y(1);
-    this.header.resize(header_area);
+    if (this.zen) {
+      this.editor.resize(screen);
+      this.debug.resize(screen.right_bottom(DebugArea));
+    } else {
+      const [header_area, a0] = screen.div_y(1);
+      this.header.resize(header_area);
 
-    const [editor_area, footer_area] = a0.div_y(-1);
-    this.editor.resize(editor_area);
-    this.footer.resize(footer_area);
+      const [editor_area, footer_area] = a0.div_y(-1);
+      this.editor.resize(editor_area);
+      this.debug.resize(editor_area.right_bottom(DebugArea));
 
-    this.debug.resize(editor_area.right_bottom(DebugArea));
+      this.footer.resize(footer_area);
+    }
+
     this.save_as.resize(screen);
     this.alert.resize(screen);
     this.ask.resize(screen);
@@ -139,6 +144,9 @@ export class App {
         case "F10":
           await this.#act(this.action.exit);
           return;
+        case "F11":
+          await this.#act(this.action.zen);
+          return;
       }
     }
 
@@ -168,5 +176,13 @@ export class App {
     this.file_path = x;
 
     this.header.set_file_path(x);
+  }
+
+  toggle_zen(): void {
+    this.zen = !this.zen;
+
+    this.header.enabled = !this.zen;
+    this.footer.enabled = !this.zen;
+    this.editor.line_index_enabled = !this.zen;
   }
 }
