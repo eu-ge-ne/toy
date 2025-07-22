@@ -1,8 +1,8 @@
 import { Action } from "./action.ts";
 
-export class WrapAction extends Action<[]> {
+export class ZenAction extends Action<[]> {
   run(): void {
-    this.app.editor.toggle_wrap();
+    this.app.toggle_zen();
 
     this.app.resize();
   }

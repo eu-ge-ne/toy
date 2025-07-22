@@ -1,10 +1,10 @@
-import { Area, Pane } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 
 export const DebugArea = new Area(0, 0, 15, 4);
 
-export class Debug extends Pane {
+export class Debug extends Control {
   #react_time = 0;
   #editor_render_time = 0;
 

@@ -30,7 +30,8 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
+    const { buffer, enabled, area, wrap_enabled, line_index_enabled } =
+      this.editor;
 
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -39,7 +40,7 @@ export class View {
     );
 
     this.#index_width = 0;
-    if (opts.show_ln_index && buffer.ln_count > 0) {
+    if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
     }
 
@@ -117,15 +118,15 @@ export class View {
       let color: Uint8Array;
 
       if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_whitespace
-          ? EDITOR_SELECTED_INVISIBLE_COLORS
-          : EDITOR_SELECTED_CHAR_COLORS;
+        color = cell.grapheme.is_visible
+          ? EDITOR_SELECTED_CHAR_COLORS
+          : EDITOR_SELECTED_INVISIBLE_COLORS;
       } else {
-        color = cell.grapheme.is_whitespace
-          ? invisible_enabled
+        color = cell.grapheme.is_visible
+          ? EDITOR_CHAR_COLORS
+          : (invisible_enabled
             ? EDITOR_INVISIBLE_ON_COLORS
-            : EDITOR_INVISIBLE_OFF_COLORS
-          : EDITOR_CHAR_COLORS;
+            : EDITOR_INVISIBLE_OFF_COLORS);
       }
 
       vt.write(color, cell.grapheme.bytes);

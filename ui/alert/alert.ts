@@ -6,12 +6,11 @@ import { ALERT_BG, ALERT_COLORS } from "@ui/theme";
 export class Alert extends Modal<[unknown], void> {
   protected size = new Area(0, 0, 60, 10);
 
-  #opened = false;
   #text = "";
 
   async open(err: unknown): Promise<void> {
     try {
-      this.#opened = true;
+      this.enabled = true;
       this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
 
       this.render();
@@ -28,12 +27,12 @@ export class Alert extends Modal<[unknown], void> {
         }
       }
     } finally {
-      this.#opened = false;
+      this.enabled = false;
     }
   }
 
   render(): void {
-    if (!this.#opened) {
+    if (!this.enabled) {
       return;
     }
 

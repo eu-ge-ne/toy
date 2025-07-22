@@ -1,4 +1,4 @@
-import { Pane } from "@lib/ui";
+import { Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import {
   HEADER_BG,
@@ -8,11 +8,15 @@ import {
 
 const FLAG = " +";
 
-export class Header extends Pane {
+export class Header extends Control {
   #file_path = "";
   #unsaved_flag = false;
 
   render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
     const { y0, x0, h, w } = this.area;
 
     vt.sync_write(

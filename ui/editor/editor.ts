@@ -4,7 +4,7 @@ import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
-import { Pane } from "@lib/ui";
+import { Control } from "@lib/ui";
 import { VT_WIDTH_COLORS } from "@ui/theme";
 
 import * as key from "./key/mod.ts";
@@ -12,10 +12,9 @@ import { View } from "./view.ts";
 
 interface EditorOptions {
   multi_line: boolean;
-  show_ln_index: boolean;
 }
 
-export class Editor extends Pane {
+export class Editor extends Control {
   on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
@@ -54,6 +53,7 @@ export class Editor extends Pane {
     new key.Center(this),
   ];
 
+  line_index_enabled = false;
   invisible_enabled = false;
   wrap_enabled = false;
   clipboard = "";

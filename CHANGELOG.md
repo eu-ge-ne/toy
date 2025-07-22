@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.14
+
+- Removed flags for invisible chars and line wrapping
+- Added Zen mode
+- Zen mode is enabled by default
+
 ## v0.0.13
 
 - Fixed line index rendering
