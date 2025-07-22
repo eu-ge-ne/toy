@@ -6,12 +6,11 @@ import { ASK_BG, ASK_COLORS } from "@ui/theme";
 export class Ask extends Modal<[string], boolean> {
   protected size = new Area(0, 0, 40, 7);
 
-  #opened = false;
   #text = "";
 
   async open(text: string): Promise<boolean> {
     try {
-      this.#opened = true;
+      this.enabled = true;
       this.#text = text;
 
       this.render();
@@ -29,12 +28,12 @@ export class Ask extends Modal<[string], boolean> {
         }
       }
     } finally {
-      this.#opened = false;
+      this.enabled = false;
     }
   }
 
   render(): void {
-    if (!this.#opened) {
+    if (!this.enabled) {
       return;
     }
 
