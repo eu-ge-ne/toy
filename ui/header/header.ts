@@ -1,4 +1,4 @@
-import { Pane } from "@lib/ui";
+import { Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import {
   HEADER_BG,
@@ -8,7 +8,7 @@ import {
 
 const FLAG = " +";
 
-export class Header extends Pane {
+export class Header extends Control {
   #file_path = "";
   #unsaved_flag = false;
 
