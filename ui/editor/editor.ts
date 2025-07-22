@@ -12,7 +12,6 @@ import { View } from "./view.ts";
 
 interface EditorOptions {
   multi_line: boolean;
-  show_ln_index: boolean;
 }
 
 export class Editor extends Pane {
@@ -54,6 +53,7 @@ export class Editor extends Pane {
     new key.Center(this),
   ];
 
+  line_index_enabled = false;
   invisible_enabled = false;
   wrap_enabled = false;
   clipboard = "";

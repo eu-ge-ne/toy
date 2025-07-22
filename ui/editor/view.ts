@@ -30,7 +30,8 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled, area, opts, wrap_enabled } = this.editor;
+    const { buffer, enabled, area, wrap_enabled, line_index_enabled } =
+      this.editor;
 
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -39,7 +40,7 @@ export class View {
     );
 
     this.#index_width = 0;
-    if (opts.show_ln_index && buffer.ln_count > 0) {
+    if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
     }
 
