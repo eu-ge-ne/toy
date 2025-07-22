@@ -32,6 +32,7 @@ export class View {
 
   render(): void {
     const {
+      shaper,
       buffer,
       enabled,
       area,
@@ -56,8 +57,8 @@ export class View {
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
 
-    this.#cursor_y = area.y0;
-    this.#cursor_x = area.x0 + this.#index_width;
+    shaper.y = this.#cursor_y = area.y0;
+    shaper.x = this.#cursor_x = area.x0 + this.#index_width;
     this.#scroll_vertical();
     this.#scroll_horizontal();
 
