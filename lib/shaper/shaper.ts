@@ -51,9 +51,7 @@ export class Shaper {
           grapheme.bytes,
         );
 
-        const [, width] = vt.cursor.get();
-
-        grapheme.width = width;
+        grapheme.width = vt.cursor.get()[1] - this.x;
       }
 
       w += grapheme.width;
