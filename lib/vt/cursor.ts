@@ -10,7 +10,7 @@ import {
   parse_cpr_res,
 } from "@eu-ge-ne/ctlseqs";
 
-import { flush } from "./write.ts";
+import { write } from "./write.ts";
 
 export const save = decsc;
 export const restore = decrc;
@@ -25,7 +25,7 @@ export function set(y: number, x: number): Uint8Array {
 const buf = new Uint8Array(1024);
 
 export function get(): [number, number] {
-  flush(cpr_req);
+  write(cpr_req);
 
   for (let i = 0; i < 4; i += 1) {
     const len = Deno.stdin.readSync(buf)!;
@@ -39,5 +39,5 @@ export function get(): [number, number] {
     }
   }
 
-  throw new Error("get_cursor(): timeout");
+  throw new Error("cursor.get(): timeout");
 }

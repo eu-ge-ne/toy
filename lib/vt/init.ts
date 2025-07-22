@@ -2,12 +2,12 @@ import { DECResetMode, decrst, decset, DECSetMode } from "@eu-ge-ne/ctlseqs";
 import { set_flags } from "@eu-ge-ne/kitty-keys";
 
 import * as cursor from "./cursor.ts";
-import { flush } from "./write.ts";
+import { write } from "./write.ts";
 
 export function init_vt(): void {
   Deno.stdin.setRaw(true);
 
-  flush(
+  write(
     decset(DECSetMode.ALTSCR),
     set_flags({
       disambiguate: true,
@@ -19,7 +19,7 @@ export function init_vt(): void {
 }
 
 export function restore_vt(): void {
-  flush(
+  write(
     decrst(DECResetMode.ALTSCR),
     cursor.show,
   );
