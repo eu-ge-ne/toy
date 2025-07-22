@@ -1,5 +1,6 @@
 import { range, sum } from "@lib/std";
 import * as vt from "@lib/vt";
+import * as vt_buf from "@lib/vt-buf";
 import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
@@ -38,7 +39,9 @@ export class View {
       line_index_enabled,
     } = this.editor;
 
-    vt.begin_write(
+    vt.write(vt.bsu);
+
+    vt_buf.write(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
@@ -80,18 +83,20 @@ export class View {
     }
 
     if (enabled) {
-      vt.end_write(
+      vt_buf.flush(
         vt.cursor.show,
         vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
-      vt.end_write(vt.cursor.restore);
+      vt_buf.flush(vt.cursor.restore);
     }
+
+    vt.write(vt.esu);
   }
 
   #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.editor.area;
-    vt.write(vt.cursor.set(this.#y, x0));
+    vt_buf.write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -137,7 +142,7 @@ export class View {
             : EDITOR_INVISIBLE_OFF_COLORS);
       }
 
-      vt.write(color, cell.grapheme.bytes);
+      vt_buf.write(color, cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
     }
@@ -145,7 +150,7 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.write(
+      vt_buf.write(
         EDITOR_LINE_INDEX_COLORS,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
@@ -154,7 +159,7 @@ export class View {
 
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.write(
+      vt_buf.write(
         EDITOR_BLANK_LINE_INDEX_COLORS,
         vt.fmt.space(span, this.#index_width),
       );
