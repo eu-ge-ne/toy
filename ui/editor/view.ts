@@ -30,8 +30,13 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled, area, wrap_enabled, line_index_enabled } =
-      this.editor;
+    const {
+      buffer,
+      enabled,
+      area,
+      wrap_enabled,
+      line_index_enabled,
+    } = this.editor;
 
     vt.begin_write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -98,7 +103,11 @@ export class View {
   }
 
   #render_line(span: vt.fmt.Span): void {
-    const { shaper, cursor, invisible_enabled } = this.editor;
+    const {
+      shaper,
+      cursor,
+      invisible_enabled,
+    } = this.editor;
 
     this.#render_line_index(span);
 
