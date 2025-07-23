@@ -63,6 +63,7 @@ export class App {
     this.footer.enabled = !this.zen;
     this.editor.line_index_enabled = !this.zen;
 
+    this.editor.enabled = true;
     this.editor.on_has_changes = (x) => {
       this.unsaved_changes = x;
       this.header.set_unsaved_flag(x);
