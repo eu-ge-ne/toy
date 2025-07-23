@@ -7,10 +7,10 @@ Minimalistic TUI text editor.
 - [Features](#features)
 - [Supported terminal emulators](#supported-terminal-emulators)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Function](#function)
   - [Navigate](#navigate)
   - [Select](#select)
   - [Edit](#edit)
-  - [Other](#other)
   - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -46,6 +46,16 @@ brew install eu-ge-ne/tap/toy
 
 ## Keyboard Shortcuts
 
+### Function
+
+- `Esc` -- Center the cursor or selection in the visible area
+- `F2` -- Save
+- `F5` -- Toggle invisible characters
+- `F6` -- Toggle line wrapping
+- `F9` -- Toggle debug panel
+- `F10` -- Exit
+- `F11` -- Toggle Zen mode
+
 ### Navigate
 
 - `Left`, `Right`, `Up`, `Down` -- Move cursor
@@ -55,7 +65,6 @@ brew install eu-ge-ne/tap/toy
 - `Page Down`, `Fn+Down` -- Move cursor down a frame
 - `⌘+Up` -- Move cursor to top of the text
 - `⌘+Down` -- Move cursor to bottom of the text
-- `Esc` -- Center the cursor or selection in the visible area
 
 ### Select
 
@@ -84,15 +93,6 @@ brew install eu-ge-ne/tap/toy
 - `⌃+V`, `⌘+V` -- Paste text at cursor
 - `Delete` -- Delete the character to the left of the cursor
 - `Fn+Delete` -- Delete the character under the cursor
-
-### Other
-
-- `F2` -- Save
-- `F5` -- Toggle invisible characters
-- `F6` -- Toggle line wrapping
-- `F9` -- Toggle debug panel
-- `F10` -- Exit
-- `F11` -- Toggle Zen mode
 
 ### Roadmap
 
