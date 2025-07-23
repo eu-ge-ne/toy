@@ -11,7 +11,7 @@ Minimalistic TUI text editor.
   - [Navigate](#navigate)
   - [Select](#select)
   - [Edit](#edit)
-  - [Roadmap](#roadmap)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 ## Installation
@@ -94,7 +94,7 @@ brew install eu-ge-ne/tap/toy
 - `Delete` -- Delete the character to the left of the cursor
 - `Fn+Delete` -- Delete the character under the cursor
 
-### Roadmap
+## Roadmap
 
 - `⌃+F` -- Find
 - `F3` -- Find next
