@@ -1,6 +1,6 @@
 import { range, sum } from "@lib/std";
 import * as vt from "@lib/vt";
-import * as vt_buf from "@lib/vt-buf";
+import { VtBuf } from "@lib/vt-buf";
 import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
@@ -15,6 +15,8 @@ import {
 import { Editor } from "./editor.ts";
 
 export class View {
+  #vt_buf = new VtBuf();
+
   #index_width!: number;
   #text_width!: number;
   #wrap_width!: number;
@@ -42,7 +44,7 @@ export class View {
 
     vt.write(vt.bsu);
 
-    vt_buf.write(
+    this.#vt_buf.write(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
@@ -84,12 +86,12 @@ export class View {
     }
 
     if (enabled) {
-      vt_buf.flush(
+      this.#vt_buf.flush(
         vt.cursor.show,
         vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
-      vt_buf.flush(vt.cursor.restore);
+      this.#vt_buf.flush(vt.cursor.restore);
     }
 
     vt.write(vt.esu);
@@ -97,7 +99,7 @@ export class View {
 
   #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.editor.area;
-    vt_buf.write(vt.cursor.set(this.#y, x0));
+    this.#vt_buf.write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -143,7 +145,7 @@ export class View {
             : EDITOR_INVISIBLE_OFF_COLORS);
       }
 
-      vt_buf.write(color, cell.grapheme.bytes);
+      this.#vt_buf.write(color, cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
     }
@@ -151,7 +153,7 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt_buf.write(
+      this.#vt_buf.write(
         EDITOR_LINE_INDEX_COLORS,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
@@ -160,7 +162,7 @@ export class View {
 
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt_buf.write(
+      this.#vt_buf.write(
         EDITOR_BLANK_LINE_INDEX_COLORS,
         vt.fmt.space(span, this.#index_width),
       );

@@ -1,25 +1,30 @@
-const buf = new Uint8Array(1024 * 1024 * 2);
+export class VtBuf {
+  #buf = new Uint8Array(1024 * 1024);
+  #pos = 0;
 
-let pos = 0;
+  write(...chunks: Uint8Array[]): void {
+    for (const chunk of chunks) {
+      if (this.#pos + chunk.length >= this.#buf.length) {
+        this.#commit();
+      }
 
-function commit(): void {
-  for (let i = 0; i < pos;) {
-    i += Deno.stdout.writeSync(buf.subarray(i, pos));
+      this.#buf.set(chunk, this.#pos);
+
+      this.#pos += chunk.length;
+    }
   }
 
-  pos = 0;
-}
+  flush(...chunks: Uint8Array[]): void {
+    this.write(...chunks);
 
-export function write(...chunks: Uint8Array[]): void {
-  for (const chunk of chunks) {
-    buf.set(chunk, pos);
-
-    pos += chunk.length;
+    this.#commit();
   }
-}
 
-export function flush(...chunks: Uint8Array[]): void {
-  write(...chunks);
+  #commit(): void {
+    for (let i = 0; i < this.#pos;) {
+      i += Deno.stdout.writeSync(this.#buf.subarray(i, this.#pos));
+    }
 
-  commit();
+    this.#pos = 0;
+  }
 }
