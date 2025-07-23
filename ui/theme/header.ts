@@ -15,8 +15,3 @@ export const HEADER_UNSAVED_FLAG_COLORS = new Uint8Array([
   ...HEADER_BG,
   ...sgr(["fg", ...BRIGHT]),
 ]);
-
-export const VT_WIDTH_COLORS = new Uint8Array([
-  ...HEADER_BG,
-  ...sgr(["fg", ...LOWEST]),
-]);

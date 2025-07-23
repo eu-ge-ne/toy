@@ -1,5 +1,6 @@
 import { range, sum } from "@lib/std";
 import * as vt from "@lib/vt";
+import { VtBuf } from "@lib/vt-buf";
 import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
@@ -14,6 +15,8 @@ import {
 import { Editor } from "./editor.ts";
 
 export class View {
+  #vt_buf = new VtBuf();
+
   #index_width!: number;
   #text_width!: number;
   #wrap_width!: number;
@@ -30,10 +33,18 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled, area, wrap_enabled, line_index_enabled } =
-      this.editor;
+    const {
+      shaper,
+      buffer,
+      enabled,
+      area,
+      wrap_enabled,
+      line_index_enabled,
+    } = this.editor;
 
-    vt.begin_write(
+    vt.write(vt.bsu);
+
+    this.#vt_buf.write(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
@@ -43,14 +54,13 @@ export class View {
     if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
     }
-
     this.#text_width = area.w - this.#index_width;
     this.#wrap_width = wrap_enabled
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
 
-    this.#cursor_y = area.y0;
-    this.#cursor_x = area.x0 + this.#index_width;
+    shaper.y = this.#cursor_y = area.y0;
+    shaper.x = this.#cursor_x = area.x0 + this.#index_width;
     this.#scroll_vertical();
     this.#scroll_horizontal();
 
@@ -76,18 +86,20 @@ export class View {
     }
 
     if (enabled) {
-      vt.end_write(
+      this.#vt_buf.flush(
         vt.cursor.show,
         vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
-      vt.end_write(vt.cursor.restore);
+      this.#vt_buf.flush(vt.cursor.restore);
     }
+
+    vt.write(vt.esu);
   }
 
   #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.editor.area;
-    vt.write(vt.cursor.set(this.#y, x0));
+    this.#vt_buf.write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -98,11 +110,15 @@ export class View {
   }
 
   #render_line(span: vt.fmt.Span): void {
-    const { shaper, cursor, invisible_enabled } = this.editor;
+    const {
+      shaper,
+      cursor,
+      invisible_enabled,
+    } = this.editor;
 
     this.#render_line_index(span);
 
-    for (const cell of shaper.line(this.#ln, this.#wrap_width)) {
+    for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
       if (cell.i > 0 && cell.col === 0) {
         if (this.#end_ln()) {
           return;
@@ -129,7 +145,7 @@ export class View {
             : EDITOR_INVISIBLE_OFF_COLORS);
       }
 
-      vt.write(color, cell.grapheme.bytes);
+      this.#vt_buf.write(color, cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
     }
@@ -137,7 +153,7 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.write(
+      this.#vt_buf.write(
         EDITOR_LINE_INDEX_COLORS,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
@@ -146,7 +162,7 @@ export class View {
 
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.write(
+      this.#vt_buf.write(
         EDITOR_BLANK_LINE_INDEX_COLORS,
         vt.fmt.space(span, this.#index_width),
       );
@@ -207,7 +223,7 @@ export class View {
 
     let c = 0; // c = f(cursor.col)
 
-    const line = shaper.line(cursor.ln, this.#wrap_width, true).toArray();
+    const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
     if (line.length > 0) {
       const cell = line[cursor.col];
       if (cell) {

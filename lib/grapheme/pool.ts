@@ -21,14 +21,6 @@ export class GraphemePool {
     if (!grapheme) {
       grapheme = new Grapheme(seg);
 
-      // Printable ASCII excluding DEL(0x7f) ?
-      if ([...seg].length === 1) {
-        const cp = seg.codePointAt(0);
-        if (typeof cp === "number" && cp >= 0x20 && cp < 0x7f) {
-          grapheme.width = 1;
-        }
-      }
-
       this.#pool.set(seg, grapheme);
     }
 

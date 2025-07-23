@@ -1,0 +1,4 @@
+{
+  "name": "@lib/vt-buf",
+  "exports": "./mod.ts"
+}

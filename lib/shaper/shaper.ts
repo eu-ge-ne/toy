@@ -10,26 +10,32 @@ interface Cell {
 }
 
 export class Shaper {
+  y!: number;
+  x!: number;
+
   constructor(
     private graphemes: GraphemePool,
     private buffer: Buffer,
-    private colors: Uint8Array,
   ) {
   }
 
-  count_wraps(ln: number, wrap_width: number): number {
-    return this.line(ln, wrap_width).reduce(
-      (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-      1,
-    );
+  *line(ln: number): Generator<Grapheme> {
+    for (const seg of this.buffer.line(ln)) {
+      yield this.graphemes.get(seg);
+    }
   }
 
-  *line(
+  count_wraps(ln: number, wrap_width: number): number {
+    return this.wrap_line(ln, wrap_width)
+      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
+  }
+
+  *wrap_line(
     ln: number,
     wrap_width = Number.MAX_SAFE_INTEGER,
     add_tail_cell = false,
   ): Generator<Cell> {
-    const { buffer, graphemes, colors } = this;
+    const { buffer, graphemes } = this;
 
     let i = 0;
     let w = 0;
@@ -40,7 +46,12 @@ export class Shaper {
       const grapheme = graphemes.get(seg);
 
       if (grapheme.width < 0) {
-        grapheme.width = vt.width(colors, grapheme.bytes);
+        vt.write(
+          vt.cursor.set(this.y, this.x),
+          grapheme.bytes,
+        );
+
+        grapheme.width = vt.cursor.get()[1] - this.x;
       }
 
       w += grapheme.width;

@@ -1,4 +1,4 @@
-import { copy_to_clipboard, flush } from "@lib/vt";
+import { copy_to_clipboard, write } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -22,7 +22,7 @@ export class Copy extends KeyHandler {
       ]);
     }
 
-    flush(copy_to_clipboard(this.editor.clipboard));
+    write(copy_to_clipboard(this.editor.clipboard));
   }
 }
 
@@ -48,7 +48,7 @@ export class Cut extends KeyHandler {
       this.editor.delete_char();
     }
 
-    flush(copy_to_clipboard(this.editor.clipboard));
+    write(copy_to_clipboard(this.editor.clipboard));
   }
 }
 

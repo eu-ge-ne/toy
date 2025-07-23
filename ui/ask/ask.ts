@@ -39,7 +39,8 @@ export class Ask extends Modal<[string], boolean> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    vt.begin_write(
+    vt.write(
+      vt.bsu,
       vt.cursor.hide,
       ASK_BG,
       ...vt.clear(y0, x0, h, w),
@@ -64,9 +65,10 @@ export class Ask extends Modal<[string], boolean> {
       );
     }
 
-    vt.end_write(
+    vt.write(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+      vt.esu,
     );
   }
 }
