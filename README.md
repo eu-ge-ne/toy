@@ -33,7 +33,6 @@ brew install eu-ge-ne/tap/toy
 - Utilizes the 256-color terminal palette
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-  support
 - System clipboard integration via OSC52
 - Automatic line wrapping
 - Renders invisible characters (e.g., spaces, tabs)
