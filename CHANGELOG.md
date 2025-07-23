@@ -2,6 +2,7 @@
 
 ## v0.0.15
 
+- Fixed opening new file
 - Improved performance of grapheme rendering
 
 ## v0.0.14
