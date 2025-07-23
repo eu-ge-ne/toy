@@ -1,5 +1,5 @@
 export class VtBuf {
-  #buf = new ArrayBuffer(1024 * 1024, { maxByteLength: 1024 * 1024 * 64 });
+  #buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
   #bytes = new Uint8Array(this.#buf);
   #i = 0;
 
