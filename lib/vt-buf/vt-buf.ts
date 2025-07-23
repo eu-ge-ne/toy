@@ -4,10 +4,6 @@ export class VtBuf {
 
   write(...chunks: Uint8Array[]): void {
     for (const chunk of chunks) {
-      if (this.#pos + chunk.length >= this.#buf.length) {
-        this.#commit();
-      }
-
       this.#buf.set(chunk, this.#pos);
 
       this.#pos += chunk.length;
@@ -17,10 +13,6 @@ export class VtBuf {
   flush(...chunks: Uint8Array[]): void {
     this.write(...chunks);
 
-    this.#commit();
-  }
-
-  #commit(): void {
     for (let i = 0; i < this.#pos;) {
       i += Deno.stdout.writeSync(this.#buf.subarray(i, this.#pos));
     }
