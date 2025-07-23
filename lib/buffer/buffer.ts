@@ -21,7 +21,7 @@ export class Buffer {
 
   async load(file: Deno.FsFile): Promise<void> {
     const decoder = new TextDecoder();
-    const bytes = new Uint8Array(1024 * 1024 * 256);
+    const bytes = new Uint8Array(1024 * 1024 * 64);
 
     while (true) {
       const n = await file.read(bytes);

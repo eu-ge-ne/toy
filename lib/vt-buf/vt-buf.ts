@@ -1,22 +1,29 @@
 export class VtBuf {
-  #buf = new Uint8Array(1024 * 1024);
-  #pos = 0;
+  #buf = new ArrayBuffer(1024 * 1024, { maxByteLength: 1024 * 1024 * 64 });
+  #bytes = new Uint8Array(this.#buf);
+  #i = 0;
 
   write(...chunks: Uint8Array[]): void {
     for (const chunk of chunks) {
-      this.#buf.set(chunk, this.#pos);
+      const j = this.#i + chunk.byteLength;
 
-      this.#pos += chunk.length;
+      if (j > this.#buf.byteLength) {
+        this.#buf.resize(j * 2);
+      }
+
+      this.#bytes.set(chunk, this.#i);
+
+      this.#i = j;
     }
   }
 
   flush(...chunks: Uint8Array[]): void {
     this.write(...chunks);
 
-    for (let i = 0; i < this.#pos;) {
-      i += Deno.stdout.writeSync(this.#buf.subarray(i, this.#pos));
+    for (let j = 0; j < this.#i;) {
+      j += Deno.stdout.writeSync(this.#bytes.subarray(j, this.#i));
     }
 
-    this.#pos = 0;
+    this.#i = 0;
   }
 }
