@@ -1,4 +1,4 @@
-import { read_input } from "@lib/input";
+import { InputReader, new_input_reader } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { ASK_BG, ASK_COLORS } from "@ui/theme";
@@ -9,25 +9,33 @@ export class Ask extends Modal<[string], boolean> {
   #text = "";
 
   async open(text: string): Promise<boolean> {
+    let input: InputReader | undefined;
+
     try {
       this.enabled = true;
       this.#text = text;
 
-      this.render();
+      const { promise, resolve } = Promise.withResolvers<boolean>();
 
-      while (true) {
-        for await (const key of read_input()) {
-          if (typeof key !== "string") {
-            switch (key.name) {
-              case "ESC":
-                return false;
-              case "ENTER":
-                return true;
-            }
+      input = new_input_reader((key) => {
+        if (typeof key !== "string") {
+          switch (key.name) {
+            case "ESC":
+              resolve(false);
+              return;
+            case "ENTER":
+              resolve(true);
+              return;
           }
         }
-      }
+
+        this.render();
+      });
+
+      return await promise;
     } finally {
+      input?.releaseLock();
+
       this.enabled = false;
     }
   }

@@ -1,5 +1,5 @@
+import { InputReader, new_input_reader } from "@lib/input";
 import { GraphemePool } from "@lib/grapheme";
-import { read_input } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -11,37 +11,45 @@ export class SaveAs extends Modal<[string], string> {
   #editor = new Editor(new GraphemePool(), { multi_line: false });
 
   async open(file_path: string): Promise<string> {
-    const { buffer } = this.#editor;
+    let input: InputReader | undefined;
 
     try {
       this.enabled = true;
       this.#editor.enabled = true;
 
-      buffer.set_text(file_path);
+      this.#editor.buffer.set_text(file_path);
       this.#editor.reset(true);
 
       this.render();
 
-      while (true) {
-        for await (const key of read_input()) {
-          if (typeof key !== "string") {
-            switch (key.name) {
-              case "ESC":
-                return "";
-              case "ENTER": {
-                const new_file_path = buffer.get_text();
-                if (new_file_path.length > 0) {
-                  return new_file_path;
-                }
-                break;
+      const { promise, resolve } = Promise.withResolvers<string>();
+
+      input = new_input_reader((key) => {
+        if (typeof key !== "string") {
+          switch (key.name) {
+            case "ESC":
+              resolve("");
+              return;
+            case "ENTER": {
+              const new_file_path = this.#editor.buffer.get_text();
+              if (new_file_path.length > 0) {
+                resolve(new_file_path);
+                return;
               }
+              break;
             }
           }
-
-          this.#editor.on_key(key);
         }
-      }
+
+        this.#editor.on_key(key);
+
+        this.render();
+      });
+
+      return await promise;
     } finally {
+      input?.releaseLock();
+
       this.enabled = false;
       this.#editor.enabled = false;
     }

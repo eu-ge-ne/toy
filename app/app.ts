@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Key, read_input } from "@lib/input";
+import { InputReader, Key, new_input_reader } from "@lib/input";
 import { Area } from "@lib/ui";
 import { init_vt } from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -24,6 +24,8 @@ import { WrapAction } from "./wrap.ts";
 import { ZenAction } from "./zen.ts";
 
 export class App {
+  #input?: InputReader;
+
   zen = true;
   file_path = "";
   unsaved_changes = true;
@@ -35,8 +37,6 @@ export class App {
   debug = new Debug();
   alert = new Alert();
   ask = new Ask();
-
-  on_input_key_busy = false;
 
   action = {
     exit: new ExitAction(this),
@@ -75,15 +75,7 @@ export class App {
     Deno.addSignalListener("SIGWINCH", this.#refresh);
     this.#refresh();
 
-    if (typeof args._[0] === "string") {
-      await this.#act(new LoadAction(this), args._[0]);
-    }
-
-    while (true) {
-      for await (const key of read_input()) {
-        await this.#handle_key(key);
-      }
-    }
+    await this.#act(new LoadAction(this), args._[0]);
   }
 
   resize(): void {
@@ -123,11 +115,40 @@ export class App {
     this.render();
   };
 
-  async #handle_key(key: Key | string): Promise<void> {
-    if (this.on_input_key_busy) {
-      return;
-    }
+  // deno-lint-ignore no-explicit-any
+  async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
+    const started = Date.now();
 
+    try {
+      this.#input?.releaseLock();
+      this.editor.enabled = false;
+
+      await act.run(...p);
+    } finally {
+      this.#input = new_input_reader(this.#on_key);
+      this.editor.enabled = true;
+
+      this.render();
+
+      this.debug.set_react_time(Date.now() - started);
+    }
+  }
+
+  set_file_path(x: string): void {
+    this.file_path = x;
+
+    this.header.set_file_path(x);
+  }
+
+  toggle_zen(): void {
+    this.zen = !this.zen;
+
+    this.header.enabled = !this.zen;
+    this.footer.enabled = !this.zen;
+    this.editor.line_index_enabled = !this.zen;
+  }
+
+  #on_key = async (key: Key | string) => {
     if (typeof key !== "string") {
       switch (key.name) {
         case "F2":
@@ -152,38 +173,5 @@ export class App {
     }
 
     this.editor.on_key(key);
-  }
-
-  // deno-lint-ignore no-explicit-any
-  async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
-    const started = Date.now();
-
-    try {
-      this.on_input_key_busy = true;
-      this.editor.enabled = false;
-
-      await act.run(...p);
-    } finally {
-      this.on_input_key_busy = false;
-      this.editor.enabled = true;
-
-      this.render();
-
-      this.debug.set_react_time(Date.now() - started);
-    }
-  }
-
-  set_file_path(x: string): void {
-    this.file_path = x;
-
-    this.header.set_file_path(x);
-  }
-
-  toggle_zen(): void {
-    this.zen = !this.zen;
-
-    this.header.enabled = !this.zen;
-    this.footer.enabled = !this.zen;
-    this.editor.line_index_enabled = !this.zen;
-  }
+  };
 }
