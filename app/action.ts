@@ -1,9 +1,32 @@
 import { App } from "./app.ts";
 
-// deno-lint-ignore no-explicit-any
-export abstract class Action<P extends any[], R = void> {
+export abstract class Action {
   constructor(protected app: App) {
   }
 
-  abstract run(...p: P): Promise<R> | R;
+  async run(): Promise<void> {
+    if (this.app.action_running) {
+      return;
+    }
+
+    const started = Date.now();
+
+    const { editor, debug } = this.app;
+
+    try {
+      this.app.action_running = true;
+      editor.enabled = false;
+
+      await this._run();
+    } finally {
+      this.app.action_running = false;
+      editor.enabled = true;
+
+      this.app.render();
+
+      debug.set_react_time(Date.now() - started);
+    }
+  }
+
+  protected abstract _run(): Promise<void>;
 }
