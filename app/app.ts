@@ -2,7 +2,7 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import { Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
-import { init_vt } from "@lib/vt";
+import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
 import { Ask } from "@ui/ask";
 import { Debug, DebugArea } from "@ui/debug";
@@ -56,7 +56,7 @@ export class App {
       Deno.exit();
     }
 
-    init_vt();
+    vt.init();
     globalThis.addEventListener("unload", exit);
 
     this.header.enabled = !this.zen;
@@ -120,11 +120,17 @@ export class App {
 
   #refresh = () => {
     this.resize();
-    this.render();
+
+    vt.write(vt.dummy_req);
   };
 
-  async #handle_key(key: Key | string): Promise<void> {
+  async #handle_key(key: Key | string | Uint8Array): Promise<void> {
     if (this.on_input_key_busy) {
+      return;
+    }
+
+    if (key instanceof Uint8Array) {
+      this.render();
       return;
     }
 
