@@ -78,10 +78,8 @@ export class App {
       await this.#act(new LoadAction(this), args._[0]);
     }
 
-    while (true) {
-      for await (const key of read_input()) {
-        await this.#handle_key(key);
-      }
+    for await (const data of read_input()) {
+      await this.#on_input(data);
     }
   }
 
@@ -117,58 +115,12 @@ export class App {
     this.ask.render();
   }
 
+  // TODO: refactor
   #refresh = () => {
     this.resize();
 
     vt.write(vt.dummy_req);
   };
-
-  async #handle_key(key: Key | string | Uint8Array): Promise<void> {
-    if (key instanceof Uint8Array) {
-      this.render();
-      return;
-    }
-
-    if (this.alert.enabled) {
-      this.alert.on_input(key);
-      return;
-    }
-
-    if (this.ask.enabled) {
-      this.ask.on_input(key);
-      return;
-    }
-
-    if (this.save_as.enabled) {
-      this.save_as.on_input(key);
-      return;
-    }
-
-    if (typeof key !== "string") {
-      switch (key.name) {
-        case "F2":
-          this.#act(this.action.save);
-          return;
-        case "F5":
-          this.#act(this.action.invisible);
-          return;
-        case "F6":
-          this.#act(this.action.wrap);
-          return;
-        case "F9":
-          this.#act(this.action.debug);
-          return;
-        case "F10":
-          this.#act(this.action.exit);
-          return;
-        case "F11":
-          this.#act(this.action.zen);
-          return;
-      }
-    }
-
-    this.editor.on_key(key);
-  }
 
   // deno-lint-ignore no-explicit-any
   async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
@@ -205,5 +157,52 @@ export class App {
     this.header.enabled = !this.zen;
     this.footer.enabled = !this.zen;
     this.editor.line_index_enabled = !this.zen;
+  }
+
+  async #on_input(key: Key | string | Uint8Array): Promise<void> {
+    if (key instanceof Uint8Array) {
+      this.render();
+      return;
+    }
+
+    if (this.alert.enabled) {
+      this.alert.on_key(key);
+      return;
+    }
+
+    if (this.ask.enabled) {
+      this.ask.on_key(key);
+      return;
+    }
+
+    if (this.save_as.enabled) {
+      this.save_as.on_key(key);
+      return;
+    }
+
+    if (typeof key !== "string") {
+      switch (key.name) {
+        case "F2":
+          this.#act(this.action.save);
+          return;
+        case "F5":
+          this.#act(this.action.invisible);
+          return;
+        case "F6":
+          this.#act(this.action.wrap);
+          return;
+        case "F9":
+          this.#act(this.action.debug);
+          return;
+        case "F10":
+          this.#act(this.action.exit);
+          return;
+        case "F11":
+          this.#act(this.action.zen);
+          return;
+      }
+    }
+
+    this.editor.on_key(key);
   }
 }
