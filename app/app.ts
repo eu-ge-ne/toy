@@ -122,6 +122,7 @@ export class App {
     vt.write(vt.dummy_req);
   };
 
+  // TODO: refactor
   // deno-lint-ignore no-explicit-any
   async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
     if (this.action_running) {
