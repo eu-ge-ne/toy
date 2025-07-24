@@ -125,14 +125,6 @@ export class App {
     this.header.set_file_path(x);
   }
 
-  toggle_zen(): void {
-    this.zen = !this.zen;
-
-    this.header.enabled = !this.zen;
-    this.footer.enabled = !this.zen;
-    this.editor.line_index_enabled = !this.zen;
-  }
-
   async #on_input(key: Key | string | Uint8Array): Promise<void> {
     if (key instanceof Uint8Array) {
       this.render();
