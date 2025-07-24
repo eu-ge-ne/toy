@@ -10,22 +10,22 @@ export class Ask extends Modal<[string], boolean> {
   #done!: PromiseWithResolvers<boolean>;
 
   async open(text: string): Promise<boolean> {
-    try {
-      this.enabled = true;
-      this.#text = text;
-      this.#done = Promise.withResolvers();
+    this.enabled = true;
+    this.#text = text;
+    this.#done = Promise.withResolvers();
 
-      this.render();
+    this.render();
 
-      return await this.#done.promise;
-    } finally {
-      this.enabled = false;
-    }
+    const result = await this.#done.promise;
+
+    this.enabled = false;
+
+    return result;
   }
 
-  on_input(data: Key | string): void {
-    if (typeof data !== "string") {
-      switch (data.name) {
+  on_key(key: Key | string): void {
+    if (typeof key !== "string") {
+      switch (key.name) {
         case "ESC":
           this.#done.resolve(false);
           break;
