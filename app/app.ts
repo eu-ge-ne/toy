@@ -12,7 +12,6 @@ import { Header } from "@ui/header";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import { Action } from "./action.ts";
 import { DebugAction } from "./debug.ts";
 import { exit, ExitAction } from "./exit.ts";
 import { editor_graphemes } from "./graphemes.ts";
@@ -24,6 +23,8 @@ import { WrapAction } from "./wrap.ts";
 import { ZenAction } from "./zen.ts";
 
 export class App {
+  args = parseArgs(Deno.args);
+
   zen = true;
   file_path = "";
   unsaved_changes = true;
@@ -48,9 +49,7 @@ export class App {
   };
 
   async run(): Promise<void> {
-    const args = parseArgs(Deno.args);
-
-    if (args.v || args.version) {
+    if (this.args.v || this.args.version) {
       console.log(`toy ${deno.version}`);
       Deno.exit();
     }
@@ -74,9 +73,7 @@ export class App {
     Deno.addSignalListener("SIGWINCH", this.#refresh);
     this.#refresh();
 
-    if (typeof args._[0] === "string") {
-      await this.#act(new LoadAction(this), args._[0]);
-    }
+    await new LoadAction(this).run();
 
     for await (const data of read_input()) {
       await this.#on_input(data);
@@ -122,30 +119,6 @@ export class App {
     vt.write(vt.dummy_req);
   };
 
-  // TODO: refactor
-  // deno-lint-ignore no-explicit-any
-  async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
-    if (this.action_running) {
-      return;
-    }
-
-    const started = Date.now();
-
-    try {
-      this.action_running = true;
-      this.editor.enabled = false;
-
-      await act.run(...p);
-    } finally {
-      this.action_running = false;
-      this.editor.enabled = true;
-
-      this.render();
-
-      this.debug.set_react_time(Date.now() - started);
-    }
-  }
-
   set_file_path(x: string): void {
     this.file_path = x;
 
@@ -184,22 +157,22 @@ export class App {
     if (typeof key !== "string") {
       switch (key.name) {
         case "F2":
-          this.#act(this.action.save);
+          this.action.save.run();
           return;
         case "F5":
-          this.#act(this.action.invisible);
+          this.action.invisible.run();
           return;
         case "F6":
-          this.#act(this.action.wrap);
+          this.action.wrap.run();
           return;
         case "F9":
-          this.#act(this.action.debug);
+          this.action.debug.run();
           return;
         case "F10":
-          this.#act(this.action.exit);
+          this.action.exit.run();
           return;
         case "F11":
-          this.#act(this.action.zen);
+          this.action.zen.run();
           return;
       }
     }

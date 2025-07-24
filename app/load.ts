@@ -1,9 +1,15 @@
 import { Action } from "./action.ts";
 import { exit } from "./exit.ts";
 
-export class LoadAction extends Action<[string]> {
-  async run(path: string): Promise<void> {
-    const { editor, alert } = this.app;
+export class LoadAction extends Action {
+  protected override async _run(): Promise<void> {
+    const { editor, alert, args } = this.app;
+
+    if (typeof args._[0] !== "string") {
+      return;
+    }
+
+    const path = args._[0];
 
     try {
       using file = await Deno.open(path, { read: true });

@@ -1,7 +1,7 @@
 import { Action } from "./action.ts";
 
-export class SaveAsAction extends Action<[]> {
-  async run(): Promise<void> {
+export class SaveAsAction extends Action {
+  protected override async _run(): Promise<void> {
     const { editor, file_path, alert, save_as } = this.app;
 
     while (true) {

@@ -8,8 +8,8 @@ export function exit(): never {
   Deno.exit(0);
 }
 
-export class ExitAction extends Action<[], never> {
-  async run(): Promise<never> {
+export class ExitAction extends Action {
+  protected override async _run(): Promise<void> {
     const { unsaved_changes, ask, action } = this.app;
 
     if (unsaved_changes) {
