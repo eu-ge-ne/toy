@@ -100,10 +100,6 @@ export class Editor extends Control {
   }
 
   on_key(key: Key | string): void {
-    if (!this.enabled) {
-      return;
-    }
-
     const started = Date.now();
 
     try {

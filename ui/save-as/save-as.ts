@@ -31,7 +31,6 @@ export class SaveAs extends Modal<[string], string> {
     return result;
   }
 
-  // TODO: review
   on_key(key: Key | string): void {
     if (typeof key !== "string") {
       switch (key.name) {

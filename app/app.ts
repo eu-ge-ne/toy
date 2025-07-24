@@ -204,6 +204,8 @@ export class App {
       }
     }
 
-    this.editor.on_key(key);
+    if (this.editor.enabled) {
+      this.editor.on_key(key);
+    }
   }
 }
