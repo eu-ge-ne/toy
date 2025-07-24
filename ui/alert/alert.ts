@@ -10,22 +10,20 @@ export class Alert extends Modal<[unknown], void> {
   #done!: PromiseWithResolvers<void>;
 
   async open(err: unknown): Promise<void> {
-    try {
-      this.enabled = true;
-      this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
-      this.#done = Promise.withResolvers();
+    this.enabled = true;
+    this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
+    this.#done = Promise.withResolvers();
 
-      this.render();
+    this.render();
 
-      await this.#done.promise;
-    } finally {
-      this.enabled = false;
-    }
+    await this.#done.promise;
+
+    this.enabled = false;
   }
 
-  on_input(data: Key | string): void {
-    if (typeof data !== "string") {
-      switch (data.name) {
+  on_key(key: Key | string): void {
+    if (typeof key !== "string") {
+      switch (key.name) {
         case "ESC":
         case "ENTER":
           this.#done.resolve();
