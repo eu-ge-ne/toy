@@ -1,8 +1,12 @@
 import { Action } from "./action.ts";
 import { exit } from "./exit.ts";
 
-export class LoadAction extends Action<[string]> {
-  async run(path: string): Promise<void> {
+export class LoadAction extends Action<[unknown]> {
+  async run(path: unknown): Promise<void> {
+    if (typeof path !== "string") {
+      return;
+    }
+
     const { editor, alert } = this.app;
 
     try {
