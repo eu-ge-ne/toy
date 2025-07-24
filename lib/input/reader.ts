@@ -4,7 +4,7 @@ import { Key, parse_keys } from "@eu-ge-ne/kitty-keys";
 
 export type InputReader = ReadableStreamDefaultReader<Uint8Array>;
 
-type Handler = (_: Key | string) => Promise<void>;
+type Handler = (_: Key | string) => Promise<void> | void;
 
 export function new_input_reader(on_key: Handler): InputReader {
   const reader = Deno.stdin.readable.getReader();
@@ -22,7 +22,7 @@ async function run(reader: InputReader, on_key: Handler): Promise<void> {
     }
 
     for (const key of parse_keys(bytes)) {
-      on_key(key);
+      await on_key(key);
     }
   }
 }
