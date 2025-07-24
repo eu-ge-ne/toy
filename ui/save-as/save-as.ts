@@ -14,26 +14,27 @@ export class SaveAs extends Modal<[string], string> {
   async open(file_path: string): Promise<string> {
     const { buffer } = this.#editor;
 
-    try {
-      this.enabled = true;
-      this.#editor.enabled = true;
-      this.#done = Promise.withResolvers();
+    this.enabled = true;
+    this.#editor.enabled = true;
+    this.#done = Promise.withResolvers();
 
-      buffer.set_text(file_path);
-      this.#editor.reset(true);
+    buffer.set_text(file_path);
+    this.#editor.reset(true);
 
-      this.render();
+    this.render();
 
-      return await this.#done.promise;
-    } finally {
-      this.enabled = false;
-      this.#editor.enabled = false;
-    }
+    const result = await this.#done.promise;
+
+    this.enabled = false;
+    this.#editor.enabled = false;
+
+    return result;
   }
 
-  on_input(data: Key | string): void {
-    if (typeof data !== "string") {
-      switch (data.name) {
+  // TODO: review
+  on_key(key: Key | string): void {
+    if (typeof key !== "string") {
+      switch (key.name) {
         case "ESC":
           this.#done.resolve("");
           return;
@@ -48,7 +49,7 @@ export class SaveAs extends Modal<[string], string> {
       }
     }
 
-    this.#editor.on_key(data);
+    this.#editor.on_key(key);
   }
 
   override resize(area: Area): void {
