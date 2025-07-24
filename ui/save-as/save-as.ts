@@ -1,5 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
-import { read_input } from "@lib/input";
+import { Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -9,6 +9,7 @@ export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 40, 10);
 
   #editor = new Editor(new GraphemePool(), { multi_line: false });
+  #done!: PromiseWithResolvers<string>;
 
   async open(file_path: string): Promise<string> {
     const { buffer } = this.#editor;
@@ -16,35 +17,38 @@ export class SaveAs extends Modal<[string], string> {
     try {
       this.enabled = true;
       this.#editor.enabled = true;
+      this.#done = Promise.withResolvers();
 
       buffer.set_text(file_path);
       this.#editor.reset(true);
 
       this.render();
 
-      while (true) {
-        for await (const key of read_input()) {
-          if (typeof key !== "string") {
-            switch (key.name) {
-              case "ESC":
-                return "";
-              case "ENTER": {
-                const new_file_path = buffer.get_text();
-                if (new_file_path.length > 0) {
-                  return new_file_path;
-                }
-                break;
-              }
-            }
-          }
-
-          this.#editor.on_key(key);
-        }
-      }
+      return await this.#done.promise;
     } finally {
       this.enabled = false;
       this.#editor.enabled = false;
     }
+  }
+
+  on_input(data: Key | string): void {
+    if (typeof data !== "string") {
+      switch (data.name) {
+        case "ESC":
+          this.#done.resolve("");
+          return;
+        case "ENTER": {
+          const path = this.#editor.buffer.get_text();
+          if (path.length > 0) {
+            this.#done.resolve(path);
+            return;
+          }
+          break;
+        }
+      }
+    }
+
+    this.#editor.on_key(data);
   }
 
   override resize(area: Area): void {

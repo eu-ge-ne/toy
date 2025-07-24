@@ -36,8 +36,7 @@ export class App {
   alert = new Alert();
   ask = new Ask();
 
-  on_input_key_busy = false;
-
+  action_running = false;
   action = {
     exit: new ExitAction(this),
     debug: new DebugAction(this),
@@ -125,34 +124,45 @@ export class App {
   };
 
   async #handle_key(key: Key | string | Uint8Array): Promise<void> {
-    if (this.on_input_key_busy) {
+    if (key instanceof Uint8Array) {
+      this.render();
       return;
     }
 
-    if (key instanceof Uint8Array) {
-      this.render();
+    if (this.alert.enabled) {
+      this.alert.on_input(key);
+      return;
+    }
+
+    if (this.ask.enabled) {
+      this.ask.on_input(key);
+      return;
+    }
+
+    if (this.save_as.enabled) {
+      this.save_as.on_input(key);
       return;
     }
 
     if (typeof key !== "string") {
       switch (key.name) {
         case "F2":
-          await this.#act(this.action.save);
+          this.#act(this.action.save);
           return;
         case "F5":
-          await this.#act(this.action.invisible);
+          this.#act(this.action.invisible);
           return;
         case "F6":
-          await this.#act(this.action.wrap);
+          this.#act(this.action.wrap);
           return;
         case "F9":
-          await this.#act(this.action.debug);
+          this.#act(this.action.debug);
           return;
         case "F10":
-          await this.#act(this.action.exit);
+          this.#act(this.action.exit);
           return;
         case "F11":
-          await this.#act(this.action.zen);
+          this.#act(this.action.zen);
           return;
       }
     }
@@ -162,15 +172,19 @@ export class App {
 
   // deno-lint-ignore no-explicit-any
   async #act<P extends any[]>(act: Action<P>, ...p: P): Promise<void> {
+    if (this.action_running) {
+      return;
+    }
+
     const started = Date.now();
 
     try {
-      this.on_input_key_busy = true;
+      this.action_running = true;
       this.editor.enabled = false;
 
       await act.run(...p);
     } finally {
-      this.on_input_key_busy = false;
+      this.action_running = false;
       this.editor.enabled = true;
 
       this.render();
