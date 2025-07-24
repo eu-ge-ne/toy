@@ -139,6 +139,8 @@ export class App {
       return;
     }
 
+    const { action, action_running, editor } = this;
+
     if (this.alert.enabled) {
       this.alert.on_key(key);
       return;
@@ -154,31 +156,35 @@ export class App {
       return;
     }
 
+    if (action_running) {
+      return;
+    }
+
     if (typeof key !== "string") {
       switch (key.name) {
         case "F2":
-          this.action.save.run();
+          action.save.run();
           return;
         case "F5":
-          this.action.invisible.run();
+          action.invisible.run();
           return;
         case "F6":
-          this.action.wrap.run();
+          action.wrap.run();
           return;
         case "F9":
-          this.action.debug.run();
+          action.debug.run();
           return;
         case "F10":
-          this.action.exit.run();
+          action.exit.run();
           return;
         case "F11":
-          this.action.zen.run();
+          action.zen.run();
           return;
       }
     }
 
-    if (this.editor.enabled) {
-      this.editor.on_key(key);
+    if (editor.enabled) {
+      editor.on_key(key);
     }
   }
 }

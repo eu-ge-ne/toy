@@ -5,10 +5,6 @@ export abstract class Action {
   }
 
   async run(): Promise<void> {
-    if (this.app.action_running) {
-      return;
-    }
-
     const started = Date.now();
 
     const { editor, debug } = this.app;
