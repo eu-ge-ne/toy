@@ -6,7 +6,7 @@ import { Editor } from "@ui/editor";
 import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 
 export class SaveAs extends Modal<[string], string> {
-  protected size = new Area(0, 0, 40, 10);
+  protected size = new Area(0, 0, 60, 10);
 
   #editor = new Editor(new GraphemePool(), { multi_line: false });
   #done!: PromiseWithResolvers<string>;
@@ -75,7 +75,7 @@ export class SaveAs extends Modal<[string], string> {
       SAVE_AS_COLORS,
       ...vt.fmt.center({ len: w }, "Save As"),
       vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+      ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
       vt.esu,
     );
 
