@@ -4,7 +4,7 @@ import { set_flags } from "@eu-ge-ne/kitty-keys";
 import * as cursor from "./cursor.ts";
 import { write } from "./write.ts";
 
-export function init_vt(): void {
+export function init(): void {
   Deno.stdin.setRaw(true);
 
   write(
@@ -18,7 +18,7 @@ export function init_vt(): void {
   );
 }
 
-export function restore_vt(): void {
+export function restore(): void {
   write(
     decrst(DECResetMode.ALTSCR),
     cursor.show,

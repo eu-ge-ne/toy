@@ -1,4 +1,4 @@
-import { read_input } from "@lib/input";
+import { Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { ALERT_BG, ALERT_COLORS } from "@ui/theme";
@@ -7,27 +7,28 @@ export class Alert extends Modal<[unknown], void> {
   protected size = new Area(0, 0, 60, 10);
 
   #text = "";
+  #done!: PromiseWithResolvers<void>;
 
   async open(err: unknown): Promise<void> {
-    try {
-      this.enabled = true;
-      this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
+    this.enabled = true;
+    this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
+    this.#done = Promise.withResolvers();
 
-      this.render();
+    this.render();
 
-      while (true) {
-        for await (const key of read_input()) {
-          if (typeof key !== "string") {
-            switch (key.name) {
-              case "ESC":
-              case "ENTER":
-                return;
-            }
-          }
-        }
+    await this.#done.promise;
+
+    this.enabled = false;
+  }
+
+  on_key(key: Key | string): void {
+    if (typeof key !== "string") {
+      switch (key.name) {
+        case "ESC":
+        case "ENTER":
+          this.#done.resolve();
+          break;
       }
-    } finally {
-      this.enabled = false;
     }
   }
 
