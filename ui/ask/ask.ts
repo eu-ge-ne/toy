@@ -4,7 +4,7 @@ import * as vt from "@lib/vt";
 import { ASK_BG, ASK_COLORS } from "@ui/theme";
 
 export class Ask extends Modal<[string], boolean> {
-  protected size = new Area(0, 0, 40, 7);
+  protected size = new Area(0, 0, 60, 7);
 
   #text = "";
   #done!: PromiseWithResolvers<boolean>;
@@ -71,7 +71,7 @@ export class Ask extends Modal<[string], boolean> {
 
     vt.write(
       vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+      ...vt.fmt.center({ len: w }, "ESC‧no    ENTER‧yes"),
       vt.esu,
     );
   }

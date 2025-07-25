@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.17
+
+- Improved Save, SaveAs and Alert modals
+
 ## v0.0.16
 
 - Fixed window resize handling

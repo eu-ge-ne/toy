@@ -67,7 +67,7 @@ export class Alert extends Modal<[unknown], void> {
 
     vt.write(
       vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ENTER [ok]"),
+      ...vt.fmt.center({ len: w }, "ENTER‧ok"),
       vt.esu,
     );
   }
