@@ -27,7 +27,7 @@ export class App {
 
   zen = true;
   file_path = "";
-  unsaved_changes = false;
+  changes = false;
 
   ui = {
     alert: new Alert(),
@@ -61,9 +61,9 @@ export class App {
     this.ui.footer.enabled = !this.zen;
 
     this.ui.editor.line_index_enabled = !this.zen;
-    this.ui.editor.on_has_changes = (x) => {
-      this.unsaved_changes = x;
-      this.ui.header.set_unsaved_flag(x);
+    this.ui.editor.history.on_changed = (x) => {
+      this.changes = x > 0;
+      this.ui.header.set_unsaved_flag(x > 0);
     };
     this.ui.editor.on_react = (x) => this.ui.debug.set_react_time(x);
     this.ui.editor.on_render = (x) => this.ui.debug.set_editor_render_time(x);
