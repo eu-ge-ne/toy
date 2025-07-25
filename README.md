@@ -29,6 +29,9 @@ brew install eu-ge-ne/tap/toy
 - Built with Deno and TypeScript
 - Zero third-party dependencies
 - Accurate handling of Unicode grapheme clusters
+- Leverage
+  [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
+  extension for fast rendering
 - Efficiently opens large files
 - Utilizes the 256-color terminal palette
 - Supports the
@@ -59,12 +62,12 @@ brew install eu-ge-ne/tap/toy
 ### Navigate
 
 - `Left`, `Right`, `Up`, `Down` -- Move cursor
-- `Home`, `Fn+Left`, `⌘+Left` -- Move cursor to beginning of current line
-- `End`, `Fn+Right`, `⌘+Right` -- Move cursor to end of current line
-- `Page Up`, `Fn+Up` -- Move cursor up a frame
-- `Page Down`, `Fn+Down` -- Move cursor down a frame
-- `⌘+Up` -- Move cursor to top of the text
-- `⌘+Down` -- Move cursor to bottom of the text
+- `Home` -- Move cursor to beginning of current line (`Fn+Left`, `⌘+Left`)
+- `End` -- Move cursor to end of current line (`Fn+Right`, `⌘+Right`)
+- `Page Up` -- Move cursor up a frame (`Fn+Up`)
+- `Page Down` -- Move cursor down a frame (`Fn+Down`)
+- `⌘+Up` -- Move cursor to the top of the text
+- `⌘+Down` -- Move cursor to the bottom of the text
 
 ### Select
 
