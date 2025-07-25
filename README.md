@@ -26,17 +26,19 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
-- Built with Deno and TypeScript
-- Zero third-party dependencies
-- Accurate handling of Unicode grapheme clusters
-- Efficiently opens large files
-- Utilizes the 256-color terminal palette
+- Built with Deno and TypeScript (has zero third-party dependencies)
+- Opens large files (tested on gigabyte-sized files)
+- Properly handles Unicode grapheme clusters
+- Leverages
+  [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
+  extension for fast rendering (median 5 ms)
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-- System clipboard integration via OSC52
-- Automatic line wrapping
+- Integrates with system clipboard via OSC52
+- Utilizes the 256-color terminal palette
 - Renders invisible characters (e.g., spaces, tabs)
-- Zen mode (enabled by default)
+- Renders long lines via scroll or wrap
+- Has Zen mode (enabled by default, can be turned off)
 
 ## Supported terminal emulators
 
@@ -59,12 +61,12 @@ brew install eu-ge-ne/tap/toy
 ### Navigate
 
 - `Left`, `Right`, `Up`, `Down` -- Move cursor
-- `Home`, `Fn+Left`, `⌘+Left` -- Move cursor to beginning of current line
-- `End`, `Fn+Right`, `⌘+Right` -- Move cursor to end of current line
-- `Page Up`, `Fn+Up` -- Move cursor up a frame
-- `Page Down`, `Fn+Down` -- Move cursor down a frame
-- `⌘+Up` -- Move cursor to top of the text
-- `⌘+Down` -- Move cursor to bottom of the text
+- `Home` -- Move cursor to beginning of current line (`Fn+Left`, `⌘+Left`)
+- `End` -- Move cursor to end of current line (`Fn+Right`, `⌘+Right`)
+- `Page Up` -- Move cursor up a frame (`Fn+Up`)
+- `Page Down` -- Move cursor down a frame (`Fn+Down`)
+- `⌘+Up` -- Move cursor to the top of the text
+- `⌘+Down` -- Move cursor to the bottom of the text
 
 ### Select
 
@@ -74,23 +76,23 @@ brew install eu-ge-ne/tap/toy
   horizontal location on the line above
 - `⇧+Down` -- Extend text selection to the nearest character at the same
   horizontal location on the line below
-- `⇧+Home`, `⇧+Fn+Left`, `⇧+⌘+Left` -- Select the text between the cursor and
-  the beginning of the current line
-- `⇧+End`, `⇧+Fn+Right`, `⇧+⌘+Right` -- Select the text between the cursor and
-  the end of the current line
-- `⇧+Page Up`, `⇧+Fn+Up` -- Select a frame of text above the cursor
-- `⇧+Page Down`, `⇧+Fn+Down` -- Select a frame of text below the cursor
+- `⇧+Home` -- Select the text between the cursor and the beginning of the
+  current line (`⇧+Fn+Left`, `⇧+⌘+Left`)
+- `⇧+End` -- Select the text between the cursor and the end of the current line
+  (`⇧+Fn+Right`, `⇧+⌘+Right`)
+- `⇧+Page Up` -- Select a frame of text above the cursor (`⇧+Fn+Up`)
+- `⇧+Page Down` -- Select a frame of text below the cursor (`⇧+Fn+Down`)
 - `⇧+⌘+Up` -- Select the text between the cursor and the beginning of the text
 - `⇧+⌘+Down` -- Select the text between the cursor and the end of the text
-- `⌃+A`, `⌘+A` -- Select all text
+- `⌃+A` -- Select all text (`⌘+A`)
 
 ### Edit
 
-- `⌃+Z`, `⌘+Z` -- Undo
-- `⌃+Y`, `⌘+Y` -- Redo
-- `⌃+C`, `⌘+C` -- Copy selected text
-- ️`⌃+X`, `⌘+X` -- Cut selected text
-- `⌃+V`, `⌘+V` -- Paste text at cursor
+- `⌃+Z` -- Undo (`⌘+Z`)
+- `⌃+Y` -- Redo (`⌘+Y`)
+- `⌃+C` -- Copy selected text (`⌘+C`)
+- ️`⌃+X` -- Cut selected text (`⌘+X`)
+- `⌃+V` -- Paste text at cursor (`⌘+V`)
 - `Delete` -- Delete the character to the left of the cursor
 - `Fn+Delete` -- Delete the character under the cursor
 
