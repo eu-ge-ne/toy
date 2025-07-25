@@ -2,6 +2,8 @@
 
 Minimalistic TUI text editor.
 
+![toy](etc/toy.png)
+
 - [Installation](#installation)
   - [Homebrew (macOS only)](#homebrew-macos-only)
 - [Features](#features)
