@@ -2,17 +2,17 @@ import { Key } from "@lib/input";
 
 import { App } from "../app.ts";
 
-export abstract class Action<P extends unknown[] = []> {
+export abstract class Action {
   constructor(protected app: App) {
   }
 
-  async run(...p: P): Promise<void> {
+  async run(): Promise<void> {
     const started = Date.now();
 
     try {
       this.app.actions_started += 1;
 
-      await this._run(...p);
+      await this._run();
     } finally {
       this.app.actions_started -= 1;
 
@@ -22,5 +22,5 @@ export abstract class Action<P extends unknown[] = []> {
 
   abstract match(key: Key | string): boolean;
 
-  protected abstract _run(...p: P): Promise<void>;
+  protected abstract _run(): Promise<void>;
 }
