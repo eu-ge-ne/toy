@@ -50,13 +50,4 @@ export class Area {
 
     return new Area(x0, y0, w, h);
   }
-
-  right_bottom(area: Area): Area {
-    return new Area(
-      this.x0 + this.w - area.w,
-      this.y0 + this.h - area.h,
-      area.w,
-      area.h,
-    );
-  }
 }

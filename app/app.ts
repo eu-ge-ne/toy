@@ -5,7 +5,7 @@ import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
 import { Ask } from "@ui/ask";
-import { Debug, DebugArea } from "@ui/debug";
+import { Debug } from "@ui/debug";
 import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
@@ -91,14 +91,14 @@ export class App {
 
     if (this.zen) {
       editor.resize(screen);
-      debug.resize(screen.right_bottom(DebugArea));
+      debug.resize(screen);
     } else {
       const [header_area, a0] = screen.div_y(1);
       header.resize(header_area);
 
       const [editor_area, footer_area] = a0.div_y(-1);
       editor.resize(editor_area);
-      debug.resize(editor_area.right_bottom(DebugArea));
+      debug.resize(editor_area);
 
       footer.resize(footer_area);
     }
