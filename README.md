@@ -28,11 +28,11 @@ brew install eu-ge-ne/tap/toy
 
 - Built with Deno and TypeScript
 - Zero third-party dependencies
-- Accurate handling of Unicode grapheme clusters
-- Leverage
+- Properly handles Unicode grapheme clusters
+- Leverages
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering
-- Efficiently opens large files
+- Opens large files
 - Utilizes the 256-color terminal palette
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
