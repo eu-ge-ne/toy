@@ -181,14 +181,4 @@ export class Editor extends Control {
 
     history.push();
   }
-
-  toggle_invisible(): void {
-    this.invisible_enabled = !this.invisible_enabled;
-  }
-
-  toggle_wrap(): void {
-    this.wrap_enabled = !this.wrap_enabled;
-
-    this.cursor.move(0, -Number.MAX_SAFE_INTEGER, false);
-  }
 }

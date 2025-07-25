@@ -7,6 +7,7 @@ export class SaveAsAction extends Action {
     while (true) {
       const path = await ui.save_as.open(file_path);
       if (!path) {
+        this.app.render();
         return;
       }
 
@@ -22,6 +23,7 @@ export class SaveAsAction extends Action {
         ui.editor.reset(false);
 
         this.app.set_file_path(path);
+        this.app.render();
       } catch (err) {
         await ui.alert.open(err);
 

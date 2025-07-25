@@ -1,12 +1,4 @@
-import * as vt from "@lib/vt";
-
 import { Action } from "./action.ts";
-
-export function exit(): never {
-  vt.restore();
-
-  Deno.exit(0);
-}
 
 export class ExitAction extends Action {
   protected override async _run(): Promise<void> {
@@ -18,6 +10,6 @@ export class ExitAction extends Action {
       }
     }
 
-    exit();
+    this.app.stop();
   }
 }

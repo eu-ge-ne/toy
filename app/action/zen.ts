@@ -11,5 +11,6 @@ export class ZenAction extends Action {
     editor.line_index_enabled = !this.app.zen;
 
     this.app.resize();
+    this.app.render();
   }
 }

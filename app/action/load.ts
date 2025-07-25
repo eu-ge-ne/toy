@@ -1,5 +1,4 @@
 import { Action } from "./action.ts";
-import { exit } from "./exit.ts";
 
 export class LoadAction extends Action {
   protected override async _run(): Promise<void> {
@@ -22,6 +21,7 @@ export class LoadAction extends Action {
       await ui.editor.buffer.load(file);
 
       ui.editor.reset(true);
+      ui.editor.render();
 
       this.app.set_file_path(path);
     } catch (err) {
@@ -30,7 +30,7 @@ export class LoadAction extends Action {
       } else {
         await ui.alert.open(err);
 
-        exit();
+        this.app.stop();
       }
     }
   }

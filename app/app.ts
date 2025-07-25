@@ -12,15 +12,9 @@ import { Header } from "@ui/header";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import { DebugAction } from "./debug.ts";
+import * as action from "./action/mod.ts";
 import { exit, ExitAction } from "./exit.ts";
 import { editor_graphemes } from "./graphemes.ts";
-import { InvisibleAction } from "./invisible.ts";
-import { LoadAction } from "./load.ts";
-import { SaveAsAction } from "./save-as.ts";
-import { SaveAction } from "./save.ts";
-import { WrapAction } from "./wrap.ts";
-import { ZenAction } from "./zen.ts";
 
 export class App {
   args = parseArgs(Deno.args);
@@ -40,13 +34,13 @@ export class App {
   };
 
   action = {
+    debug: new action.DebugAction(this),
+    invisible: new action.InvisibleAction(this),
     exit: new ExitAction(this),
-    debug: new DebugAction(this),
-    save_as: new SaveAsAction(this),
-    save: new SaveAction(this),
-    wrap: new WrapAction(this),
-    invisible: new InvisibleAction(this),
-    zen: new ZenAction(this),
+    save_as: new action.SaveAsAction(this),
+    save: new action.SaveAction(this),
+    wrap: new action.WrapAction(this),
+    zen: new action.ZenAction(this),
   };
 
   actions_started = 0;
@@ -77,11 +71,17 @@ export class App {
     this.resize();
     this.render();
 
-    await new LoadAction(this).run();
+    await new action.LoadAction(this).run();
 
     for await (const data of read_input()) {
       await this.#on_input(data);
     }
+  }
+
+  stop(): never {
+    vt.restore();
+
+    Deno.exit(0);
   }
 
   resize(): void {
