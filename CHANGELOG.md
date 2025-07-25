@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.17
+
+- Improved Save modal
+
 ## v0.0.16
 
 - Fixed window resize handling

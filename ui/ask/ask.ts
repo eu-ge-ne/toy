@@ -71,7 +71,7 @@ export class Ask extends Modal<[string], boolean> {
 
     vt.write(
       vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ESC [cancel]    ENTER [ok]"),
+      ...vt.fmt.center({ len: w }, "ESC‧no    ENTER‧yes"),
       vt.esu,
     );
   }
