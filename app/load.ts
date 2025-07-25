@@ -5,11 +5,11 @@ export class LoadAction extends Action {
   protected override async _run(): Promise<void> {
     const { editor, alert, args } = this.app;
 
-    if (typeof args._[0] !== "string") {
+    const path = args._[0];
+
+    if (typeof path !== "string") {
       return;
     }
-
-    const path = args._[0];
 
     try {
       using file = await Deno.open(path, { read: true });
