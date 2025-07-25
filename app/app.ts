@@ -13,7 +13,6 @@ import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
 import * as action from "./action/mod.ts";
-import { exit, ExitAction } from "./exit.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
@@ -35,8 +34,8 @@ export class App {
 
   action = {
     debug: new action.DebugAction(this),
+    exit: new action.ExitAction(this),
     invisible: new action.InvisibleAction(this),
-    exit: new ExitAction(this),
     save_as: new action.SaveAsAction(this),
     save: new action.SaveAction(this),
     wrap: new action.WrapAction(this),
@@ -59,13 +58,13 @@ export class App {
       this.changes = x > 0;
       this.ui.header.set_unsaved_flag(x > 0);
     };
-    this.ui.editor.on_react = (x) => this.ui.debug.set_react_time(x);
-    this.ui.editor.on_render = (x) => this.ui.debug.set_editor_render_time(x);
+    this.ui.editor.on_react = (x) => this.ui.debug.set_action_time(x);
+    this.ui.editor.on_render = (x) => this.ui.debug.set_render_time(x);
     this.ui.editor.on_cursor = (x) => this.ui.footer.set_cursor_status(x);
     this.ui.editor.enabled = true;
 
     vt.init();
-    globalThis.addEventListener("unload", exit);
+    globalThis.addEventListener("unload", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
     this.resize();
@@ -78,11 +77,11 @@ export class App {
     }
   }
 
-  stop(): never {
+  stop = () => {
     vt.restore();
 
     Deno.exit(0);
-  }
+  };
 
   resize(): void {
     const { editor, debug, header, footer, save_as, alert, ask } = this.ui;

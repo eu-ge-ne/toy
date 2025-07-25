@@ -1,4 +1,5 @@
 export * from "./debug.ts";
+export * from "./exit.ts";
 export * from "./invisible.ts";
 export * from "./load.ts";
 export * from "./save-as.ts";

@@ -14,7 +14,7 @@ export abstract class Action<P extends unknown[] = []> {
     } finally {
       this.app.actions_started -= 1;
 
-      this.app.ui.debug.set_react_time(Date.now() - started);
+      this.app.ui.debug.set_action_time(Date.now() - started);
     }
   }
 
