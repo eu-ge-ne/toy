@@ -28,15 +28,16 @@ brew install eu-ge-ne/tap/toy
 
 - Built with Deno and TypeScript
 - Zero third-party dependencies
+- Opens large files
 - Properly handles Unicode grapheme clusters
 - Leverages
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering
-- Opens large files
-- Utilizes the 256-color terminal palette
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - System clipboard integration via OSC52
+- Utilizes the 256-color terminal palette
+
 - Automatic line wrapping
 - Renders invisible characters (e.g., spaces, tabs)
 - Zen mode (enabled by default)
