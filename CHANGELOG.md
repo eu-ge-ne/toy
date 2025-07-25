@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.16
+
+- Fixed window resize handling
+- Improved input handling
+
 ## v0.0.15
 
 - Fixed opening new file
