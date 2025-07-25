@@ -3,6 +3,7 @@
 ## v0.0.17
 
 - Improved Save modal
+- Improved Alert modal
 
 ## v0.0.16
 
