@@ -26,9 +26,8 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
-- Built with Deno and TypeScript
-- Zero third-party dependencies
-- Opens large files
+- Built with Deno and TypeScript (has zero third-party dependencies)
+- Opens large files (tested on gigabyte-sized files)
 - Properly handles Unicode grapheme clusters
 - Leverages
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
