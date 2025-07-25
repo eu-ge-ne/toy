@@ -76,23 +76,23 @@ brew install eu-ge-ne/tap/toy
   horizontal location on the line above
 - `⇧+Down` -- Extend text selection to the nearest character at the same
   horizontal location on the line below
-- `⇧+Home`, `⇧+Fn+Left`, `⇧+⌘+Left` -- Select the text between the cursor and
-  the beginning of the current line
-- `⇧+End`, `⇧+Fn+Right`, `⇧+⌘+Right` -- Select the text between the cursor and
-  the end of the current line
-- `⇧+Page Up`, `⇧+Fn+Up` -- Select a frame of text above the cursor
-- `⇧+Page Down`, `⇧+Fn+Down` -- Select a frame of text below the cursor
+- `⇧+Home` -- Select the text between the cursor and the beginning of the
+  current line (`⇧+Fn+Left`, `⇧+⌘+Left`)
+- `⇧+End` -- Select the text between the cursor and the end of the current line
+  (`⇧+Fn+Right`, `⇧+⌘+Right`)
+- `⇧+Page Up` -- Select a frame of text above the cursor (`⇧+Fn+Up`)
+- `⇧+Page Down` -- Select a frame of text below the cursor (`⇧+Fn+Down`)
 - `⇧+⌘+Up` -- Select the text between the cursor and the beginning of the text
 - `⇧+⌘+Down` -- Select the text between the cursor and the end of the text
-- `⌃+A`, `⌘+A` -- Select all text
+- `⌃+A` -- Select all text (`⌘+A`)
 
 ### Edit
 
-- `⌃+Z`, `⌘+Z` -- Undo
-- `⌃+Y`, `⌘+Y` -- Redo
-- `⌃+C`, `⌘+C` -- Copy selected text
-- ️`⌃+X`, `⌘+X` -- Cut selected text
-- `⌃+V`, `⌘+V` -- Paste text at cursor
+- `⌃+Z` -- Undo (`⌘+Z`)
+- `⌃+Y` -- Redo (`⌘+Y`)
+- `⌃+C` -- Copy selected text (`⌘+C`)
+- ️`⌃+X` -- Cut selected text (`⌘+X`)
+- `⌃+V` -- Paste text at cursor (`⌘+V`)
 - `Delete` -- Delete the character to the left of the cursor
 - `Fn+Delete` -- Delete the character under the cursor
 
