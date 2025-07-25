@@ -50,57 +50,57 @@ brew install eu-ge-ne/tap/toy
 
 ### Function
 
-- `Esc` -- Center the cursor or selection in the visible area
-- `F2` -- Save
-- `F5` -- Toggle invisible characters
-- `F6` -- Toggle line wrapping
-- `F9` -- Toggle debug panel
-- `F10` -- Exit
-- `F11` -- Toggle Zen mode
+- `Esc` - Center the cursor or selection in the visible area
+- `F2` - Save
+- `F5` - Toggle invisible characters
+- `F6` - Toggle line wrapping
+- `F9` - Toggle debug panel
+- `F10` - Exit
+- `F11` - Toggle Zen mode
 
 ### Navigate
 
-- `Left`, `Right`, `Up`, `Down` -- Move cursor
-- `Home` -- Move cursor to beginning of current line (`Fn+Left`, `⌘+Left`)
-- `End` -- Move cursor to end of current line (`Fn+Right`, `⌘+Right`)
-- `Page Up` -- Move cursor up a frame (`Fn+Up`)
-- `Page Down` -- Move cursor down a frame (`Fn+Down`)
-- `⌘+Up` -- Move cursor to the top of the text
-- `⌘+Down` -- Move cursor to the bottom of the text
+- `Left`, `Right`, `Up`, `Down` - Move cursor
+- `Home` - Move cursor to beginning of current line (`Fn+Left`, `⌘+Left`)
+- `End` - Move cursor to end of current line (`Fn+Right`, `⌘+Right`)
+- `Page Up` - Move cursor up a frame (`Fn+Up`)
+- `Page Down` - Move cursor down a frame (`Fn+Down`)
+- `⌘+Up` - Move cursor to the top of the text
+- `⌘+Down` - Move cursor to the bottom of the text
 
 ### Select
 
-- `⇧+Left` -- Extend text selection one character to the left
-- `⇧+Right` -- Extend text selection one character to the right
-- `⇧+Up` -- Extend text selection to the nearest character at the same
-  horizontal location on the line above
-- `⇧+Down` -- Extend text selection to the nearest character at the same
+- `⇧+Left` - Extend text selection one character to the left
+- `⇧+Right` - Extend text selection one character to the right
+- `⇧+Up` - Extend text selection to the nearest character at the same horizontal
+  location on the line above
+- `⇧+Down` - Extend text selection to the nearest character at the same
   horizontal location on the line below
-- `⇧+Home` -- Select the text between the cursor and the beginning of the
-  current line (`⇧+Fn+Left`, `⇧+⌘+Left`)
-- `⇧+End` -- Select the text between the cursor and the end of the current line
+- `⇧+Home` - Select the text between the cursor and the beginning of the current
+  line (`⇧+Fn+Left`, `⇧+⌘+Left`)
+- `⇧+End` - Select the text between the cursor and the end of the current line
   (`⇧+Fn+Right`, `⇧+⌘+Right`)
-- `⇧+Page Up` -- Select a frame of text above the cursor (`⇧+Fn+Up`)
-- `⇧+Page Down` -- Select a frame of text below the cursor (`⇧+Fn+Down`)
-- `⇧+⌘+Up` -- Select the text between the cursor and the beginning of the text
-- `⇧+⌘+Down` -- Select the text between the cursor and the end of the text
-- `⌃+A` -- Select all text (`⌘+A`)
+- `⇧+Page Up` - Select a frame of text above the cursor (`⇧+Fn+Up`)
+- `⇧+Page Down` - Select a frame of text below the cursor (`⇧+Fn+Down`)
+- `⇧+⌘+Up` - Select the text between the cursor and the beginning of the text
+- `⇧+⌘+Down` - Select the text between the cursor and the end of the text
+- `⌃+A` - Select all text (`⌘+A`)
 
 ### Edit
 
-- `⌃+Z` -- Undo (`⌘+Z`)
-- `⌃+Y` -- Redo (`⌘+Y`)
-- `⌃+C` -- Copy selected text (`⌘+C`)
-- ️`⌃+X` -- Cut selected text (`⌘+X`)
-- `⌃+V` -- Paste text at cursor (`⌘+V`)
-- `Delete` -- Delete the character to the left of the cursor
-- `Fn+Delete` -- Delete the character under the cursor
+- `⌃+Z` - Undo (`⌘+Z`)
+- `⌃+Y` - Redo (`⌘+Y`)
+- `⌃+C` - Copy selected text (`⌘+C`)
+- ️`⌃+X` - Cut selected text (`⌘+X`)
+- `⌃+V` - Paste text at cursor (`⌘+V`)
+- `Delete` - Delete the character to the left of the cursor
+- `Fn+Delete` - Delete the character under the cursor
 
 ## Roadmap
 
-- `⌃+F` -- Find
-- `F3` -- Find next
-- `⇧+F3` -- Find previous
+- `⌃+F` - Find
+- `F3` - Find next
+- `⇧+F3` - Find previous
 
 ## License
 
