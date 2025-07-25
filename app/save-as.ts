@@ -2,10 +2,10 @@ import { Action } from "./action.ts";
 
 export class SaveAsAction extends Action {
   protected override async _run(): Promise<void> {
-    const { editor, file_path, alert, save_as } = this.app;
+    const { file_path, ui } = this.app;
 
     while (true) {
-      const path = await save_as.open(file_path);
+      const path = await ui.save_as.open(file_path);
       if (!path) {
         return;
       }
@@ -17,13 +17,13 @@ export class SaveAsAction extends Action {
           truncate: true,
         });
 
-        await editor.buffer.save(file);
+        await ui.editor.buffer.save(file);
 
-        editor.reset(false);
+        ui.editor.reset(false);
 
         this.app.set_file_path(path);
       } catch (err) {
-        await alert.open(err);
+        await ui.alert.open(err);
 
         this.app.render();
         continue;

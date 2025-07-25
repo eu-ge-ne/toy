@@ -2,7 +2,7 @@ import { Action } from "./action.ts";
 
 export class SaveAction extends Action {
   protected override async _run(): Promise<void> {
-    const { editor, file_path, alert, action } = this.app;
+    const { file_path, ui, action } = this.app;
 
     if (!file_path) {
       await action.save_as.run();
@@ -16,11 +16,11 @@ export class SaveAction extends Action {
         truncate: true,
       });
 
-      await editor.buffer.save(file);
+      await ui.editor.buffer.save(file);
 
-      editor.reset(false);
+      ui.editor.reset(false);
     } catch (err) {
-      await alert.open(err);
+      await ui.alert.open(err);
 
       this.app.render();
 

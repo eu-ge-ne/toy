@@ -29,15 +29,16 @@ export class App {
   file_path = "";
   unsaved_changes = false;
 
-  editor = new Editor(editor_graphemes, { multi_line: true });
-  header = new Header();
-  footer = new Footer();
-  save_as = new SaveAs();
-  debug = new Debug();
-  alert = new Alert();
-  ask = new Ask();
+  ui = {
+    alert: new Alert(),
+    ask: new Ask(),
+    debug: new Debug(),
+    editor: new Editor(editor_graphemes, { multi_line: true }),
+    footer: new Footer(),
+    header: new Header(),
+    save_as: new SaveAs(),
+  };
 
-  action_running = false;
   action = {
     exit: new ExitAction(this),
     debug: new DebugAction(this),
@@ -48,28 +49,29 @@ export class App {
     zen: new ZenAction(this),
   };
 
+  actions_started = 0;
+
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
       console.log(`toy ${deno.version}`);
       Deno.exit();
     }
 
+    this.ui.header.enabled = !this.zen;
+    this.ui.footer.enabled = !this.zen;
+
+    this.ui.editor.line_index_enabled = !this.zen;
+    this.ui.editor.on_has_changes = (x) => {
+      this.unsaved_changes = x;
+      this.ui.header.set_unsaved_flag(x);
+    };
+    this.ui.editor.on_react = (x) => this.ui.debug.set_react_time(x);
+    this.ui.editor.on_render = (x) => this.ui.debug.set_editor_render_time(x);
+    this.ui.editor.on_cursor = (x) => this.ui.footer.set_cursor_status(x);
+    this.ui.editor.enabled = true;
+
     vt.init();
     globalThis.addEventListener("unload", exit);
-
-    this.header.enabled = !this.zen;
-    this.footer.enabled = !this.zen;
-    this.editor.line_index_enabled = !this.zen;
-
-    this.editor.enabled = true;
-    this.editor.on_has_changes = (x) => {
-      this.unsaved_changes = x;
-      this.header.set_unsaved_flag(x);
-    };
-    this.editor.on_react = (x) => this.debug.set_react_time(x);
-    this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
-    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
-
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
     this.resize();
@@ -83,41 +85,45 @@ export class App {
   }
 
   resize(): void {
+    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+
     const screen = Area.from_screen();
 
     if (this.zen) {
-      this.editor.resize(screen);
-      this.debug.resize(screen.right_bottom(DebugArea));
+      editor.resize(screen);
+      debug.resize(screen.right_bottom(DebugArea));
     } else {
       const [header_area, a0] = screen.div_y(1);
-      this.header.resize(header_area);
+      header.resize(header_area);
 
       const [editor_area, footer_area] = a0.div_y(-1);
-      this.editor.resize(editor_area);
-      this.debug.resize(editor_area.right_bottom(DebugArea));
+      editor.resize(editor_area);
+      debug.resize(editor_area.right_bottom(DebugArea));
 
-      this.footer.resize(footer_area);
+      footer.resize(footer_area);
     }
 
-    this.save_as.resize(screen);
-    this.alert.resize(screen);
-    this.ask.resize(screen);
+    save_as.resize(screen);
+    alert.resize(screen);
+    ask.resize(screen);
   }
 
   render(): void {
-    this.header.render();
-    this.editor.render();
-    this.footer.render();
-    this.debug.render();
-    this.save_as.render();
-    this.alert.render();
-    this.ask.render();
+    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+
+    header.render();
+    editor.render();
+    footer.render();
+    debug.render();
+    save_as.render();
+    alert.render();
+    ask.render();
   }
 
   set_file_path(x: string): void {
     this.file_path = x;
 
-    this.header.set_file_path(x);
+    this.ui.header.set_file_path(x);
   }
 
   #on_sigwinch = () => {
@@ -132,24 +138,24 @@ export class App {
       return;
     }
 
-    const { action, action_running, editor } = this;
+    const { ui, action, actions_started } = this;
 
-    if (this.alert.enabled) {
-      this.alert.on_key(key);
+    if (ui.alert.enabled) {
+      ui.alert.on_key(key);
       return;
     }
 
-    if (this.ask.enabled) {
-      this.ask.on_key(key);
+    if (ui.ask.enabled) {
+      ui.ask.on_key(key);
       return;
     }
 
-    if (this.save_as.enabled) {
-      this.save_as.on_key(key);
+    if (ui.save_as.enabled) {
+      ui.save_as.on_key(key);
       return;
     }
 
-    if (action_running) {
+    if (actions_started > 0) {
       return;
     }
 
@@ -176,8 +182,8 @@ export class App {
       }
     }
 
-    if (editor.enabled) {
-      editor.on_key(key);
+    if (ui.editor.enabled) {
+      ui.editor.on_key(key);
     }
   }
 }

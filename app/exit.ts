@@ -10,10 +10,10 @@ export function exit(): never {
 
 export class ExitAction extends Action {
   protected override async _run(): Promise<void> {
-    const { unsaved_changes, ask, action } = this.app;
+    const { unsaved_changes, ui, action } = this.app;
 
     if (unsaved_changes) {
-      if (await ask.open("Save?")) {
+      if (await ui.ask.open("Save?")) {
         await action.save.run();
       }
     }
