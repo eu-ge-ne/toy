@@ -17,7 +17,6 @@ export class Editor extends Control {
   on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
-  on_has_changes?: (_: boolean) => void;
 
   readonly buffer = new Buffer();
   readonly shaper: Shaper;
@@ -96,7 +95,6 @@ export class Editor extends Control {
     }
 
     this.history.reset();
-    this.on_has_changes?.(this.history.has_changes);
   }
 
   on_key(key: Key | string): void {
@@ -142,7 +140,6 @@ export class Editor extends Control {
     }
 
     history.push();
-    this.on_has_changes?.(this.history.has_changes);
   }
 
   backspace(): void {
@@ -152,25 +149,20 @@ export class Editor extends Control {
       switch (buffer.line_length(cursor.ln)) {
         case 1: {
           buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
-
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-
           break;
         }
         default: {
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-
           buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
         }
       }
     } else {
       buffer.delete([cursor.ln, cursor.col - 1], [cursor.ln, cursor.col - 1]);
-
       cursor.move(0, -1, false);
     }
 
     history.push();
-    this.on_has_changes?.(this.history.has_changes);
   }
 
   delete_char(): void {
@@ -179,7 +171,6 @@ export class Editor extends Control {
     buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
 
     history.push();
-    this.on_has_changes?.(this.history.has_changes);
   }
 
   delete_selection(): void {
@@ -189,7 +180,6 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
-    this.on_has_changes?.(this.history.has_changes);
   }
 
   toggle_invisible(): void {
