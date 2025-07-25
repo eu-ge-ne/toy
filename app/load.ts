@@ -3,7 +3,7 @@ import { exit } from "./exit.ts";
 
 export class LoadAction extends Action {
   protected override async _run(): Promise<void> {
-    const { editor, alert, args } = this.app;
+    const { args, ui } = this.app;
 
     const path = args._[0];
 
@@ -19,16 +19,16 @@ export class LoadAction extends Action {
         throw new Error(`${path} is not a file`);
       }
 
-      await editor.buffer.load(file);
+      await ui.editor.buffer.load(file);
 
-      editor.reset(true);
+      ui.editor.reset(true);
 
       this.app.set_file_path(path);
     } catch (err) {
       if (err instanceof Deno.errors.NotFound) {
         this.app.set_file_path(path);
       } else {
-        await alert.open(err);
+        await ui.alert.open(err);
 
         exit();
       }

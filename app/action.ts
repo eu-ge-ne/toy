@@ -7,15 +7,15 @@ export abstract class Action {
   async run(): Promise<void> {
     const started = Date.now();
 
-    const { editor, debug } = this.app;
+    const { editor, debug } = this.app.ui;
 
     try {
-      this.app.action_running = true;
+      this.app.actions_started += 1;
       editor.enabled = false;
 
       await this._run();
     } finally {
-      this.app.action_running = false;
+      this.app.actions_started -= 1;
       editor.enabled = true;
 
       this.app.render();
