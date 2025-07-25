@@ -1,6 +1,10 @@
 import { Action } from "./action.ts";
 
 export class SaveAsAction extends Action {
+  match(): boolean {
+    return false;
+  }
+
   protected override async _run(): Promise<void> {
     const { file_path, ui } = this.app;
 

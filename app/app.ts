@@ -12,7 +12,7 @@ import { Header } from "@ui/header";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import * as action from "./action/mod.ts";
+import * as act from "./action/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
@@ -32,17 +32,17 @@ export class App {
     save_as: new SaveAs(),
   };
 
-  action = {
-    debug: new action.DebugAction(this),
-    exit: new action.ExitAction(this),
-    invisible: new action.InvisibleAction(this),
-    save_as: new action.SaveAsAction(this),
-    save: new action.SaveAction(this),
-    wrap: new action.WrapAction(this),
-    zen: new action.ZenAction(this),
-  };
-
   actions_started = 0;
+
+  #actions = [
+    new act.DebugAction(this),
+    new act.ExitAction(this),
+    new act.InvisibleAction(this),
+    new act.SaveAsAction(this),
+    new act.SaveAction(this),
+    new act.WrapAction(this),
+    new act.ZenAction(this),
+  ];
 
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
@@ -70,7 +70,7 @@ export class App {
     this.resize();
     this.render();
 
-    await new action.LoadAction(this).run();
+    await new act.LoadAction(this).run();
 
     for await (const data of read_input()) {
       await this.#on_input(data);
@@ -137,7 +137,7 @@ export class App {
       return;
     }
 
-    const { ui, action, actions_started } = this;
+    const { ui, actions_started } = this;
 
     if (ui.alert.enabled) {
       ui.alert.on_key(key);
@@ -158,27 +158,10 @@ export class App {
       return;
     }
 
-    if (typeof key !== "string") {
-      switch (key.name) {
-        case "F2":
-          action.save.run();
-          return;
-        case "F5":
-          action.invisible.run();
-          return;
-        case "F6":
-          action.wrap.run();
-          return;
-        case "F9":
-          action.debug.run();
-          return;
-        case "F10":
-          action.exit.run();
-          return;
-        case "F11":
-          action.zen.run();
-          return;
-      }
+    const act = this.#actions.find((x) => x.match(key));
+    if (act) {
+      act.run();
+      return;
     }
 
     if (ui.editor.enabled) {

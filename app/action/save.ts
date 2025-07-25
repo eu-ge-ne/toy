@@ -1,11 +1,18 @@
+import { Key } from "@lib/input";
+
 import { Action } from "./action.ts";
+import { SaveAsAction } from "./save-as.ts";
 
 export class SaveAction extends Action {
+  match(key: Key | string): boolean {
+    return typeof key !== "string" && key.name === "F2";
+  }
+
   protected override async _run(): Promise<void> {
-    const { file_path, ui, action } = this.app;
+    const { file_path, ui } = this.app;
 
     if (!file_path) {
-      await action.save_as.run();
+      await new SaveAsAction(this.app).run();
       return;
     }
 
@@ -24,7 +31,7 @@ export class SaveAction extends Action {
 
       this.app.render();
 
-      await action.save_as.run();
+      await new SaveAsAction(this.app).run();
     }
   }
 }

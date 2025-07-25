@@ -1,3 +1,5 @@
+import { Key } from "@lib/input";
+
 import { App } from "../app.ts";
 
 export abstract class Action<P extends unknown[] = []> {
@@ -17,6 +19,8 @@ export abstract class Action<P extends unknown[] = []> {
       this.app.ui.debug.set_action_time(Date.now() - started);
     }
   }
+
+  abstract match(key: Key | string): boolean;
 
   protected abstract _run(...p: P): Promise<void>;
 }

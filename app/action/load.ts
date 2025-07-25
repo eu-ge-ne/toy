@@ -1,6 +1,10 @@
 import { Action } from "./action.ts";
 
 export class LoadAction extends Action {
+  match(): boolean {
+    return false;
+  }
+
   protected override async _run(): Promise<void> {
     const { args, ui } = this.app;
 
