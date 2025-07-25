@@ -37,9 +37,8 @@ brew install eu-ge-ne/tap/toy
 - Integrates with system clipboard via OSC52
 - Utilizes the 256-color terminal palette
 - Renders invisible characters (e.g., spaces, tabs)
-
-- Automatic line wrapping
-- Zen mode (enabled by default)
+- Renders long lines via scroll or wrap
+- Has Zen mode (enabled by default, can be turned off)
 
 ## Supported terminal emulators
 
