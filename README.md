@@ -34,7 +34,7 @@ brew install eu-ge-ne/tap/toy
   extension for fast rendering
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-- System clipboard integration via OSC52
+- Integrates with system clipboard via OSC52
 - Utilizes the 256-color terminal palette
 
 - Automatic line wrapping
