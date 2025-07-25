@@ -31,7 +31,7 @@ brew install eu-ge-ne/tap/toy
 - Properly handles Unicode grapheme clusters
 - Leverages
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
-  extension for fast rendering
+  extension for fast rendering (median 5 ms)
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - Integrates with system clipboard via OSC52
