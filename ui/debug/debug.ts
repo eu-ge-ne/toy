@@ -2,11 +2,22 @@ import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 
-export const DebugArea = new Area(0, 0, 15, 4);
+const AREA = new Area(0, 0, 15, 4);
 
 export class Debug extends Control {
   #react_time = 0;
   #editor_render_time = 0;
+
+  override resize(area: Area): void {
+    super.resize(
+      new Area(
+        area.x0 + area.w - AREA.w,
+        area.y0 + area.h - AREA.h,
+        AREA.w,
+        AREA.h,
+      ),
+    );
+  }
 
   render(): void {
     if (!this.enabled) {
