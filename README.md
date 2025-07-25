@@ -36,9 +36,9 @@ brew install eu-ge-ne/tap/toy
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - Integrates with system clipboard via OSC52
 - Utilizes the 256-color terminal palette
+- Renders invisible characters (e.g., spaces, tabs)
 
 - Automatic line wrapping
-- Renders invisible characters (e.g., spaces, tabs)
 - Zen mode (enabled by default)
 
 ## Supported terminal emulators
