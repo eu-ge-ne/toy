@@ -27,7 +27,7 @@ export class App {
 
   zen = true;
   file_path = "";
-  unsaved_changes = true;
+  unsaved_changes = false;
 
   editor = new Editor(editor_graphemes, { multi_line: true });
   header = new Header();
@@ -70,8 +70,10 @@ export class App {
     this.editor.on_render = (x) => this.debug.set_editor_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
 
-    Deno.addSignalListener("SIGWINCH", this.#refresh);
-    this.#refresh();
+    Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
+
+    this.resize();
+    this.render();
 
     await new LoadAction(this).run();
 
@@ -112,18 +114,17 @@ export class App {
     this.ask.render();
   }
 
-  // TODO: refactor
-  #refresh = () => {
-    this.resize();
-
-    vt.write(vt.dummy_req);
-  };
-
   set_file_path(x: string): void {
     this.file_path = x;
 
     this.header.set_file_path(x);
   }
+
+  #on_sigwinch = () => {
+    this.resize();
+
+    vt.write(vt.dummy_req);
+  };
 
   async #on_input(key: Key | string | Uint8Array): Promise<void> {
     if (key instanceof Uint8Array) {
