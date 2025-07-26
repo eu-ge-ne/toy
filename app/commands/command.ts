@@ -1,8 +1,11 @@
 import { Key } from "@lib/input";
+import { PaletteOption } from "@ui/palette";
 
 import { App } from "../app.ts";
 
-export abstract class Command {
+export abstract class Command implements PaletteOption {
+  id = "Command";
+
   abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 
   protected static started = 0;

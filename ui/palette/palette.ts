@@ -4,19 +4,23 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
 
-export class Palette extends Modal<[], void> {
+export interface PaletteOption {
+  id: string;
+}
+
+export class Palette
+  extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   protected size = new Area(0, 0, 60, 10);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
   #options: string[] = [];
   #done!: PromiseWithResolvers<void>;
 
-  async open(): Promise<void> {
+  async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.editor.enabled = true;
-    this.#options.push("Hello");
-    this.#options.push("World");
-    this.#options.push("TODO");
+
+    this.#options = options.map((x) => x.id);
     this.#done = Promise.withResolvers();
 
     this.render();
@@ -25,6 +29,8 @@ export class Palette extends Modal<[], void> {
 
     this.enabled = false;
     this.editor.enabled = false;
+
+    return;
   }
 
   on_esc_key(): void {

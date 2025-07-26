@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class PaletteCommand extends Command {
+  override id = "Palette";
+
   keys = [
     { name: "F1" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }
@@ -14,7 +16,7 @@ export class PaletteCommand extends Command {
 
     editor.enabled = false;
 
-    await palette.open();
+    await palette.open(this.app.commands);
 
     editor.enabled = true;
 

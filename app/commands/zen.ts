@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class ZenCommand extends Command {
+  override id = "Zen";
+
   keys = [
     { name: "F11" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

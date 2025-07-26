@@ -17,7 +17,7 @@ import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
-  #commands = [
+  commands = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -257,7 +257,7 @@ export class App {
       return;
     }
 
-    this.#commands.find((x) => x.match(key))?.run(key);
+    this.commands.find((x) => x.match(key))?.run(key);
   }
 
   #set_file_path(x: string): void {
