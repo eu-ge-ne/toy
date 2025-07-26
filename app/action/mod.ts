@@ -3,7 +3,7 @@ export * from "./2/debug.ts";
 export * from "./2/delete.ts";
 export * from "./2/enter.ts";
 export * from "./2/esc.ts";
-export * from "./2/exit.ts";
+export * from "./exit.ts";
 export * from "./2/invisible.ts";
 export * from "./2/left.ts";
 export * from "./load.ts";
