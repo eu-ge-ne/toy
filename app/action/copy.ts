@@ -1,6 +1,6 @@
 import { copy_to_clipboard, write } from "@lib/vt";
 
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class CopyAction extends Action {
   keys = [
