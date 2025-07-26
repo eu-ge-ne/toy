@@ -17,9 +17,8 @@ export class TextAction extends Action {
 
     const text = typeof key === "string" ? key : key.text!;
 
-    if (editor.enabled) {
-      editor.insert(text);
-      editor.render();
-    }
+    editor.insert(text);
+
+    editor.render();
   }
 }
