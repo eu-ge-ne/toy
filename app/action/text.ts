@@ -8,15 +8,7 @@ export class TextAction extends Action {
   }
 
   protected override async _run(key: Key | string): Promise<void> {
-    const { alert, ask, save_as, editor } = this.app.ui;
-
-    if (alert.enabled) {
-      return;
-    }
-
-    if (ask.enabled) {
-      return;
-    }
+    const { save_as, editor } = this.app.ui;
 
     const text = typeof key === "string" ? key : key.text!;
 
@@ -26,7 +18,9 @@ export class TextAction extends Action {
       return;
     }
 
-    editor.insert(text);
-    editor.render();
+    if (editor.enabled) {
+      editor.insert(text);
+      editor.render();
+    }
   }
 }

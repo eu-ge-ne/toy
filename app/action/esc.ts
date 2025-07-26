@@ -28,7 +28,9 @@ export class EscAction extends Action {
       return;
     }
 
-    editor.on_esc_key();
-    editor.render();
+    if (editor.enabled) {
+      editor.on_esc_key();
+      editor.render();
+    }
   }
 }

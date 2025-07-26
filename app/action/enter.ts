@@ -28,7 +28,9 @@ export class EnterAction extends Action {
       return;
     }
 
-    editor.on_enter_key();
-    editor.render();
+    if (editor.enabled) {
+      editor.on_enter_key();
+      editor.render();
+    }
   }
 }
