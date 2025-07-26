@@ -9,7 +9,7 @@ export class CutCommand extends Command {
   ];
 
   protected override async command(): Promise<void> {
-    const editor = this.app.focused_editor;
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

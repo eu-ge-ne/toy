@@ -144,13 +144,19 @@ export class App {
     palette.render();
   }
 
-  get focused_editor(): Editor | undefined {
-    if (this.ui.save_as.enabled) {
-      return this.ui.save_as.editor;
+  get active_editor(): Editor | undefined {
+    const { palette, save_as, editor } = this.ui;
+
+    if (palette.enabled) {
+      return palette.editor;
     }
 
-    if (this.ui.editor.enabled) {
-      return this.ui.editor;
+    if (save_as.enabled) {
+      return save_as.editor;
+    }
+
+    if (editor.enabled) {
+      return editor;
     }
 
     return undefined;
