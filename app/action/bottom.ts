@@ -18,11 +18,7 @@ export class BottomAction extends Action {
       return;
     }
 
-    const { cursor } = editor;
-
-    const select = Boolean(key.shift);
-
-    cursor.move(Number.MAX_SAFE_INTEGER, 0, select);
+    editor.cursor.move(Number.MAX_SAFE_INTEGER, 0, Boolean(key.shift));
 
     editor.render();
   }
