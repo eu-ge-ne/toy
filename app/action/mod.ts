@@ -11,6 +11,7 @@ export * from "./editor/select-all.ts";
 export * from "./editor/tab.ts";
 export * from "./editor/text.ts";
 export * from "./editor/undo.ts";
+export * from "./editor/up.ts";
 
 export * from "./debug.ts";
 export * from "./exit.ts";

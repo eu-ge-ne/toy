@@ -30,6 +30,7 @@ export class App {
     new act.SelectAllAction(this),
     new act.TabAction(this),
     new act.UndoAction(this),
+    new act.UpAction(this),
 
     new act.DebugAction(this),
     new act.ExitAction(this),

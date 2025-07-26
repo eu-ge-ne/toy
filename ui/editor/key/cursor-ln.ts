@@ -2,23 +2,6 @@ import { Key } from "@lib/input";
 
 import { KeyHandler } from "./handler.ts";
 
-export class Up extends KeyHandler {
-  keys = [
-    { name: "UP" },
-    { name: "UP", shift: true },
-  ];
-
-  handle({ shift }: Key): void {
-    const { opts, cursor } = this.editor;
-
-    if (opts.multi_line) {
-      const select = Boolean(shift);
-
-      cursor.move(-1, 0, select);
-    }
-  }
-}
-
 export class Down extends KeyHandler {
   keys = [
     { name: "DOWN" },
