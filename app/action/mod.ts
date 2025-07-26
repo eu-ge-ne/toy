@@ -6,7 +6,7 @@ export * from "./2/esc.ts";
 export * from "./exit.ts";
 export * from "./invisible.ts";
 export * from "./2/left.ts";
-export * from "./2/load.ts";
+export * from "./load.ts";
 export * from "./2/right.ts";
 export * from "./2/save-as.ts";
 export * from "./2/save.ts";
