@@ -17,6 +17,7 @@ export class SaveAction extends Action {
     await this.app.save();
 
     editor.enabled = true;
+
     editor.reset(false);
     editor.render();
   }
