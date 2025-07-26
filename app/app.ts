@@ -20,6 +20,7 @@ export class App {
     new act.TextAction(this),
     new act.BackspaceAction(this),
     new act.DeleteAction(this),
+    new act.DownAction(this),
     new act.EndAction(this),
     new act.EnterAction(this),
     new act.EscAction(this),
