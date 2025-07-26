@@ -13,16 +13,18 @@ export class Palette
   protected size = new Area(0, 0, 60, 10);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
-  #options: string[] = [];
+  #options: PaletteOption[] = [];
+  #filtered: PaletteOption[] = [];
   #done!: PromiseWithResolvers<void>;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.editor.enabled = true;
 
-    this.#options = options.map((x) => x.id);
+    this.#options = options;
     this.#done = Promise.withResolvers();
 
+    this.#filter();
     this.render();
 
     await this.#done.promise;
@@ -63,25 +65,37 @@ export class Palette
       ...vt.clear(y0, x0, h, w),
     );
 
-    let pos = 0;
+    let i = 0;
 
     for (let y = y0 + 3; y < y1; y += 1) {
-      if (pos === this.#options.length) {
+      if (i === this.#options.length) {
         break;
       }
 
       const space = { len: w - 4 };
-      const line = this.#options[pos]!;
+      const option = this.#filtered[i]!;
 
       vt.write(
         vt.cursor.set(y, x0 + 2),
         PALETTE_COLORS,
-        ...vt.fmt.text(space, line),
+        ...vt.fmt.text(space, option.id),
       );
 
-      pos += 1;
+      i += 1;
     }
 
     this.editor.render();
+  }
+
+  #filter(): void {
+    const text = this.editor.buffer.get_text();
+
+    if (!text) {
+      this.#filtered = this.#options;
+    } else {
+      this.#filtered = this.#options.filter((x) => x.id.includes(text));
+    }
+
+    this.#filtered.sort((a, b) => a.id.localeCompare(b.id));
   }
 }

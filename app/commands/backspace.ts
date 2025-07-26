@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class BackspaceCommand extends Command {
+  override id = "Backspace";
+
   keys = [
     { name: "BACKSPACE" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
