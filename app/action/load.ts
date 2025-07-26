@@ -1,4 +1,4 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class LoadAction extends Action {
   keys = [];
@@ -7,7 +7,6 @@ export class LoadAction extends Action {
     const { args, ui } = this.app;
 
     const path = args._[0];
-
     if (typeof path !== "string") {
       return;
     }
