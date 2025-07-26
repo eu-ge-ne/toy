@@ -27,8 +27,11 @@ export class EscAction extends Action {
     }
 
     if (editor.enabled) {
-      editor.on_esc_key();
-      editor.render();
+      if (editor.opts.multi_line) {
+        editor.view.center();
+
+        editor.render();
+      }
     }
   }
 }

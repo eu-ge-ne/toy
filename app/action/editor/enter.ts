@@ -27,8 +27,11 @@ export class EnterAction extends Action {
     }
 
     if (editor.enabled) {
-      editor.on_enter_key();
-      editor.render();
+      if (editor.opts.multi_line) {
+        editor.insert("\n");
+
+        editor.render();
+      }
     }
   }
 }

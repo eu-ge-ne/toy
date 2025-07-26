@@ -5,6 +5,7 @@ export * from "./editor/esc.ts";
 export * from "./editor/left.ts";
 export * from "./editor/redo.ts";
 export * from "./editor/right.ts";
+export * from "./editor/tab.ts";
 export * from "./editor/text.ts";
 export * from "./editor/undo.ts";
 

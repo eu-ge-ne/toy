@@ -38,8 +38,6 @@ export class Editor extends Control {
     new key.Copy(this),
     new key.Cut(this),
     new key.Paste(this),
-
-    new key.Tab(this),
   ];
 
   line_index_enabled = false;
@@ -159,17 +157,5 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
-  }
-
-  on_esc_key(): void {
-    if (this.opts.multi_line) {
-      this.view.center();
-    }
-  }
-
-  on_enter_key(): void {
-    if (this.opts.multi_line) {
-      this.insert("\n");
-    }
   }
 }
