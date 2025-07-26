@@ -1,9 +1,7 @@
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class LoadAction extends Action {
-  match(): boolean {
-    return false;
-  }
+  keys = [];
 
   protected override async _run(): Promise<void> {
     const { args, ui } = this.app;

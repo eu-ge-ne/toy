@@ -1,9 +1,11 @@
 import { Key } from "@lib/input";
 
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class TextAction extends Action {
-  match(key: Key | string): boolean {
+  keys = [];
+
+  override match(key: Key | string): boolean {
     return typeof key === "string" || typeof key.text === "string";
   }
 

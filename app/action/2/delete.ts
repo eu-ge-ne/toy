@@ -1,11 +1,9 @@
-import { Key } from "@lib/input";
-
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class DeleteAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "DELETE";
-  }
+  keys = [
+    { name: "DELETE" },
+  ];
 
   protected override async _run(): Promise<void> {
     const { save_as, editor } = this.app.ui;

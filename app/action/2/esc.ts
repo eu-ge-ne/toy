@@ -1,11 +1,9 @@
-import { Key } from "@lib/input";
-
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class EscAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "ESC";
-  }
+  keys = [
+    { name: "ESC" },
+  ];
 
   protected override async _run(): Promise<void> {
     const { alert, ask, save_as, editor } = this.app.ui;

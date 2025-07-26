@@ -1,11 +1,9 @@
-import { Key } from "@lib/input";
-
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class ZenAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "F11";
-  }
+  keys = [
+    { name: "F11" },
+  ];
 
   protected override async _run(): Promise<void> {
     const { header, footer, editor } = this.app.ui;

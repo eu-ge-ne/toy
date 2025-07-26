@@ -3,9 +3,10 @@ import { Key } from "@lib/input";
 import { Action } from "../action.ts";
 
 export class LeftAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "LEFT";
-  }
+  keys = [
+    { name: "LEFT" },
+    { name: "LEFT", shift: true },
+  ];
 
   protected override async _run(key: Key): Promise<void> {
     const editor = this.app.focused_editor;

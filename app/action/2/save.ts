@@ -1,11 +1,9 @@
-import { Key } from "@lib/input";
-
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class SaveAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "F2";
-  }
+  keys = [
+    { name: "F2" },
+  ];
 
   protected override async _run(): Promise<void> {
     const { file_path, ui, save_as_action } = this.app;

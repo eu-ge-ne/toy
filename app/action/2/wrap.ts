@@ -1,11 +1,9 @@
-import { Key } from "@lib/input";
-
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class WrapAction extends Action {
-  match(key: Key | string): boolean {
-    return typeof key !== "string" && key.name === "F6";
-  }
+  keys = [
+    { name: "F6" },
+  ];
 
   protected override async _run(): Promise<void> {
     const { editor } = this.app.ui;
