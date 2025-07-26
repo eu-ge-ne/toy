@@ -81,10 +81,7 @@ export class Palette
       return;
     }
 
-    let h = 3;
-    if (this.#filtered.length > 0) {
-      h += Math.min(this.#filtered.length, LIST_SIZE) + 1;
-    }
+    const h = 3 + Math.min(this.#filtered.length, LIST_SIZE);
     this.size = new Area(0, 0, 60, h);
     super.resize(this.#parent_area);
     this.editor.resize(
@@ -101,7 +98,7 @@ export class Palette
 
     let i = 0;
 
-    for (let y = this.area.y0 + 3; y < this.area.y1; y += 1) {
+    for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
       if (i === LIST_SIZE) {
         break;
       }
