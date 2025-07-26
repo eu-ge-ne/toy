@@ -1,5 +1,5 @@
 export * from "./2/backspace.ts";
-export * from "./2/debug.ts";
+export * from "./debug.ts";
 export * from "./2/delete.ts";
 export * from "./2/enter.ts";
 export * from "./2/esc.ts";
