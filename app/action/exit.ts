@@ -1,5 +1,5 @@
-import { Action } from "../action.ts";
-import { SaveAction } from "./save.ts";
+import { Action } from "./action.ts";
+import { SaveAction } from "./2/save.ts";
 
 export class ExitAction extends Action {
   keys = [

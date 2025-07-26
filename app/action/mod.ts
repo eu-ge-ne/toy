@@ -1,10 +1,9 @@
-
 export * from "./2/backspace.ts";
 export * from "./2/debug.ts";
 export * from "./2/delete.ts";
 export * from "./2/enter.ts";
 export * from "./2/esc.ts";
-export * from "./2/exit.ts";
+export * from "./exit.ts";
 export * from "./2/invisible.ts";
 export * from "./2/left.ts";
 export * from "./2/load.ts";
@@ -13,4 +12,4 @@ export * from "./2/save-as.ts";
 export * from "./2/save.ts";
 export * from "./2/text.ts";
 export * from "./2/wrap.ts";
-export * from "./2/zen.ts";
+export * from "./zen.ts";
