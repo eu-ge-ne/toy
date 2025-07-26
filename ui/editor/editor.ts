@@ -33,8 +33,6 @@ export class Editor extends Control {
     new key.PageDown(this),
     new key.Top(this),
     new key.Bottom(this),
-
-    new key.SelectAll(this),
     new key.Copy(this),
     new key.Cut(this),
     new key.Paste(this),

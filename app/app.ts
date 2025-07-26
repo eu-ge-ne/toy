@@ -25,6 +25,7 @@ export class App {
     new act.LeftAction(this),
     new act.RedoAction(this),
     new act.RightAction(this),
+    new act.SelectAllAction(this),
     new act.TabAction(this),
     new act.UndoAction(this),
 
