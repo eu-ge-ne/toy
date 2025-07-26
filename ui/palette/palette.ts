@@ -13,6 +13,7 @@ export class Palette extends Modal<[], void> {
 
   async open(): Promise<void> {
     this.enabled = true;
+    this.editor.enabled = true;
     this.#options.push("Hello");
     this.#options.push("World");
     this.#options.push("TODO");
@@ -23,6 +24,7 @@ export class Palette extends Modal<[], void> {
     await this.#done.promise;
 
     this.enabled = false;
+    this.editor.enabled = false;
   }
 
   on_esc_key(): void {
