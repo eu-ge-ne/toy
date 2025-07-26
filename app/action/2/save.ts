@@ -1,4 +1,4 @@
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class SaveAction extends Action {
   keys = [
@@ -6,12 +6,11 @@ export class SaveAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { actions_started, file_path, ui, save_as_action } = this.app;
-    /*
-    if (actions_started > 1) {
+    const { file_path, ui, save_as_action } = this.app;
+
+    if (!ui.editor.enabled) {
       return;
     }
-    */
 
     if (!file_path) {
       await save_as_action.run();

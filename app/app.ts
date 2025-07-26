@@ -53,8 +53,6 @@ export class App {
     save_as: new SaveAs(),
   };
 
-  actions_started = 0;
-
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
       console.log(`toy ${deno.version}`);

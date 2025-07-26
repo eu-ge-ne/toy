@@ -1,4 +1,4 @@
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class InvisibleAction extends Action {
   keys = [
@@ -6,12 +6,11 @@ export class InvisibleAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { actions_started } = this.app;
-    if (actions_started > 1) {
+    const { editor } = this.app.ui;
+
+    if (!editor.enabled) {
       return;
     }
-
-    const { editor } = this.app.ui;
 
     editor.invisible_enabled = !editor.invisible_enabled;
 
