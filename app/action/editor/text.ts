@@ -9,7 +9,7 @@ export class TextAction extends Action {
     return typeof key === "string" || typeof key.text === "string";
   }
 
-  protected override async _run(key: Key | string): Promise<void> {
+  protected override async action(key: Key | string): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

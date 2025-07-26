@@ -8,7 +8,7 @@ export class UpAction extends Action {
     { name: "UP", shift: true },
   ];
 
-  protected override async _run(key: Key): Promise<void> {
+  protected override async action(key: Key): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

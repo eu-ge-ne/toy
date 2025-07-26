@@ -25,12 +25,12 @@ export abstract class Action {
 
     Action.started += 1;
 
-    await this._run(key);
+    await this.action(key);
 
     Action.started -= 1;
 
     this.app.ui.debug.set_action_time(Date.now() - started);
   }
 
-  protected abstract _run(key?: Key | string): Promise<void>;
+  protected abstract action(key?: Key | string): Promise<void>;
 }

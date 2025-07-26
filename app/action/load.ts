@@ -3,7 +3,7 @@ import { Action } from "./action.ts";
 export class LoadAction extends Action {
   keys = [];
 
-  protected override async _run(): Promise<void> {
+  protected override async action(): Promise<void> {
     const { args, ui } = this.app;
 
     const path = args._[0];

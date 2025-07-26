@@ -5,7 +5,7 @@ export class EscAction extends Action {
     { name: "ESC" },
   ];
 
-  protected override async _run(): Promise<void> {
+  protected override async action(): Promise<void> {
     const { alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {

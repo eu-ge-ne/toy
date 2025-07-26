@@ -5,7 +5,7 @@ export class DebugAction extends Action {
     { name: "F9" },
   ];
 
-  protected override async _run(): Promise<void> {
+  protected override async action(): Promise<void> {
     if (Action.started > 1) {
       return;
     }

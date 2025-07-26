@@ -5,7 +5,7 @@ export class BackspaceAction extends Action {
     { name: "BACKSPACE" },
   ];
 
-  protected override async _run(): Promise<void> {
+  protected override async action(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

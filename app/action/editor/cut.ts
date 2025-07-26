@@ -8,7 +8,7 @@ export class CutAction extends Action {
     { name: "x", super: true },
   ];
 
-  protected override async _run(): Promise<void> {
+  protected override async action(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;
