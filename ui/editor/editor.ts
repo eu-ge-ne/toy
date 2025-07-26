@@ -39,9 +39,6 @@ export class Editor extends Control {
     new key.Cut(this),
     new key.Paste(this),
 
-    new key.Undo(this),
-    new key.Redo(this),
-
     new key.Tab(this),
   ];
 

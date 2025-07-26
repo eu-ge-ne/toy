@@ -23,7 +23,9 @@ export class App {
     new act.EnterAction(this),
     new act.EscAction(this),
     new act.LeftAction(this),
+    new act.RedoAction(this),
     new act.RightAction(this),
+    new act.UndoAction(this),
 
     new act.DebugAction(this),
     new act.ExitAction(this),
