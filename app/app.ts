@@ -19,6 +19,7 @@ export class App {
   #actions = [
     new act.TextAction(this),
     new act.BackspaceAction(this),
+    new act.BottomAction(this),
     new act.DeleteAction(this),
     new act.DownAction(this),
     new act.EndAction(this),
@@ -32,6 +33,7 @@ export class App {
     new act.RightAction(this),
     new act.SelectAllAction(this),
     new act.TabAction(this),
+    new act.TopAction(this),
     new act.UndoAction(this),
     new act.UpAction(this),
 
