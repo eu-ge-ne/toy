@@ -1,3 +1,4 @@
+export * from "./backspace.ts";
 export * from "./debug.ts";
 export * from "./delete.ts";
 export * from "./enter.ts";
