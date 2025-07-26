@@ -18,11 +18,7 @@ export class UpAction extends Action {
       return;
     }
 
-    const { cursor } = editor;
-
-    const select = Boolean(key.shift);
-
-    cursor.move(-1, 0, select);
+    editor.cursor.move(-1, 0, Boolean(key.shift));
 
     editor.render();
   }
