@@ -25,8 +25,6 @@ export class Editor extends Control {
   readonly view = new View(this);
 
   #handlers: key.KeyHandler[] = [
-    new key.PageUp(this),
-    new key.PageDown(this),
     new key.Top(this),
     new key.Bottom(this),
     new key.Copy(this),

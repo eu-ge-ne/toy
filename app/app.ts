@@ -26,6 +26,8 @@ export class App {
     new act.EscAction(this),
     new act.HomeAction(this),
     new act.LeftAction(this),
+    new act.PageDownAction(this),
+    new act.PageUpAction(this),
     new act.RedoAction(this),
     new act.RightAction(this),
     new act.SelectAllAction(this),

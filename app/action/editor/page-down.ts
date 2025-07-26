@@ -1,0 +1,29 @@
+import { Key } from "@lib/input";
+
+import { Action } from "../action.ts";
+
+export class PageDownAction extends Action {
+  keys = [
+    { name: "PAGE_DOWN" },
+    { name: "PAGE_DOWN", shift: true },
+  ];
+
+  protected override async _run(key: Key): Promise<void> {
+    const editor = this.app.focused_editor;
+    if (!editor?.enabled) {
+      return;
+    }
+
+    if (!editor.opts.multi_line) {
+      return;
+    }
+
+    const { cursor, area } = editor;
+
+    const select = Boolean(key.shift);
+
+    cursor.move(area.h, 0, select);
+
+    editor.render();
+  }
+}

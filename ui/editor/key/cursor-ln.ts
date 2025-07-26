@@ -2,40 +2,6 @@ import { Key } from "@lib/input";
 
 import { KeyHandler } from "./handler.ts";
 
-export class PageUp extends KeyHandler {
-  keys = [
-    { name: "PAGE_UP" },
-    { name: "PAGE_UP", shift: true },
-  ];
-
-  handle({ shift }: Key): void {
-    const { opts, area, cursor } = this.editor;
-
-    if (opts.multi_line) {
-      const select = Boolean(shift);
-
-      cursor.move(-area.h, 0, select);
-    }
-  }
-}
-
-export class PageDown extends KeyHandler {
-  keys = [
-    { name: "PAGE_DOWN" },
-    { name: "PAGE_DOWN", shift: true },
-  ];
-
-  handle({ shift }: Key): void {
-    const { opts, area, cursor } = this.editor;
-
-    if (opts.multi_line) {
-      const select = Boolean(shift);
-
-      cursor.move(area.h, 0, select);
-    }
-  }
-}
-
 export class Top extends KeyHandler {
   keys = [
     { name: "UP", super: true },
