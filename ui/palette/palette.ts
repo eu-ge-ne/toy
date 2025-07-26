@@ -4,6 +4,8 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
 
+const LIST_SIZE = 10;
+
 export interface PaletteOption {
   name: string;
 }
@@ -60,7 +62,7 @@ export class Palette
 
     let h = 3;
     if (this.#filtered.length > 0) {
-      h += this.#filtered.length + 1;
+      h += Math.min(this.#filtered.length, LIST_SIZE) + 1;
     }
     this.size = new Area(0, 0, 60, h);
     super.resize(this.#parent_area);
@@ -79,6 +81,9 @@ export class Palette
     let i = 0;
 
     for (let y = this.area.y0 + 3; y < this.area.y1; y += 1) {
+      if (i === LIST_SIZE) {
+        break;
+      }
       const option = this.#filtered[i];
       if (!option) {
         break;
