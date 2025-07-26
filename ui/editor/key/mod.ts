@@ -7,4 +7,3 @@ export * from "./clipboard.ts";
 export * from "./undo-redo.ts";
 
 export * from "./tab.ts";
-export * from "./delete.ts";

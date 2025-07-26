@@ -45,8 +45,6 @@ export class Editor extends Control {
     new key.Redo(this),
 
     new key.Tab(this),
-    new key.Backspace(this),
-    new key.Delete(this),
   ];
 
   line_index_enabled = false;

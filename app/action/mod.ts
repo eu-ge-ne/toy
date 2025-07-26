@@ -1,4 +1,5 @@
 export * from "./debug.ts";
+export * from "./delete.ts";
 export * from "./enter.ts";
 export * from "./esc.ts";
 export * from "./exit.ts";

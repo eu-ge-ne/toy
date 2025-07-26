@@ -19,7 +19,9 @@ export class App {
   readonly save_as_action = new act.SaveAsAction(this);
 
   #actions = [
+    new act.BackspaceAction(this),
     new act.DebugAction(this),
+    new act.DeleteAction(this),
     new act.EnterAction(this),
     new act.EscAction(this),
     new act.ExitAction(this),
