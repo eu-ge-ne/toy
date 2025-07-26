@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class InvisibleCommand extends Command {
+  override name = "Invisible";
+
   keys = [
     { name: "F5" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

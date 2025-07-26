@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class EscCommand extends Command {
+  override name = "Esc";
+
   keys = [
     { name: "ESC" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     const { palette, alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {

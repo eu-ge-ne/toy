@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class ExitCommand extends Command {
+  override name = "Exit";
+
   keys = [
     { name: "F10" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

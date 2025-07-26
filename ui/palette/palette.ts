@@ -2,7 +2,7 @@ import { GraphemePool } from "@lib/grapheme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
-import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
+import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 
 const LIST_SIZE = 10;
 
@@ -15,10 +15,11 @@ export class Palette
   protected size = new Area(0, 0, 0, 0);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #done!: PromiseWithResolvers<void>;
   #parent_area!: Area;
   #options: PaletteOption[] = [];
   #filtered: PaletteOption[] = [];
-  #done!: PromiseWithResolvers<void>;
+  #selected_index = -1;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
     this.enabled = true;
@@ -93,9 +94,11 @@ export class Palette
 
       vt.write(
         vt.cursor.set(y, this.area.x0 + 2),
-        PALETTE_COLORS,
+        i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
         ...vt.fmt.text(space, option.name),
       );
+
+      vt.write(vt.fmt.space(space, space.len));
 
       i += 1;
     }
@@ -115,5 +118,7 @@ export class Palette
     }
 
     this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+    this.#selected_index = this.#filtered.length === 0 ? -1 : 0;
   }
 }

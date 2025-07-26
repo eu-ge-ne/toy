@@ -3,6 +3,8 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class HomeCommand extends Command {
+  override name = "Home";
+
   keys = [
     { name: "HOME" },
     { name: "LEFT", super: true },
@@ -11,7 +13,7 @@ export class HomeCommand extends Command {
     { name: "LEFT", super: true, shift: true },
   ];
 
-  protected override async command(key: Key): Promise<void> {
+  async command(key: Key): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
