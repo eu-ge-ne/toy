@@ -8,25 +8,25 @@ import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
-  #editor = new Editor(new GraphemePool(), { multi_line: false });
+  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
   #done!: PromiseWithResolvers<string>;
 
   async open(file_path: string): Promise<string> {
-    const { buffer } = this.#editor;
+    const { buffer } = this.editor;
 
     this.enabled = true;
-    this.#editor.enabled = true;
+    this.editor.enabled = true;
     this.#done = Promise.withResolvers();
 
     buffer.set_text(file_path);
-    this.#editor.reset(true);
+    this.editor.reset(true);
 
     this.render();
 
     const result = await this.#done.promise;
 
     this.enabled = false;
-    this.#editor.enabled = false;
+    this.editor.enabled = false;
 
     return result;
   }
@@ -36,7 +36,7 @@ export class SaveAs extends Modal<[string], string> {
   }
 
   on_enter_key(): void {
-    const path = this.#editor.buffer.get_text();
+    const path = this.editor.buffer.get_text();
     if (path.length > 0) {
       this.#done.resolve(path);
       return;
@@ -48,7 +48,7 @@ export class SaveAs extends Modal<[string], string> {
   override resize(area: Area): void {
     super.resize(area);
 
-    this.#editor.resize(
+    this.editor.resize(
       new Area(this.area.x0 + 2, this.area.y0 + 4, this.area.w - 4, 1),
     );
   }
@@ -73,6 +73,6 @@ export class SaveAs extends Modal<[string], string> {
       vt.esu,
     );
 
-    this.#editor.render();
+    this.editor.render();
   }
 }

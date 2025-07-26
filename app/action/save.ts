@@ -1,7 +1,6 @@
 import { Key } from "@lib/input";
 
 import { Action } from "./action.ts";
-import { SaveAsAction } from "./save-as.ts";
 
 export class SaveAction extends Action {
   match(key: Key | string): boolean {
@@ -9,10 +8,10 @@ export class SaveAction extends Action {
   }
 
   protected override async _run(): Promise<void> {
-    const { file_path, ui } = this.app;
+    const { file_path, ui, save_as_action } = this.app;
 
     if (!file_path) {
-      await new SaveAsAction(this.app).run();
+      await save_as_action.run();
       return;
     }
 
@@ -31,7 +30,7 @@ export class SaveAction extends Action {
 
       this.app.render();
 
-      await new SaveAsAction(this.app).run();
+      await save_as_action.run();
     }
   }
 }

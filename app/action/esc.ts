@@ -8,8 +8,7 @@ export class EscAction extends Action {
   }
 
   protected override async _run(): Promise<void> {
-    const { alert, ask, save_as } = this.app.ui;
-    const { focused_editor } = this.app;
+    const { alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {
       alert.on_esc_key();
@@ -29,9 +28,7 @@ export class EscAction extends Action {
       return;
     }
 
-    if (focused_editor) {
-      focused_editor.on_esc_key();
-      focused_editor.render();
-    }
+    editor.on_esc_key();
+    editor.render();
   }
 }
