@@ -1,12 +1,14 @@
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
+  override name = "Paste";
+
   keys = [
     { name: "v", ctrl: true },
     { name: "v", super: true },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
