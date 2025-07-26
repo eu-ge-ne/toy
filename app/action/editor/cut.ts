@@ -2,10 +2,10 @@ import { copy_to_clipboard, write } from "@lib/vt";
 
 import { Action } from "../action.ts";
 
-export class CopyAction extends Action {
+export class CutAction extends Action {
   keys = [
-    { name: "c", ctrl: true },
-    { name: "c", super: true },
+    { name: "x", ctrl: true },
+    { name: "x", super: true },
   ];
 
   protected override async _run(): Promise<void> {
@@ -19,12 +19,14 @@ export class CopyAction extends Action {
     if (cursor.selecting) {
       editor.clipboard = buffer.copy(cursor.from, cursor.to);
 
-      cursor.set(cursor.ln, cursor.col, false);
+      editor.delete_selection();
     } else {
       editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
         cursor.ln,
         cursor.col,
       ]);
+
+      editor.delete_char();
     }
 
     write(copy_to_clipboard(editor.clipboard));
