@@ -1,6 +1,6 @@
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { ALERT_BG, ALERT_COLORS } from "@ui/theme";
+import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
 
 export class Palette extends Modal<[], void> {
   protected size = new Area(0, 0, 60, 10);
@@ -38,7 +38,7 @@ export class Palette extends Modal<[], void> {
     vt.write(
       vt.bsu,
       vt.cursor.hide,
-      ALERT_BG,
+      PALETTE_BG,
       ...vt.clear(y0, x0, h, w),
     );
 
@@ -56,7 +56,7 @@ export class Palette extends Modal<[], void> {
 
       vt.write(
         vt.cursor.set(y, x0 + 2),
-        ALERT_COLORS,
+        PALETTE_COLORS,
         ...vt.fmt.text(space, line),
       );
     }

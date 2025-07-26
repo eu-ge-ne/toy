@@ -5,3 +5,4 @@ export * from "./editor.ts";
 export * from "./footer.ts";
 export * from "./header.ts";
 export * from "./save-as.ts";
+export * from "./palette.ts";
