@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class PasteAction extends Action {
+export class PasteCommand extends Command {
   keys = [
     { name: "v", ctrl: true },
     { name: "v", super: true },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

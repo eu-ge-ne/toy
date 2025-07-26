@@ -1,14 +1,14 @@
 import { Key } from "@lib/input";
 
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class DownAction extends Action {
+export class DownCommand extends Command {
   keys = [
     { name: "DOWN" },
     { name: "DOWN", shift: true },
   ];
 
-  protected override async action(key: Key): Promise<void> {
+  protected override async command(key: Key): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

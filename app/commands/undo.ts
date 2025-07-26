@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class UndoAction extends Action {
+export class UndoCommand extends Command {
   keys = [
     { name: "z", ctrl: true },
     { name: "z", super: true },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class ZenAction extends Action {
+export class ZenCommand extends Command {
   keys = [
     { name: "F11" },
   ];
 
-  protected override async action(): Promise<void> {
-    if (Action.started > 1) {
+  protected override async command(): Promise<void> {
+    if (Command.started > 1) {
       return;
     }
 

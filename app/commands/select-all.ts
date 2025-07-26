@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class SelectAllAction extends Action {
+export class SelectAllCommand extends Command {
   keys = [
     { name: "a", ctrl: true },
     { name: "a", super: true },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

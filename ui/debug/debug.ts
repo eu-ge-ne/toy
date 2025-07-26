@@ -5,7 +5,7 @@ import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 const AREA = new Area(0, 0, 15, 4);
 
 export class Debug extends Control {
-  #action_time = 0;
+  #command_time = 0;
   #render_time = 0;
 
   override resize(area: Area): void {
@@ -35,8 +35,8 @@ export class Debug extends Control {
       vt.cursor.set(y0 + 1, x0 + 1),
       ...vt.fmt.text(
         { len: w - 1 },
-        "Action: ",
-        this.#action_time.toString(),
+        "Command: ",
+        this.#command_time.toString(),
         " ms",
       ),
       vt.cursor.set(y0 + 2, x0 + 1),
@@ -51,9 +51,9 @@ export class Debug extends Control {
     );
   }
 
-  set_action_time(x: number): void {
+  set_command_time(x: number): void {
     if (this.enabled) {
-      this.#action_time = x;
+      this.#command_time = x;
 
       this.render();
     }

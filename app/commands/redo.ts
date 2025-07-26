@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class RedoAction extends Action {
+export class RedoCommand extends Command {
   keys = [
     { name: "y", ctrl: true },
     { name: "y", super: true },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

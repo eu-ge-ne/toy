@@ -1,11 +1,11 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class BackspaceAction extends Action {
+export class DeleteCommand extends Command {
   keys = [
-    { name: "BACKSPACE" },
+    { name: "DELETE" },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;
@@ -14,7 +14,7 @@ export class BackspaceAction extends Action {
     if (editor.cursor.selecting) {
       editor.delete_selection();
     } else {
-      editor.backspace();
+      editor.delete_char();
     }
 
     editor.render();

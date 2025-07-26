@@ -2,7 +2,7 @@ import { Key } from "@lib/input";
 
 import { App } from "../app.ts";
 
-export abstract class Action {
+export abstract class Command {
   abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 
   protected static started = 0;
@@ -21,14 +21,14 @@ export abstract class Action {
   async run(key?: Key | string): Promise<void> {
     const started = Date.now();
 
-    Action.started += 1;
+    Command.started += 1;
 
-    await this.action(key);
+    await this.command(key);
 
-    Action.started -= 1;
+    Command.started -= 1;
 
-    this.app.ui.debug.set_action_time(Date.now() - started);
+    this.app.ui.debug.set_command_time(Date.now() - started);
   }
 
-  protected abstract action(key?: Key | string): Promise<void>;
+  protected abstract command(key?: Key | string): Promise<void>;
 }
