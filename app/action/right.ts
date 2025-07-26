@@ -15,7 +15,6 @@ export class RightAction extends Action {
     }
 
     const { cursor, buffer } = editor;
-
     const select = Boolean(key.shift);
 
     if (!cursor.move(0, 1, select) && cursor.ln < (buffer.ln_count - 1)) {
