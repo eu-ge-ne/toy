@@ -26,12 +26,9 @@ export class EscAction extends Action {
       return;
     }
 
-    if (editor.enabled) {
-      if (editor.opts.multi_line) {
-        editor.view.center();
-
-        editor.render();
-      }
+    if (editor.enabled && editor.opts.multi_line) {
+      editor.view.center();
+      editor.render();
     }
   }
 }
