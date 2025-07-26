@@ -12,7 +12,6 @@ export * from "./exit.ts";
 export * from "./home.ts";
 export * from "./invisible.ts";
 export * from "./left.ts";
-export * from "./load.ts";
 export * from "./page-down.ts";
 export * from "./page-up.ts";
 export * from "./paste.ts";

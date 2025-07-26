@@ -89,7 +89,7 @@ export class App {
     this.resize();
     this.render();
 
-    await new act.LoadAction(this).run();
+    await this.#load();
 
     for await (const data of read_input()) {
       await this.#on_input(data);
@@ -138,12 +138,6 @@ export class App {
     ask.render();
   }
 
-  set_file_path(x: string): void {
-    this.file_path = x;
-
-    this.ui.header.set_file_path(x);
-  }
-
   get focused_editor(): Editor | undefined {
     if (this.ui.save_as.enabled) {
       return this.ui.save_as.editor;
@@ -179,6 +173,39 @@ export class App {
     }
   }
 
+  async #load(): Promise<void> {
+    const path = this.args._[0];
+    if (typeof path !== "string") {
+      return;
+    }
+
+    const { editor, alert } = this.ui;
+
+    try {
+      using file = await Deno.open(path, { read: true });
+
+      const info = await file.stat();
+      if (!info.isFile) {
+        throw new Error(`${path} is not a file`);
+      }
+
+      await editor.buffer.load(file);
+
+      editor.reset(true);
+      editor.render();
+
+      this.#set_file_path(path);
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        this.#set_file_path(path);
+      } else {
+        await alert.open(err);
+
+        this.stop();
+      }
+    }
+  }
+
   async #save_as(): Promise<void> {
     const { save_as, editor, alert } = this.ui;
 
@@ -197,7 +224,7 @@ export class App {
 
         await editor.buffer.save(file);
 
-        this.set_file_path(path);
+        this.#set_file_path(path);
 
         return;
       } catch (err) {
@@ -219,5 +246,11 @@ export class App {
     }
 
     this.#actions.find((x) => x.match(key))?.run(key);
+  }
+
+  #set_file_path(x: string): void {
+    this.file_path = x;
+
+    this.ui.header.set_file_path(x);
   }
 }
