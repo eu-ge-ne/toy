@@ -99,21 +99,9 @@ export class Editor extends Control {
     const started = Date.now();
 
     try {
-      if (typeof key === "string") {
-        this.insert(key);
-        this.render();
-        return;
-      }
-
-      if (typeof key.text === "string") {
-        this.insert(key.text);
-        this.render();
-        return;
-      }
-
-      const handler = this.#handlers.find((x) => x.match(key));
+      const handler = this.#handlers.find((x) => x.match(key as Key));
       if (handler) {
-        handler.handle(key);
+        handler.handle(key as Key);
         this.render();
       }
     } finally {

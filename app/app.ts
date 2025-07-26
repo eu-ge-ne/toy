@@ -26,6 +26,7 @@ export class App {
     new act.InvisibleAction(this),
     this.save_as_action,
     new act.SaveAction(this),
+    new act.TextAction(this),
     new act.WrapAction(this),
     new act.ZenAction(this),
   ];
@@ -143,7 +144,7 @@ export class App {
 
     const act = this.#actions.find((x) => x.match(key));
     if (act) {
-      act.run();
+      act.run(key);
       return;
     }
 
