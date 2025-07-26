@@ -1,7 +1,15 @@
 import { Action } from "./action.ts";
 
 export class ZenAction extends Action {
-  protected override async _run(): Promise<void> {
+  keys = [
+    { name: "F11" },
+  ];
+
+  protected override async action(): Promise<void> {
+    if (Action.started > 1) {
+      return;
+    }
+
     const { header, footer, editor } = this.app.ui;
 
     this.app.zen = !this.app.zen;
@@ -11,5 +19,6 @@ export class ZenAction extends Action {
     editor.line_index_enabled = !this.app.zen;
 
     this.app.resize();
+    this.app.render();
   }
 }

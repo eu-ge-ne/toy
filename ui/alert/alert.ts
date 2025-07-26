@@ -1,4 +1,3 @@
-import { Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { ALERT_BG, ALERT_COLORS } from "@ui/theme";
@@ -21,15 +20,12 @@ export class Alert extends Modal<[unknown], void> {
     this.enabled = false;
   }
 
-  on_key(key: Key | string): void {
-    if (typeof key !== "string") {
-      switch (key.name) {
-        case "ESC":
-        case "ENTER":
-          this.#done.resolve();
-          break;
-      }
-    }
+  on_esc_key(): void {
+    this.#done.resolve();
+  }
+
+  on_enter_key(): void {
+    this.#done.resolve();
   }
 
   render(): void {

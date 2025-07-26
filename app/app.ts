@@ -12,17 +12,42 @@ import { Header } from "@ui/header";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import { DebugAction } from "./debug.ts";
-import { exit, ExitAction } from "./exit.ts";
+import * as act from "./action/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
-import { InvisibleAction } from "./invisible.ts";
-import { LoadAction } from "./load.ts";
-import { SaveAsAction } from "./save-as.ts";
-import { SaveAction } from "./save.ts";
-import { WrapAction } from "./wrap.ts";
-import { ZenAction } from "./zen.ts";
 
 export class App {
+  #actions = [
+    new act.TextAction(this),
+
+    new act.BackspaceAction(this),
+    new act.BottomAction(this),
+    new act.CopyAction(this),
+    new act.CutAction(this),
+    new act.DebugAction(this),
+    new act.DeleteAction(this),
+    new act.DownAction(this),
+    new act.EndAction(this),
+    new act.EnterAction(this),
+    new act.EscAction(this),
+    new act.ExitAction(this),
+    new act.HomeAction(this),
+    new act.InvisibleAction(this),
+    new act.LeftAction(this),
+    new act.PageDownAction(this),
+    new act.PageUpAction(this),
+    new act.PasteAction(this),
+    new act.RedoAction(this),
+    new act.RightAction(this),
+    new act.SaveAction(this),
+    new act.SelectAllAction(this),
+    new act.TabAction(this),
+    new act.TopAction(this),
+    new act.UndoAction(this),
+    new act.UpAction(this),
+    new act.WrapAction(this),
+    new act.ZenAction(this),
+  ];
+
   args = parseArgs(Deno.args);
 
   zen = true;
@@ -39,18 +64,6 @@ export class App {
     save_as: new SaveAs(),
   };
 
-  action = {
-    exit: new ExitAction(this),
-    debug: new DebugAction(this),
-    save_as: new SaveAsAction(this),
-    save: new SaveAction(this),
-    wrap: new WrapAction(this),
-    invisible: new InvisibleAction(this),
-    zen: new ZenAction(this),
-  };
-
-  actions_started = 0;
-
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
       console.log(`toy ${deno.version}`);
@@ -65,24 +78,29 @@ export class App {
       this.changes = x > 0;
       this.ui.header.set_unsaved_flag(x > 0);
     };
-    this.ui.editor.on_react = (x) => this.ui.debug.set_react_time(x);
-    this.ui.editor.on_render = (x) => this.ui.debug.set_editor_render_time(x);
+    this.ui.editor.on_render = (x) => this.ui.debug.set_render_time(x);
     this.ui.editor.on_cursor = (x) => this.ui.footer.set_cursor_status(x);
     this.ui.editor.enabled = true;
 
     vt.init();
-    globalThis.addEventListener("unload", exit);
+    globalThis.addEventListener("unload", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
     this.resize();
     this.render();
 
-    await new LoadAction(this).run();
+    await this.#load();
 
     for await (const data of read_input()) {
       await this.#on_input(data);
     }
   }
+
+  stop = () => {
+    vt.restore();
+
+    Deno.exit(0);
+  };
 
   resize(): void {
     const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
@@ -120,10 +138,99 @@ export class App {
     ask.render();
   }
 
-  set_file_path(x: string): void {
-    this.file_path = x;
+  get focused_editor(): Editor | undefined {
+    if (this.ui.save_as.enabled) {
+      return this.ui.save_as.editor;
+    }
 
-    this.ui.header.set_file_path(x);
+    if (this.ui.editor.enabled) {
+      return this.ui.editor;
+    }
+
+    return undefined;
+  }
+
+  async save(): Promise<void> {
+    const { editor, alert } = this.ui;
+
+    if (!this.file_path) {
+      await this.#save_as();
+      return;
+    }
+
+    try {
+      using file = await Deno.open(this.file_path, {
+        create: true,
+        write: true,
+        truncate: true,
+      });
+
+      await editor.buffer.save(file);
+    } catch (err) {
+      await alert.open(err);
+
+      await this.#save_as();
+    }
+  }
+
+  async #load(): Promise<void> {
+    const path = this.args._[0];
+    if (typeof path !== "string") {
+      return;
+    }
+
+    const { editor, alert } = this.ui;
+
+    try {
+      using file = await Deno.open(path, { read: true });
+
+      const info = await file.stat();
+      if (!info.isFile) {
+        throw new Error(`${path} is not a file`);
+      }
+
+      await editor.buffer.load(file);
+
+      editor.reset(true);
+      editor.render();
+
+      this.#set_file_path(path);
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        this.#set_file_path(path);
+      } else {
+        await alert.open(err);
+
+        this.stop();
+      }
+    }
+  }
+
+  async #save_as(): Promise<void> {
+    const { save_as, editor, alert } = this.ui;
+
+    while (true) {
+      const path = await save_as.open(this.file_path);
+      if (!path) {
+        return;
+      }
+
+      try {
+        using file = await Deno.open(path, {
+          create: true,
+          write: true,
+          truncate: true,
+        });
+
+        await editor.buffer.save(file);
+
+        this.#set_file_path(path);
+
+        return;
+      } catch (err) {
+        await alert.open(err);
+      }
+    }
   }
 
   #on_sigwinch = () => {
@@ -138,52 +245,12 @@ export class App {
       return;
     }
 
-    const { ui, action, actions_started } = this;
+    this.#actions.find((x) => x.match(key))?.run(key);
+  }
 
-    if (ui.alert.enabled) {
-      ui.alert.on_key(key);
-      return;
-    }
+  #set_file_path(x: string): void {
+    this.file_path = x;
 
-    if (ui.ask.enabled) {
-      ui.ask.on_key(key);
-      return;
-    }
-
-    if (ui.save_as.enabled) {
-      ui.save_as.on_key(key);
-      return;
-    }
-
-    if (actions_started > 0) {
-      return;
-    }
-
-    if (typeof key !== "string") {
-      switch (key.name) {
-        case "F2":
-          action.save.run();
-          return;
-        case "F5":
-          action.invisible.run();
-          return;
-        case "F6":
-          action.wrap.run();
-          return;
-        case "F9":
-          action.debug.run();
-          return;
-        case "F10":
-          action.exit.run();
-          return;
-        case "F11":
-          action.zen.run();
-          return;
-      }
-    }
-
-    if (ui.editor.enabled) {
-      ui.editor.on_key(key);
-    }
+    this.ui.header.set_file_path(x);
   }
 }

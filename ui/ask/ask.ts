@@ -1,4 +1,3 @@
-import { Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { ASK_BG, ASK_COLORS } from "@ui/theme";
@@ -23,17 +22,12 @@ export class Ask extends Modal<[string], boolean> {
     return result;
   }
 
-  on_key(key: Key | string): void {
-    if (typeof key !== "string") {
-      switch (key.name) {
-        case "ESC":
-          this.#done.resolve(false);
-          break;
-        case "ENTER":
-          this.#done.resolve(true);
-          break;
-      }
-    }
+  on_esc_key(): void {
+    this.#done.resolve(false);
+  }
+
+  on_enter_key(): void {
+    this.#done.resolve(true);
   }
 
   render(): void {

@@ -2,11 +2,9 @@ import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
-import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
 
-import * as key from "./key/mod.ts";
 import { View } from "./view.ts";
 
 interface EditorOptions {
@@ -14,7 +12,6 @@ interface EditorOptions {
 }
 
 export class Editor extends Control {
-  on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
@@ -23,33 +20,6 @@ export class Editor extends Control {
   readonly cursor: Cursor;
   readonly history: History;
   readonly view = new View(this);
-
-  #handlers: key.KeyHandler[] = [
-    new key.Left(this),
-    new key.Right(this),
-    new key.Home(this),
-    new key.End(this),
-    new key.Up(this),
-    new key.Down(this),
-    new key.PageUp(this),
-    new key.PageDown(this),
-    new key.Top(this),
-    new key.Bottom(this),
-
-    new key.SelectAll(this),
-    new key.Copy(this),
-    new key.Cut(this),
-    new key.Paste(this),
-
-    new key.Undo(this),
-    new key.Redo(this),
-
-    new key.Enter(this),
-    new key.Tab(this),
-    new key.Backspace(this),
-    new key.Delete(this),
-    new key.Center(this),
-  ];
 
   line_index_enabled = false;
   invisible_enabled = false;
@@ -95,32 +65,6 @@ export class Editor extends Control {
     }
 
     this.history.reset();
-  }
-
-  on_key(key: Key | string): void {
-    const started = Date.now();
-
-    try {
-      if (typeof key === "string") {
-        this.insert(key);
-        this.render();
-        return;
-      }
-
-      if (typeof key.text === "string") {
-        this.insert(key.text);
-        this.render();
-        return;
-      }
-
-      const handler = this.#handlers.find((x) => x.match(key));
-      if (handler) {
-        handler.handle(key);
-        this.render();
-      }
-    } finally {
-      this.on_react?.(Date.now() - started);
-    }
   }
 
   insert(text: string): void {
@@ -180,15 +124,5 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
-  }
-
-  toggle_invisible(): void {
-    this.invisible_enabled = !this.invisible_enabled;
-  }
-
-  toggle_wrap(): void {
-    this.wrap_enabled = !this.wrap_enabled;
-
-    this.cursor.move(0, -Number.MAX_SAFE_INTEGER, false);
   }
 }
