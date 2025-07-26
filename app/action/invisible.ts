@@ -1,4 +1,4 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class InvisibleAction extends Action {
   keys = [
@@ -9,6 +9,7 @@ export class InvisibleAction extends Action {
     const { editor } = this.app.ui;
 
     editor.invisible_enabled = !editor.invisible_enabled;
+
     editor.render();
   }
 }
