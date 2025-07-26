@@ -1,9 +1,12 @@
 import { Area } from "./area.ts";
 import { Control } from "./control.ts";
 
-// deno-lint-ignore no-explicit-any
-export abstract class Modal<P extends any[], R> extends Control {
+export abstract class Modal<P extends unknown[], R> extends Control {
   protected abstract size: Area;
+
+  constructor(protected parent: Control) {
+    super();
+  }
 
   abstract open(...params: P): Promise<R>;
 

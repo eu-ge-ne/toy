@@ -51,7 +51,6 @@ export class Palette
 
   override resize(area: Area): void {
     this.#parent_area = area;
-    this.#filter();
   }
 
   render(): void {
@@ -59,27 +58,36 @@ export class Palette
       return;
     }
 
-    const { y0, x0, y1, h, w } = this.area;
+    let h = 3;
+    if (this.#filtered.length > 0) {
+      h += this.#filtered.length + 1;
+    }
+    this.size = new Area(0, 0, 60, h);
+    super.resize(this.#parent_area);
+    this.editor.resize(
+      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
+    );
+    this.parent.render();
 
     vt.write(
       vt.bsu,
       vt.cursor.hide,
       PALETTE_BG,
-      ...vt.clear(y0, x0, h, w),
+      ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
     );
 
     let i = 0;
 
-    for (let y = y0 + 3; y < y1; y += 1) {
+    for (let y = this.area.y0 + 3; y < this.area.y1; y += 1) {
       const option = this.#filtered[i];
       if (!option) {
         break;
       }
 
-      const space = { len: w - 4 };
+      const space = { len: this.area.w - 4 };
 
       vt.write(
-        vt.cursor.set(y, x0 + 2),
+        vt.cursor.set(y, this.area.x0 + 2),
         PALETTE_COLORS,
         ...vt.fmt.text(space, option.name),
       );
@@ -102,15 +110,5 @@ export class Palette
     }
 
     this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
-
-    this.#resize();
-  }
-
-  #resize(): void {
-    this.size = new Area(0, 0, 60, 1 + 1 + 1 + this.#filtered.length + 1);
-    super.resize(this.#parent_area);
-    this.editor.resize(
-      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
-    );
   }
 }

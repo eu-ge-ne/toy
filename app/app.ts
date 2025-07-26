@@ -55,15 +55,17 @@ export class App {
   file_path = "";
   changes = false;
 
+  #ed = new Editor(editor_graphemes, { multi_line: true });
+
   ui = {
-    alert: new Alert(),
-    ask: new Ask(),
     debug: new Debug(),
-    editor: new Editor(editor_graphemes, { multi_line: true }),
+    editor: this.#ed,
     footer: new Footer(),
     header: new Header(),
-    palette: new Palette(),
-    save_as: new SaveAs(),
+    alert: new Alert(this.#ed),
+    ask: new Ask(this.#ed),
+    save_as: new SaveAs(this.#ed),
+    palette: new Palette(this.#ed),
   };
 
   async run(): Promise<void> {
