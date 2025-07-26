@@ -11,10 +11,12 @@ export class TabAction extends Action {
       return;
     }
 
-    if (editor.opts.multi_line) {
-      editor.insert("\t");
-
-      editor.render();
+    if (!editor.opts.multi_line) {
+      return;
     }
+
+    editor.insert("\t");
+
+    editor.render();
   }
 }
