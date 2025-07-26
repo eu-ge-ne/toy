@@ -10,9 +10,10 @@ export interface PaletteOption {
 
 export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
-  protected size = new Area(0, 0, 60, 10);
+  protected size = new Area(0, 0, 0, 0);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #parent_area!: Area;
   #options: PaletteOption[] = [];
   #filtered: PaletteOption[] = [];
   #done!: PromiseWithResolvers<void>;
@@ -49,11 +50,8 @@ export class Palette
   }
 
   override resize(area: Area): void {
-    super.resize(area);
-
-    this.editor.resize(
-      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
-    );
+    this.#parent_area = area;
+    this.#filter();
   }
 
   render(): void {
@@ -104,5 +102,15 @@ export class Palette
     }
 
     this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+    this.#resize();
+  }
+
+  #resize(): void {
+    this.size = new Area(0, 0, 60, 1 + 1 + 1 + this.#filtered.length + 1);
+    super.resize(this.#parent_area);
+    this.editor.resize(
+      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
+    );
   }
 }
