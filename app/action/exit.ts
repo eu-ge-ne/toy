@@ -6,11 +6,11 @@ export class ExitAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { changes, ui, save_action } = this.app;
-
-    if (!ui.editor.enabled) {
+    if (Action.started > 1) {
       return;
     }
+
+    const { changes, ui, save_action } = this.app;
 
     if (changes) {
       ui.editor.enabled = false;
