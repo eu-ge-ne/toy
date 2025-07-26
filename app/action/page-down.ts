@@ -18,11 +18,7 @@ export class PageDownAction extends Action {
       return;
     }
 
-    const { cursor, area } = editor;
-
-    const select = Boolean(key.shift);
-
-    cursor.move(area.h, 0, select);
+    editor.cursor.move(editor.area.h, 0, Boolean(key.shift));
 
     editor.render();
   }
