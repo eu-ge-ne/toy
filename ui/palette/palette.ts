@@ -1,10 +1,13 @@
+import { GraphemePool } from "@lib/grapheme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
 
 export class Palette extends Modal<[], void> {
   protected size = new Area(0, 0, 60, 10);
 
+  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
   #text = "";
   #done!: PromiseWithResolvers<void>;
 
@@ -28,6 +31,14 @@ export class Palette extends Modal<[], void> {
     this.#done.resolve();
   }
 
+  override resize(area: Area): void {
+    super.resize(area);
+
+    this.editor.resize(
+      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
+    );
+  }
+
   render(): void {
     if (!this.enabled) {
       return;
@@ -44,7 +55,7 @@ export class Palette extends Modal<[], void> {
 
     let pos = 0;
 
-    for (let y = y0 + 1; y < y1 - 3; y += 1) {
+    for (let y = y0 + 3; y < y1; y += 1) {
       if (pos === this.#text.length) {
         break;
       }
@@ -61,10 +72,6 @@ export class Palette extends Modal<[], void> {
       );
     }
 
-    vt.write(
-      vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ENTER‧ok"),
-      vt.esu,
-    );
+    this.editor.render();
   }
 }
