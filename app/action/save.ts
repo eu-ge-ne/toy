@@ -1,4 +1,4 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class SaveAction extends Action {
   keys = [
@@ -6,6 +6,10 @@ export class SaveAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
+    if (Action.started > 1) {
+      return;
+    }
+
     await this.app.save();
   }
 }
