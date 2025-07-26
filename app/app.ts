@@ -25,8 +25,6 @@ export class App {
     new act.DeleteAction(this),
     new act.DownAction(this),
     new act.EndAction(this),
-    new act.EnterAction(this),
-    new act.EscAction(this),
     new act.HomeAction(this),
     new act.LeftAction(this),
     new act.PageDownAction(this),
@@ -41,6 +39,8 @@ export class App {
     new act.UpAction(this),
 
     new act.DebugAction(this),
+    new act.EnterAction(this),
+    new act.EscAction(this),
     new act.ExitAction(this),
     new act.InvisibleAction(this),
     new act.SaveAction(this),

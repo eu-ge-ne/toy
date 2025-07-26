@@ -5,8 +5,6 @@ export * from "./editor/cut.ts";
 export * from "./editor/delete.ts";
 export * from "./editor/down.ts";
 export * from "./editor/end.ts";
-export * from "./editor/enter.ts";
-export * from "./editor/esc.ts";
 export * from "./editor/home.ts";
 export * from "./editor/left.ts";
 export * from "./editor/page-down.ts";
@@ -22,6 +20,8 @@ export * from "./editor/undo.ts";
 export * from "./editor/up.ts";
 
 export * from "./debug.ts";
+export * from "./enter.ts";
+export * from "./esc.ts";
 export * from "./exit.ts";
 export * from "./invisible.ts";
 export * from "./load.ts";

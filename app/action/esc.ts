@@ -1,34 +1,34 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
-export class EnterAction extends Action {
+export class EscAction extends Action {
   keys = [
-    { name: "ENTER" },
+    { name: "ESC" },
   ];
 
   protected override async _run(): Promise<void> {
     const { alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {
-      alert.on_enter_key();
+      alert.on_esc_key();
       alert.render();
       return;
     }
 
     if (ask.enabled) {
-      ask.on_enter_key();
+      ask.on_esc_key();
       ask.render();
       return;
     }
 
     if (save_as.enabled) {
-      save_as.on_enter_key();
+      save_as.on_esc_key();
       save_as.render();
       return;
     }
 
     if (editor.enabled) {
       if (editor.opts.multi_line) {
-        editor.insert("\n");
+        editor.view.center();
 
         editor.render();
       }
