@@ -53,11 +53,23 @@ export class Palette
   }
 
   on_up_key(): void {
-    this.#done.resolve();
+    if (this.#filtered.length === 0) {
+      return;
+    }
+
+    if (this.#selected_index > 0) {
+      this.#selected_index -= 1;
+    }
   }
 
   on_down_key(): void {
-    this.#done.resolve();
+    if (this.#filtered.length === 0) {
+      return;
+    }
+
+    if (this.#selected_index < (this.#filtered.length - 1)) {
+      this.#selected_index += 1;
+    }
   }
 
   override resize(area: Area): void {
