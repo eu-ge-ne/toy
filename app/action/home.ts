@@ -17,11 +17,7 @@ export class HomeAction extends Action {
       return;
     }
 
-    const { cursor } = editor;
-
-    const select = Boolean(key.shift);
-
-    cursor.move(0, -Number.MAX_SAFE_INTEGER, select);
+    editor.cursor.move(0, -Number.MAX_SAFE_INTEGER, Boolean(key.shift));
 
     editor.render();
   }
