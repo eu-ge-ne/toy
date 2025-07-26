@@ -7,8 +7,7 @@ export class ExitAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { changes, ui, actions_started } = this.app;
-
+    const { actions_started, changes, ui } = this.app;
     if (actions_started > 1) {
       return;
     }
