@@ -10,13 +10,13 @@ export class ExitAction extends Action {
       return;
     }
 
-    const { changes, ui, save_action } = this.app;
+    const { changes, ui } = this.app;
 
     if (changes) {
       ui.editor.enabled = false;
 
       if (await ui.ask.open("Save changes?")) {
-        await save_action.run();
+        await this.app.save();
       }
     }
 

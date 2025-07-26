@@ -16,9 +16,6 @@ import * as act from "./action/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
-  readonly save_action = new act.SaveAction(this);
-  readonly save_as_action = new act.SaveAsAction(this);
-
   #actions = [
     new act.BackspaceAction(this),
     new act.DebugAction(this),
@@ -27,12 +24,10 @@ export class App {
     new act.EscAction(this),
     new act.ExitAction(this),
     new act.InvisibleAction(this),
-    this.save_action,
-    this.save_as_action,
+    new act.SaveAction(this),
     new act.TextAction(this),
     new act.WrapAction(this),
     new act.ZenAction(this),
-
     new act.LeftAction(this),
     new act.RightAction(this),
   ];
@@ -144,6 +139,67 @@ export class App {
     }
 
     return undefined;
+  }
+
+  async save(): Promise<void> {
+    const { editor, alert } = this.ui;
+
+    if (!this.file_path) {
+      await this.#save_as();
+      return;
+    }
+
+    try {
+      using file = await Deno.open(this.file_path, {
+        create: true,
+        write: true,
+        truncate: true,
+      });
+
+      await editor.buffer.save(file);
+
+      editor.reset(false);
+    } catch (err) {
+      await alert.open(err);
+
+      this.render();
+
+      await this.#save_as();
+    }
+  }
+
+  async #save_as(): Promise<void> {
+    const { save_as, editor, alert } = this.ui;
+
+    while (true) {
+      const path = await save_as.open(this.file_path);
+      if (!path) {
+        this.render();
+        return;
+      }
+
+      try {
+        using file = await Deno.open(path, {
+          create: true,
+          write: true,
+          truncate: true,
+        });
+
+        await editor.buffer.save(file);
+
+        editor.reset(false);
+
+        this.set_file_path(path);
+        this.render();
+      } catch (err) {
+        await alert.open(err);
+
+        this.render();
+        continue;
+      }
+
+      return;
+    }
   }
 
   #on_sigwinch = () => {
