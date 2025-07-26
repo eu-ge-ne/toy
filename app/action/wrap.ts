@@ -1,4 +1,4 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class WrapAction extends Action {
   keys = [
@@ -6,10 +6,14 @@ export class WrapAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
+    const { actions_started } = this.app;
+    if (actions_started > 1) {
+      return;
+    }
+
     const { editor } = this.app.ui;
 
     editor.wrap_enabled = !editor.wrap_enabled;
-
     editor.cursor.move(0, -Number.MAX_SAFE_INTEGER, false);
 
     editor.render();
