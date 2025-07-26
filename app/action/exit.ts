@@ -7,9 +7,15 @@ export class ExitAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { changes, ui } = this.app;
+    const { changes, ui, actions_started } = this.app;
+
+    if (actions_started > 1) {
+      return;
+    }
 
     if (changes) {
+      ui.editor.enabled = false;
+
       if (await ui.ask.open("Save changes?")) {
         await new SaveAction(this.app).run();
       }

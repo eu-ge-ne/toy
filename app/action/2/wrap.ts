@@ -1,4 +1,4 @@
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class WrapAction extends Action {
   keys = [

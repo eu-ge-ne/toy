@@ -1,4 +1,4 @@
-import { Action } from "./action.ts";
+import { Action } from "../action.ts";
 
 export class InvisibleAction extends Action {
   keys = [
