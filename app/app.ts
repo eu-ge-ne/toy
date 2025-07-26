@@ -26,10 +26,10 @@ export class App {
     new act.InvisibleAction(this),
     new act.SaveAction(this),
     new act.TextAction(this),
-    new act.WrapAction(this),
     new act.LeftAction(this),
     new act.RightAction(this),
 
+    new act.WrapAction(this),
     new act.ZenAction(this),
   ];
 
