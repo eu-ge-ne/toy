@@ -2,40 +2,6 @@ import { Key } from "@lib/input";
 
 import { KeyHandler } from "./handler.ts";
 
-export class Left extends KeyHandler {
-  keys = [
-    { name: "LEFT" },
-    { name: "LEFT", shift: true },
-  ];
-
-  handle({ shift }: Key): void {
-    const { cursor } = this.editor;
-
-    const select = Boolean(shift);
-
-    if (!cursor.move(0, -1, select) && cursor.ln > 0) {
-      cursor.move(-1, Number.MAX_SAFE_INTEGER, select);
-    }
-  }
-}
-
-export class Right extends KeyHandler {
-  keys = [
-    { name: "RIGHT" },
-    { name: "RIGHT", shift: true },
-  ];
-
-  handle({ shift }: Key): void {
-    const { cursor, buffer } = this.editor;
-
-    const select = Boolean(shift);
-
-    if (!cursor.move(0, 1, select) && cursor.ln < (buffer.ln_count - 1)) {
-      cursor.move(1, Number.MIN_SAFE_INTEGER, select);
-    }
-  }
-}
-
 export class Home extends KeyHandler {
   keys = [
     { name: "HOME" },

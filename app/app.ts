@@ -31,6 +31,9 @@ export class App {
     new act.TextAction(this),
     new act.WrapAction(this),
     new act.ZenAction(this),
+
+    new act.LeftAction(this),
+    new act.RightAction(this),
   ];
 
   args = parseArgs(Deno.args);
@@ -130,6 +133,18 @@ export class App {
     this.file_path = x;
 
     this.ui.header.set_file_path(x);
+  }
+
+  get focused_editor(): Editor | undefined {
+    if (this.ui.save_as.enabled) {
+      return this.ui.save_as.editor;
+    }
+
+    if (this.ui.editor.enabled) {
+      return this.ui.editor;
+    }
+
+    return undefined;
   }
 
   #on_sigwinch = () => {

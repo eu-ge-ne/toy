@@ -11,3 +11,6 @@ export * from "./save.ts";
 export * from "./text.ts";
 export * from "./wrap.ts";
 export * from "./zen.ts";
+
+export * from "./2/left.ts";
+export * from "./2/right.ts";
