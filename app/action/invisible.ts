@@ -6,7 +6,7 @@ export class InvisibleAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const editor = this.app.focused_editor;
+    const editor = this.app.ui.editor;
     if (!editor?.enabled) {
       return;
     }
