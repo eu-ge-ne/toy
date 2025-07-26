@@ -1,4 +1,4 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class ZenAction extends Action {
   keys = [
@@ -6,11 +6,11 @@ export class ZenAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { header, footer, editor } = this.app.ui;
-
-    if (!editor.enabled) {
+    if (Action.started > 1) {
       return;
     }
+
+    const { header, footer, editor } = this.app.ui;
 
     this.app.zen = !this.app.zen;
 
