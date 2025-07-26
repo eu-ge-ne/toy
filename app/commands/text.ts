@@ -1,15 +1,15 @@
 import { Key } from "@lib/input";
 
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class TextAction extends Action {
+export class TextCommand extends Command {
   keys = [];
 
   override match(key: Key | string): boolean {
     return typeof key === "string" || typeof key.text === "string";
   }
 
-  protected override async action(key: Key | string): Promise<void> {
+  protected override async command(key: Key | string): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

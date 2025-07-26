@@ -1,11 +1,11 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class EnterAction extends Action {
+export class EnterCommand extends Command {
   keys = [
     { name: "ENTER" },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const { alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {

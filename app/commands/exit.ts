@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class ExitAction extends Action {
+export class ExitCommand extends Command {
   keys = [
     { name: "F10" },
   ];
 
-  protected override async action(): Promise<void> {
-    if (Action.started > 1) {
+  protected override async command(): Promise<void> {
+    if (Command.started > 1) {
       return;
     }
 

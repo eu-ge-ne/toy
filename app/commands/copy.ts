@@ -1,14 +1,14 @@
 import { copy_to_clipboard, write } from "@lib/vt";
 
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class CutAction extends Action {
+export class CopyCommand extends Command {
   keys = [
-    { name: "x", ctrl: true },
-    { name: "x", super: true },
+    { name: "c", ctrl: true },
+    { name: "c", super: true },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;
@@ -19,14 +19,12 @@ export class CutAction extends Action {
     if (cursor.selecting) {
       editor.clipboard = buffer.copy(cursor.from, cursor.to);
 
-      editor.delete_selection();
+      cursor.set(cursor.ln, cursor.col, false);
     } else {
       editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
         cursor.ln,
         cursor.col,
       ]);
-
-      editor.delete_char();
     }
 
     write(copy_to_clipboard(editor.clipboard));

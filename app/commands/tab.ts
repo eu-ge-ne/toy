@@ -1,11 +1,11 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class TabAction extends Action {
+export class TabCommand extends Command {
   keys = [
     { name: "TAB" },
   ];
 
-  protected override async action(): Promise<void> {
+  protected override async command(): Promise<void> {
     const editor = this.app.focused_editor;
     if (!editor?.enabled) {
       return;

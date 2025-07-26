@@ -1,12 +1,12 @@
-import { Action } from "./action.ts";
+import { Command } from "./command.ts";
 
-export class WrapAction extends Action {
+export class WrapCommand extends Command {
   keys = [
     { name: "F6" },
   ];
 
-  protected override async action(): Promise<void> {
-    if (Action.started > 1) {
+  protected override async command(): Promise<void> {
+    if (Command.started > 1) {
       return;
     }
 

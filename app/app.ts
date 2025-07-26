@@ -12,40 +12,39 @@ import { Header } from "@ui/header";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import * as act from "./action/mod.ts";
+import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
-  #actions = [
-    new act.TextAction(this),
-
-    new act.BackspaceAction(this),
-    new act.BottomAction(this),
-    new act.CopyAction(this),
-    new act.CutAction(this),
-    new act.DebugAction(this),
-    new act.DeleteAction(this),
-    new act.DownAction(this),
-    new act.EndAction(this),
-    new act.EnterAction(this),
-    new act.EscAction(this),
-    new act.ExitAction(this),
-    new act.HomeAction(this),
-    new act.InvisibleAction(this),
-    new act.LeftAction(this),
-    new act.PageDownAction(this),
-    new act.PageUpAction(this),
-    new act.PasteAction(this),
-    new act.RedoAction(this),
-    new act.RightAction(this),
-    new act.SaveAction(this),
-    new act.SelectAllAction(this),
-    new act.TabAction(this),
-    new act.TopAction(this),
-    new act.UndoAction(this),
-    new act.UpAction(this),
-    new act.WrapAction(this),
-    new act.ZenAction(this),
+  #commands = [
+    new cmd.TextCommand(this),
+    new cmd.BackspaceCommand(this),
+    new cmd.BottomCommand(this),
+    new cmd.CopyCommand(this),
+    new cmd.CutCommand(this),
+    new cmd.DebugCommand(this),
+    new cmd.DeleteCommand(this),
+    new cmd.DownCommand(this),
+    new cmd.EndCommand(this),
+    new cmd.EnterCommand(this),
+    new cmd.EscCommand(this),
+    new cmd.ExitCommand(this),
+    new cmd.HomeCommand(this),
+    new cmd.InvisibleCommand(this),
+    new cmd.LeftCommand(this),
+    new cmd.PageDownCommand(this),
+    new cmd.PageUpCommand(this),
+    new cmd.PasteCommand(this),
+    new cmd.RedoCommand(this),
+    new cmd.RightCommand(this),
+    new cmd.SaveCommand(this),
+    new cmd.SelectAllCommand(this),
+    new cmd.TabCommand(this),
+    new cmd.TopCommand(this),
+    new cmd.UndoCommand(this),
+    new cmd.UpCommand(this),
+    new cmd.WrapCommand(this),
+    new cmd.ZenCommand(this),
   ];
 
   args = parseArgs(Deno.args);
@@ -245,7 +244,7 @@ export class App {
       return;
     }
 
-    this.#actions.find((x) => x.match(key))?.run(key);
+    this.#commands.find((x) => x.match(key))?.run(key);
   }
 
   #set_file_path(x: string): void {
