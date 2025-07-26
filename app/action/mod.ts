@@ -1,8 +1,6 @@
-export * from "./editor/backspace.ts";
 export * from "./editor/bottom.ts";
 export * from "./editor/copy.ts";
 export * from "./editor/cut.ts";
-export * from "./editor/delete.ts";
 export * from "./editor/down.ts";
 export * from "./editor/end.ts";
 export * from "./editor/home.ts";
@@ -18,7 +16,9 @@ export * from "./editor/top.ts";
 export * from "./editor/undo.ts";
 export * from "./editor/up.ts";
 
+export * from "./backspace.ts";
 export * from "./debug.ts";
+export * from "./delete.ts";
 export * from "./enter.ts";
 export * from "./esc.ts";
 export * from "./exit.ts";

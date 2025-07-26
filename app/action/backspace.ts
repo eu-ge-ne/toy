@@ -1,8 +1,8 @@
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
-export class DeleteAction extends Action {
+export class BackspaceAction extends Action {
   keys = [
-    { name: "DELETE" },
+    { name: "BACKSPACE" },
   ];
 
   protected override async action(): Promise<void> {
@@ -14,7 +14,7 @@ export class DeleteAction extends Action {
     if (editor.cursor.selecting) {
       editor.delete_selection();
     } else {
-      editor.delete_char();
+      editor.backspace();
     }
 
     editor.render();

@@ -19,11 +19,9 @@ export class App {
   #actions = [
     new act.TextAction(this),
 
-    new act.BackspaceAction(this),
     new act.BottomAction(this),
     new act.CopyAction(this),
     new act.CutAction(this),
-    new act.DeleteAction(this),
     new act.DownAction(this),
     new act.EndAction(this),
     new act.HomeAction(this),
@@ -39,7 +37,9 @@ export class App {
     new act.UndoAction(this),
     new act.UpAction(this),
 
+    new act.BackspaceAction(this),
     new act.DebugAction(this),
+    new act.DeleteAction(this),
     new act.EnterAction(this),
     new act.EscAction(this),
     new act.ExitAction(this),
