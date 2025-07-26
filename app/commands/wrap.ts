@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class WrapCommand extends Command {
+  override id = "Wrap";
+
   keys = [
     { name: "F6" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }
