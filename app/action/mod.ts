@@ -11,6 +11,7 @@ export * from "./editor/home.ts";
 export * from "./editor/left.ts";
 export * from "./editor/page-down.ts";
 export * from "./editor/page-up.ts";
+export * from "./editor/paste.ts";
 export * from "./editor/redo.ts";
 export * from "./editor/right.ts";
 export * from "./editor/select-all.ts";

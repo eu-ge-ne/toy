@@ -2,11 +2,9 @@ import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
-import { Key } from "@lib/input";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
 
-import * as key from "./key/mod.ts";
 import { View } from "./view.ts";
 
 interface EditorOptions {
@@ -14,7 +12,6 @@ interface EditorOptions {
 }
 
 export class Editor extends Control {
-  on_react?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
@@ -23,10 +20,6 @@ export class Editor extends Control {
   readonly cursor: Cursor;
   readonly history: History;
   readonly view = new View(this);
-
-  #handlers: key.KeyHandler[] = [
-    new key.Paste(this),
-  ];
 
   line_index_enabled = false;
   invisible_enabled = false;
@@ -72,20 +65,6 @@ export class Editor extends Control {
     }
 
     this.history.reset();
-  }
-
-  on_key(key: Key | string): void {
-    const started = Date.now();
-
-    try {
-      const handler = this.#handlers.find((x) => x.match(key as Key));
-      if (handler) {
-        handler.handle(key as Key);
-        this.render();
-      }
-    } finally {
-      this.on_react?.(Date.now() - started);
-    }
   }
 
   insert(text: string): void {

@@ -31,6 +31,7 @@ export class App {
     new act.LeftAction(this),
     new act.PageDownAction(this),
     new act.PageUpAction(this),
+    new act.PasteAction(this),
     new act.RedoAction(this),
     new act.RightAction(this),
     new act.SelectAllAction(this),
@@ -77,7 +78,6 @@ export class App {
       this.changes = x > 0;
       this.ui.header.set_unsaved_flag(x > 0);
     };
-    this.ui.editor.on_react = (x) => this.ui.debug.set_action_time(x);
     this.ui.editor.on_render = (x) => this.ui.debug.set_render_time(x);
     this.ui.editor.on_cursor = (x) => this.ui.footer.set_cursor_status(x);
     this.ui.editor.enabled = true;
@@ -218,14 +218,6 @@ export class App {
       return;
     }
 
-    const act = this.#actions.find((x) => x.match(key));
-    if (act) {
-      act.run(key);
-      return;
-    }
-
-    if (this.ui.editor.enabled) {
-      this.ui.editor.on_key(key);
-    }
+    this.#actions.find((x) => x.match(key))?.run(key);
   }
 }
