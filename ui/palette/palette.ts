@@ -57,9 +57,7 @@ export class Palette
       return;
     }
 
-    if (this.#selected_index > 0) {
-      this.#selected_index -= 1;
-    }
+    this.#selected_index = Math.max(this.#selected_index - 1, 0);
   }
 
   on_down_key(): void {
@@ -67,9 +65,10 @@ export class Palette
       return;
     }
 
-    if (this.#selected_index < (this.#filtered.length - 1)) {
-      this.#selected_index += 1;
-    }
+    this.#selected_index = Math.min(
+      this.#selected_index + 1,
+      this.#filtered.length - 1,
+    );
   }
 
   override resize(area: Area): void {
