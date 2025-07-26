@@ -1,5 +1,4 @@
 import { GraphemePool } from "@lib/grapheme";
-//import { Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -37,12 +36,9 @@ export class SaveAs extends Modal<[string], string> {
 
   on_enter_key(): void {
     const path = this.editor.buffer.get_text();
-    if (path.length > 0) {
+    if (path) {
       this.#done.resolve(path);
-      return;
     }
-
-    //this.#editor.on_key(key);
   }
 
   override resize(area: Area): void {
