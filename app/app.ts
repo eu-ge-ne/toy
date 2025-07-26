@@ -22,13 +22,13 @@ export class App {
     new act.DeleteAction(this),
     new act.EnterAction(this),
     new act.EscAction(this),
+    new act.LeftAction(this),
+    new act.RightAction(this),
 
     new act.DebugAction(this),
     new act.ExitAction(this),
     new act.InvisibleAction(this),
     new act.SaveAction(this),
-    new act.LeftAction(this),
-    new act.RightAction(this),
     new act.WrapAction(this),
     new act.ZenAction(this),
   ];

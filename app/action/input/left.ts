@@ -15,6 +15,7 @@ export class LeftAction extends Action {
     }
 
     const { cursor } = editor;
+
     const select = Boolean(key.shift);
 
     if (!cursor.move(0, -1, select) && cursor.ln > 0) {
