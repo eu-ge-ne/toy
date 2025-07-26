@@ -20,6 +20,10 @@ export class Palette
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.editor.enabled = true;
+    this.editor.history.on_changed = () => {
+      this.#filter();
+      this.render();
+    };
 
     this.#options = options;
     this.#done = Promise.withResolvers();
@@ -31,6 +35,7 @@ export class Palette
 
     this.enabled = false;
     this.editor.enabled = false;
+    this.editor.history.on_changed = undefined;
 
     return;
   }
@@ -68,12 +73,12 @@ export class Palette
     let i = 0;
 
     for (let y = y0 + 3; y < y1; y += 1) {
-      if (i === this.#options.length) {
+      const option = this.#filtered[i];
+      if (!option) {
         break;
       }
 
       const space = { len: w - 4 };
-      const option = this.#filtered[i]!;
 
       vt.write(
         vt.cursor.set(y, x0 + 2),
@@ -93,7 +98,9 @@ export class Palette
     if (!text) {
       this.#filtered = this.#options;
     } else {
-      this.#filtered = this.#options.filter((x) => x.name.includes(text));
+      this.#filtered = this.#options.filter((x) =>
+        x.name.toUpperCase().includes(text.toUpperCase())
+      );
     }
 
     this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
