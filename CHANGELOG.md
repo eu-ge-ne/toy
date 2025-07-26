@@ -1,12 +1,9 @@
 # Changelog
 
-## v0.0.18
-
-- Improved input handling
-
 ## v0.0.17
 
 - Improved Save, SaveAs and Alert modals
+- Improved input handling
 
 ## v0.0.16
 
