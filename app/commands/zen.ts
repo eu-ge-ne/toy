@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class ZenCommand extends Command {
-  override name = "Zen";
+  name = "Zen";
 
   keys = [
     { name: "F11" },

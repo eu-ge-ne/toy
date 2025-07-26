@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class BackspaceCommand extends Command {
-  override name = "Backspace";
+  name = "Backspace";
 
   keys = [
     { name: "BACKSPACE" },

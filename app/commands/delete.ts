@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class DeleteCommand extends Command {
+  name = "Delete";
+
   keys = [
     { name: "DELETE" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

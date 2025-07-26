@@ -3,7 +3,7 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class PageUpCommand extends Command {
-  override name = "Page Up";
+  name = "Page Up";
 
   keys = [
     { name: "PAGE_UP" },

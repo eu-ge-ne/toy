@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class SaveCommand extends Command {
-  override name = "Save";
+  name = "Save";
 
   keys = [
     { name: "F2" },

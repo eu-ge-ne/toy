@@ -3,7 +3,7 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class HomeCommand extends Command {
-  override name = "Home";
+  name = "Home";
 
   keys = [
     { name: "HOME" },

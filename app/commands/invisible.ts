@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class InvisibleCommand extends Command {
-  override name = "Invisible";
+  name = "Invisible";
 
   keys = [
     { name: "F5" },

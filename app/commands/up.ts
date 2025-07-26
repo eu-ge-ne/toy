@@ -3,7 +3,7 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class UpCommand extends Command {
-  override name = "Up";
+  name = "Up";
 
   keys = [
     { name: "UP" },
@@ -11,6 +11,13 @@ export class UpCommand extends Command {
   ];
 
   async command(key: Key): Promise<void> {
+    const { palette } = this.app.ui;
+
+    if (palette.enabled) {
+      palette.on_up_key();
+      palette.render();
+    }
+
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

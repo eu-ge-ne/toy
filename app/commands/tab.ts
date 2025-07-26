@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class TabCommand extends Command {
-  override name = "Tab";
+  name = "Tab";
 
   keys = [
     { name: "TAB" },

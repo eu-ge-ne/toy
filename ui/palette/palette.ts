@@ -52,6 +52,14 @@ export class Palette
     this.#done.resolve();
   }
 
+  on_up_key(): void {
+    this.#done.resolve();
+  }
+
+  on_down_key(): void {
+    this.#done.resolve();
+  }
+
   override resize(area: Area): void {
     this.#parent_area = area;
   }

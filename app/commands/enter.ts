@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class EnterCommand extends Command {
+  name = "Enter";
+
   keys = [
     { name: "ENTER" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     const { alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {

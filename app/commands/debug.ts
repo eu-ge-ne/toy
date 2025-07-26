@@ -1,11 +1,13 @@
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
+  name = "Debug";
+
   keys = [
     { name: "F9" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }
