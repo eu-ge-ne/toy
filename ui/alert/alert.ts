@@ -21,6 +21,10 @@ export class Alert extends Modal<[unknown], void> {
     this.enabled = false;
   }
 
+  on_esc_key(): void {
+    this.#done.resolve();
+  }
+
   on_key(key: Key | string): void {
     if (typeof key !== "string") {
       switch (key.name) {

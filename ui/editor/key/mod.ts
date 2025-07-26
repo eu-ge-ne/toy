@@ -9,4 +9,3 @@ export * from "./undo-redo.ts";
 export * from "./enter.ts";
 export * from "./tab.ts";
 export * from "./delete.ts";
-export * from "./center.ts";

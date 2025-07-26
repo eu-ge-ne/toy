@@ -31,6 +31,10 @@ export class SaveAs extends Modal<[string], string> {
     return result;
   }
 
+  on_esc_key(): void {
+    this.#done.resolve("");
+  }
+
   on_key(key: Key | string): void {
     if (typeof key !== "string") {
       switch (key.name) {

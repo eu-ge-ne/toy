@@ -48,7 +48,6 @@ export class Editor extends Control {
     new key.Tab(this),
     new key.Backspace(this),
     new key.Delete(this),
-    new key.Center(this),
   ];
 
   line_index_enabled = false;
@@ -180,5 +179,11 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
+  }
+
+  on_esc_key(): void {
+    if (this.opts.multi_line) {
+      this.view.center();
+    }
   }
 }

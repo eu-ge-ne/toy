@@ -23,6 +23,10 @@ export class Ask extends Modal<[string], boolean> {
     return result;
   }
 
+  on_esc_key(): void {
+    this.#done.resolve(false);
+  }
+
   on_key(key: Key | string): void {
     if (typeof key !== "string") {
       switch (key.name) {

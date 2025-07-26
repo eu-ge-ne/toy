@@ -16,6 +16,17 @@ import * as act from "./action/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
+  #actions = [
+    new act.DebugAction(this),
+    new act.EscAction(this),
+    new act.ExitAction(this),
+    new act.InvisibleAction(this),
+    new act.SaveAsAction(this),
+    new act.SaveAction(this),
+    new act.WrapAction(this),
+    new act.ZenAction(this),
+  ];
+
   args = parseArgs(Deno.args);
 
   zen = true;
@@ -33,16 +44,7 @@ export class App {
   };
 
   actions_started = 0;
-
-  #actions = [
-    new act.DebugAction(this),
-    new act.ExitAction(this),
-    new act.InvisibleAction(this),
-    new act.SaveAsAction(this),
-    new act.SaveAction(this),
-    new act.WrapAction(this),
-    new act.ZenAction(this),
-  ];
+  focused_editor?: Editor;
 
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
