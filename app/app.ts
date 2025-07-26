@@ -9,6 +9,7 @@ import { Debug } from "@ui/debug";
 import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
+import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
@@ -34,6 +35,7 @@ export class App {
     new cmd.LeftCommand(this),
     new cmd.PageDownCommand(this),
     new cmd.PageUpCommand(this),
+    new cmd.PaletteCommand(this),
     new cmd.PasteCommand(this),
     new cmd.RedoCommand(this),
     new cmd.RightCommand(this),
@@ -60,6 +62,7 @@ export class App {
     editor: new Editor(editor_graphemes, { multi_line: true }),
     footer: new Footer(),
     header: new Header(),
+    palette: new Palette(),
     save_as: new SaveAs(),
   };
 
@@ -102,7 +105,8 @@ export class App {
   };
 
   resize(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
 
     const screen = Area.from_screen();
 
@@ -123,10 +127,12 @@ export class App {
     save_as.resize(screen);
     alert.resize(screen);
     ask.resize(screen);
+    palette.resize(screen);
   }
 
   render(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
 
     header.render();
     editor.render();
@@ -135,6 +141,7 @@ export class App {
     save_as.render();
     alert.render();
     ask.render();
+    palette.render();
   }
 
   get focused_editor(): Editor | undefined {
