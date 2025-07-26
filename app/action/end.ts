@@ -1,6 +1,6 @@
 import { Key } from "@lib/input";
 
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
 export class EndAction extends Action {
   keys = [

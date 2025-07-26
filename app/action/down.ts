@@ -1,14 +1,11 @@
 import { Key } from "@lib/input";
 
-import { Action } from "../action.ts";
+import { Action } from "./action.ts";
 
-export class HomeAction extends Action {
+export class DownAction extends Action {
   keys = [
-    { name: "HOME" },
-    { name: "LEFT", super: true },
-
-    { name: "HOME", shift: true },
-    { name: "LEFT", super: true, shift: true },
+    { name: "DOWN" },
+    { name: "DOWN", shift: true },
   ];
 
   protected override async action(key: Key): Promise<void> {
@@ -17,11 +14,15 @@ export class HomeAction extends Action {
       return;
     }
 
+    if (!editor.opts.multi_line) {
+      return;
+    }
+
     const { cursor } = editor;
 
     const select = Boolean(key.shift);
 
-    cursor.move(0, -Number.MAX_SAFE_INTEGER, select);
+    cursor.move(1, 0, select);
 
     editor.render();
   }
