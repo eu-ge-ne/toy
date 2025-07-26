@@ -2,10 +2,8 @@ import { Key } from "@lib/input";
 
 import { App } from "../app.ts";
 
-type KeyMatcher = Pick<Key, "name" | "super" | "shift" | "ctrl">;
-
 export abstract class Action {
-  abstract keys: KeyMatcher[];
+  abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 
   protected static started = 0;
 
