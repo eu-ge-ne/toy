@@ -19,11 +19,11 @@ export class App {
   #actions = [
     new act.TextAction(this),
     new act.EnterAction(this),
+    new act.EscAction(this),
 
     new act.BackspaceAction(this),
     new act.DebugAction(this),
     new act.DeleteAction(this),
-    new act.EscAction(this),
     new act.ExitAction(this),
     new act.InvisibleAction(this),
     new act.SaveAction(this),
