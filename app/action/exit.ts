@@ -12,9 +12,9 @@ export class ExitAction extends Action {
 
     const { changes, ui } = this.app;
 
-    if (changes) {
-      ui.editor.enabled = false;
+    ui.editor.enabled = false;
 
+    if (changes) {
       if (await ui.ask.open("Save changes?")) {
         await this.app.save();
       }

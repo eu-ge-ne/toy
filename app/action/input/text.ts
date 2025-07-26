@@ -10,15 +10,12 @@ export class TextAction extends Action {
   }
 
   protected override async _run(key: Key | string): Promise<void> {
-    const { save_as, editor } = this.app.ui;
-
-    const text = typeof key === "string" ? key : key.text!;
-
-    if (save_as.enabled) {
-      save_as.editor.insert(text);
-      save_as.editor.render();
+    const editor = this.app.focused_editor;
+    if (!editor?.enabled) {
       return;
     }
+
+    const text = typeof key === "string" ? key : key.text!;
 
     if (editor.enabled) {
       editor.insert(text);

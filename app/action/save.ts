@@ -10,6 +10,10 @@ export class SaveAction extends Action {
       return;
     }
 
+    this.app.ui.editor.enabled = false;
+
     await this.app.save();
+
+    this.app.ui.editor.enabled = true;
   }
 }

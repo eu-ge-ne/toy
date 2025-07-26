@@ -17,6 +17,8 @@ import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
   #actions = [
+    new act.TextAction(this),
+
     new act.BackspaceAction(this),
     new act.DebugAction(this),
     new act.DeleteAction(this),
@@ -25,10 +27,8 @@ export class App {
     new act.ExitAction(this),
     new act.InvisibleAction(this),
     new act.SaveAction(this),
-    new act.TextAction(this),
     new act.LeftAction(this),
     new act.RightAction(this),
-
     new act.WrapAction(this),
     new act.ZenAction(this),
   ];

@@ -11,6 +11,8 @@ export class LoadAction extends Action {
       return;
     }
 
+    ui.editor.enabled = false;
+
     try {
       using file = await Deno.open(path, { read: true });
 
@@ -21,6 +23,7 @@ export class LoadAction extends Action {
 
       await ui.editor.buffer.load(file);
 
+      ui.editor.enabled = true;
       ui.editor.reset(true);
       ui.editor.render();
 
