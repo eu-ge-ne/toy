@@ -44,7 +44,6 @@ export class Editor extends Control {
     new key.Undo(this),
     new key.Redo(this),
 
-    new key.Enter(this),
     new key.Tab(this),
     new key.Backspace(this),
     new key.Delete(this),
@@ -184,6 +183,12 @@ export class Editor extends Control {
   on_esc_key(): void {
     if (this.opts.multi_line) {
       this.view.center();
+    }
+  }
+
+  on_enter_key(): void {
+    if (this.opts.multi_line) {
+      this.insert("\n");
     }
   }
 }

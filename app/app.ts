@@ -139,35 +139,14 @@ export class App {
       return;
     }
 
-    const { ui, actions_started } = this;
-
-    if (ui.alert.enabled) {
-      ui.alert.on_key(key);
-      return;
-    }
-
-    if (ui.ask.enabled) {
-      ui.ask.on_key(key);
-      return;
-    }
-
-    if (ui.save_as.enabled) {
-      ui.save_as.on_key(key);
-      return;
-    }
-
-    if (actions_started > 0) {
-      return;
-    }
-
     const act = this.#actions.find((x) => x.match(key));
     if (act) {
       act.run();
       return;
     }
 
-    if (ui.editor.enabled) {
-      ui.editor.on_key(key);
+    if (this.ui.editor.enabled) {
+      this.ui.editor.on_key(key);
     }
   }
 }
