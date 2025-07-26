@@ -8,12 +8,14 @@ export class Palette extends Modal<[], void> {
   protected size = new Area(0, 0, 60, 10);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
-  #text = "";
+  #options: string[] = [];
   #done!: PromiseWithResolvers<void>;
 
   async open(): Promise<void> {
     this.enabled = true;
-    this.#text = "TODO";
+    this.#options.push("Hello");
+    this.#options.push("World");
+    this.#options.push("TODO");
     this.#done = Promise.withResolvers();
 
     this.render();
@@ -56,20 +58,20 @@ export class Palette extends Modal<[], void> {
     let pos = 0;
 
     for (let y = y0 + 3; y < y1; y += 1) {
-      if (pos === this.#text.length) {
+      if (pos === this.#options.length) {
         break;
       }
 
       const space = { len: w - 4 };
-      const line = this.#text.slice(pos, pos + space.len);
-
-      pos += line.length;
+      const line = this.#options[pos]!;
 
       vt.write(
         vt.cursor.set(y, x0 + 2),
         PALETTE_COLORS,
         ...vt.fmt.text(space, line),
       );
+
+      pos += 1;
     }
 
     this.editor.render();
