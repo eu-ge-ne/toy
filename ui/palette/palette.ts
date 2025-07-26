@@ -5,7 +5,7 @@ import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS } from "@ui/theme";
 
 export interface PaletteOption {
-  id: string;
+  name: string;
 }
 
 export class Palette
@@ -78,7 +78,7 @@ export class Palette
       vt.write(
         vt.cursor.set(y, x0 + 2),
         PALETTE_COLORS,
-        ...vt.fmt.text(space, option.id),
+        ...vt.fmt.text(space, option.name),
       );
 
       i += 1;
@@ -93,9 +93,9 @@ export class Palette
     if (!text) {
       this.#filtered = this.#options;
     } else {
-      this.#filtered = this.#options.filter((x) => x.id.includes(text));
+      this.#filtered = this.#options.filter((x) => x.name.includes(text));
     }
 
-    this.#filtered.sort((a, b) => a.id.localeCompare(b.id));
+    this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
   }
 }

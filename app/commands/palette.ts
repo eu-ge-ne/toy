@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class PaletteCommand extends Command {
-  override id = "Palette";
+  override name = "Palette";
 
   keys = [
     { name: "F1" },
