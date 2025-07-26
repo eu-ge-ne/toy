@@ -9,6 +9,7 @@ import { Debug } from "@ui/debug";
 import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
+import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
@@ -16,7 +17,7 @@ import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
-  #commands = [
+  commands = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -34,6 +35,7 @@ export class App {
     new cmd.LeftCommand(this),
     new cmd.PageDownCommand(this),
     new cmd.PageUpCommand(this),
+    new cmd.PaletteCommand(this),
     new cmd.PasteCommand(this),
     new cmd.RedoCommand(this),
     new cmd.RightCommand(this),
@@ -53,14 +55,17 @@ export class App {
   file_path = "";
   changes = false;
 
+  #ed = new Editor(editor_graphemes, { multi_line: true });
+
   ui = {
-    alert: new Alert(),
-    ask: new Ask(),
     debug: new Debug(),
-    editor: new Editor(editor_graphemes, { multi_line: true }),
+    editor: this.#ed,
     footer: new Footer(),
     header: new Header(),
-    save_as: new SaveAs(),
+    alert: new Alert(this.#ed),
+    ask: new Ask(this.#ed),
+    save_as: new SaveAs(this.#ed),
+    palette: new Palette(this.#ed),
   };
 
   async run(): Promise<void> {
@@ -102,7 +107,8 @@ export class App {
   };
 
   resize(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
 
     const screen = Area.from_screen();
 
@@ -123,10 +129,12 @@ export class App {
     save_as.resize(screen);
     alert.resize(screen);
     ask.resize(screen);
+    palette.resize(screen);
   }
 
   render(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
 
     header.render();
     editor.render();
@@ -135,15 +143,22 @@ export class App {
     save_as.render();
     alert.render();
     ask.render();
+    palette.render();
   }
 
-  get focused_editor(): Editor | undefined {
-    if (this.ui.save_as.enabled) {
-      return this.ui.save_as.editor;
+  get active_editor(): Editor | undefined {
+    const { palette, save_as, editor } = this.ui;
+
+    if (palette.enabled) {
+      return palette.editor;
     }
 
-    if (this.ui.editor.enabled) {
-      return this.ui.editor;
+    if (save_as.enabled) {
+      return save_as.editor;
+    }
+
+    if (editor.enabled) {
+      return editor;
     }
 
     return undefined;
@@ -244,7 +259,7 @@ export class App {
       return;
     }
 
-    this.#commands.find((x) => x.match(key))?.run(key);
+    this.commands.find((x) => x.match(key))?.run(key);
   }
 
   #set_file_path(x: string): void {

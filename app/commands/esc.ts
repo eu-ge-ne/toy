@@ -6,7 +6,7 @@ export class EscCommand extends Command {
   ];
 
   protected override async command(): Promise<void> {
-    const { alert, ask, save_as, editor } = this.app.ui;
+    const { palette, alert, ask, save_as, editor } = this.app.ui;
 
     if (alert.enabled) {
       alert.on_esc_key();
@@ -23,6 +23,12 @@ export class EscCommand extends Command {
     if (save_as.enabled) {
       save_as.on_esc_key();
       save_as.render();
+      return;
+    }
+
+    if (palette.enabled) {
+      palette.on_esc_key();
+      palette.render();
       return;
     }
 

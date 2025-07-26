@@ -14,6 +14,7 @@ export * from "./invisible.ts";
 export * from "./left.ts";
 export * from "./page-down.ts";
 export * from "./page-up.ts";
+export * from "./palette.ts";
 export * from "./paste.ts";
 export * from "./redo.ts";
 export * from "./right.ts";

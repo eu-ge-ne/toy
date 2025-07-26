@@ -1,10 +1,10 @@
 import { Command } from "./command.ts";
 
-export class SaveCommand extends Command {
-  override name = "Save";
+export class PaletteCommand extends Command {
+  override name = "Palette";
 
   keys = [
-    { name: "F2" },
+    { name: "F1" },
   ];
 
   async command(): Promise<void> {
@@ -12,15 +12,14 @@ export class SaveCommand extends Command {
       return;
     }
 
-    const { editor } = this.app.ui;
+    const { editor, palette } = this.app.ui;
 
     editor.enabled = false;
 
-    await this.app.save();
+    await palette.open(this.app.commands);
 
     editor.enabled = true;
 
-    editor.reset(false);
     editor.render();
   }
 }
