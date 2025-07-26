@@ -4,7 +4,7 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 
-const LIST_SIZE = 10;
+const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
   name: string;
@@ -19,19 +19,20 @@ export class Palette
   #parent_area!: Area;
   #options: PaletteOption[] = [];
   #filtered: PaletteOption[] = [];
-  #selected_index = -1;
+  #selected_index = 0;
+  #scroll_index = 0;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.editor.enabled = true;
-    this.editor.history.on_changed = () => {
-      this.#filter();
-      this.render();
-    };
 
     this.#options = options;
     this.#done = Promise.withResolvers();
 
+    this.editor.history.on_changed = () => {
+      this.#filter();
+      this.render();
+    };
     this.#filter();
     this.render();
 
@@ -80,13 +81,20 @@ export class Palette
       return;
     }
 
-    const h = 3 + Math.min(this.#filtered.length, LIST_SIZE);
-    this.size = new Area(0, 0, 60, h);
+    const list_size = Math.min(this.#filtered.length, MAX_LIST_SIZE);
+    this.size = new Area(0, 0, 60, 3 + list_size);
     super.resize(this.#parent_area);
     this.editor.resize(
       new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
     );
     this.parent.render();
+
+    const delta = this.#selected_index - this.#scroll_index;
+    if (delta < 0) {
+      this.#scroll_index = this.#selected_index;
+    } else if (delta >= list_size) {
+      this.#scroll_index = this.#selected_index - list_size + 1;
+    }
 
     vt.write(
       vt.bsu,
@@ -95,10 +103,11 @@ export class Palette
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
     );
 
-    let i = 0;
+    const max_i = this.#scroll_index + list_size;
+    let i = this.#scroll_index;
 
     for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
-      if (i === LIST_SIZE) {
+      if (i === max_i) {
         break;
       }
       const option = this.#filtered[i];
@@ -135,6 +144,6 @@ export class Palette
 
     this.#filtered.sort((a, b) => a.name.localeCompare(b.name));
 
-    this.#selected_index = this.#filtered.length === 0 ? -1 : 0;
+    this.#selected_index = 0;
   }
 }
