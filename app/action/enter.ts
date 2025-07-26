@@ -26,12 +26,9 @@ export class EnterAction extends Action {
       return;
     }
 
-    if (editor.enabled) {
-      if (editor.opts.multi_line) {
-        editor.insert("\n");
-
-        editor.render();
-      }
+    if (editor.enabled && editor.opts.multi_line) {
+      editor.insert("\n");
+      editor.render();
     }
   }
 }
