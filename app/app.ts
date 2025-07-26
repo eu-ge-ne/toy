@@ -16,6 +16,7 @@ import * as act from "./action/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
+  readonly save_action = new act.SaveAction(this);
   readonly save_as_action = new act.SaveAsAction(this);
 
   #actions = [
@@ -26,8 +27,8 @@ export class App {
     new act.EscAction(this),
     new act.ExitAction(this),
     new act.InvisibleAction(this),
+    this.save_action,
     this.save_as_action,
-    new act.SaveAction(this),
     new act.TextAction(this),
     new act.WrapAction(this),
     new act.ZenAction(this),

@@ -9,7 +9,7 @@ export * from "./2/left.ts";
 export * from "./load.ts";
 export * from "./2/right.ts";
 export * from "./2/save-as.ts";
-export * from "./2/save.ts";
+export * from "./save.ts";
 export * from "./2/text.ts";
 export * from "./wrap.ts";
 export * from "./zen.ts";

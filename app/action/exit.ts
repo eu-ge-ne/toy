@@ -1,5 +1,4 @@
 import { Action } from "./action.ts";
-import { SaveAction } from "./2/save.ts";
 
 export class ExitAction extends Action {
   keys = [
@@ -7,7 +6,7 @@ export class ExitAction extends Action {
   ];
 
   protected override async _run(): Promise<void> {
-    const { actions_started, changes, ui } = this.app;
+    const { actions_started, changes, ui, save_action } = this.app;
     if (actions_started > 1) {
       return;
     }
@@ -16,7 +15,7 @@ export class ExitAction extends Action {
       ui.editor.enabled = false;
 
       if (await ui.ask.open("Save changes?")) {
-        await new SaveAction(this.app).run();
+        await save_action.run();
       }
     }
 
