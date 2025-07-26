@@ -158,12 +158,8 @@ export class App {
       });
 
       await editor.buffer.save(file);
-
-      editor.reset(false);
     } catch (err) {
       await alert.open(err);
-
-      this.render();
 
       await this.#save_as();
     }
@@ -175,7 +171,6 @@ export class App {
     while (true) {
       const path = await save_as.open(this.file_path);
       if (!path) {
-        this.render();
         return;
       }
 
@@ -188,18 +183,12 @@ export class App {
 
         await editor.buffer.save(file);
 
-        editor.reset(false);
-
         this.set_file_path(path);
-        this.render();
+
+        return;
       } catch (err) {
         await alert.open(err);
-
-        this.render();
-        continue;
       }
-
-      return;
     }
   }
 

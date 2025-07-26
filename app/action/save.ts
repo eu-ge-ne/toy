@@ -10,10 +10,14 @@ export class SaveAction extends Action {
       return;
     }
 
-    this.app.ui.editor.enabled = false;
+    const { editor } = this.app.ui;
+
+    editor.enabled = false;
 
     await this.app.save();
 
-    this.app.ui.editor.enabled = true;
+    editor.enabled = true;
+    editor.reset(false);
+    editor.render();
   }
 }
