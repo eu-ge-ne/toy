@@ -12,12 +12,12 @@ export class PasteAction extends Action {
       return;
     }
 
-    const { clipboard } = editor;
-
-    if (clipboard.length > 0) {
-      editor.insert(clipboard);
-
-      editor.render();
+    if (!editor.clipboard) {
+      return;
     }
+
+    editor.insert(editor.clipboard);
+
+    editor.render();
   }
 }
