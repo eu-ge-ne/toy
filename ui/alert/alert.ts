@@ -36,8 +36,9 @@ export class Alert extends Modal<[unknown], void> {
 
     const { y0, x0, y1, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.hide,
       ALERT_BG,
       ...vt.clear(y0, x0, h, w),
@@ -65,7 +66,8 @@ export class Alert extends Modal<[unknown], void> {
     vt.write(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ENTER‧ok"),
-      vt.esu,
     );
+
+    vt.end_sync();
   }
 }

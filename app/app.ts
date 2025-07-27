@@ -148,6 +148,8 @@ export class App {
     const { palette, editor, debug, header, footer, save_as, alert, ask } =
       this.ui;
 
+    vt.begin_sync();
+
     header.render();
     editor.render();
     footer.render();
@@ -156,6 +158,8 @@ export class App {
     alert.render();
     ask.render();
     palette.render();
+
+    vt.end_sync();
   }
 
   get active_editor(): Editor | undefined {

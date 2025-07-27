@@ -57,8 +57,9 @@ export class SaveAs extends Modal<[string], string> {
 
     const { y0, x0, y1, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.hide,
       SAVE_AS_BG,
       ...vt.clear(y0, x0, h, w),
@@ -67,9 +68,10 @@ export class SaveAs extends Modal<[string], string> {
       ...vt.fmt.center({ len: w }, "Save As"),
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
-      vt.esu,
     );
 
     this.editor.render();
+
+    vt.end_sync();
   }
 }

@@ -83,12 +83,13 @@ export class Palette
       return;
     }
 
+    vt.begin_sync();
+
     this.#resize();
     this.parent.render();
     this.#scroll();
 
     vt.write(
-      vt.bsu,
       vt.cursor.hide,
       PALETTE_BG,
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
@@ -100,9 +101,9 @@ export class Palette
       this.#render_options();
     }
 
-    vt.write(vt.esu);
-
     this.editor.render();
+
+    vt.end_sync();
   }
 
   #filter(): void {

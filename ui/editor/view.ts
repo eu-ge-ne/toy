@@ -42,7 +42,7 @@ export class View {
       line_index_enabled,
     } = this.editor;
 
-    vt.write(vt.bsu);
+    vt.begin_sync();
 
     this.#vt_buf.write(
       ...(enabled ? [] : [vt.cursor.save]),
@@ -94,7 +94,7 @@ export class View {
       this.#vt_buf.flush(vt.cursor.restore);
     }
 
-    vt.write(vt.esu);
+    vt.end_sync();
   }
 
   #begin_ln(): vt.fmt.Span {
