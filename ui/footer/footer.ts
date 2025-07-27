@@ -1,6 +1,6 @@
+import { FOOTER_BG, FOOTER_CURSOR_COLORS } from "@lib/theme";
 import { Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { FOOTER_BG, FOOTER_CURSOR_COLORS } from "@ui/theme";
 
 export class Footer extends Control {
   #cursor_status = "";
@@ -13,8 +13,9 @@ export class Footer extends Control {
     const { y0, x0, h, w } = this.area;
     const space = { len: w };
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.save,
       FOOTER_BG,
       ...vt.clear(y0, x0, h, w),
@@ -30,8 +31,9 @@ export class Footer extends Control {
       vt.cursor.set(y0, x0 + space.len),
       ...data,
       vt.cursor.restore,
-      vt.esu,
     );
+
+    vt.end_sync();
   }
 
   set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {

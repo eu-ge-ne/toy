@@ -1,13 +1,18 @@
 import { Command } from "./command.ts";
 
 export class UndoCommand extends Command {
+  override option = {
+    name: "Undo",
+    description: "Edit: Undo",
+  };
+
   keys = [
     { name: "z", ctrl: true },
     { name: "z", super: true },
   ];
 
-  protected override async command(): Promise<void> {
-    const editor = this.app.focused_editor;
+  async command(): Promise<Command | undefined> {
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

@@ -1,13 +1,13 @@
 import { Command } from "./command.ts";
 
-export class WrapCommand extends Command {
+export class WhitespaceCommand extends Command {
   override option = {
-    name: "Wrap",
-    description: "View: Toggle Line Wrap",
+    name: "Whitespace",
+    description: "View: Toggle Render Whitespace",
   };
 
   keys = [
-    { name: "F6" },
+    { name: "F5" },
   ];
 
   async command(): Promise<Command | undefined> {
@@ -17,8 +17,7 @@ export class WrapCommand extends Command {
 
     const { editor } = this.app.ui;
 
-    editor.wrap_enabled = !editor.wrap_enabled;
-    editor.cursor.move(0, -Number.MAX_SAFE_INTEGER, false);
+    editor.whitespace_enabled = !editor.whitespace_enabled;
 
     editor.render();
   }

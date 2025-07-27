@@ -1,11 +1,16 @@
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
+  override option = {
+    name: "Debug",
+    description: "Global: Toggle Debug Panel",
+  };
+
   keys = [
     { name: "F9" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<Command | undefined> {
     if (Command.started > 1) {
       return;
     }

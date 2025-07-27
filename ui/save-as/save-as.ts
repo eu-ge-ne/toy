@@ -1,28 +1,28 @@
 import { GraphemePool } from "@lib/grapheme";
+import { SAVE_AS_BG, SAVE_AS_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
-import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
-  #done!: PromiseWithResolvers<string>;
 
   async open(file_path: string): Promise<string> {
     const { buffer } = this.editor;
 
+    this.done = Promise.withResolvers();
+
     this.enabled = true;
     this.editor.enabled = true;
-    this.#done = Promise.withResolvers();
 
     buffer.set_text(file_path);
     this.editor.reset(true);
 
     this.render();
 
-    const result = await this.#done.promise;
+    const result = await this.done.promise;
 
     this.enabled = false;
     this.editor.enabled = false;
@@ -31,13 +31,13 @@ export class SaveAs extends Modal<[string], string> {
   }
 
   on_esc_key(): void {
-    this.#done.resolve("");
+    this.done.resolve("");
   }
 
   on_enter_key(): void {
     const path = this.editor.buffer.get_text();
     if (path) {
-      this.#done.resolve(path);
+      this.done.resolve(path);
     }
   }
 
@@ -56,8 +56,9 @@ export class SaveAs extends Modal<[string], string> {
 
     const { y0, x0, y1, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.hide,
       SAVE_AS_BG,
       ...vt.clear(y0, x0, h, w),
@@ -66,9 +67,10 @@ export class SaveAs extends Modal<[string], string> {
       ...vt.fmt.center({ len: w }, "Save As"),
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
-      vt.esu,
     );
 
     this.editor.render();
+
+    vt.end_sync();
   }
 }

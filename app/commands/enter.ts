@@ -5,8 +5,14 @@ export class EnterCommand extends Command {
     { name: "ENTER" },
   ];
 
-  protected override async command(): Promise<void> {
-    const { alert, ask, save_as, editor } = this.app.ui;
+  async command(): Promise<Command | undefined> {
+    const { palette, alert, ask, save_as, editor } = this.app.ui;
+
+    if (palette.enabled) {
+      palette.on_enter_key();
+      palette.render();
+      return;
+    }
 
     if (alert.enabled) {
       alert.on_enter_key();

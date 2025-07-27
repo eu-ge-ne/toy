@@ -1,8 +1,6 @@
+import { DEBUG_BG, DEBUG_COLORS } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
-
-const AREA = new Area(0, 0, 15, 4);
 
 export class Debug extends Control {
   #command_time = 0;
@@ -10,12 +8,7 @@ export class Debug extends Control {
 
   override resize(area: Area): void {
     super.resize(
-      new Area(
-        area.x0 + area.w - AREA.w,
-        area.y0 + area.h - AREA.h,
-        AREA.w,
-        AREA.h,
-      ),
+      new Area(area.x0 + area.w - 15, area.y0 + area.h - 4, 15, 4),
     );
   }
 
@@ -26,8 +19,9 @@ export class Debug extends Control {
 
     const { y0, x0, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.save,
       DEBUG_BG,
       ...vt.clear(y0, x0, h, w),
@@ -42,13 +36,14 @@ export class Debug extends Control {
       vt.cursor.set(y0 + 2, x0 + 1),
       ...vt.fmt.text(
         { len: w - 1 },
-        "Render: ",
+        "Render : ",
         this.#render_time.toString(),
         " ms",
       ),
       vt.cursor.restore,
-      vt.esu,
     );
+
+    vt.end_sync();
   }
 
   set_command_time(x: number): void {

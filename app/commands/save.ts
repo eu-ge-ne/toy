@@ -1,11 +1,16 @@
 import { Command } from "./command.ts";
 
 export class SaveCommand extends Command {
+  override option = {
+    name: "Save",
+    description: "Global: Save",
+  };
+
   keys = [
     { name: "F2" },
   ];
 
-  protected override async command(): Promise<void> {
+  async command(): Promise<Command | undefined> {
     if (Command.started > 1) {
       return;
     }

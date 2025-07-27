@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.18
+
+- Improved synchronized rendering
+- Added Command Palette
+
 ## v0.0.17
 
 - Improved Save, SaveAs and Alert modals

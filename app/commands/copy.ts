@@ -3,13 +3,18 @@ import { copy_to_clipboard, write } from "@lib/vt";
 import { Command } from "./command.ts";
 
 export class CopyCommand extends Command {
+  override option = {
+    name: "Copy",
+    description: "Edit: Copy",
+  };
+
   keys = [
     { name: "c", ctrl: true },
     { name: "c", super: true },
   ];
 
-  protected override async command(): Promise<void> {
-    const editor = this.app.focused_editor;
+  async command(): Promise<Command | undefined> {
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

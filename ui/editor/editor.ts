@@ -22,7 +22,7 @@ export class Editor extends Control {
   readonly view = new View(this);
 
   line_index_enabled = false;
-  invisible_enabled = false;
+  whitespace_enabled = false;
   wrap_enabled = false;
   clipboard = "";
 

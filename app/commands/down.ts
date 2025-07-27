@@ -8,8 +8,15 @@ export class DownCommand extends Command {
     { name: "DOWN", shift: true },
   ];
 
-  protected override async command(key: Key): Promise<void> {
-    const editor = this.app.focused_editor;
+  async command(key: Key): Promise<Command | undefined> {
+    const { palette } = this.app.ui;
+
+    if (palette.enabled) {
+      palette.on_down_key();
+      palette.render();
+    }
+
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

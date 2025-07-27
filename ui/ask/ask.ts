@@ -1,21 +1,21 @@
+import { ASK_BG, ASK_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { ASK_BG, ASK_COLORS } from "@ui/theme";
 
 export class Ask extends Modal<[string], boolean> {
   protected size = new Area(0, 0, 60, 7);
 
   #text = "";
-  #done!: PromiseWithResolvers<boolean>;
 
   async open(text: string): Promise<boolean> {
+    this.done = Promise.withResolvers();
+
     this.enabled = true;
     this.#text = text;
-    this.#done = Promise.withResolvers();
 
     this.render();
 
-    const result = await this.#done.promise;
+    const result = await this.done.promise;
 
     this.enabled = false;
 
@@ -23,11 +23,11 @@ export class Ask extends Modal<[string], boolean> {
   }
 
   on_esc_key(): void {
-    this.#done.resolve(false);
+    this.done.resolve(false);
   }
 
   on_enter_key(): void {
-    this.#done.resolve(true);
+    this.done.resolve(true);
   }
 
   render(): void {
@@ -37,8 +37,9 @@ export class Ask extends Modal<[string], boolean> {
 
     const { y0, x0, y1, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.hide,
       ASK_BG,
       ...vt.clear(y0, x0, h, w),
@@ -66,7 +67,8 @@ export class Ask extends Modal<[string], boolean> {
     vt.write(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧no    ENTER‧yes"),
-      vt.esu,
     );
+
+    vt.end_sync();
   }
 }

@@ -1,4 +1,4 @@
 {
-  "name": "@ui/theme",
+  "name": "@ui/palette",
   "exports": "./mod.ts"
 }

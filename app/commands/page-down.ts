@@ -8,8 +8,8 @@ export class PageDownCommand extends Command {
     { name: "PAGE_DOWN", shift: true },
   ];
 
-  protected override async command(key: Key): Promise<void> {
-    const editor = this.app.focused_editor;
+  async command(key: Key): Promise<Command | undefined> {
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

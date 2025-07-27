@@ -9,8 +9,8 @@ export class TextCommand extends Command {
     return typeof key === "string" || typeof key.text === "string";
   }
 
-  protected override async command(key: Key | string): Promise<void> {
-    const editor = this.app.focused_editor;
+  async command(key: Key | string): Promise<Command | undefined> {
+    const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
     }

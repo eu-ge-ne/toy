@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Key, read_input } from "@lib/input";
+import { display_keys, Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -9,14 +9,16 @@ import { Debug } from "@ui/debug";
 import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
+import { Palette, PaletteOption } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
+import { Command } from "./commands/command.ts";
 
 export class App {
-  #commands = [
+  commands: cmd.Command[] = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -30,10 +32,10 @@ export class App {
     new cmd.EscCommand(this),
     new cmd.ExitCommand(this),
     new cmd.HomeCommand(this),
-    new cmd.InvisibleCommand(this),
     new cmd.LeftCommand(this),
     new cmd.PageDownCommand(this),
     new cmd.PageUpCommand(this),
+    new cmd.PaletteCommand(this),
     new cmd.PasteCommand(this),
     new cmd.RedoCommand(this),
     new cmd.RightCommand(this),
@@ -43,25 +45,40 @@ export class App {
     new cmd.TopCommand(this),
     new cmd.UndoCommand(this),
     new cmd.UpCommand(this),
+    new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
     new cmd.ZenCommand(this),
   ];
 
-  args = parseArgs(Deno.args);
+  options: PaletteOption[];
 
+  args = parseArgs(Deno.args);
   zen = true;
   file_path = "";
   changes = false;
 
+  #ed = new Editor(editor_graphemes, { multi_line: true });
+
   ui = {
-    alert: new Alert(),
-    ask: new Ask(),
     debug: new Debug(),
-    editor: new Editor(editor_graphemes, { multi_line: true }),
+    editor: this.#ed,
     footer: new Footer(),
     header: new Header(),
-    save_as: new SaveAs(),
+    alert: new Alert(this.#ed),
+    ask: new Ask(this.#ed),
+    save_as: new SaveAs(this.#ed),
+    palette: new Palette(this.#ed),
   };
+
+  constructor() {
+    this.options = this.commands.filter((x) => x.option).map((x) => ({
+      name: x.option!.name,
+      description: x.option!.description,
+      keys: display_keys(x.keys),
+    }));
+
+    this.options.sort((a, b) => a.description.localeCompare(b.description));
+  }
 
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
@@ -102,7 +119,8 @@ export class App {
   };
 
   resize(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
 
     const screen = Area.from_screen();
 
@@ -123,10 +141,14 @@ export class App {
     save_as.resize(screen);
     alert.resize(screen);
     ask.resize(screen);
+    palette.resize(screen);
   }
 
   render(): void {
-    const { editor, debug, header, footer, save_as, alert, ask } = this.ui;
+    const { palette, editor, debug, header, footer, save_as, alert, ask } =
+      this.ui;
+
+    vt.begin_sync();
 
     header.render();
     editor.render();
@@ -135,15 +157,24 @@ export class App {
     save_as.render();
     alert.render();
     ask.render();
+    palette.render();
+
+    vt.end_sync();
   }
 
-  get focused_editor(): Editor | undefined {
-    if (this.ui.save_as.enabled) {
-      return this.ui.save_as.editor;
+  get active_editor(): Editor | undefined {
+    const { palette, save_as, editor } = this.ui;
+
+    if (palette.enabled) {
+      return palette.editor;
     }
 
-    if (this.ui.editor.enabled) {
-      return this.ui.editor;
+    if (save_as.enabled) {
+      return save_as.editor;
+    }
+
+    if (editor.enabled) {
+      return editor;
     }
 
     return undefined;
@@ -244,7 +275,13 @@ export class App {
       return;
     }
 
-    this.#commands.find((x) => x.match(key))?.run(key);
+    this.#run_command(key, this.commands.find((x) => x.match(key)));
+  }
+
+  async #run_command(key: Key | string, command?: Command): Promise<void> {
+    while (command) {
+      command = await command.run(key);
+    }
   }
 
   #set_file_path(x: string): void {

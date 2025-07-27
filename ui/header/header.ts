@@ -1,10 +1,10 @@
-import { Control } from "@lib/ui";
-import * as vt from "@lib/vt";
 import {
   HEADER_BG,
   HEADER_FILE_PATH_COLORS,
   HEADER_UNSAVED_FLAG_COLORS,
-} from "@ui/theme";
+} from "@lib/theme";
+import { Control } from "@lib/ui";
+import * as vt from "@lib/vt";
 
 const FLAG = " +";
 
@@ -19,8 +19,9 @@ export class Header extends Control {
 
     const { y0, x0, h, w } = this.area;
 
+    vt.begin_sync();
+
     vt.write(
-      vt.bsu,
       vt.cursor.save,
       HEADER_BG,
       ...vt.clear(y0, x0, h, w),
@@ -32,8 +33,9 @@ export class Header extends Control {
         ...(this.#unsaved_flag ? [HEADER_UNSAVED_FLAG_COLORS, FLAG] : []),
       ),
       vt.cursor.restore,
-      vt.esu,
     );
+
+    vt.end_sync();
   }
 
   set_file_path(x: string): void {
