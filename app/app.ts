@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Key, read_input } from "@lib/input";
+import { display_key, Key, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -50,7 +50,7 @@ export class App {
     new cmd.ZenCommand(this),
   ];
 
-  options = this.commands.filter((x) => x.option) as PaletteOption[];
+  options: PaletteOption[];
 
   args = parseArgs(Deno.args);
   zen = true;
@@ -71,7 +71,13 @@ export class App {
   };
 
   constructor() {
-    this.options.sort((a, b) => a.option.name.localeCompare(b.option.name));
+    this.options = this.commands.filter((x) => x.option).map((x) => ({
+      name: x.option!.name,
+      description: x.option!.description,
+      keys: x.keys.map(display_key).join(", "),
+    }));
+
+    this.options.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async run(): Promise<void> {

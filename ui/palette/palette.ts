@@ -1,5 +1,4 @@
 import { GraphemePool } from "@lib/grapheme";
-import { display_key, Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -8,8 +7,9 @@ import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
-  option: { name: string; description: string };
-  keys: Key[];
+  name: string;
+  description: string;
+  keys: string;
 }
 
 export class Palette
@@ -110,8 +110,7 @@ export class Palette
       this.#options = this.#all;
     } else {
       this.#options = this.#all.filter((x) =>
-        x.option.name.toUpperCase().includes(text) ||
-        x.option.description.toUpperCase().includes(text)
+        x.description.toUpperCase().includes(text)
       );
     }
 
@@ -128,7 +127,7 @@ export class Palette
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      const w = option.option.description.length + 8;
+      const w = option.description.length;
       const h = 1 + Math.ceil(w / (area_width - 4));
       if (area_height + h > this.#parent_area.h) {
         break;
@@ -185,13 +184,12 @@ export class Palette
         i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
       );
-      const keys = option.keys.map(display_key).join(", ").padStart(space.len);
-      vt.write(...vt.fmt.text(space, keys));
+      vt.write(...vt.fmt.text(space, option.keys.padStart(space.len)));
 
       space = { len: this.area.w - 4 };
       vt.write(
         vt.cursor.set(y + 1, this.area.x0 + 2),
-        ...vt.fmt.text(space, option.option.description),
+        ...vt.fmt.text(space, option.description),
       );
       vt.write(vt.fmt.space(space, space.len));
 

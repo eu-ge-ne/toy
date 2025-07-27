@@ -21,9 +21,7 @@ export class PaletteCommand extends Command {
     editor.render();
 
     if (option) {
-      return this.app.commands.find((x) =>
-        x.option?.name === option.option.name
-      );
+      return this.app.commands.find((x) => x.option?.name === option.name);
     }
   }
 }
