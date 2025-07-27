@@ -33,15 +33,14 @@ brew install eu-ge-ne/tap/toy
 - Working with text as a sequence of Unicode grapheme clusters
 - Moving cursor according to the width of characters rendered by terminal
   emulators
-
-- Uses 256-color palette for rendering text
-- Can render whitespace characters
-- Leverages the
+- Using 256-color palette for rendering text
+- Rendering whitespace characters
+- Leveraging the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
-- Supports the
+- Supporting the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-- Integrates with the system clipboard via OSC52
+- Integration with the system clipboard via OSC52
 - Undo/Redo buffer
 - Line wrapping
 - Command Palette
