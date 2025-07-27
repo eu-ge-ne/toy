@@ -5,7 +5,7 @@ export class EnterCommand extends Command {
     { name: "ENTER" },
   ];
 
-  async command(): Promise<void> {
+  async command(): Promise<Command | undefined> {
     const { palette, alert, ask, save_as, editor } = this.app.ui;
 
     if (palette.enabled) {

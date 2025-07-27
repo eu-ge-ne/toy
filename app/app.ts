@@ -17,7 +17,7 @@ import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
-  #commands: cmd.Command[] = [
+  commands: cmd.Command[] = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -69,7 +69,7 @@ export class App {
   };
 
   constructor() {
-    this.palette_options = this.#commands.filter((x) =>
+    this.palette_options = this.commands.filter((x) =>
       typeof x.name === "string"
     ) as PaletteOption[];
     this.palette_options.sort((a, b) => a.name.localeCompare(b.name));
@@ -266,7 +266,7 @@ export class App {
       return;
     }
 
-    this.#commands.find((x) => x.match(key))?.run(key);
+    this.commands.find((x) => x.match(key))?.run(key);
   }
 
   #set_file_path(x: string): void {

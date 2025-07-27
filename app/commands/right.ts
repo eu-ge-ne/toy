@@ -8,7 +8,7 @@ export class RightCommand extends Command {
     { name: "RIGHT", shift: true },
   ];
 
-  async command(key: Key): Promise<void> {
+  async command(key: Key): Promise<Command | undefined> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

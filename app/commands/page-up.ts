@@ -8,7 +8,7 @@ export class PageUpCommand extends Command {
     { name: "PAGE_UP", shift: true },
   ];
 
-  async command(key: Key): Promise<void> {
+  async command(key: Key): Promise<Command | undefined> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

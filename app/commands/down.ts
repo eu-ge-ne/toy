@@ -8,7 +8,7 @@ export class DownCommand extends Command {
     { name: "DOWN", shift: true },
   ];
 
-  async command(key: Key): Promise<void> {
+  async command(key: Key): Promise<Command | undefined> {
     const { palette } = this.app.ui;
 
     if (palette.enabled) {

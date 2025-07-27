@@ -7,7 +7,7 @@ export class InvisibleCommand extends Command {
     { name: "F5" },
   ];
 
-  async command(): Promise<void> {
+  async command(): Promise<Command | undefined> {
     if (Command.started > 1) {
       return;
     }

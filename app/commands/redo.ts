@@ -8,7 +8,7 @@ export class RedoCommand extends Command {
     { name: "y", super: true },
   ];
 
-  async command(): Promise<void> {
+  async command(): Promise<Command | undefined> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;
