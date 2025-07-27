@@ -1,31 +1,29 @@
 import { Key } from "@eu-ge-ne/kitty-keys";
 
-export function display_key(key: Key | string): string {
-  if (typeof key === "string") {
-    return `"${key}"`;
-  }
+export function display_keys(keys: Key[]): string {
+  return keys.map((key) => {
+    const { shift, ctrl, alt, super: super_, name } = key;
 
-  const { shift, ctrl, alt, super: super_, name } = key;
+    const chunks: string[] = [];
 
-  const chunks: string[] = [];
+    if (shift) {
+      chunks.push("⇧");
+    }
 
-  if (shift) {
-    chunks.push("⇧");
-  }
+    if (ctrl) {
+      chunks.push("⌃");
+    }
 
-  if (ctrl) {
-    chunks.push("⌃");
-  }
+    if (alt) {
+      chunks.push("⌥");
+    }
 
-  if (alt) {
-    chunks.push("⌥");
-  }
+    if (super_) {
+      chunks.push("⌘");
+    }
 
-  if (super_) {
-    chunks.push("⌘");
-  }
+    chunks.push(name.toUpperCase());
 
-  chunks.push(name);
-
-  return chunks.join("+");
+    return chunks.join("");
+  }).join(" ");
 }
