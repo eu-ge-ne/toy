@@ -2,6 +2,7 @@ import { Command } from "./command.ts";
 
 export class UndoCommand extends Command {
   name = "Undo";
+  override palette = true;
 
   keys = [
     { name: "z", ctrl: true },

@@ -2,6 +2,7 @@ import { Command } from "./command.ts";
 
 export class ExitCommand extends Command {
   name = "Exit";
+  override palette = true;
 
   keys = [
     { name: "F10" },

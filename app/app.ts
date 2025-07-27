@@ -15,9 +15,10 @@ import { SaveAs } from "@ui/save-as";
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
+import { Command } from "./commands/command.ts";
 
 export class App {
-  commands = [
+  #commands = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -49,8 +50,8 @@ export class App {
     new cmd.ZenCommand(this),
   ];
 
+  palette_commands: Command[];
   args = parseArgs(Deno.args);
-
   zen = true;
   file_path = "";
   changes = false;
@@ -67,6 +68,11 @@ export class App {
     save_as: new SaveAs(this.#ed),
     palette: new Palette(this.#ed),
   };
+
+  constructor() {
+    this.palette_commands = this.#commands.filter((x) => x.palette);
+    this.palette_commands.sort((a, b) => a.name.localeCompare(b.name));
+  }
 
   async run(): Promise<void> {
     if (this.args.v || this.args.version) {
@@ -259,7 +265,7 @@ export class App {
       return;
     }
 
-    this.commands.find((x) => x.match(key))?.run(key);
+    this.#commands.find((x) => x.match(key))?.run(key);
   }
 
   #set_file_path(x: string): void {

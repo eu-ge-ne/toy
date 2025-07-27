@@ -2,6 +2,7 @@ import { Command } from "./command.ts";
 
 export class WrapCommand extends Command {
   name = "Wrap";
+  override palette = true;
 
   keys = [
     { name: "F6" },

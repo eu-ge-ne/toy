@@ -5,6 +5,7 @@ import { App } from "../app.ts";
 
 export abstract class Command implements PaletteOption {
   abstract name: string;
+  palette?: boolean;
 
   abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 

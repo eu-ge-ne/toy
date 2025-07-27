@@ -2,6 +2,7 @@ import { Command } from "./command.ts";
 
 export class InvisibleCommand extends Command {
   name = "Invisible";
+  override palette = true;
 
   keys = [
     { name: "F5" },

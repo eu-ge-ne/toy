@@ -4,6 +4,7 @@ import { Command } from "./command.ts";
 
 export class CopyCommand extends Command {
   name = "Copy";
+  override palette = true;
 
   keys = [
     { name: "c", ctrl: true },

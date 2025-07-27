@@ -4,6 +4,7 @@ import { Command } from "./command.ts";
 
 export class CutCommand extends Command {
   name = "Cut";
+  override palette = true;
 
   keys = [
     { name: "x", ctrl: true },

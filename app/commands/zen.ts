@@ -2,6 +2,7 @@ import { Command } from "./command.ts";
 
 export class ZenCommand extends Command {
   name = "Zen";
+  override palette = true;
 
   keys = [
     { name: "F11" },
