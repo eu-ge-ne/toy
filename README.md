@@ -42,7 +42,7 @@ brew install eu-ge-ne/tap/toy
 
 ### Rendering
 
-- Using 256-color palette for rendering text
+- 256-color palette
 - Rendering whitespace characters
 - Leveraging the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
@@ -50,8 +50,8 @@ brew install eu-ge-ne/tap/toy
 
 ### Input
 
-- Supporting the
-  [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
+- [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
+  support
 - Integration with the system clipboard via OSC52
 
 ### UX
