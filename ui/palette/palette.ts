@@ -128,7 +128,8 @@ export class Palette
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      const h = 1 + Math.ceil((option.option.description.length + 8) / 56);
+      const h = 1 +
+        Math.ceil((option.option.description.length + 8) / (area_width - 4));
       if (area_height + h > this.#parent_area.h) {
         break;
       }
@@ -141,7 +142,7 @@ export class Palette
     this.area = new Area(x0, y0, area_width, area_height);
 
     this.editor.resize(
-      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
+      new Area(x0 + 2, y0 + 1, area_width - 4, 1),
     );
   }
 
