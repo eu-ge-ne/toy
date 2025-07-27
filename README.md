@@ -40,8 +40,8 @@ brew install eu-ge-ne/tap/toy
 - Integrates with the system clipboard via OSC52
 - 256 color palette
 - Command Palette
-- Undo/Redo buffer
 - Zen mode
+- Undo/Redo buffer
 - Whitespace character rendering
 - Line wrapping
 
