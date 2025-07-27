@@ -9,9 +9,10 @@ export class Ask extends Modal<[string], boolean> {
   #done!: PromiseWithResolvers<boolean>;
 
   async open(text: string): Promise<boolean> {
+    this.#done = Promise.withResolvers();
+
     this.enabled = true;
     this.#text = text;
-    this.#done = Promise.withResolvers();
 
     this.render();
 

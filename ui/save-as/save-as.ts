@@ -13,9 +13,10 @@ export class SaveAs extends Modal<[string], string> {
   async open(file_path: string): Promise<string> {
     const { buffer } = this.editor;
 
+    this.#done = Promise.withResolvers();
+
     this.enabled = true;
     this.editor.enabled = true;
-    this.#done = Promise.withResolvers();
 
     buffer.set_text(file_path);
     this.editor.reset(true);

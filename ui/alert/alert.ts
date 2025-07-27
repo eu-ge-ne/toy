@@ -9,9 +9,10 @@ export class Alert extends Modal<[unknown], void> {
   #done!: PromiseWithResolvers<void>;
 
   async open(err: unknown): Promise<void> {
+    this.#done = Promise.withResolvers();
+
     this.enabled = true;
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
-    this.#done = Promise.withResolvers();
 
     this.render();
 

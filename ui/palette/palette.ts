@@ -25,12 +25,14 @@ export class Palette
   #scroll_index = 0;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
+    this.#done = Promise.withResolvers();
+
     this.enabled = true;
     this.editor.enabled = true;
 
     this.#all = options;
-    this.#done = Promise.withResolvers();
-
+    this.editor.buffer.set_text("");
+    this.editor.reset(false);
     this.editor.history.on_changed = () => {
       this.#filter();
       this.render();
