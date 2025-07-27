@@ -55,22 +55,18 @@ export class Palette
   }
 
   on_up_key(): void {
-    if (this.#options.length === 0) {
-      return;
+    if (this.#options.length > 0) {
+      this.#selected_index = Math.max(this.#selected_index - 1, 0);
     }
-
-    this.#selected_index = Math.max(this.#selected_index - 1, 0);
   }
 
   on_down_key(): void {
-    if (this.#options.length === 0) {
-      return;
+    if (this.#options.length > 0) {
+      this.#selected_index = Math.min(
+        this.#selected_index + 1,
+        this.#options.length - 1,
+      );
     }
-
-    this.#selected_index = Math.min(
-      this.#selected_index + 1,
-      this.#options.length - 1,
-    );
   }
 
   override resize(area: Area): void {
