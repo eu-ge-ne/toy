@@ -5,7 +5,7 @@ import { Command } from "./command.ts";
 export class CutCommand extends Command {
   override option = {
     name: "Cut",
-    description: "Cut selected text",
+    description: "Edit: Cut",
   };
 
   keys = [

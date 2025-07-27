@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class UndoCommand extends Command {
   override option = {
     name: "Undo",
-    description: "Undo",
+    description: "Edit: Undo",
   };
 
   keys = [

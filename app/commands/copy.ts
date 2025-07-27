@@ -5,7 +5,7 @@ import { Command } from "./command.ts";
 export class CopyCommand extends Command {
   override option = {
     name: "Copy",
-    description: "Copy selected text",
+    description: "Edit: Copy",
   };
 
   keys = [

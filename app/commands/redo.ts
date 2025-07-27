@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class RedoCommand extends Command {
   override option = {
     name: "Redo",
-    description: "Redo",
+    description: "Edit: Redo",
   };
 
   keys = [

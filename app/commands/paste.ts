@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class PasteCommand extends Command {
   override option = {
     name: "Paste",
-    description: "Paste text at cursor",
+    description: "Edit: Paste",
   };
 
   keys = [
