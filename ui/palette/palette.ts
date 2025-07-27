@@ -100,6 +100,8 @@ export class Palette
       this.#render_options();
     }
 
+    vt.write(vt.esu);
+
     this.editor.render();
   }
 
