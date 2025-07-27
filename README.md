@@ -8,6 +8,9 @@ third-party dependencies.
 - [Installation](#installation)
   - [Homebrew (macOS only)](#homebrew-macos-only)
 - [Features](#features)
+  - [Text](#text)
+  - [Rendering](#rendering)
+  - [UX](#ux)
 - [Supported terminal emulators](#supported-terminal-emulators)
 - [Keyboard shortcuts](#keyboard-shortcuts)
   - [Function](#function)
@@ -29,10 +32,14 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
+### Text
+
 - Working with large files (tested on gigabyte-sized files)
 - Working with text as a sequence of Unicode grapheme clusters
 - Moving cursor according to the width of characters rendered by terminal
   emulators
+
+### Rendering
 
 - Using 256-color palette for rendering text
 - Rendering whitespace characters
@@ -45,6 +52,9 @@ brew install eu-ge-ne/tap/toy
 - Integration with the system clipboard via OSC52
 - Undo/Redo buffer
 - Line wrapping
+
+### UX
+
 - Command Palette
 - Zen mode
 
