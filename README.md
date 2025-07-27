@@ -108,6 +108,7 @@ brew install eu-ge-ne/tap/toy
 - `⌃+F` - Find
 - `F3` - Find next
 - `⇧+F3` - Find previous
+- Mouse support
 
 ## License
 
