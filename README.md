@@ -9,7 +9,7 @@ third-party dependencies.
   - [Homebrew (macOS only)](#homebrew-macos-only)
 - [Features](#features)
 - [Supported terminal emulators](#supported-terminal-emulators)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Keyboard shortcuts](#keyboard-shortcuts)
   - [Function](#function)
   - [Navigate](#navigate)
   - [Select](#select)
@@ -52,7 +52,7 @@ brew install eu-ge-ne/tap/toy
 - Ghostty
 - VSCode terminal
 
-## Keyboard Shortcuts
+## Keyboard shortcuts
 
 ### Function
 
