@@ -5,7 +5,6 @@ import { Editor } from "@ui/editor";
 import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 
 const MAX_LIST_SIZE = 10;
-const NO_MATCH = "No matching commands";
 
 export interface PaletteOption {
   name: string;
@@ -18,8 +17,10 @@ export class Palette
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
   #done!: PromiseWithResolvers<void>;
   #parent_area!: Area;
+
   #all: PaletteOption[] = [];
   #options: PaletteOption[] = [];
+  #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;
 
@@ -78,20 +79,9 @@ export class Palette
       return;
     }
 
-    const list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
-    this.size = new Area(0, 0, 60, 3 + Math.max(list_size, 1));
-    super.resize(this.#parent_area);
-    this.editor.resize(
-      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
-    );
+    this.#resize();
     this.parent.render();
-
-    const delta = this.#selected_index - this.#scroll_index;
-    if (delta < 0) {
-      this.#scroll_index = this.#selected_index;
-    } else if (delta >= list_size) {
-      this.#scroll_index = this.#selected_index - list_size + 1;
-    }
+    this.#scroll();
 
     vt.write(
       vt.bsu,
@@ -101,36 +91,9 @@ export class Palette
     );
 
     if (this.#options.length === 0) {
-      vt.write(
-        vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
-        PALETTE_COLORS,
-        ...vt.fmt.text({ len: this.area.w - 4 }, NO_MATCH),
-      );
+      this.#render_empty();
     } else {
-      const max_i = this.#scroll_index + list_size;
-      let i = this.#scroll_index;
-
-      for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
-        if (i === max_i) {
-          break;
-        }
-        const option = this.#options[i];
-        if (!option) {
-          break;
-        }
-
-        const space = { len: this.area.w - 4 };
-
-        vt.write(
-          vt.cursor.set(y, this.area.x0 + 2),
-          i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
-          ...vt.fmt.text(space, option.name),
-        );
-
-        vt.write(vt.fmt.space(space, space.len));
-
-        i += 1;
-      }
+      this.#render_options();
     }
 
     this.editor.render();
@@ -148,5 +111,60 @@ export class Palette
     }
 
     this.#selected_index = 0;
+  }
+
+  #resize(): void {
+    this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
+
+    this.size = new Area(0, 0, 60, 3 + Math.max(this.#list_size, 1));
+    super.resize(this.#parent_area);
+
+    this.editor.resize(
+      new Area(this.area.x0 + 2, this.area.y0 + 1, this.area.w - 4, 1),
+    );
+  }
+
+  #scroll(): void {
+    const delta = this.#selected_index - this.#scroll_index;
+    if (delta < 0) {
+      this.#scroll_index = this.#selected_index;
+    } else if (delta >= this.#list_size) {
+      this.#scroll_index = this.#selected_index - this.#list_size + 1;
+    }
+  }
+
+  #render_empty(): void {
+    vt.write(
+      vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
+      PALETTE_COLORS,
+      ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
+    );
+  }
+
+  #render_options(): void {
+    const max_i = this.#scroll_index + this.#list_size;
+    let i = this.#scroll_index;
+
+    for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
+      if (i === max_i) {
+        break;
+      }
+      const option = this.#options[i];
+      if (!option) {
+        break;
+      }
+
+      const space = { len: this.area.w - 4 };
+
+      vt.write(
+        vt.cursor.set(y, this.area.x0 + 2),
+        i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
+        ...vt.fmt.text(space, option.name),
+      );
+
+      vt.write(vt.fmt.space(space, space.len));
+
+      i += 1;
+    }
   }
 }
