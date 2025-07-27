@@ -3,7 +3,10 @@ import { copy_to_clipboard, write } from "@lib/vt";
 import { Command } from "./command.ts";
 
 export class CutCommand extends Command {
-  override name = "Cut";
+  override option = {
+    name: "Cut",
+    description: "Cut selected text",
+  };
 
   keys = [
     { name: "x", ctrl: true },

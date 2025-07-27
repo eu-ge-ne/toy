@@ -1,7 +1,10 @@
 import { Command } from "./command.ts";
 
 export class WrapCommand extends Command {
-  override name = "Wrap";
+  override option = {
+    name: "Wrap",
+    description: "Toggle line wrapping",
+  };
 
   keys = [
     { name: "F6" },

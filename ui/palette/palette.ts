@@ -8,7 +8,7 @@ import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
-  name: string;
+  option: { name: string; description: string };
   keys: Key[];
 }
 
@@ -104,13 +104,14 @@ export class Palette
   }
 
   #filter(): void {
-    const text = this.editor.buffer.get_text();
+    const text = this.editor.buffer.get_text().toUpperCase();
 
     if (!text) {
       this.#options = this.#all;
     } else {
       this.#options = this.#all.filter((x) =>
-        x.name.toUpperCase().includes(text.toUpperCase())
+        x.option.name.toUpperCase().includes(text) ||
+        x.option.description.toUpperCase().includes(text)
       );
     }
 
@@ -163,7 +164,7 @@ export class Palette
       vt.write(
         vt.cursor.set(y, this.area.x0 + 2),
         i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
-        ...vt.fmt.text(space, option.name),
+        ...vt.fmt.text(space, option.option.name),
       );
 
       const keys = option.keys.map(display_key).join(", ").padStart(space.len);

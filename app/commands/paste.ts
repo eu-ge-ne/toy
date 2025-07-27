@@ -1,7 +1,10 @@
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
-  override name = "Paste";
+  override option = {
+    name: "Paste",
+    description: "Paste text at cursor",
+  };
 
   keys = [
     { name: "v", ctrl: true },

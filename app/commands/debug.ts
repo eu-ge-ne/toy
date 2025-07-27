@@ -1,7 +1,10 @@
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
-  override name = "Debug";
+  override option = {
+    name: "Debug",
+    description: "Toggle debug panel",
+  };
 
   keys = [
     { name: "F9" },

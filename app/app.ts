@@ -50,9 +50,7 @@ export class App {
     new cmd.ZenCommand(this),
   ];
 
-  options = this.commands.filter((x) =>
-    typeof x.name === "string"
-  ) as PaletteOption[];
+  options = this.commands.filter((x) => x.option) as PaletteOption[];
 
   args = parseArgs(Deno.args);
   zen = true;
@@ -73,7 +71,7 @@ export class App {
   };
 
   constructor() {
-    this.options.sort((a, b) => a.name.localeCompare(b.name));
+    this.options.sort((a, b) => a.option.name.localeCompare(b.option.name));
   }
 
   async run(): Promise<void> {

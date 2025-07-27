@@ -3,7 +3,7 @@ import { Key } from "@lib/input";
 import { App } from "../app.ts";
 
 export abstract class Command {
-  name?: string;
+  option?: { name: string; description: string };
 
   abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 

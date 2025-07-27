@@ -1,7 +1,10 @@
 import { Command } from "./command.ts";
 
 export class RedoCommand extends Command {
-  override name = "Redo";
+  override option = {
+    name: "Redo",
+    description: "Redo",
+  };
 
   keys = [
     { name: "y", ctrl: true },
