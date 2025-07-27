@@ -10,13 +10,10 @@ import {
   EDITOR_WHITESPACE_ON_COLORS,
 } from "@lib/theme";
 import * as vt from "@lib/vt";
-import { VtBuf } from "@lib/vt-buf";
 
 import { Editor } from "./editor.ts";
 
 export class View {
-  #vt_buf = new VtBuf();
-
   #index_width!: number;
   #text_width!: number;
   #wrap_width!: number;
@@ -42,9 +39,7 @@ export class View {
       line_index_enabled,
     } = this.editor;
 
-    vt.begin_sync();
-
-    this.#vt_buf.write(
+    vt.begin_sync_write(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
@@ -86,20 +81,18 @@ export class View {
     }
 
     if (enabled) {
-      this.#vt_buf.flush(
+      vt.end_sync_write(
         vt.cursor.show,
         vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
-      this.#vt_buf.flush(vt.cursor.restore);
+      vt.end_sync_write(vt.cursor.restore);
     }
-
-    vt.end_sync();
   }
 
   #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.editor.area;
-    this.#vt_buf.write(vt.cursor.set(this.#y, x0));
+    vt.sync_write(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -145,7 +138,7 @@ export class View {
             : EDITOR_WHITESPACE_OFF_COLORS);
       }
 
-      this.#vt_buf.write(color, cell.grapheme.bytes);
+      vt.sync_write(color, cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
     }
@@ -153,7 +146,7 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      this.#vt_buf.write(
+      vt.sync_write(
         EDITOR_LINE_INDEX_COLORS,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
@@ -162,7 +155,7 @@ export class View {
 
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      this.#vt_buf.write(
+      vt.sync_write(
         EDITOR_BLANK_LINE_INDEX_COLORS,
         vt.fmt.space(span, this.#index_width),
       );

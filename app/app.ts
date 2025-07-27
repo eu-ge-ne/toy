@@ -148,7 +148,7 @@ export class App {
     const { palette, editor, debug, header, footer, save_as, alert, ask } =
       this.ui;
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
     header.render();
     editor.render();
@@ -159,7 +159,7 @@ export class App {
     ask.render();
     palette.render();
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 
   get active_editor(): Editor | undefined {
@@ -266,7 +266,7 @@ export class App {
   #on_sigwinch = () => {
     this.resize();
 
-    vt.write(vt.dummy_req);
+    vt.direct_write(vt.dummy_req);
   };
 
   async #on_input(key: Key | string | Uint8Array): Promise<void> {

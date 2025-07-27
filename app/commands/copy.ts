@@ -1,4 +1,4 @@
-import { copy_to_clipboard, write } from "@lib/vt";
+import { copy_to_clipboard, direct_write } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
@@ -32,7 +32,7 @@ export class CopyCommand extends Command {
       ]);
     }
 
-    write(copy_to_clipboard(editor.clipboard));
+    direct_write(copy_to_clipboard(editor.clipboard));
 
     editor.render();
   }

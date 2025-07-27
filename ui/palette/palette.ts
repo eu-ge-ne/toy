@@ -86,13 +86,13 @@ export class Palette
       return;
     }
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
     this.#resize();
     this.parent.render();
     this.#scroll();
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.hide,
       PALETTE_BG,
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
@@ -106,7 +106,7 @@ export class Palette
 
     this.editor.render();
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 
   #filter(): void {
@@ -133,8 +133,6 @@ export class Palette
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      //const w = option.description.length;
-      //const h = 1 + Math.ceil(w / (area_width - 4));
       const h = 1;
       if (area_height + h > this.#parent_area.h) {
         break;
@@ -162,7 +160,7 @@ export class Palette
   }
 
   #render_empty(): void {
-    vt.write(
+    vt.sync_write(
       vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
       PALETTE_COLORS,
       ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
@@ -187,14 +185,14 @@ export class Palette
       }
 
       const space = { len: this.area.w - 4 };
-      vt.write(
+      vt.sync_write(
         index === this.#selected_index
           ? PALETTE_SELECTED_COLORS
           : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
-      vt.write(...vt.fmt.text(space, option.keys.padStart(space.len)));
+      vt.sync_write(...vt.fmt.text(space, option.keys.padStart(space.len)));
 
       i += 1;
       y += 1;

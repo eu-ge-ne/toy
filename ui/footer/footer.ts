@@ -13,9 +13,7 @@ export class Footer extends Control {
     const { y0, x0, h, w } = this.area;
     const space = { len: w };
 
-    vt.begin_sync();
-
-    vt.write(
+    vt.begin_sync_write(
       vt.cursor.save,
       FOOTER_BG,
       ...vt.clear(y0, x0, h, w),
@@ -27,13 +25,11 @@ export class Footer extends Control {
       vt.fmt.space(space, 1),
     ];
 
-    vt.write(
+    vt.end_sync_write(
       vt.cursor.set(y0, x0 + space.len),
       ...data,
       vt.cursor.restore,
     );
-
-    vt.end_sync();
   }
 
   set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {

@@ -37,9 +37,9 @@ export class Ask extends Modal<[string], boolean> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.hide,
       ASK_BG,
       ...vt.clear(y0, x0, h, w),
@@ -57,18 +57,18 @@ export class Ask extends Modal<[string], boolean> {
 
       pos += line.length;
 
-      vt.write(
+      vt.sync_write(
         vt.cursor.set(y, x0 + 1),
         ASK_COLORS,
         ...vt.fmt.center(space, line),
       );
     }
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧no    ENTER‧yes"),
     );
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 }
