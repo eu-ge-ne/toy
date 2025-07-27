@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class SelectAllCommand extends Command {
-  override name = "SelectAll";
+  override name = "Select All";
 
   keys = [
     { name: "a", ctrl: true },

@@ -1,4 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
+import { display_key, Key } from "@lib/input";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -8,6 +9,7 @@ const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
   name: string;
+  keys: Key[];
 }
 
 export class Palette
@@ -164,7 +166,9 @@ export class Palette
         ...vt.fmt.text(space, option.name),
       );
 
-      vt.write(vt.fmt.space(space, space.len));
+      const keys = option.keys.map(display_key).join(", ").padStart(space.len);
+
+      vt.write(...vt.fmt.text(space, keys));
 
       i += 1;
     }
