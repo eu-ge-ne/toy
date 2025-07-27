@@ -1,5 +1,6 @@
 export * from "./backspace.ts";
 export * from "./bottom.ts";
+export * from "./command.ts";
 export * from "./copy.ts";
 export * from "./cut.ts";
 export * from "./debug.ts";

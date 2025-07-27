@@ -1,8 +1,6 @@
 import { Command } from "./command.ts";
 
 export class DeleteCommand extends Command {
-  name = "Delete";
-
   keys = [
     { name: "DELETE" },
   ];

@@ -1,8 +1,6 @@
 import { Command } from "./command.ts";
 
 export class EscCommand extends Command {
-  name = "Esc";
-
   keys = [
     { name: "ESC" },
   ];

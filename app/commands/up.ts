@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class UpCommand extends Command {
-  name = "Up";
-
   keys = [
     { name: "UP" },
     { name: "UP", shift: true },

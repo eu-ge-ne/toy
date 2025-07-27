@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class PageUpCommand extends Command {
-  name = "Page Up";
-
   keys = [
     { name: "PAGE_UP" },
     { name: "PAGE_UP", shift: true },

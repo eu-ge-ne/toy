@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class RightCommand extends Command {
-  name = "Right";
-
   keys = [
     { name: "RIGHT" },
     { name: "RIGHT", shift: true },

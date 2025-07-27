@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class HomeCommand extends Command {
-  name = "Home";
-
   keys = [
     { name: "HOME" },
     { name: "LEFT", super: true },

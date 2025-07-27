@@ -1,8 +1,6 @@
 import { Command } from "./command.ts";
 
 export class EnterCommand extends Command {
-  name = "Enter";
-
   keys = [
     { name: "ENTER" },
   ];

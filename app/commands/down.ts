@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class DownCommand extends Command {
-  name = "Down";
-
   keys = [
     { name: "DOWN" },
     { name: "DOWN", shift: true },

@@ -1,8 +1,7 @@
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
-  name = "Debug";
-  override palette = true;
+  override name = "Debug";
 
   keys = [
     { name: "F9" },

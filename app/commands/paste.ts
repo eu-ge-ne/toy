@@ -1,8 +1,7 @@
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
-  name = "Paste";
-  override palette = true;
+  override name = "Paste";
 
   keys = [
     { name: "v", ctrl: true },

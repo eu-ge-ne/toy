@@ -3,8 +3,7 @@ import { copy_to_clipboard, write } from "@lib/vt";
 import { Command } from "./command.ts";
 
 export class CopyCommand extends Command {
-  name = "Copy";
-  override palette = true;
+  override name = "Copy";
 
   keys = [
     { name: "c", ctrl: true },

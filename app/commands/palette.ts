@@ -1,9 +1,6 @@
 import { Command } from "./command.ts";
 
 export class PaletteCommand extends Command {
-  name = "Palette";
-  override palette = true;
-
   keys = [
     { name: "F1" },
   ];
@@ -17,7 +14,7 @@ export class PaletteCommand extends Command {
 
     editor.enabled = false;
 
-    await palette.open(this.app.palette_commands);
+    await palette.open(this.app.palette_options);
 
     editor.enabled = true;
 

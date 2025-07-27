@@ -9,16 +9,15 @@ import { Debug } from "@ui/debug";
 import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
-import { Palette } from "@ui/palette";
+import { Palette, PaletteOption } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
-import { Command } from "./commands/command.ts";
 
 export class App {
-  #commands = [
+  #commands: cmd.Command[] = [
     new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
@@ -50,7 +49,7 @@ export class App {
     new cmd.ZenCommand(this),
   ];
 
-  palette_commands: Command[];
+  palette_options: PaletteOption[];
   args = parseArgs(Deno.args);
   zen = true;
   file_path = "";
@@ -70,8 +69,10 @@ export class App {
   };
 
   constructor() {
-    this.palette_commands = this.#commands.filter((x) => x.palette);
-    this.palette_commands.sort((a, b) => a.name.localeCompare(b.name));
+    this.palette_options = this.#commands.filter((x) =>
+      typeof x.name === "string"
+    ) as PaletteOption[];
+    this.palette_options.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async run(): Promise<void> {

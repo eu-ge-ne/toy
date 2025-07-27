@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class TextCommand extends Command {
-  name = "Text";
-
   keys = [];
 
   override match(key: Key | string): boolean {

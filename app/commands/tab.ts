@@ -1,8 +1,6 @@
 import { Command } from "./command.ts";
 
 export class TabCommand extends Command {
-  name = "Tab";
-
   keys = [
     { name: "TAB" },
   ];

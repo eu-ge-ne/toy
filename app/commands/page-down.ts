@@ -3,8 +3,6 @@ import { Key } from "@lib/input";
 import { Command } from "./command.ts";
 
 export class PageDownCommand extends Command {
-  name = "Page Down";
-
   keys = [
     { name: "PAGE_DOWN" },
     { name: "PAGE_DOWN", shift: true },
