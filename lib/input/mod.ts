@@ -1,2 +1,2 @@
 export * from "./display.ts";
-export * from "./input.ts";
+export * from "./read.ts";
