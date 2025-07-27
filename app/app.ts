@@ -32,7 +32,6 @@ export class App {
     new cmd.EscCommand(this),
     new cmd.ExitCommand(this),
     new cmd.HomeCommand(this),
-    new cmd.InvisibleCommand(this),
     new cmd.LeftCommand(this),
     new cmd.PageDownCommand(this),
     new cmd.PageUpCommand(this),
@@ -46,6 +45,7 @@ export class App {
     new cmd.TopCommand(this),
     new cmd.UndoCommand(this),
     new cmd.UpCommand(this),
+    new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
     new cmd.ZenCommand(this),
   ];
@@ -77,7 +77,7 @@ export class App {
       keys: display_keys(x.keys),
     }));
 
-    this.options.sort((a, b) => a.name.localeCompare(b.name));
+    this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
 
   async run(): Promise<void> {

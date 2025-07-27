@@ -5,11 +5,11 @@ import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
   EDITOR_CHAR_COLORS,
-  EDITOR_INVISIBLE_OFF_COLORS,
-  EDITOR_INVISIBLE_ON_COLORS,
   EDITOR_LINE_INDEX_COLORS,
   EDITOR_SELECTED_CHAR_COLORS,
   EDITOR_SELECTED_INVISIBLE_COLORS,
+  EDITOR_WHITESPACE_OFF_COLORS,
+  EDITOR_WHITESPACE_ON_COLORS,
 } from "@ui/theme";
 
 import { Editor } from "./editor.ts";
@@ -113,7 +113,7 @@ export class View {
     const {
       shaper,
       cursor,
-      invisible_enabled,
+      whitespace_enabled,
     } = this.editor;
 
     this.#render_line_index(span);
@@ -140,9 +140,9 @@ export class View {
       } else {
         color = cell.grapheme.is_visible
           ? EDITOR_CHAR_COLORS
-          : (invisible_enabled
-            ? EDITOR_INVISIBLE_ON_COLORS
-            : EDITOR_INVISIBLE_OFF_COLORS);
+          : (whitespace_enabled
+            ? EDITOR_WHITESPACE_ON_COLORS
+            : EDITOR_WHITESPACE_OFF_COLORS);
       }
 
       this.#vt_buf.write(color, cell.grapheme.bytes);

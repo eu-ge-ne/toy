@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class SaveCommand extends Command {
   override option = {
     name: "Save",
-    description: "Save",
+    description: "Global: Save",
   };
 
   keys = [

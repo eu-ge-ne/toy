@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class DebugCommand extends Command {
   override option = {
     name: "Debug",
-    description: "Toggle debug panel",
+    description: "Global: Toggle Debug Panel",
   };
 
   keys = [

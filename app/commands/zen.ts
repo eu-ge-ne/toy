@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class ZenCommand extends Command {
   override option = {
     name: "Zen",
-    description: "Toggle Zen mode",
+    description: "Global: Toggle Zen Mode",
   };
 
   keys = [

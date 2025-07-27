@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class ExitCommand extends Command {
   override option = {
     name: "Exit",
-    description: "Exit",
+    description: "Global: Exit",
   };
 
   keys = [

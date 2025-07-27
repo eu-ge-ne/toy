@@ -3,7 +3,7 @@ import { Command } from "./command.ts";
 export class WrapCommand extends Command {
   override option = {
     name: "Wrap",
-    description: "Toggle line wrapping",
+    description: "View: Toggle Line Wrap",
   };
 
   keys = [

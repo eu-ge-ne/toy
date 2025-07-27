@@ -1,9 +1,9 @@
 import { Command } from "./command.ts";
 
-export class InvisibleCommand extends Command {
+export class WhitespaceCommand extends Command {
   override option = {
-    name: "Invisible",
-    description: "Toggle invisible characters",
+    name: "Whitespace",
+    description: "View: Toggle Render Whitespace",
   };
 
   keys = [
@@ -17,7 +17,7 @@ export class InvisibleCommand extends Command {
 
     const { editor } = this.app.ui;
 
-    editor.invisible_enabled = !editor.invisible_enabled;
+    editor.whitespace_enabled = !editor.whitespace_enabled;
 
     editor.render();
   }

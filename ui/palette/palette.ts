@@ -123,12 +123,13 @@ export class Palette
     const area_width = Math.min(60, this.#parent_area.w);
     let area_height = 3;
 
-    for (const option of this.#options) {
+    for (const _ of this.#options) {
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      const w = option.description.length;
-      const h = 1 + Math.ceil(w / (area_width - 4));
+      //const w = option.description.length;
+      //const h = 1 + Math.ceil(w / (area_width - 4));
+      const h = 1;
       if (area_height + h > this.#parent_area.h) {
         break;
       }
@@ -166,7 +167,6 @@ export class Palette
     let i = 0;
     let y = this.area.y0 + 2;
 
-    //for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
     while (true) {
       if (i === this.#list_size) {
         break;
@@ -179,22 +179,16 @@ export class Palette
         break;
       }
 
-      let space = { len: this.area.w - 4 };
+      const space = { len: this.area.w - 4 };
       vt.write(
         i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
+        ...vt.fmt.text(space, option.description),
       );
       vt.write(...vt.fmt.text(space, option.keys.padStart(space.len)));
 
-      space = { len: this.area.w - 4 };
-      vt.write(
-        vt.cursor.set(y + 1, this.area.x0 + 2),
-        ...vt.fmt.text(space, option.description),
-      );
-      vt.write(vt.fmt.space(space, space.len));
-
       i += 1;
-      y += 2;
+      y += 1;
     }
   }
 }
