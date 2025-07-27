@@ -121,8 +121,6 @@ export class Palette
   #resize(): void {
     //this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
     const area_width = Math.min(60, this.#parent_area.w);
-    //const max_height = this.#parent_area.h;
-    //const area_height = Math.min(this.size.h, this.#parent_area.h);
     let area_height = 3;
 
     this.#list_size = 0;
@@ -138,9 +136,6 @@ export class Palette
       this.#list_size += 1;
     }
 
-    //this.size = new Area(0, 0, 60, 3 + Math.max(this.#list_size, 1));
-    //this.size = new Area(0, 0, area_width, area_height);
-    //this.area = this.#parent_area.center(this.size);
     const x0 = Math.trunc((this.#parent_area.w - area_width) / 2);
     const y0 = Math.trunc((this.#parent_area.h - area_height) / 2);
     this.area = new Area(x0, y0, area_width, area_height);
