@@ -6,27 +6,26 @@ export class Alert extends Modal<[unknown], void> {
   protected size = new Area(0, 0, 60, 10);
 
   #text = "";
-  #done!: PromiseWithResolvers<void>;
 
   async open(err: unknown): Promise<void> {
-    this.#done = Promise.withResolvers();
+    this.done = Promise.withResolvers();
 
     this.enabled = true;
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
 
     this.render();
 
-    await this.#done.promise;
+    await this.done.promise;
 
     this.enabled = false;
   }
 
   on_esc_key(): void {
-    this.#done.resolve();
+    this.done.resolve();
   }
 
   on_enter_key(): void {
-    this.#done.resolve();
+    this.done.resolve();
   }
 
   render(): void {

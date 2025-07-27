@@ -21,7 +21,6 @@ export class Palette
   protected size = new Area(0, 0, 0, 0);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
-  #done!: PromiseWithResolvers<PaletteOption | undefined>;
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];
@@ -31,7 +30,7 @@ export class Palette
   #scroll_index = 0;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
-    this.#done = Promise.withResolvers();
+    this.done = Promise.withResolvers();
 
     this.enabled = true;
     this.editor.enabled = true;
@@ -46,7 +45,7 @@ export class Palette
     this.#filter();
     this.render();
 
-    const result = await this.#done.promise;
+    const result = await this.done.promise;
 
     this.enabled = false;
     this.editor.enabled = false;
@@ -56,11 +55,11 @@ export class Palette
   }
 
   on_esc_key(): void {
-    this.#done.resolve(undefined);
+    this.done.resolve(undefined);
   }
 
   on_enter_key(): void {
-    this.#done.resolve(this.#options[this.#selected_index]);
+    this.done.resolve(this.#options[this.#selected_index]);
   }
 
   on_up_key(): void {

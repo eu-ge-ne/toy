@@ -3,6 +3,7 @@ import { Control } from "./control.ts";
 
 export abstract class Modal<P extends unknown[], R> extends Control {
   protected abstract size: Area;
+  protected done!: PromiseWithResolvers<R>;
 
   constructor(protected parent: Control) {
     super();

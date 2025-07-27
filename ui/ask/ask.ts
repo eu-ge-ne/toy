@@ -6,17 +6,16 @@ export class Ask extends Modal<[string], boolean> {
   protected size = new Area(0, 0, 60, 7);
 
   #text = "";
-  #done!: PromiseWithResolvers<boolean>;
 
   async open(text: string): Promise<boolean> {
-    this.#done = Promise.withResolvers();
+    this.done = Promise.withResolvers();
 
     this.enabled = true;
     this.#text = text;
 
     this.render();
 
-    const result = await this.#done.promise;
+    const result = await this.done.promise;
 
     this.enabled = false;
 
@@ -24,11 +23,11 @@ export class Ask extends Modal<[string], boolean> {
   }
 
   on_esc_key(): void {
-    this.#done.resolve(false);
+    this.done.resolve(false);
   }
 
   on_enter_key(): void {
-    this.#done.resolve(true);
+    this.done.resolve(true);
   }
 
   render(): void {
