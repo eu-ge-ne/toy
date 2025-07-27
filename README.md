@@ -41,10 +41,10 @@ brew install eu-ge-ne/tap/toy
 - 256 color palette
 - Command Palette
 - Undo/Redo buffer
+- Zen mode
 
 - Renders invisible characters (e.g., spaces, tabs)
 - Renders long lines via scroll or wrap
-- Zen mode (enabled by default, can be turned off)
 
 ## Supported terminal emulators
 
