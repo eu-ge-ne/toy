@@ -41,6 +41,7 @@ brew install eu-ge-ne/tap/toy
 - Renders invisible characters (e.g., spaces, tabs)
 - Renders long lines via scroll or wrap
 - Has Zen mode (enabled by default, can be turned off)
+- Command Palette
 
 ## Supported terminal emulators
 
@@ -53,6 +54,7 @@ brew install eu-ge-ne/tap/toy
 ### Function
 
 - `Esc` - Center the cursor or selection in the visible area
+- `F1` - Command Palette
 - `F2` - Save
 - `F5` - Toggle invisible characters
 - `F6` - Toggle line wrapping
