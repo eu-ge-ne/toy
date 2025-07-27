@@ -165,8 +165,10 @@ export class Palette
 
   #render_options(): void {
     let i = 0;
+    let y = this.area.y0 + 2;
 
-    for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
+    //for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
+    while (true) {
       if (i === this.#list_size) {
         break;
       }
@@ -174,20 +176,27 @@ export class Palette
       if (!option) {
         break;
       }
+      if (y === this.area.y1) {
+        break;
+      }
 
-      const space = { len: this.area.w - 4 };
-
+      let space = { len: this.area.w - 4 };
       vt.write(
-        vt.cursor.set(y, this.area.x0 + 2),
         i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
-        ...vt.fmt.text(space, option.option.name),
+        vt.cursor.set(y, this.area.x0 + 2),
       );
-
       const keys = option.keys.map(display_key).join(", ").padStart(space.len);
-
       vt.write(...vt.fmt.text(space, keys));
 
+      space = { len: this.area.w - 4 };
+      vt.write(
+        vt.cursor.set(y + 1, this.area.x0 + 2),
+        ...vt.fmt.text(space, option.option.description),
+      );
+      vt.write(vt.fmt.space(space, space.len));
+
       i += 1;
+      y += 2;
     }
   }
 }
