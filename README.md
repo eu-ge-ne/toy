@@ -30,8 +30,8 @@ brew install eu-ge-ne/tap/toy
 
 - Built with Deno and TypeScript (with zero third-party dependencies)
 - Opens large files (tested on gigabyte-sized files)
-- Properly handles Unicode grapheme clusters and always moves cursor according
-  to the width of characters
+- Properly handles Unicode grapheme clusters and moves cursor according to the
+  width of characters
 - Leverages the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
