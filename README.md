@@ -38,8 +38,8 @@ brew install eu-ge-ne/tap/toy
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - Integrates with the system clipboard via OSC52
+- 256 color palette
 
-- 256 colors palette
 - Renders invisible characters (e.g., spaces, tabs)
 - Renders long lines via scroll or wrap
 - Zen mode (enabled by default, can be turned off)
