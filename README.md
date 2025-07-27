@@ -1,6 +1,7 @@
 # toy
 
-Minimalistic TUI text editor.
+Minimalistic TUI text editor. Built with Deno and TypeScript (with zero
+third-party dependencies).
 
 ![toy](etc/toy.png)
 
@@ -28,11 +29,12 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
-- Built with Deno and TypeScript (with zero third-party dependencies)
-- Opens large files (tested on gigabyte-sized files)
+- Working with large files (tested on gigabyte-sized files)
+
 - Properly handles Unicode grapheme clusters and moves cursor according to the
   width of characters
-- Uses 256-color palette for rendering
+- Uses 256-color palette for rendering text
+- Can render whitespace characters
 - Leverages the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
@@ -40,7 +42,6 @@ brew install eu-ge-ne/tap/toy
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - Integrates with the system clipboard via OSC52
 - Undo/Redo buffer
-- Whitespace character rendering
 - Line wrapping
 - Command Palette
 - Zen mode
