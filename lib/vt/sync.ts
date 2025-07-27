@@ -30,7 +30,6 @@ export function sync_write(...chunks: Uint8Array[]): void {
 
 export function end_sync_write(...chunks: Uint8Array[]): void {
   sync_write(...chunks);
-
   c -= 1;
 
   if (c === 0) {
