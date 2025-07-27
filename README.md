@@ -42,9 +42,8 @@ brew install eu-ge-ne/tap/toy
 - Command Palette
 - Undo/Redo buffer
 - Zen mode
-
-- Renders invisible characters (e.g., spaces, tabs)
-- Renders long lines via scroll or wrap
+- Whitespace character rendering
+- Line wrapping
 
 ## Supported terminal emulators
 
