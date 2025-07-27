@@ -15,6 +15,7 @@ import { SaveAs } from "@ui/save-as";
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
+import { Command } from "./commands/command.ts";
 
 export class App {
   commands: cmd.Command[] = [
@@ -266,7 +267,15 @@ export class App {
       return;
     }
 
-    this.commands.find((x) => x.match(key))?.run(key);
+    const command = this.commands.find((x) => x.match(key));
+
+    this.#run_command(key, command);
+  }
+
+  async #run_command(key: Key | string, command?: Command): Promise<void> {
+    while (command) {
+      command = await command.run(key);
+    }
   }
 
   #set_file_path(x: string): void {
