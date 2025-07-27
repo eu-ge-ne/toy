@@ -1,7 +1,7 @@
 # toy
 
-Minimalistic TUI text editor. Built with Deno and TypeScript (with zero
-third-party dependencies).
+Minimalistic TUI text editor. Built with Deno and TypeScript with zero
+third-party dependencies.
 
 ![toy](etc/toy.png)
 
