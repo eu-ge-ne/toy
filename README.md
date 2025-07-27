@@ -32,14 +32,14 @@ brew install eu-ge-ne/tap/toy
 - Opens large files (tested on gigabyte-sized files)
 - Properly handles Unicode grapheme clusters and moves cursor according to the
   width of characters
-- Leverages
+- Leverages the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
 - Supports the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-- Integrates with system clipboard via OSC52
+- Integrates with the system clipboard via OSC52
 
-- Utilizes the 256-color terminal palette
+- 256 colors palette
 - Renders invisible characters (e.g., spaces, tabs)
 - Renders long lines via scroll or wrap
 - Zen mode (enabled by default, can be turned off)
