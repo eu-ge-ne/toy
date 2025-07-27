@@ -179,9 +179,11 @@ export class Palette
         break;
       }
 
+      const selected = this.#scroll_index + i === this.#selected_index;
+
       const space = { len: this.area.w - 4 };
       vt.write(
-        i === this.#selected_index ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
+        selected ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
