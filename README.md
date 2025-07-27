@@ -10,6 +10,7 @@ third-party dependencies.
 - [Features](#features)
   - [Text](#text)
   - [Rendering](#rendering)
+  - [Input](#input)
   - [UX](#ux)
 - [Supported terminal emulators](#supported-terminal-emulators)
 - [Keyboard shortcuts](#keyboard-shortcuts)
@@ -47,16 +48,18 @@ brew install eu-ge-ne/tap/toy
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
 
+### Input
+
 - Supporting the
   [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
 - Integration with the system clipboard via OSC52
-- Undo/Redo buffer
-- Line wrapping
 
 ### UX
 
 - Command Palette
 - Zen mode
+- Undo/Redo buffer
+- Line wrapping
 
 ## Supported terminal emulators
 
