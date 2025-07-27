@@ -119,17 +119,17 @@ export class Palette
   }
 
   #resize(): void {
-    //this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
+    this.#list_size = 0;
+
     const area_width = Math.min(60, this.#parent_area.w);
     let area_height = 3;
 
-    this.#list_size = 0;
     for (const option of this.#options) {
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      const h = 1 +
-        Math.ceil((option.option.description.length + 8) / (area_width - 4));
+      const w = option.option.description.length + 8;
+      const h = 1 + Math.ceil(w / (area_width - 4));
       if (area_height + h > this.#parent_area.h) {
         break;
       }
