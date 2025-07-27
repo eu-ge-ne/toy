@@ -1,6 +1,4 @@
 import { range, sum } from "@lib/std";
-import * as vt from "@lib/vt";
-import { VtBuf } from "@lib/vt-buf";
 import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
@@ -10,7 +8,9 @@ import {
   EDITOR_SELECTED_INVISIBLE_COLORS,
   EDITOR_WHITESPACE_OFF_COLORS,
   EDITOR_WHITESPACE_ON_COLORS,
-} from "@ui/theme";
+} from "@lib/theme";
+import * as vt from "@lib/vt";
+import { VtBuf } from "@lib/vt-buf";
 
 import { Editor } from "./editor.ts";
 

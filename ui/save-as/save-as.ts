@@ -1,8 +1,8 @@
 import { GraphemePool } from "@lib/grapheme";
+import { SAVE_AS_BG, SAVE_AS_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
-import { SAVE_AS_BG, SAVE_AS_COLORS } from "@ui/theme";
 
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);

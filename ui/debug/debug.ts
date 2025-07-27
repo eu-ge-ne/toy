@@ -1,6 +1,6 @@
+import { DEBUG_BG, DEBUG_COLORS } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { DEBUG_BG, DEBUG_COLORS } from "@ui/theme";
 
 const AREA = new Area(0, 0, 15, 4);
 

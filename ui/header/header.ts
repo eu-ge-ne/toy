@@ -1,10 +1,10 @@
-import { Control } from "@lib/ui";
-import * as vt from "@lib/vt";
 import {
   HEADER_BG,
   HEADER_FILE_PATH_COLORS,
   HEADER_UNSAVED_FLAG_COLORS,
-} from "@ui/theme";
+} from "@lib/theme";
+import { Control } from "@lib/ui";
+import * as vt from "@lib/vt";
 
 const FLAG = " +";
 

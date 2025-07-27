@@ -1,6 +1,6 @@
+import { ASK_BG, ASK_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { ASK_BG, ASK_COLORS } from "@ui/theme";
 
 export class Ask extends Modal<[string], boolean> {
   protected size = new Area(0, 0, 60, 7);

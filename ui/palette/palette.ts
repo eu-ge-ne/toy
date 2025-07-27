@@ -1,8 +1,12 @@
 import { GraphemePool } from "@lib/grapheme";
+import {
+  PALETTE_BG,
+  PALETTE_COLORS,
+  PALETTE_SELECTED_COLORS,
+} from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
-import { PALETTE_BG, PALETTE_COLORS, PALETTE_SELECTED_COLORS } from "@ui/theme";
 
 const MAX_LIST_SIZE = 10;
 

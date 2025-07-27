@@ -1,6 +1,6 @@
+import { ALERT_BG, ALERT_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { ALERT_BG, ALERT_COLORS } from "@ui/theme";
 
 export class Alert extends Modal<[unknown], void> {
   protected size = new Area(0, 0, 60, 10);

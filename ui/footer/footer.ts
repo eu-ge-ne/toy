@@ -1,6 +1,6 @@
+import { FOOTER_BG, FOOTER_CURSOR_COLORS } from "@lib/theme";
 import { Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { FOOTER_BG, FOOTER_CURSOR_COLORS } from "@ui/theme";
 
 export class Footer extends Control {
   #cursor_status = "";
