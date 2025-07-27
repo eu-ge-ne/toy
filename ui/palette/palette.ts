@@ -171,7 +171,8 @@ export class Palette
       if (i === this.#list_size) {
         break;
       }
-      const option = this.#options[this.#scroll_index + i];
+      const index = this.#scroll_index + i;
+      const option = this.#options[index];
       if (!option) {
         break;
       }
@@ -179,11 +180,11 @@ export class Palette
         break;
       }
 
-      const selected = this.#scroll_index + i === this.#selected_index;
-
       const space = { len: this.area.w - 4 };
       vt.write(
-        selected ? PALETTE_SELECTED_COLORS : PALETTE_COLORS,
+        index === this.#selected_index
+          ? PALETTE_SELECTED_COLORS
+          : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
