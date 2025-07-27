@@ -6,7 +6,13 @@ export class EnterCommand extends Command {
   ];
 
   async command(): Promise<void> {
-    const { alert, ask, save_as, editor } = this.app.ui;
+    const { palette, alert, ask, save_as, editor } = this.app.ui;
+
+    if (palette.enabled) {
+      palette.on_enter_key();
+      palette.render();
+      return;
+    }
 
     if (alert.enabled) {
       alert.on_enter_key();

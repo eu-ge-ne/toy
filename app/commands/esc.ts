@@ -8,6 +8,12 @@ export class EscCommand extends Command {
   async command(): Promise<void> {
     const { palette, alert, ask, save_as, editor } = this.app.ui;
 
+    if (palette.enabled) {
+      palette.on_esc_key();
+      palette.render();
+      return;
+    }
+
     if (alert.enabled) {
       alert.on_esc_key();
       alert.render();
@@ -23,12 +29,6 @@ export class EscCommand extends Command {
     if (save_as.enabled) {
       save_as.on_esc_key();
       save_as.render();
-      return;
-    }
-
-    if (palette.enabled) {
-      palette.on_esc_key();
-      palette.render();
       return;
     }
 

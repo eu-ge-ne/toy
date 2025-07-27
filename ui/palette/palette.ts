@@ -15,7 +15,7 @@ export class Palette
   protected size = new Area(0, 0, 0, 0);
 
   readonly editor = new Editor(new GraphemePool(), { multi_line: false });
-  #done!: PromiseWithResolvers<void>;
+  #done!: PromiseWithResolvers<PaletteOption | undefined>;
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];
@@ -38,21 +38,21 @@ export class Palette
     this.#filter();
     this.render();
 
-    await this.#done.promise;
+    const result = await this.#done.promise;
 
     this.enabled = false;
     this.editor.enabled = false;
     this.editor.history.on_changed = undefined;
 
-    return;
+    return result;
   }
 
   on_esc_key(): void {
-    this.#done.resolve();
+    this.#done.resolve(undefined);
   }
 
   on_enter_key(): void {
-    this.#done.resolve();
+    this.#done.resolve(this.#options[this.#selected_index]);
   }
 
   on_up_key(): void {
