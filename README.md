@@ -1,14 +1,19 @@
 # toy
 
-Minimalistic TUI text editor.
+Minimalistic TUI text editor. Built with Deno and TypeScript with zero
+third-party dependencies.
 
 ![toy](etc/toy.png)
 
 - [Installation](#installation)
   - [Homebrew (macOS only)](#homebrew-macos-only)
 - [Features](#features)
+  - [Text](#text)
+  - [Rendering](#rendering)
+  - [Input](#input)
+  - [UX](#ux)
 - [Supported terminal emulators](#supported-terminal-emulators)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Keyboard shortcuts](#keyboard-shortcuts)
   - [Function](#function)
   - [Navigate](#navigate)
   - [Select](#select)
@@ -28,20 +33,33 @@ brew install eu-ge-ne/tap/toy
 
 ## Features
 
-- Built with Deno and TypeScript (has zero third-party dependencies)
-- Opens large files (tested on gigabyte-sized files)
-- Properly handles Unicode grapheme clusters
-- Leverages
+### Text
+
+- Working with large files (tested on gigabyte-sized files)
+- Working with text as a sequence of Unicode grapheme clusters
+- Moving cursor according to the width of characters rendered by terminal
+  emulators
+
+### Rendering
+
+- 256-color palette
+- Rendering whitespace characters
+- Leveraging the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
   extension for fast rendering (median 5 ms)
-- Supports the
-  [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
-- Integrates with system clipboard via OSC52
-- Utilizes the 256-color terminal palette
-- Renders invisible characters (e.g., spaces, tabs)
-- Renders long lines via scroll or wrap
-- Has Zen mode (enabled by default, can be turned off)
+
+### Input
+
+- [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol)
+  support
+- Integration with the system clipboard via OSC52
+
+### UX
+
 - Command Palette
+- Zen mode
+- Undo/Redo buffer
+- Line wrapping
 
 ## Supported terminal emulators
 
@@ -49,7 +67,7 @@ brew install eu-ge-ne/tap/toy
 - Ghostty
 - VSCode terminal
 
-## Keyboard Shortcuts
+## Keyboard shortcuts
 
 ### Function
 
@@ -105,6 +123,7 @@ brew install eu-ge-ne/tap/toy
 - `⌃+F` - Find
 - `F3` - Find next
 - `⇧+F3` - Find previous
+- Mouse support
 
 ## License
 
