@@ -14,7 +14,7 @@ export class PaletteCommand extends Command {
 
     editor.enabled = false;
 
-    const option = await palette.open(this.app.palette_options);
+    const option = await palette.open(this.app.options);
 
     editor.enabled = true;
 

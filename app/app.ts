@@ -50,7 +50,10 @@ export class App {
     new cmd.ZenCommand(this),
   ];
 
-  palette_options: PaletteOption[];
+  options = this.commands.filter((x) =>
+    typeof x.name === "string"
+  ) as PaletteOption[];
+
   args = parseArgs(Deno.args);
   zen = true;
   file_path = "";
@@ -70,10 +73,7 @@ export class App {
   };
 
   constructor() {
-    this.palette_options = this.commands.filter((x) =>
-      typeof x.name === "string"
-    ) as PaletteOption[];
-    this.palette_options.sort((a, b) => a.name.localeCompare(b.name));
+    this.options.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async run(): Promise<void> {
@@ -267,9 +267,7 @@ export class App {
       return;
     }
 
-    const command = this.commands.find((x) => x.match(key));
-
-    this.#run_command(key, command);
+    this.#run_command(key, this.commands.find((x) => x.match(key)));
   }
 
   async #run_command(key: Key | string, command?: Command): Promise<void> {
