@@ -164,14 +164,13 @@ export class Palette
   }
 
   #render_options(): void {
-    const max_i = this.#scroll_index + this.#list_size;
-    let i = this.#scroll_index;
+    let i = 0;
 
     for (let y = this.area.y0 + 2; y < this.area.y1; y += 1) {
-      if (i === max_i) {
+      if (i === this.#list_size) {
         break;
       }
-      const option = this.#options[i];
+      const option = this.#options[this.#scroll_index + i];
       if (!option) {
         break;
       }
