@@ -31,8 +31,8 @@ brew install eu-ge-ne/tap/toy
 
 - Working with large files (tested on gigabyte-sized files)
 - Working with text as a sequence of Unicode grapheme clusters
-- Moving cursor according to the width of characters as rendered by a terminal
-  emulator
+- Moving cursor according to the width of characters rendered by terminal
+  emulators
 
 - Uses 256-color palette for rendering text
 - Can render whitespace characters
