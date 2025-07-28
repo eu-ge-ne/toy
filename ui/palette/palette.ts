@@ -102,12 +102,12 @@ export class Palette
       return;
     }
 
-    vt.begin_sync_write();
+    vt.bsu();
 
     this.#resize();
     this.#scroll();
 
-    vt.sync_write(
+    vt.write_buf(
       vt.cursor.hide,
       PALETTE_BG,
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
@@ -121,7 +121,7 @@ export class Palette
 
     this.#editor.render();
 
-    vt.end_sync_write();
+    vt.esu();
   }
 
   #filter(): void {
@@ -168,7 +168,7 @@ export class Palette
   }
 
   #render_empty(): void {
-    vt.sync_write(
+    vt.write_buf(
       vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
       PALETTE_COLORS,
       ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
@@ -194,7 +194,7 @@ export class Palette
 
       const space = { len: this.area.w - 4 };
 
-      vt.sync_write(
+      vt.write_buf(
         index === this.#selected_index
           ? PALETTE_SELECTED_COLORS
           : PALETTE_COLORS,
@@ -203,7 +203,7 @@ export class Palette
       );
 
       if (option.shortcuts) {
-        vt.sync_write(
+        vt.write_buf(
           ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
         );
       }

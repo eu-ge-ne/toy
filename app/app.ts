@@ -114,21 +114,18 @@ export class App extends Control {
   }
 
   render(): void {
-    const { palette, editor, debug, header, footer, save_as, alert, ask } =
-      this.ui;
+    vt.bsu();
 
-    vt.begin_sync_write();
+    this.ui.header.render();
+    this.ui.editor.render();
+    this.ui.footer.render();
+    this.ui.debug.render();
+    this.ui.save_as.render();
+    this.ui.alert.render();
+    this.ui.ask.render();
+    this.ui.palette.render();
 
-    header.render();
-    editor.render();
-    footer.render();
-    debug.render();
-    save_as.render();
-    alert.render();
-    ask.render();
-    palette.render();
-
-    vt.end_sync_write();
+    vt.esu();
   }
 
   async save(): Promise<void> {
@@ -230,7 +227,7 @@ export class App extends Control {
   #on_sigwinch = () => {
     this.resize(Area.from_screen());
 
-    vt.direct_write(vt.dummy_req);
+    vt.write_direct(vt.dummy_req);
   };
 
   async #process_input(): Promise<void> {

@@ -19,7 +19,9 @@ export class Header extends Control {
 
     const { y0, x0, h, w } = this.area;
 
-    vt.begin_sync_write(
+    vt.bsu();
+
+    vt.flush_buf(
       vt.cursor.save,
       HEADER_BG,
       ...vt.clear(y0, x0, h, w),
@@ -33,7 +35,7 @@ export class Header extends Control {
       vt.cursor.restore,
     );
 
-    vt.end_sync_write();
+    vt.esu();
   }
 
   set_file_path(x: string): void {

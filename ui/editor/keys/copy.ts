@@ -1,4 +1,4 @@
-import { copy_to_clipboard, direct_write } from "@lib/vt";
+import { copy_to_clipboard, write_direct } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -22,7 +22,7 @@ export class CopyHandler extends KeyHandler {
       ]);
     }
 
-    direct_write(copy_to_clipboard(this.editor.clipboard));
+    write_direct(copy_to_clipboard(this.editor.clipboard));
 
     return false;
   }
