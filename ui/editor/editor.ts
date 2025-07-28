@@ -16,6 +16,8 @@ interface EditorOptions {
 export class Editor extends Control {
   #handlers: keys.KeyHandler[] = [
     new keys.TextHandler(this),
+    new keys.LeftHandler(this),
+    new keys.RightHandler(this),
   ];
 
   on_render?: (_: number) => void;

@@ -71,7 +71,6 @@ brew install eu-ge-ne/tap/toy
 
 ### Function
 
-- `Esc` - Center the cursor or selection in the visible area
 - `F1` - Command Palette
 - `F2` - Save
 - `F5` - Toggle invisible characters
