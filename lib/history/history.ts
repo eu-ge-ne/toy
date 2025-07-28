@@ -39,22 +39,30 @@ export class History {
     this.on_changed?.(this.#index);
   }
 
-  undo(): void {
+  undo(): boolean {
     if (this.#index > 0) {
       this.#index -= 1;
       this.#restore();
 
       this.on_changed?.(this.#index);
+
+      return true;
     }
+
+    return false;
   }
 
-  redo(): void {
+  redo(): boolean {
     if (this.#index < (this.#entries.length - 1)) {
       this.#index += 1;
       this.#restore();
 
       this.on_changed?.(this.#index);
+
+      return true;
     }
+
+    return false;
   }
 
   #restore(): void {
