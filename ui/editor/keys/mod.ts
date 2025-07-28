@@ -1,3 +1,5 @@
+export * from "./backspace.ts";
+export * from "./delete.ts";
 export * from "./end.ts";
 export * from "./handler.ts";
 export * from "./home.ts";
