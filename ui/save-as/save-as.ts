@@ -8,25 +8,23 @@ import { Editor } from "@ui/editor";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
-  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(new GraphemePool(), { multi_line: false });
 
   async open(file_path: string): Promise<string> {
-    const { buffer } = this.editor;
+    const { buffer } = this.#editor;
 
     this.done = Promise.withResolvers();
 
     this.enabled = true;
-    this.editor.enabled = true;
 
     buffer.set_text(file_path);
-    this.editor.reset(true);
+    this.#editor.reset(true);
 
     this.render();
 
     await this.#process_input();
 
     this.enabled = false;
-    this.editor.enabled = false;
 
     return this.done.promise;
   }
@@ -44,7 +42,7 @@ export class SaveAs extends Modal<[string], string> {
               this.done.resolve("");
               return;
             case "ENTER": {
-              const path = this.editor.buffer.get_text();
+              const path = this.#editor.buffer.get_text();
               if (path) {
                 this.done.resolve(path);
                 return;
@@ -53,7 +51,7 @@ export class SaveAs extends Modal<[string], string> {
           }
         }
 
-        this.editor.handle_key(data);
+        this.#editor.handle_key(data);
       }
     }
   }
@@ -61,7 +59,7 @@ export class SaveAs extends Modal<[string], string> {
   override resize(area: Area): void {
     super.resize(area);
 
-    this.editor.resize(
+    this.#editor.resize(
       new Area(this.area.x0 + 2, this.area.y0 + 4, this.area.w - 4, 1),
     );
   }
@@ -84,7 +82,7 @@ export class SaveAs extends Modal<[string], string> {
       ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
     );
 
-    this.editor.render();
+    this.#editor.render();
 
     vt.end_sync_write();
   }

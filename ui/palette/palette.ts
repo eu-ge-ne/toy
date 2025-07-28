@@ -21,7 +21,7 @@ export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   protected size = new Area(0, 0, 0, 0);
 
-  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(new GraphemePool(), { multi_line: false });
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];
@@ -34,11 +34,10 @@ export class Palette
     this.done = Promise.withResolvers();
 
     this.enabled = true;
-    this.editor.enabled = true;
 
     this.#all = options;
-    this.editor.buffer.set_text("");
-    this.editor.reset(false);
+    this.#editor.buffer.set_text("");
+    this.#editor.reset(false);
     /*
     this.editor.history.on_changed = () => {
       this.#filter();
@@ -51,7 +50,6 @@ export class Palette
     await this.#process_input();
 
     this.enabled = false;
-    this.editor.enabled = false;
     //this.editor.history.on_changed = undefined;
 
     return this.done.promise;
@@ -75,7 +73,7 @@ export class Palette
           }
         }
 
-        this.editor.handle_key(data);
+        this.#editor.handle_key(data);
       }
     }
   }
@@ -122,13 +120,13 @@ export class Palette
       this.#render_options();
     }
 
-    this.editor.render();
+    this.#editor.render();
 
     vt.end_sync_write();
   }
 
   #filter(): void {
-    const text = this.editor.buffer.get_text().toUpperCase();
+    const text = this.#editor.buffer.get_text().toUpperCase();
 
     if (!text) {
       this.#options = this.#all;
@@ -163,7 +161,7 @@ export class Palette
     const y0 = Math.trunc((this.#parent_area.h - area_height) / 2);
     this.area = new Area(x0, y0, area_width, area_height);
 
-    this.editor.resize(
+    this.#editor.resize(
       new Area(x0 + 2, y0 + 1, area_width - 4, 1),
     );
   }
