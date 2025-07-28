@@ -31,7 +31,6 @@ export class View {
 
   render(): void {
     const {
-      shaper,
       buffer,
       enabled,
       area,
@@ -54,10 +53,7 @@ export class View {
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
 
-    shaper.y = this.#cursor_y = area.y0;
-    shaper.x = this.#cursor_x = area.x0 + this.#index_width;
-    this.#scroll_vertical();
-    this.#scroll_horizontal();
+    this.#scroll();
 
     this.#y = area.y0;
     this.#ln = this.#scroll_ln;
@@ -176,6 +172,20 @@ export class View {
       height -= h;
       this.#scroll_ln = i;
     }
+  }
+
+  #scroll(): void {
+    const { shaper, area } = this.editor;
+
+    shaper.y = this.#cursor_y = area.y0;
+    shaper.x = this.#cursor_x = area.x0 + this.#index_width;
+
+    vt.direct_write(vt.bsu, vt.cursor.hide);
+
+    this.#scroll_vertical();
+    this.#scroll_horizontal();
+
+    vt.direct_write(vt.esu);
   }
 
   #scroll_vertical(): void {
