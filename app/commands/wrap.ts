@@ -10,7 +10,7 @@ export class WrapCommand extends Command {
     { name: "F6" },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

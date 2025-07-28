@@ -5,7 +5,7 @@ export class PaletteCommand extends Command {
     { name: "F1" },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }
@@ -21,7 +21,7 @@ export class PaletteCommand extends Command {
     editor.render();
 
     if (option) {
-      return this.app.commands.find((x) => x.option?.name === option.name);
+      //return this.app.commands.find((x) => x.option?.name === option.name);
     }
   }
 }

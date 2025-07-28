@@ -11,7 +11,7 @@ export class PasteCommand extends Command {
     { name: "v", super: true },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

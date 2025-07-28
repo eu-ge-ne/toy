@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { display_keys, Key, read_input } from "@lib/input";
+import { display_keys, read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -15,7 +15,6 @@ import { SaveAs } from "@ui/save-as";
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
-import { Command } from "./commands/command.ts";
 
 export class App {
   commands: cmd.Command[] = [
@@ -107,11 +106,7 @@ export class App {
 
     await this.#load();
 
-    while (true) {
-      for await (const data of read_input()) {
-        await this.#on_input(data);
-      }
-    }
+    await this.#process_input();
   }
 
   stop = () => {
@@ -271,18 +266,15 @@ export class App {
     vt.direct_write(vt.dummy_req);
   };
 
-  async #on_input(key: Key | string | Uint8Array): Promise<void> {
-    if (key instanceof Uint8Array) {
-      this.render();
-      return;
-    }
-
-    this.#run_command(key, this.commands.find((x) => x.match(key)));
-  }
-
-  async #run_command(key: Key | string, command?: Command): Promise<void> {
-    while (command) {
-      command = await command.run(key);
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          this.render();
+        } else {
+          await this.commands.find((x) => x.match(data))?.run(data);
+        }
+      }
     }
   }
 

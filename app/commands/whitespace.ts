@@ -10,7 +10,7 @@ export class WhitespaceCommand extends Command {
     { name: "F5" },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

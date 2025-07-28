@@ -11,7 +11,7 @@ export class EndCommand extends Command {
     { name: "RIGHT", super: true, shift: true },
   ];
 
-  async command(key: Key): Promise<Command | undefined> {
+  async command(key: Key): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

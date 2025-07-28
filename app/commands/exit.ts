@@ -10,7 +10,7 @@ export class ExitCommand extends Command {
     { name: "F10" },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

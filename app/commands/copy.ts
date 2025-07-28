@@ -13,7 +13,7 @@ export class CopyCommand extends Command {
     { name: "c", super: true },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     const editor = this.app.active_editor;
     if (!editor?.enabled) {
       return;

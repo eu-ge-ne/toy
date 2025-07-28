@@ -20,19 +20,17 @@ export abstract class Command {
       );
   }
 
-  async run(key?: Key | string): Promise<Command | undefined> {
+  async run(key?: Key | string): Promise<void> {
     const started = Date.now();
 
     Command.started += 1;
 
-    const result = await this.command(key);
+    await this.command(key);
 
     Command.started -= 1;
 
     this.app.ui.debug.set_command_time(Date.now() - started);
-
-    return result;
   }
 
-  protected abstract command(key?: Key | string): Promise<Command | undefined>;
+  protected abstract command(key?: Key | string): Promise<void>;
 }

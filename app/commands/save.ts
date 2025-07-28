@@ -10,7 +10,7 @@ export class SaveCommand extends Command {
     { name: "F2" },
   ];
 
-  async command(): Promise<Command | undefined> {
+  async command(): Promise<void> {
     if (Command.started > 1) {
       return;
     }

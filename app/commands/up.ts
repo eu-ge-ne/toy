@@ -8,7 +8,7 @@ export class UpCommand extends Command {
     { name: "UP", shift: true },
   ];
 
-  async command(key: Key): Promise<Command | undefined> {
+  async command(key: Key): Promise<void> {
     const { palette } = this.app.ui;
 
     if (palette.enabled) {
