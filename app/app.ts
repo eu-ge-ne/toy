@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { display_keys, read_input } from "@lib/input";
+import { read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -49,9 +49,9 @@ export class App {
 
   constructor() {
     this.options = this.commands.filter((x) => x.option).map((x) => ({
-      name: x.option!.name,
+      id: x.option!.id,
       description: x.option!.description,
-      keys: display_keys(x.keys),
+      shortcuts: x.option!.shortcuts ?? "",
     }));
 
     this.options.sort((a, b) => a.description.localeCompare(b.description));
@@ -234,10 +234,12 @@ export class App {
           continue;
         }
 
-        const command = this.commands.find((x) => x.match(data));
-        if (command && !cmd.Command.running) {
-          await command.run(data);
-          continue;
+        if (typeof data !== "string") {
+          const command = this.commands.find((x) => x.match(data));
+          if (command && !cmd.Command.running) {
+            await command.run(data);
+            continue;
+          }
         }
 
         if (this.ui.editor.enabled) {

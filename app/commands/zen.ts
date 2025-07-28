@@ -1,14 +1,17 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class ZenCommand extends Command {
-  override option = {
-    name: "Zen",
-    description: "Global: Toggle Zen Mode",
-  };
-
-  keys = [
+  match_keys = [
     { name: "F11" },
   ];
+
+  option = {
+    id: "Zen",
+    description: "Global: Toggle Zen Mode",
+    shortcuts: display_keys(this.match_keys),
+  };
 
   async command(): Promise<void> {
     const { header, footer, editor } = this.app.ui;

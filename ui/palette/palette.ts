@@ -12,9 +12,9 @@ import { Editor } from "@ui/editor";
 const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
-  name: string;
+  id: string;
   description: string;
-  keys: string;
+  shortcuts: string;
 }
 
 export class Palette
@@ -205,7 +205,7 @@ export class Palette
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
-      vt.sync_write(...vt.fmt.text(space, option.keys.padStart(space.len)));
+      vt.sync_write(...vt.fmt.text(space, option.shortcuts.padStart(space.len)));
 
       i += 1;
       y += 1;

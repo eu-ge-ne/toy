@@ -3,21 +3,24 @@ import { Key } from "@lib/input";
 import { App } from "../app.ts";
 
 export abstract class Command {
-  option?: { name: string; description: string };
+  abstract match_keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 
-  abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
+  abstract option?: {
+    id: string;
+    description: string;
+    shortcuts?: string;
+  };
 
   static running = 0;
 
   constructor(protected app: App) {
   }
 
-  match(key: Key | string): boolean {
-    return typeof key !== "string" &&
-      this.keys.some((x) =>
-        x.name === key.name && x.super === key.super && x.shift === key.shift &&
-        x.ctrl === key.ctrl
-      );
+  match(key: Key): boolean {
+    return this.match_keys.some((x) =>
+      x.name === key.name && x.super === key.super && x.shift === key.shift &&
+      x.ctrl === key.ctrl
+    );
   }
 
   async run(key?: Key | string): Promise<void> {
