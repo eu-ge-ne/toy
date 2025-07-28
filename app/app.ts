@@ -18,10 +18,14 @@ import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
   commands: cmd.Command[] = [
+    new cmd.CopyCommand(this),
+    new cmd.CutCommand(this),
     new cmd.DebugCommand(this),
     new cmd.ExitCommand(this),
     new cmd.PaletteCommand(this),
+    new cmd.PasteCommand(this),
     new cmd.SaveCommand(this),
+    new cmd.SelectAllCommand(this),
     new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
     new cmd.ZenCommand(this),
