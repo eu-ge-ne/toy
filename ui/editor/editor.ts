@@ -53,10 +53,11 @@ export class Editor extends Control {
   clipboard = "";
 
   constructor(
+    parent: Control,
     readonly graphemes: GraphemePool,
     readonly opts: EditorOptions,
   ) {
-    super();
+    super(parent);
 
     this.shaper = new Shaper(graphemes, this.buffer);
     this.cursor = new Cursor(this.shaper, this.buffer);

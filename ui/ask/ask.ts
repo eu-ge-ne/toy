@@ -27,6 +27,7 @@ export class Ask extends Modal<[string], boolean> {
     while (true) {
       for await (const data of read_input()) {
         if (data instanceof Uint8Array || typeof data === "string") {
+          this.parent?.render();
           continue;
         }
 

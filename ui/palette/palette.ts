@@ -21,7 +21,7 @@ export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   protected size = new Area(0, 0, 0, 0);
 
-  #editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(this, new GraphemePool(), { multi_line: false });
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];
@@ -41,7 +41,7 @@ export class Palette
     this.#editor.reset(false);
 
     this.#filter();
-    this.render();
+    this.parent?.render();
 
     await this.#process_input();
 
@@ -55,6 +55,7 @@ export class Palette
     while (true) {
       for await (const data of read_input()) {
         if (data instanceof Uint8Array) {
+          this.parent?.render();
           continue;
         }
 
@@ -69,7 +70,7 @@ export class Palette
             case "UP":
               if (this.#options.length > 0) {
                 this.#selected_index = Math.max(this.#selected_index - 1, 0);
-                this.render();
+                this.parent?.render();
               }
               continue;
             case "DOWN":
@@ -78,7 +79,7 @@ export class Palette
                   this.#selected_index + 1,
                   this.#options.length - 1,
                 );
-                this.render();
+                this.parent?.render();
               }
               continue;
           }
@@ -86,7 +87,7 @@ export class Palette
 
         if (this.#editor.handle_key(data)) {
           this.#filter();
-          this.render();
+          this.parent?.render();
         }
       }
     }
@@ -104,7 +105,6 @@ export class Palette
     vt.begin_sync_write();
 
     this.#resize();
-    this.parent.render();
     this.#scroll();
 
     vt.sync_write(
@@ -141,7 +141,13 @@ export class Palette
   #resize(): void {
     this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
 
-    const area_height = 3 + Math.max(this.#list_size, 1);
+    let area_height = 3 + Math.max(this.#list_size, 1);
+    if (area_height > this.#parent_area.h) {
+      area_height = this.#parent_area.h;
+      if (this.#list_size > 0) {
+        this.#list_size = area_height - 3;
+      }
+    }
     const area_width = Math.min(60, this.#parent_area.w);
 
     const x0 = Math.trunc((this.#parent_area.w - area_width) / 2);

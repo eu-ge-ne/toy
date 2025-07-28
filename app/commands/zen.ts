@@ -1,4 +1,5 @@
 import { display_keys } from "@lib/input";
+import { Area } from "@lib/ui";
 
 import { Command } from "./command.ts";
 
@@ -22,7 +23,7 @@ export class ZenCommand extends Command {
     footer.enabled = !this.app.zen;
     editor.line_index_enabled = !this.app.zen;
 
-    this.app.resize();
+    this.app.resize(Area.from_screen());
     this.app.render();
   }
 }

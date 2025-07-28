@@ -25,6 +25,7 @@ export class Alert extends Modal<[unknown], void> {
     while (true) {
       for await (const data of read_input()) {
         if (data instanceof Uint8Array || typeof data === "string") {
+          this.parent?.render();
           continue;
         }
 

@@ -5,6 +5,9 @@ export abstract class Control {
 
   area!: Area;
 
+  constructor(protected parent?: Control) {
+  }
+
   resize(area: Area): void {
     this.area = area;
   }
