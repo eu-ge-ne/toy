@@ -137,24 +137,6 @@ export class App {
     vt.end_sync_write();
   }
 
-  get active_editor(): Editor | undefined {
-    const { palette, save_as, editor } = this.ui;
-
-    if (palette.enabled) {
-      return palette.editor;
-    }
-
-    if (save_as.enabled) {
-      return save_as.editor;
-    }
-
-    if (editor.enabled) {
-      return editor;
-    }
-
-    return undefined;
-  }
-
   async save(): Promise<void> {
     const { editor, alert } = this.ui;
 
