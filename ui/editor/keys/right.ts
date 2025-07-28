@@ -12,7 +12,11 @@ export class RightHandler extends KeyHandler {
     const { cursor, buffer } = this.editor;
     const select = Boolean(key.shift);
 
-    if (!cursor.move(0, 1, select) && cursor.ln < (buffer.ln_count - 1)) {
+    if (cursor.move(0, 1, select)) {
+      return true;
+    }
+
+    if (cursor.ln < buffer.ln_count - 1) {
       return cursor.move(1, Number.MIN_SAFE_INTEGER, select);
     }
 
