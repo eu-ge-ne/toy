@@ -70,28 +70,29 @@ export class Palette
             case "ENTER":
               this.done.resolve(this.#options[this.#selected_index]);
               return;
+            case "UP":
+              if (this.#options.length > 0) {
+                this.#selected_index = Math.max(this.#selected_index - 1, 0);
+                this.render();
+              }
+              continue;
+            case "DOWN":
+              if (this.#options.length > 0) {
+                this.#selected_index = Math.min(
+                  this.#selected_index + 1,
+                  this.#options.length - 1,
+                );
+                this.render();
+              }
+              continue;
           }
         }
 
         if (this.#editor.handle_key(data)) {
-          this.#editor.render();
+          this.#filter();
+          this.render();
         }
       }
-    }
-  }
-
-  on_up_key(): void {
-    if (this.#options.length > 0) {
-      this.#selected_index = Math.max(this.#selected_index - 1, 0);
-    }
-  }
-
-  on_down_key(): void {
-    if (this.#options.length > 0) {
-      this.#selected_index = Math.min(
-        this.#selected_index + 1,
-        this.#options.length - 1,
-      );
     }
   }
 
