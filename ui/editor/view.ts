@@ -38,7 +38,9 @@ export class View {
       line_index_enabled,
     } = this.editor;
 
-    vt.begin_sync_write(
+    vt.bsu();
+
+    vt.write_buf(
       ...(enabled ? [] : [vt.cursor.save]),
       EDITOR_BG,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
@@ -77,18 +79,20 @@ export class View {
     }
 
     if (enabled) {
-      vt.end_sync_write(
+      vt.flush_buf(
         vt.cursor.show,
         vt.cursor.set(this.#cursor_y, this.#cursor_x),
       );
     } else {
-      vt.end_sync_write(vt.cursor.restore);
+      vt.flush_buf(vt.cursor.restore);
     }
+
+    vt.esu();
   }
 
   #begin_ln(): vt.fmt.Span {
     const { x0, w } = this.editor.area;
-    vt.sync_write(vt.cursor.set(this.#y, x0));
+    vt.write_buf(vt.cursor.set(this.#y, x0));
     return { len: w };
   }
 
@@ -134,7 +138,7 @@ export class View {
             : EDITOR_WHITESPACE_OFF_COLORS);
       }
 
-      vt.sync_write(color, cell.grapheme.bytes);
+      vt.write_buf(color, cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
     }
@@ -142,7 +146,7 @@ export class View {
 
   #render_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.sync_write(
+      vt.write_buf(
         EDITOR_LINE_INDEX_COLORS,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
@@ -151,7 +155,7 @@ export class View {
 
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
-      vt.sync_write(
+      vt.write_buf(
         EDITOR_BLANK_LINE_INDEX_COLORS,
         vt.fmt.space(span, this.#index_width),
       );
@@ -180,12 +184,8 @@ export class View {
     shaper.y = this.#cursor_y = area.y0;
     shaper.x = this.#cursor_x = area.x0 + this.#index_width;
 
-    vt.direct_write(vt.bsu, vt.cursor.hide);
-
     this.#scroll_vertical();
     this.#scroll_horizontal();
-
-    vt.direct_write(vt.esu);
   }
 
   #scroll_vertical(): void {

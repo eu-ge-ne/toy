@@ -46,7 +46,9 @@ export class Alert extends Modal<[unknown], void> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    vt.begin_sync_write(
+    vt.bsu();
+
+    vt.write_buf(
       vt.cursor.hide,
       ALERT_BG,
       ...vt.clear(y0, x0, h, w),
@@ -64,16 +66,18 @@ export class Alert extends Modal<[unknown], void> {
 
       pos += line.length;
 
-      vt.sync_write(
+      vt.write_buf(
         vt.cursor.set(y, x0 + 2),
         ALERT_COLORS,
         ...vt.fmt.text(space, line),
       );
     }
 
-    vt.end_sync_write(
+    vt.flush_buf(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ENTER‧ok"),
     );
+
+    vt.esu();
   }
 }

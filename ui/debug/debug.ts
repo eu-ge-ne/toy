@@ -19,7 +19,9 @@ export class Debug extends Control {
 
     const { y0, x0, h, w } = this.area;
 
-    vt.begin_sync_write(
+    vt.bsu();
+
+    vt.flush_buf(
       vt.cursor.save,
       DEBUG_BG,
       ...vt.clear(y0, x0, h, w),
@@ -41,7 +43,7 @@ export class Debug extends Control {
       vt.cursor.restore,
     );
 
-    vt.end_sync_write();
+    vt.esu();
   }
 
   set_command_time(x: number): void {
