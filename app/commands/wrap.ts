@@ -9,7 +9,6 @@ export class WrapCommand extends Command {
 
   option = {
     id: "Wrap",
-
     description: "View: Toggle Line Wrap",
     shortcuts: display_keys(this.match_keys),
   };
