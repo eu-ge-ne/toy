@@ -73,7 +73,7 @@ export class App extends Control {
     this.ui.editor.enabled = true;
 
     vt.init();
-    globalThis.addEventListener("unload", this.stop);
+    globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
     this.enable_zen(true);
@@ -83,8 +83,12 @@ export class App extends Control {
     await this.#process_input();
   }
 
-  stop = () => {
+  stop = (e?: PromiseRejectionEvent) => {
     vt.restore();
+
+    if (e) {
+      console.log(e.reason);
+    }
 
     Deno.exit(0);
   };
