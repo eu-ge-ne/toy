@@ -71,7 +71,7 @@ brew install eu-ge-ne/tap/toy
 
 ### Function
 
-- `F1` - Command Palette
+- `F1` - Open Command Palette
 - `F2` - Save
 - `F5` - Toggle invisible characters
 - `F6` - Toggle line wrapping
