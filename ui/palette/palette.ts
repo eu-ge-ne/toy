@@ -105,7 +105,6 @@ export class Palette
     vt.begin_sync_write();
 
     this.#resize();
-    //this.parent?.render();
     this.#scroll();
 
     vt.sync_write(
@@ -143,6 +142,9 @@ export class Palette
     this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
 
     const area_height = 3 + Math.max(this.#list_size, 1);
+    if (area_height > this.#parent_area.h) {
+      // TODO
+    }
     const area_width = Math.min(60, this.#parent_area.w);
 
     const x0 = Math.trunc((this.#parent_area.w - area_width) / 2);
