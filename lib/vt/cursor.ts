@@ -10,7 +10,7 @@ import {
   parse_cpr_res,
 } from "@eu-ge-ne/ctlseqs";
 
-import { write_direct } from "./write.ts";
+import { write } from "./write.ts";
 
 export const save = decsc;
 export const restore = decrc;
@@ -25,7 +25,7 @@ export function set(y: number, x: number): Uint8Array {
 const buf = new Uint8Array(1024);
 
 export function measure(y: number, x: number, bytes: Uint8Array): number {
-  write_direct(
+  write(
     set(y, x),
     bytes,
     cpr_req,

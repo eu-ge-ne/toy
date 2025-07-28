@@ -164,6 +164,12 @@ export class App extends Control {
     this.render();
   }
 
+  #on_sigwinch = () => {
+    this.resize(Area.from_screen());
+
+    vt.dummy_req();
+  };
+
   async #load(): Promise<void> {
     const path = this.args._[0];
     if (typeof path !== "string") {
@@ -224,11 +230,11 @@ export class App extends Control {
     }
   }
 
-  #on_sigwinch = () => {
-    this.resize(Area.from_screen());
+  #set_file_path(x: string): void {
+    this.file_path = x;
 
-    vt.write_direct(vt.dummy_req);
-  };
+    this.ui.header.set_file_path(x);
+  }
 
   async #process_input(): Promise<void> {
     while (true) {
@@ -253,11 +259,5 @@ export class App extends Control {
         }
       }
     }
-  }
-
-  #set_file_path(x: string): void {
-    this.file_path = x;
-
-    this.ui.header.set_file_path(x);
   }
 }
