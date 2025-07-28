@@ -16,6 +16,7 @@ export class SaveAs extends Modal<[string], string> {
     this.done = Promise.withResolvers();
 
     this.enabled = true;
+    this.#editor.enabled = true;
 
     buffer.set_text(file_path);
     this.#editor.reset(true);
@@ -25,6 +26,7 @@ export class SaveAs extends Modal<[string], string> {
     await this.#process_input();
 
     this.enabled = false;
+    this.#editor.enabled = false;
 
     return this.done.promise;
   }
