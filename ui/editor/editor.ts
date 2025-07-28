@@ -4,10 +4,10 @@ import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
+import { Key } from "@lib/vt";
 
 import * as keys from "./keys/mod.ts";
 import { View } from "./view.ts";
-import { Key } from "@lib/input";
 
 interface EditorOptions {
   multi_line: boolean;

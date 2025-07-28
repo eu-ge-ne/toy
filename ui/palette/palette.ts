@@ -1,5 +1,4 @@
 import { GraphemePool } from "@lib/grapheme";
-import { read_input } from "@lib/input";
 import {
   PALETTE_BG,
   PALETTE_COLORS,
@@ -53,14 +52,14 @@ export class Palette
 
   async #process_input(): Promise<void> {
     while (true) {
-      for await (const data of read_input()) {
-        if (data instanceof Uint8Array) {
+      for await (const key of vt.read()) {
+        if (key instanceof Uint8Array) {
           this.parent?.render();
           continue;
         }
 
-        if (typeof data !== "string") {
-          switch (data.name) {
+        if (typeof key !== "string") {
+          switch (key.name) {
             case "ESC":
               this.done.resolve(undefined);
               return;
@@ -85,7 +84,7 @@ export class Palette
           }
         }
 
-        if (this.#editor.handle_key(data)) {
+        if (this.#editor.handle_key(key)) {
           this.#filter();
           this.parent?.render();
         }
