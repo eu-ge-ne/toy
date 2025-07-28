@@ -1,4 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
+import { read_input } from "@lib/input";
 import { SAVE_AS_BG, SAVE_AS_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -22,22 +23,38 @@ export class SaveAs extends Modal<[string], string> {
 
     this.render();
 
-    const result = await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
     this.editor.enabled = false;
 
-    return result;
+    return this.done.promise;
   }
 
-  on_esc_key(): void {
-    this.done.resolve("");
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          continue;
+        }
 
-  on_enter_key(): void {
-    const path = this.editor.buffer.get_text();
-    if (path) {
-      this.done.resolve(path);
+        if (typeof data !== "string") {
+          switch (data.name) {
+            case "ESC":
+              this.done.resolve("");
+              return;
+            case "ENTER": {
+              const path = this.editor.buffer.get_text();
+              if (path) {
+                this.done.resolve(path);
+                return;
+              }
+            }
+          }
+        }
+
+        this.editor.handle_key(data);
+      }
     }
   }
 
