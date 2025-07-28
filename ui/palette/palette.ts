@@ -38,19 +38,13 @@ export class Palette
     this.#all = options;
     this.#editor.buffer.set_text("");
     this.#editor.reset(false);
-    /*
-    this.editor.history.on_changed = () => {
-      this.#filter();
-      this.render();
-    };
-    */
+
     this.#filter();
     this.render();
 
     await this.#process_input();
 
     this.enabled = false;
-    //this.editor.history.on_changed = undefined;
 
     return this.done.promise;
   }
