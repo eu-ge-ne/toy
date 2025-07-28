@@ -1,4 +1,4 @@
-import { copy_to_clipboard, write_direct } from "@lib/vt";
+import { copy_to_clipboard } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -24,7 +24,7 @@ export class CutHandler extends KeyHandler {
       this.editor.delete_char();
     }
 
-    write_direct(copy_to_clipboard(this.editor.clipboard));
+    copy_to_clipboard(this.editor.clipboard);
 
     return true;
   }

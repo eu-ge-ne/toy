@@ -1,4 +1,4 @@
-import { write_direct } from "./write.ts";
+import { write } from "./write.ts";
 
 const buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
 const bytes = new Uint8Array(buf);
@@ -18,7 +18,7 @@ export function write_buf(...chunks: Uint8Array[]): void {
 }
 
 export function flush_buf(...chunks: Uint8Array[]): void {
-  write_direct(bytes.subarray(0, i), ...chunks);
+  write(bytes.subarray(0, i), ...chunks);
 
   i = 0;
 }
