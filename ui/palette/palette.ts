@@ -1,4 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
+import { read_input } from "@lib/input";
 import {
   PALETTE_BG,
   PALETTE_COLORS,
@@ -38,28 +39,45 @@ export class Palette
     this.#all = options;
     this.editor.buffer.set_text("");
     this.editor.reset(false);
+    /*
     this.editor.history.on_changed = () => {
       this.#filter();
       this.render();
     };
+    */
     this.#filter();
     this.render();
 
-    const result = await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
     this.editor.enabled = false;
-    this.editor.history.on_changed = undefined;
+    //this.editor.history.on_changed = undefined;
 
-    return result;
+    return this.done.promise;
   }
 
-  on_esc_key(): void {
-    this.done.resolve(undefined);
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          continue;
+        }
 
-  on_enter_key(): void {
-    this.done.resolve(this.#options[this.#selected_index]);
+        if (typeof data !== "string") {
+          switch (data.name) {
+            case "ESC":
+              this.done.resolve(undefined);
+              return;
+            case "ENTER":
+              this.done.resolve(this.#options[this.#selected_index]);
+              return;
+          }
+        }
+
+        this.editor.handle_key(data);
+      }
+    }
   }
 
   on_up_key(): void {
