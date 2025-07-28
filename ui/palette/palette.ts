@@ -139,30 +139,17 @@ export class Palette
   }
 
   #resize(): void {
-    this.#list_size = 0;
+    this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
 
+    const area_height = 3 + Math.max(this.#list_size, 1);
     const area_width = Math.min(60, this.#parent_area.w);
-    let area_height = 3;
-
-    for (const _ of this.#options) {
-      if (this.#list_size === MAX_LIST_SIZE) {
-        break;
-      }
-      const h = 1;
-      if (area_height + h > this.#parent_area.h) {
-        break;
-      }
-      area_height += h;
-      this.#list_size += 1;
-    }
 
     const x0 = Math.trunc((this.#parent_area.w - area_width) / 2);
     const y0 = Math.trunc((this.#parent_area.h - area_height) / 2);
+
     this.area = new Area(x0, y0, area_width, area_height);
 
-    this.#editor.resize(
-      new Area(x0 + 2, y0 + 1, area_width - 4, 1),
-    );
+    this.#editor.resize(new Area(x0 + 2, y0 + 1, area_width - 4, 1));
   }
 
   #scroll(): void {
