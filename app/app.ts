@@ -18,7 +18,6 @@ import { editor_graphemes } from "./graphemes.ts";
 
 export class App {
   commands: cmd.Command[] = [
-    new cmd.TextCommand(this),
     new cmd.BackspaceCommand(this),
     new cmd.BottomCommand(this),
     new cmd.CopyCommand(this),
@@ -271,8 +270,17 @@ export class App {
       for await (const data of read_input()) {
         if (data instanceof Uint8Array) {
           this.render();
-        } else {
-          await this.commands.find((x) => x.match(data))?.run(data);
+          continue;
+        }
+
+        const command = this.commands.find((x) => x.match(data));
+        if (command) {
+          await command.run(data);
+          continue;
+        }
+
+        if (this.ui.editor.enabled) {
+          this.ui.editor.handle_key(data);
         }
       }
     }

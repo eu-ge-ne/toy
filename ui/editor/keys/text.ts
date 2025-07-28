@@ -1,0 +1,17 @@
+import { Key } from "@lib/input";
+
+import { KeyHandler } from "./handler.ts";
+
+export class TextHandler extends KeyHandler {
+  keys = [];
+
+  override match(key: Key | string): boolean {
+    return typeof key === "string" || typeof key.text === "string";
+  }
+
+  handle(key: Key | string): void {
+    const text = typeof key === "string" ? key : key.text!;
+
+    this.editor.insert(text);
+  }
+}

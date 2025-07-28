@@ -5,13 +5,19 @@ import { History } from "@lib/history";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
 
+import * as keys from "./keys/mod.ts";
 import { View } from "./view.ts";
+import { Key } from "@lib/input";
 
 interface EditorOptions {
   multi_line: boolean;
 }
 
 export class Editor extends Control {
+  #handlers: keys.KeyHandler[] = [
+    new keys.TextHandler(this),
+  ];
+
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
@@ -124,5 +130,16 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
+  }
+
+  handle_key(key: Key | string): void {
+    const handler = this.#handlers.find((x) => x.match(key));
+    if (!handler) {
+      return;
+    }
+
+    handler.handle(key);
+
+    this.render();
   }
 }

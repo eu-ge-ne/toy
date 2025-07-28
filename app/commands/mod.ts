@@ -21,7 +21,6 @@ export * from "./right.ts";
 export * from "./save.ts";
 export * from "./select-all.ts";
 export * from "./tab.ts";
-export * from "./text.ts";
 export * from "./top.ts";
 export * from "./undo.ts";
 export * from "./up.ts";
