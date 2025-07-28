@@ -24,17 +24,19 @@ export function set(y: number, x: number): Uint8Array {
 
 const buf = new Uint8Array(1024);
 
-export function get(): [number, number] {
-  write_direct(cpr_req);
+export function measure(y: number, x: number, bytes: Uint8Array): number {
+  write_direct(
+    set(y, x),
+    bytes,
+    cpr_req,
+  );
 
   for (let i = 0; i < 4; i += 1) {
     const len = Deno.stdin.readSync(buf)!;
-
     if (len) {
       const pos = parse_cpr_res(buf.subarray(0, len));
-
       if (pos) {
-        return [pos[0] - 1, pos[1] - 1];
+        return pos[1] - 1 - x;
       }
     }
   }
