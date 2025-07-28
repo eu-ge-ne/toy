@@ -1,3 +1,4 @@
+import { read_input } from "@lib/input";
 import { ALERT_BG, ALERT_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -15,17 +16,26 @@ export class Alert extends Modal<[unknown], void> {
 
     this.render();
 
-    await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
   }
 
-  on_esc_key(): void {
-    this.done.resolve();
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array || typeof data === "string") {
+          continue;
+        }
 
-  on_enter_key(): void {
-    this.done.resolve();
+        switch (data.name) {
+          case "ESC":
+          case "ENTER":
+            this.done.resolve();
+            return;
+        }
+      }
+    }
   }
 
   render(): void {
