@@ -141,9 +141,12 @@ export class Palette
   #resize(): void {
     this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
 
-    const area_height = 3 + Math.max(this.#list_size, 1);
+    let area_height = 3 + Math.max(this.#list_size, 1);
     if (area_height > this.#parent_area.h) {
-      // TODO
+      area_height = this.#parent_area.h;
+      if (this.#list_size > 0) {
+        this.#list_size = area_height - 3;
+      }
     }
     const area_width = Math.min(60, this.#parent_area.w);
 
