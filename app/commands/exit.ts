@@ -11,10 +11,6 @@ export class ExitCommand extends Command {
   ];
 
   async command(): Promise<void> {
-    if (Command.started > 1) {
-      return;
-    }
-
     const { changes, ui } = this.app;
 
     ui.editor.enabled = false;

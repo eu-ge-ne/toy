@@ -235,7 +235,7 @@ export class App {
         }
 
         const command = this.commands.find((x) => x.match(data));
-        if (command) {
+        if (command && !cmd.Command.running) {
           await command.run(data);
           continue;
         }

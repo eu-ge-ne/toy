@@ -6,10 +6,6 @@ export class PaletteCommand extends Command {
   ];
 
   async command(): Promise<void> {
-    if (Command.started > 1) {
-      return;
-    }
-
     const { editor, palette } = this.app.ui;
 
     editor.enabled = false;
@@ -21,7 +17,8 @@ export class PaletteCommand extends Command {
     editor.render();
 
     if (option) {
-      //return this.app.commands.find((x) => x.option?.name === option.name);
+      await this.app.commands.find((x) => x.option?.name === option.name)
+        ?.run();
     }
   }
 }

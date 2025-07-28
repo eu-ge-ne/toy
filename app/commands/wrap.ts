@@ -11,10 +11,6 @@ export class WrapCommand extends Command {
   ];
 
   async command(): Promise<void> {
-    if (Command.started > 1) {
-      return;
-    }
-
     const { editor } = this.app.ui;
 
     editor.wrap_enabled = !editor.wrap_enabled;

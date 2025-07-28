@@ -7,7 +7,7 @@ export abstract class Command {
 
   abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
 
-  protected static started = 0;
+  static running = 0;
 
   constructor(protected app: App) {
   }
@@ -23,11 +23,11 @@ export abstract class Command {
   async run(key?: Key | string): Promise<void> {
     const started = Date.now();
 
-    Command.started += 1;
+    Command.running += 1;
 
     await this.command(key);
 
-    Command.started -= 1;
+    Command.running -= 1;
 
     this.app.ui.debug.set_command_time(Date.now() - started);
   }

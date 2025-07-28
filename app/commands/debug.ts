@@ -11,10 +11,6 @@ export class DebugCommand extends Command {
   ];
 
   async command(): Promise<void> {
-    if (Command.started > 1) {
-      return;
-    }
-
     const { debug, editor } = this.app.ui;
 
     debug.enabled = !debug.enabled;
