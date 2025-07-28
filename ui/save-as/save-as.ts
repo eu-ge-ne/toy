@@ -1,4 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
+import { read_input } from "@lib/input";
 import { SAVE_AS_BG, SAVE_AS_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -7,44 +8,60 @@ import { Editor } from "@ui/editor";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
-  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(new GraphemePool(), { multi_line: false });
 
   async open(file_path: string): Promise<string> {
-    const { buffer } = this.editor;
+    const { buffer } = this.#editor;
 
     this.done = Promise.withResolvers();
 
     this.enabled = true;
-    this.editor.enabled = true;
 
     buffer.set_text(file_path);
-    this.editor.reset(true);
+    this.#editor.reset(true);
 
     this.render();
 
-    const result = await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
-    this.editor.enabled = false;
 
-    return result;
+    return this.done.promise;
   }
 
-  on_esc_key(): void {
-    this.done.resolve("");
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          continue;
+        }
 
-  on_enter_key(): void {
-    const path = this.editor.buffer.get_text();
-    if (path) {
-      this.done.resolve(path);
+        if (typeof data !== "string") {
+          switch (data.name) {
+            case "ESC":
+              this.done.resolve("");
+              return;
+            case "ENTER": {
+              const path = this.#editor.buffer.get_text();
+              if (path) {
+                this.done.resolve(path);
+                return;
+              }
+            }
+          }
+        }
+
+        if (this.#editor.handle_key(data)) {
+          this.#editor.render();
+        }
+      }
     }
   }
 
   override resize(area: Area): void {
     super.resize(area);
 
-    this.editor.resize(
+    this.#editor.resize(
       new Area(this.area.x0 + 2, this.area.y0 + 4, this.area.w - 4, 1),
     );
   }
@@ -56,9 +73,7 @@ export class SaveAs extends Modal<[string], string> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    vt.begin_sync();
-
-    vt.write(
+    vt.begin_sync_write(
       vt.cursor.hide,
       SAVE_AS_BG,
       ...vt.clear(y0, x0, h, w),
@@ -69,8 +84,8 @@ export class SaveAs extends Modal<[string], string> {
       ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
     );
 
-    this.editor.render();
+    this.#editor.render();
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 }

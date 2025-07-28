@@ -1,20 +1,19 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class WrapCommand extends Command {
-  override option = {
-    name: "Wrap",
-    description: "View: Toggle Line Wrap",
-  };
-
-  keys = [
+  match_keys = [
     { name: "F6" },
   ];
 
-  async command(): Promise<Command | undefined> {
-    if (Command.started > 1) {
-      return;
-    }
+  option = {
+    id: "Wrap",
+    description: "View: Toggle Line Wrap",
+    shortcuts: display_keys(this.match_keys),
+  };
 
+  async command(): Promise<void> {
     const { editor } = this.app.ui;
 
     editor.wrap_enabled = !editor.wrap_enabled;

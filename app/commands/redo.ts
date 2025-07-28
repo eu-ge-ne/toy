@@ -1,24 +1,26 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class RedoCommand extends Command {
-  override option = {
-    name: "Redo",
+  match_keys = [];
+
+  option = {
+    id: "Redo",
     description: "Edit: Redo",
+    shortcuts: display_keys([
+      { name: "y", ctrl: true },
+      { name: "y", super: true },
+    ]),
   };
 
-  keys = [
-    { name: "y", ctrl: true },
-    { name: "y", super: true },
-  ];
+  async command(): Promise<void> {
+    const { editor } = this.app.ui;
 
-  async command(): Promise<Command | undefined> {
-    const editor = this.app.active_editor;
-    if (!editor?.enabled) {
-      return;
+    if (editor.enabled) {
+      editor.handle_key({ name: "y", ctrl: true });
+
+      editor.render();
     }
-
-    editor.history.redo();
-
-    editor.render();
   }
 }

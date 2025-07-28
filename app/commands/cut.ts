@@ -1,41 +1,26 @@
-import { copy_to_clipboard, write } from "@lib/vt";
+import { display_keys } from "@lib/input";
 
 import { Command } from "./command.ts";
 
 export class CutCommand extends Command {
-  override option = {
-    name: "Cut",
+  match_keys = [];
+
+  option = {
+    id: "Cut",
     description: "Edit: Cut",
+    shortcuts: display_keys([
+      { name: "x", ctrl: true },
+      { name: "x", super: true },
+    ]),
   };
 
-  keys = [
-    { name: "x", ctrl: true },
-    { name: "x", super: true },
-  ];
+  async command(): Promise<void> {
+    const { editor } = this.app.ui;
 
-  async command(): Promise<Command | undefined> {
-    const editor = this.app.active_editor;
-    if (!editor?.enabled) {
-      return;
+    if (editor.enabled) {
+      editor.handle_key({ name: "x", ctrl: true });
+
+      editor.render();
     }
-
-    const { cursor, buffer } = editor;
-
-    if (cursor.selecting) {
-      editor.clipboard = buffer.copy(cursor.from, cursor.to);
-
-      editor.delete_selection();
-    } else {
-      editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
-        cursor.ln,
-        cursor.col,
-      ]);
-
-      editor.delete_char();
-    }
-
-    write(copy_to_clipboard(editor.clipboard));
-
-    editor.render();
   }
 }

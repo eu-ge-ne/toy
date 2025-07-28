@@ -5,13 +5,39 @@ import { History } from "@lib/history";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
 
+import * as keys from "./keys/mod.ts";
 import { View } from "./view.ts";
+import { Key } from "@lib/input";
 
 interface EditorOptions {
   multi_line: boolean;
 }
 
 export class Editor extends Control {
+  #handlers: keys.KeyHandler[] = [
+    new keys.TextHandler(this),
+    new keys.BackspaceHandler(this),
+    new keys.BottomHandler(this),
+    new keys.CopyHandler(this),
+    new keys.CutHandler(this),
+    new keys.DeleteHandler(this),
+    new keys.DownHandler(this),
+    new keys.EndHandler(this),
+    new keys.EnterHandler(this),
+    new keys.HomeHandler(this),
+    new keys.LeftHandler(this),
+    new keys.PageDownHandler(this),
+    new keys.PageUpHandler(this),
+    new keys.PasteHandler(this),
+    new keys.RedoHandler(this),
+    new keys.RightHandler(this),
+    new keys.SelectAllHandler(this),
+    new keys.TabHandler(this),
+    new keys.TopHandler(this),
+    new keys.UndoHandler(this),
+    new keys.UpHandler(this),
+  ];
+
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
@@ -124,5 +150,9 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
+  }
+
+  handle_key(key: Key | string): boolean {
+    return this.#handlers.find((x) => x.match(key))?.handle(key) ?? false;
   }
 }

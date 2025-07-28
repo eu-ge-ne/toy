@@ -1,3 +1,4 @@
+import { read_input } from "@lib/input";
 import { ASK_BG, ASK_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -15,19 +16,30 @@ export class Ask extends Modal<[string], boolean> {
 
     this.render();
 
-    const result = await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
 
-    return result;
+    return this.done.promise;
   }
 
-  on_esc_key(): void {
-    this.done.resolve(false);
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array || typeof data === "string") {
+          continue;
+        }
 
-  on_enter_key(): void {
-    this.done.resolve(true);
+        switch (data.name) {
+          case "ESC":
+            this.done.resolve(false);
+            return;
+          case "ENTER":
+            this.done.resolve(true);
+            return;
+        }
+      }
+    }
   }
 
   render(): void {
@@ -37,9 +49,9 @@ export class Ask extends Modal<[string], boolean> {
 
     const { y0, x0, y1, h, w } = this.area;
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.hide,
       ASK_BG,
       ...vt.clear(y0, x0, h, w),
@@ -57,18 +69,18 @@ export class Ask extends Modal<[string], boolean> {
 
       pos += line.length;
 
-      vt.write(
+      vt.sync_write(
         vt.cursor.set(y, x0 + 1),
         ASK_COLORS,
         ...vt.fmt.center(space, line),
       );
     }
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧no    ENTER‧yes"),
     );
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 }

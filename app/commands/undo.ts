@@ -1,24 +1,26 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class UndoCommand extends Command {
-  override option = {
-    name: "Undo",
+  match_keys = [];
+
+  option = {
+    id: "Undo",
     description: "Edit: Undo",
+    shortcuts: display_keys([
+      { name: "z", ctrl: true },
+      { name: "z", super: true },
+    ]),
   };
 
-  keys = [
-    { name: "z", ctrl: true },
-    { name: "z", super: true },
-  ];
+  async command(): Promise<void> {
+    const { editor } = this.app.ui;
 
-  async command(): Promise<Command | undefined> {
-    const editor = this.app.active_editor;
-    if (!editor?.enabled) {
-      return;
+    if (editor.enabled) {
+      editor.handle_key({ name: "z", ctrl: true });
+
+      editor.render();
     }
-
-    editor.history.undo();
-
-    editor.render();
   }
 }

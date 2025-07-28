@@ -1,28 +1,26 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
-  override option = {
-    name: "Paste",
+  match_keys = [];
+
+  option = {
+    id: "Paste",
     description: "Edit: Paste",
+    shortcuts: display_keys([
+      { name: "v", ctrl: true },
+      { name: "v", super: true },
+    ]),
   };
 
-  keys = [
-    { name: "v", ctrl: true },
-    { name: "v", super: true },
-  ];
+  async command(): Promise<void> {
+    const { editor } = this.app.ui;
 
-  async command(): Promise<Command | undefined> {
-    const editor = this.app.active_editor;
-    if (!editor?.enabled) {
-      return;
+    if (editor.enabled) {
+      editor.handle_key({ name: "v", ctrl: true });
+
+      editor.render();
     }
-
-    if (!editor.clipboard) {
-      return;
-    }
-
-    editor.insert(editor.clipboard);
-
-    editor.render();
   }
 }

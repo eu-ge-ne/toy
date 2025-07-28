@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { display_keys, Key, read_input } from "@lib/input";
+import { read_input } from "@lib/input";
 import { Area } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -15,36 +15,19 @@ import { SaveAs } from "@ui/save-as";
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
-import { Command } from "./commands/command.ts";
 
 export class App {
   commands: cmd.Command[] = [
-    new cmd.TextCommand(this),
-    new cmd.BackspaceCommand(this),
-    new cmd.BottomCommand(this),
     new cmd.CopyCommand(this),
     new cmd.CutCommand(this),
     new cmd.DebugCommand(this),
-    new cmd.DeleteCommand(this),
-    new cmd.DownCommand(this),
-    new cmd.EndCommand(this),
-    new cmd.EnterCommand(this),
-    new cmd.EscCommand(this),
     new cmd.ExitCommand(this),
-    new cmd.HomeCommand(this),
-    new cmd.LeftCommand(this),
-    new cmd.PageDownCommand(this),
-    new cmd.PageUpCommand(this),
     new cmd.PaletteCommand(this),
     new cmd.PasteCommand(this),
     new cmd.RedoCommand(this),
-    new cmd.RightCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
-    new cmd.TabCommand(this),
-    new cmd.TopCommand(this),
     new cmd.UndoCommand(this),
-    new cmd.UpCommand(this),
     new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
     new cmd.ZenCommand(this),
@@ -71,12 +54,7 @@ export class App {
   };
 
   constructor() {
-    this.options = this.commands.filter((x) => x.option).map((x) => ({
-      name: x.option!.name,
-      description: x.option!.description,
-      keys: display_keys(x.keys),
-    }));
-
+    this.options = this.commands.filter((x) => x.option).map((x) => x.option!);
     this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
 
@@ -107,9 +85,7 @@ export class App {
 
     await this.#load();
 
-    for await (const data of read_input()) {
-      await this.#on_input(data);
-    }
+    await this.#process_input();
   }
 
   stop = () => {
@@ -148,7 +124,7 @@ export class App {
     const { palette, editor, debug, header, footer, save_as, alert, ask } =
       this.ui;
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
     header.render();
     editor.render();
@@ -159,25 +135,7 @@ export class App {
     ask.render();
     palette.render();
 
-    vt.end_sync();
-  }
-
-  get active_editor(): Editor | undefined {
-    const { palette, save_as, editor } = this.ui;
-
-    if (palette.enabled) {
-      return palette.editor;
-    }
-
-    if (save_as.enabled) {
-      return save_as.editor;
-    }
-
-    if (editor.enabled) {
-      return editor;
-    }
-
-    return undefined;
+    vt.end_sync_write();
   }
 
   async save(): Promise<void> {
@@ -266,21 +224,31 @@ export class App {
   #on_sigwinch = () => {
     this.resize();
 
-    vt.write(vt.dummy_req);
+    vt.direct_write(vt.dummy_req);
   };
 
-  async #on_input(key: Key | string | Uint8Array): Promise<void> {
-    if (key instanceof Uint8Array) {
-      this.render();
-      return;
-    }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          this.render();
+          continue;
+        }
 
-    this.#run_command(key, this.commands.find((x) => x.match(key)));
-  }
+        if (typeof data !== "string") {
+          const command = this.commands.find((x) => x.match(data));
+          if (command && !cmd.Command.running) {
+            await command.run(data);
+            continue;
+          }
+        }
 
-  async #run_command(key: Key | string, command?: Command): Promise<void> {
-    while (command) {
-      command = await command.run(key);
+        if (this.ui.editor.enabled) {
+          if (this.ui.editor.handle_key(data)) {
+            this.ui.editor.render();
+          }
+        }
+      }
     }
   }
 

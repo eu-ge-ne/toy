@@ -1,39 +1,26 @@
-import { copy_to_clipboard, write } from "@lib/vt";
+import { display_keys } from "@lib/input";
 
 import { Command } from "./command.ts";
 
 export class CopyCommand extends Command {
-  override option = {
-    name: "Copy",
+  match_keys = [];
+
+  option = {
+    id: "Copy",
     description: "Edit: Copy",
+    shortcuts: display_keys([
+      { name: "c", ctrl: true },
+      { name: "c", super: true },
+    ]),
   };
 
-  keys = [
-    { name: "c", ctrl: true },
-    { name: "c", super: true },
-  ];
+  async command(): Promise<void> {
+    const { editor } = this.app.ui;
 
-  async command(): Promise<Command | undefined> {
-    const editor = this.app.active_editor;
-    if (!editor?.enabled) {
-      return;
+    if (editor.enabled) {
+      editor.handle_key({ name: "c", ctrl: true });
+
+      editor.render();
     }
-
-    const { cursor, buffer } = editor;
-
-    if (cursor.selecting) {
-      editor.clipboard = buffer.copy(cursor.from, cursor.to);
-
-      cursor.set(cursor.ln, cursor.col, false);
-    } else {
-      editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
-        cursor.ln,
-        cursor.col,
-      ]);
-    }
-
-    write(copy_to_clipboard(editor.clipboard));
-
-    editor.render();
   }
 }

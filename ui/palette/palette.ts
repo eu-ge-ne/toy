@@ -1,4 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
+import { read_input } from "@lib/input";
 import {
   PALETTE_BG,
   PALETTE_COLORS,
@@ -11,16 +12,16 @@ import { Editor } from "@ui/editor";
 const MAX_LIST_SIZE = 10;
 
 export interface PaletteOption {
-  name: string;
+  id: string;
   description: string;
-  keys: string;
+  shortcuts?: string;
 }
 
 export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   protected size = new Area(0, 0, 0, 0);
 
-  readonly editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(new GraphemePool(), { multi_line: false });
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];
@@ -33,47 +34,59 @@ export class Palette
     this.done = Promise.withResolvers();
 
     this.enabled = true;
-    this.editor.enabled = true;
 
     this.#all = options;
-    this.editor.buffer.set_text("");
-    this.editor.reset(false);
-    this.editor.history.on_changed = () => {
-      this.#filter();
-      this.render();
-    };
+    this.#editor.buffer.set_text("");
+    this.#editor.reset(false);
+
     this.#filter();
     this.render();
 
-    const result = await this.done.promise;
+    await this.#process_input();
 
     this.enabled = false;
-    this.editor.enabled = false;
-    this.editor.history.on_changed = undefined;
 
-    return result;
+    return this.done.promise;
   }
 
-  on_esc_key(): void {
-    this.done.resolve(undefined);
-  }
+  async #process_input(): Promise<void> {
+    while (true) {
+      for await (const data of read_input()) {
+        if (data instanceof Uint8Array) {
+          continue;
+        }
 
-  on_enter_key(): void {
-    this.done.resolve(this.#options[this.#selected_index]);
-  }
+        if (typeof data !== "string") {
+          switch (data.name) {
+            case "ESC":
+              this.done.resolve(undefined);
+              return;
+            case "ENTER":
+              this.done.resolve(this.#options[this.#selected_index]);
+              return;
+            case "UP":
+              if (this.#options.length > 0) {
+                this.#selected_index = Math.max(this.#selected_index - 1, 0);
+                this.render();
+              }
+              continue;
+            case "DOWN":
+              if (this.#options.length > 0) {
+                this.#selected_index = Math.min(
+                  this.#selected_index + 1,
+                  this.#options.length - 1,
+                );
+                this.render();
+              }
+              continue;
+          }
+        }
 
-  on_up_key(): void {
-    if (this.#options.length > 0) {
-      this.#selected_index = Math.max(this.#selected_index - 1, 0);
-    }
-  }
-
-  on_down_key(): void {
-    if (this.#options.length > 0) {
-      this.#selected_index = Math.min(
-        this.#selected_index + 1,
-        this.#options.length - 1,
-      );
+        if (this.#editor.handle_key(data)) {
+          this.#filter();
+          this.render();
+        }
+      }
     }
   }
 
@@ -86,13 +99,13 @@ export class Palette
       return;
     }
 
-    vt.begin_sync();
+    vt.begin_sync_write();
 
     this.#resize();
     this.parent.render();
     this.#scroll();
 
-    vt.write(
+    vt.sync_write(
       vt.cursor.hide,
       PALETTE_BG,
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
@@ -104,13 +117,13 @@ export class Palette
       this.#render_options();
     }
 
-    this.editor.render();
+    this.#editor.render();
 
-    vt.end_sync();
+    vt.end_sync_write();
   }
 
   #filter(): void {
-    const text = this.editor.buffer.get_text().toUpperCase();
+    const text = this.#editor.buffer.get_text().toUpperCase();
 
     if (!text) {
       this.#options = this.#all;
@@ -133,8 +146,6 @@ export class Palette
       if (this.#list_size === MAX_LIST_SIZE) {
         break;
       }
-      //const w = option.description.length;
-      //const h = 1 + Math.ceil(w / (area_width - 4));
       const h = 1;
       if (area_height + h > this.#parent_area.h) {
         break;
@@ -147,7 +158,7 @@ export class Palette
     const y0 = Math.trunc((this.#parent_area.h - area_height) / 2);
     this.area = new Area(x0, y0, area_width, area_height);
 
-    this.editor.resize(
+    this.#editor.resize(
       new Area(x0 + 2, y0 + 1, area_width - 4, 1),
     );
   }
@@ -162,7 +173,7 @@ export class Palette
   }
 
   #render_empty(): void {
-    vt.write(
+    vt.sync_write(
       vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
       PALETTE_COLORS,
       ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
@@ -187,14 +198,20 @@ export class Palette
       }
 
       const space = { len: this.area.w - 4 };
-      vt.write(
+
+      vt.sync_write(
         index === this.#selected_index
           ? PALETTE_SELECTED_COLORS
           : PALETTE_COLORS,
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
-      vt.write(...vt.fmt.text(space, option.keys.padStart(space.len)));
+
+      if (option.shortcuts) {
+        vt.sync_write(
+          ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
+        );
+      }
 
       i += 1;
       y += 1;

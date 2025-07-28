@@ -1,20 +1,19 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class ExitCommand extends Command {
-  override option = {
-    name: "Exit",
-    description: "Global: Exit",
-  };
-
-  keys = [
+  match_keys = [
     { name: "F10" },
   ];
 
-  async command(): Promise<Command | undefined> {
-    if (Command.started > 1) {
-      return;
-    }
+  option = {
+    id: "Exit",
+    description: "Global: Exit",
+    shortcuts: display_keys(this.match_keys),
+  };
 
+  async command(): Promise<void> {
     const { changes, ui } = this.app;
 
     ui.editor.enabled = false;

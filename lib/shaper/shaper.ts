@@ -46,7 +46,7 @@ export class Shaper {
       const grapheme = graphemes.get(seg);
 
       if (grapheme.width < 0) {
-        vt.write(
+        vt.direct_write(
           vt.cursor.set(this.y, this.x),
           grapheme.bytes,
         );

@@ -1,20 +1,19 @@
+import { display_keys } from "@lib/input";
+
 import { Command } from "./command.ts";
 
 export class WhitespaceCommand extends Command {
-  override option = {
-    name: "Whitespace",
-    description: "View: Toggle Render Whitespace",
-  };
-
-  keys = [
+  match_keys = [
     { name: "F5" },
   ];
 
-  async command(): Promise<Command | undefined> {
-    if (Command.started > 1) {
-      return;
-    }
+  option = {
+    id: "Whitespace",
+    description: "View: Toggle Render Whitespace",
+    shortcuts: display_keys(this.match_keys),
+  };
 
+  async command(): Promise<void> {
     const { editor } = this.app.ui;
 
     editor.whitespace_enabled = !editor.whitespace_enabled;
