@@ -2,8 +2,8 @@ import { DECResetMode, decrst, decset, DECSetMode } from "@eu-ge-ne/ctlseqs";
 
 import { direct_write } from "./write.ts";
 
-const bsu = decset(DECSetMode.BSU);
-const esu = decrst(DECResetMode.ESU);
+export const bsu = decset(DECSetMode.BSU);
+export const esu = decrst(DECResetMode.ESU);
 
 const buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
 const bytes = new Uint8Array(buf);
