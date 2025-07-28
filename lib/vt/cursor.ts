@@ -10,7 +10,7 @@ import {
   parse_cpr_res,
 } from "@eu-ge-ne/ctlseqs";
 
-import { direct_write } from "./write.ts";
+import { write_direct } from "./write.ts";
 
 export const save = decsc;
 export const restore = decrc;
@@ -25,7 +25,7 @@ export function set(y: number, x: number): Uint8Array {
 const buf = new Uint8Array(1024);
 
 export function get(): [number, number] {
-  direct_write(cpr_req);
+  write_direct(cpr_req);
 
   for (let i = 0; i < 4; i += 1) {
     const len = Deno.stdin.readSync(buf)!;
