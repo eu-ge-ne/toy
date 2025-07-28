@@ -14,7 +14,7 @@ const MAX_LIST_SIZE = 10;
 export interface PaletteOption {
   id: string;
   description: string;
-  shortcuts: string;
+  shortcuts?: string;
 }
 
 export class Palette
@@ -198,6 +198,7 @@ export class Palette
       }
 
       const space = { len: this.area.w - 4 };
+
       vt.sync_write(
         index === this.#selected_index
           ? PALETTE_SELECTED_COLORS
@@ -205,9 +206,12 @@ export class Palette
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
-      vt.sync_write(
-        ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
-      );
+
+      if (option.shortcuts) {
+        vt.sync_write(
+          ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
+        );
+      }
 
       i += 1;
       y += 1;

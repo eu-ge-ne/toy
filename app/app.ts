@@ -54,12 +54,7 @@ export class App {
   };
 
   constructor() {
-    this.options = this.commands.filter((x) => x.option).map((x) => ({
-      id: x.option!.id,
-      description: x.option!.description,
-      shortcuts: x.option!.shortcuts ?? "",
-    }));
-
+    this.options = this.commands.filter((x) => x.option).map((x) => x.option!);
     this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
 
