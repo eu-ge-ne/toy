@@ -34,6 +34,7 @@ export class Palette
     this.done = Promise.withResolvers();
 
     this.enabled = true;
+    this.#editor.enabled = true;
 
     this.#all = options;
     this.#editor.buffer.set_text("");
@@ -45,6 +46,7 @@ export class Palette
     await this.#process_input();
 
     this.enabled = false;
+    this.#editor.enabled = false;
 
     return this.done.promise;
   }
