@@ -6,7 +6,9 @@ export class UndoHandler extends KeyHandler {
     { name: "z", super: true },
   ];
 
-  handle(): void {
+  handle(): boolean {
     this.editor.history.undo();
+
+    return true;
   }
 }

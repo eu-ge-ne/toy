@@ -8,12 +8,14 @@ export class LeftHandler extends KeyHandler {
     { name: "LEFT", shift: true },
   ];
 
-  handle(key: Key): void {
+  handle(key: Key): boolean {
     const { cursor } = this.editor;
     const select = Boolean(key.shift);
 
     if (!cursor.move(0, -1, select) && cursor.ln > 0) {
-      cursor.move(-1, Number.MAX_SAFE_INTEGER, select);
+      return cursor.move(-1, Number.MAX_SAFE_INTEGER, select);
     }
+
+    return false;
   }
 }

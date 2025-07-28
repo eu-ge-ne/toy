@@ -5,9 +5,13 @@ export class EnterHandler extends KeyHandler {
     { name: "ENTER" },
   ];
 
-  handle(): void {
-    if (this.editor.opts.multi_line) {
-      this.editor.insert("\n");
+  handle(): boolean {
+    if (!this.editor.opts.multi_line) {
+      return false;
     }
+
+    this.editor.insert("\n");
+
+    return true;
   }
 }

@@ -73,7 +73,9 @@ export class Palette
           }
         }
 
-        this.#editor.handle_key(data);
+        if (this.#editor.handle_key(data)) {
+          this.#editor.render();
+        }
       }
     }
   }

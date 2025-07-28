@@ -6,9 +6,13 @@ export class PasteHandler extends KeyHandler {
     { name: "v", super: true },
   ];
 
-  handle(): void {
+  handle(): boolean {
     if (this.editor.clipboard) {
       this.editor.insert(this.editor.clipboard);
+
+      return true;
     }
+
+    return false;
   }
 }

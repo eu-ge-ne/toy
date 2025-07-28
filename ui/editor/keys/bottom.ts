@@ -8,9 +8,15 @@ export class BottomHandler extends KeyHandler {
     { name: "DOWN", super: true, shift: true },
   ];
 
-  handle(key: Key): void {
-    if (this.editor.opts.multi_line) {
-      this.editor.cursor.move(Number.MAX_SAFE_INTEGER, 0, Boolean(key.shift));
+  handle(key: Key): boolean {
+    if (!this.editor.opts.multi_line) {
+      return false;
     }
+
+    return this.editor.cursor.move(
+      Number.MAX_SAFE_INTEGER,
+      0,
+      Boolean(key.shift),
+    );
   }
 }

@@ -6,10 +6,12 @@ export class SelectAllHandler extends KeyHandler {
     { name: "a", super: true },
   ];
 
-  handle(): void {
+  handle(): boolean {
     const { cursor } = this.editor;
 
     cursor.move(-Number.MAX_SAFE_INTEGER, -Number.MAX_SAFE_INTEGER, false);
     cursor.move(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+
+    return true;
   }
 }

@@ -241,7 +241,9 @@ export class App {
         }
 
         if (this.ui.editor.enabled) {
-          this.ui.editor.handle_key(data);
+          if (this.ui.editor.handle_key(data)) {
+            this.ui.editor.render();
+          }
         }
       }
     }

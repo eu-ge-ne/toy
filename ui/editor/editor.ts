@@ -152,14 +152,7 @@ export class Editor extends Control {
     history.push();
   }
 
-  handle_key(key: Key | string): void {
-    const handler = this.#handlers.find((x) => x.match(key));
-    if (!handler) {
-      return;
-    }
-
-    handler.handle(key);
-
-    this.render();
+  handle_key(key: Key | string): boolean {
+    return this.#handlers.find((x) => x.match(key))?.handle(key) ?? false;
   }
 }

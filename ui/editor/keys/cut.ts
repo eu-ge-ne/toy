@@ -8,7 +8,7 @@ export class CutHandler extends KeyHandler {
     { name: "x", super: true },
   ];
 
-  handle(): void {
+  handle(): boolean {
     const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
@@ -25,5 +25,7 @@ export class CutHandler extends KeyHandler {
     }
 
     direct_write(copy_to_clipboard(this.editor.clipboard));
+
+    return true;
   }
 }

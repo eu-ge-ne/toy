@@ -5,9 +5,13 @@ export class TabHandler extends KeyHandler {
     { name: "TAB" },
   ];
 
-  handle(): void {
+  handle(): boolean {
     if (this.editor.opts.multi_line) {
       this.editor.insert("\t");
+
+      return true;
     }
+
+    return false;
   }
 }

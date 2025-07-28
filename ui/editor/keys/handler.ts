@@ -16,5 +16,5 @@ export abstract class KeyHandler {
       );
   }
 
-  abstract handle(key: Key | string): void;
+  abstract handle(key: Key | string): boolean;
 }

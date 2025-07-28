@@ -5,11 +5,13 @@ export class BackspaceHandler extends KeyHandler {
     { name: "BACKSPACE" },
   ];
 
-  handle(): void {
+  handle(): boolean {
     if (this.editor.cursor.selecting) {
       this.editor.delete_selection();
     } else {
       this.editor.backspace();
     }
+
+    return true;
   }
 }

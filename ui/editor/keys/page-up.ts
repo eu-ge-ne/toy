@@ -8,9 +8,11 @@ export class PageUpHandler extends KeyHandler {
     { name: "PAGE_UP", shift: true },
   ];
 
-  handle(key: Key): void {
-    if (this.editor.opts.multi_line) {
-      this.editor.cursor.move(-this.editor.area.h, 0, Boolean(key.shift));
+  handle(key: Key): boolean {
+    if (!this.editor.opts.multi_line) {
+      return false;
     }
+
+    return this.editor.cursor.move(-this.editor.area.h, 0, Boolean(key.shift));
   }
 }

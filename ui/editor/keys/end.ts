@@ -11,7 +11,11 @@ export class EndHandler extends KeyHandler {
     { name: "RIGHT", super: true, shift: true },
   ];
 
-  handle(key: Key): void {
-    this.editor.cursor.move(0, Number.MAX_SAFE_INTEGER, Boolean(key.shift));
+  handle(key: Key): boolean {
+    return this.editor.cursor.move(
+      0,
+      Number.MAX_SAFE_INTEGER,
+      Boolean(key.shift),
+    );
   }
 }

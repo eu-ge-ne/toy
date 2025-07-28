@@ -6,7 +6,9 @@ export class RedoHandler extends KeyHandler {
     { name: "y", super: true },
   ];
 
-  handle(): void {
+  handle(): boolean {
     this.editor.history.redo();
+
+    return true;
   }
 }

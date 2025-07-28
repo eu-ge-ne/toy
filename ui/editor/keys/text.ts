@@ -9,9 +9,11 @@ export class TextHandler extends KeyHandler {
     return typeof key === "string" || typeof key.text === "string";
   }
 
-  handle(key: Key | string): void {
+  handle(key: Key | string): boolean {
     const text = typeof key === "string" ? key : key.text!;
 
     this.editor.insert(text);
+
+    return true;
   }
 }
