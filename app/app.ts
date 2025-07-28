@@ -1,7 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 
 import { read_input } from "@lib/input";
-import { Area } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
 import { Ask } from "@ui/ask";
@@ -16,7 +16,7 @@ import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { editor_graphemes } from "./graphemes.ts";
 
-export class App {
+export class App extends Control {
   commands: cmd.Command[] = [
     new cmd.CopyCommand(this),
     new cmd.CutCommand(this),
@@ -40,20 +40,20 @@ export class App {
   file_path = "";
   changes = false;
 
-  #ed = new Editor(editor_graphemes, { multi_line: true });
-
   ui = {
-    debug: new Debug(),
-    editor: this.#ed,
-    footer: new Footer(),
-    header: new Header(),
-    alert: new Alert(this.#ed),
-    ask: new Ask(this.#ed),
-    save_as: new SaveAs(this.#ed),
-    palette: new Palette(this.#ed),
+    debug: new Debug(this),
+    editor: new Editor(this, editor_graphemes, { multi_line: true }),
+    footer: new Footer(this),
+    header: new Header(this),
+    alert: new Alert(this),
+    ask: new Ask(this),
+    save_as: new SaveAs(this),
+    palette: new Palette(this),
   };
 
   constructor() {
+    super();
+
     this.options = this.commands.filter((x) => x.option).map((x) => x.option!);
     this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
@@ -80,7 +80,7 @@ export class App {
     globalThis.addEventListener("unload", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.resize();
+    this.resize(Area.from_screen());
     this.render();
 
     await this.#load();
@@ -94,11 +94,9 @@ export class App {
     Deno.exit(0);
   };
 
-  resize(): void {
+  override resize(screen: Area): void {
     const { palette, editor, debug, header, footer, save_as, alert, ask } =
       this.ui;
-
-    const screen = Area.from_screen();
 
     if (this.zen) {
       editor.resize(screen);
@@ -222,7 +220,7 @@ export class App {
   }
 
   #on_sigwinch = () => {
-    this.resize();
+    this.resize(Area.from_screen());
 
     vt.direct_write(vt.dummy_req);
   };

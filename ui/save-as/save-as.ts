@@ -8,7 +8,7 @@ import { Editor } from "@ui/editor";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
-  #editor = new Editor(new GraphemePool(), { multi_line: false });
+  #editor = new Editor(this, new GraphemePool(), { multi_line: false });
 
   async open(file_path: string): Promise<string> {
     const { buffer } = this.#editor;
@@ -35,6 +35,7 @@ export class SaveAs extends Modal<[string], string> {
     while (true) {
       for await (const data of read_input()) {
         if (data instanceof Uint8Array) {
+          this.parent?.render();
           continue;
         }
 
