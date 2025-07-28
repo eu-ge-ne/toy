@@ -107,8 +107,10 @@ export class App {
 
     await this.#load();
 
-    for await (const data of read_input()) {
-      await this.#on_input(data);
+    while (true) {
+      for await (const data of read_input()) {
+        await this.#on_input(data);
+      }
     }
   }
 
