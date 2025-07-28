@@ -36,7 +36,7 @@ export class App extends Control {
   options: PaletteOption[];
 
   args = parseArgs(Deno.args);
-  zen = true;
+  zen_enabled = true;
   file_path = "";
   changes = false;
 
@@ -64,10 +64,6 @@ export class App extends Control {
       Deno.exit();
     }
 
-    this.ui.header.enabled = !this.zen;
-    this.ui.footer.enabled = !this.zen;
-
-    this.ui.editor.line_index_enabled = !this.zen;
     this.ui.editor.history.on_changed = (x) => {
       this.changes = x > 0;
       this.ui.header.set_unsaved_flag(x > 0);
@@ -80,8 +76,7 @@ export class App extends Control {
     globalThis.addEventListener("unload", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.resize(Area.from_screen());
-    this.render();
+    this.enable_zen(true);
 
     await this.#load();
 
@@ -98,7 +93,7 @@ export class App extends Control {
     const { palette, editor, debug, header, footer, save_as, alert, ask } =
       this.ui;
 
-    if (this.zen) {
+    if (this.zen_enabled) {
       editor.resize(screen);
       debug.resize(screen);
     } else {
@@ -157,6 +152,19 @@ export class App extends Control {
 
       await this.#save_as();
     }
+  }
+
+  enable_zen(enabled: boolean): void {
+    const { header, footer, editor } = this.ui;
+
+    this.zen_enabled = enabled;
+
+    header.enabled = !enabled;
+    footer.enabled = !enabled;
+    editor.line_index_enabled = !enabled;
+
+    this.resize(Area.from_screen());
+    this.render();
   }
 
   async #load(): Promise<void> {
