@@ -1,6 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { read_input } from "@lib/input";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -242,22 +241,22 @@ export class App extends Control {
 
   async #process_input(): Promise<void> {
     while (true) {
-      for await (const data of read_input()) {
-        if (data instanceof Uint8Array) {
+      for await (const key of vt.read()) {
+        if (key instanceof Uint8Array) {
           this.render();
           continue;
         }
 
-        if (typeof data !== "string") {
-          const command = this.commands.find((x) => x.match(data));
+        if (typeof key !== "string") {
+          const command = this.commands.find((x) => x.match(key));
           if (command && !cmd.Command.running) {
-            await command.run(data);
+            await command.run(key);
             continue;
           }
         }
 
         if (this.ui.editor.enabled) {
-          if (this.ui.editor.handle_key(data)) {
+          if (this.ui.editor.handle_key(key)) {
             this.ui.editor.render();
           }
         }

@@ -1,4 +1,3 @@
-import { read_input } from "@lib/input";
 import { ASK_BG, ASK_COLORS } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -25,13 +24,13 @@ export class Ask extends Modal<[string], boolean> {
 
   async #process_input(): Promise<void> {
     while (true) {
-      for await (const data of read_input()) {
-        if (data instanceof Uint8Array || typeof data === "string") {
+      for await (const key of vt.read()) {
+        if (key instanceof Uint8Array || typeof key === "string") {
           this.parent?.render();
           continue;
         }
 
-        switch (data.name) {
+        switch (key.name) {
           case "ESC":
             this.done.resolve(false);
             return;

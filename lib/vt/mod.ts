@@ -4,5 +4,6 @@ export * from "./clear.ts";
 export * from "./clipboard.ts";
 export * as cursor from "./cursor.ts";
 export * from "./dummy.ts";
+export * from "./read.ts";
 export * from "./init.ts";
 export * from "./sync.ts";

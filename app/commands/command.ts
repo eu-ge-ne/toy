@@ -1,4 +1,4 @@
-import { Key } from "@lib/input";
+import { Key } from "@lib/vt";
 
 import { App } from "../app.ts";
 

@@ -1,4 +1,4 @@
-import { Key } from "@lib/input";
+import { Key } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
