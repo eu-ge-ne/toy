@@ -19,9 +19,11 @@ export class Editor extends Control {
     new keys.BackspaceHandler(this),
     new keys.DeleteHandler(this),
     new keys.EndHandler(this),
+    new keys.EnterHandler(this),
     new keys.HomeHandler(this),
     new keys.LeftHandler(this),
     new keys.RightHandler(this),
+    new keys.TabHandler(this),
   ];
 
   on_render?: (_: number) => void;
