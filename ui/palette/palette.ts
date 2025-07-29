@@ -84,7 +84,7 @@ export class Palette
           }
         }
 
-        if (this.#editor.handle_key(key)) {
+        if (this.#editor.handle_input(key)) {
           this.#filter();
           this.parent?.render();
         }

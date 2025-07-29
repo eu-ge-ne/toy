@@ -18,7 +18,7 @@ export class UndoCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "z", ctrl: true });
+      editor.handle_input({ name: "z", ctrl: true });
 
       editor.render();
     }

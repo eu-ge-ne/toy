@@ -24,15 +24,11 @@ export abstract class Command {
   }
 
   async run(key?: Key | string): Promise<void> {
-    const started = Date.now();
-
     Command.running += 1;
 
     await this.command(key);
 
     Command.running -= 1;
-
-    this.app.ui.debug.set_command_time(Date.now() - started);
   }
 
   protected abstract command(key?: Key | string): Promise<void>;

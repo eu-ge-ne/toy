@@ -38,6 +38,7 @@ export class Editor extends Control {
     new keys.UpHandler(this),
   ];
 
+  on_input_handled?: (_: number) => void;
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
@@ -66,12 +67,13 @@ export class Editor extends Control {
   }
 
   render(): void {
-    const started = Date.now();
+    const t0 = performance.now();
 
     this.view.render();
     this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.ln_count });
 
-    this.on_render?.(Date.now() - started);
+    const t1 = performance.now();
+    this.on_render?.(t1 - t0);
   }
 
   reset(reset_cursor: boolean): void {
@@ -92,6 +94,18 @@ export class Editor extends Control {
     }
 
     this.history.reset();
+  }
+
+  handle_input(key: Key | string): boolean {
+    const t0 = performance.now();
+
+    const handled = this.#handlers.find((x) => x.match(key))
+      ?.handle(key) ?? false;
+
+    const t1 = performance.now();
+    this.on_input_handled?.(t1 - t0);
+
+    return handled;
   }
 
   insert(text: string): void {
@@ -151,9 +165,5 @@ export class Editor extends Control {
     cursor.set(...cursor.from, false);
 
     history.push();
-  }
-
-  handle_key(key: Key | string): boolean {
-    return this.#handlers.find((x) => x.match(key))?.handle(key) ?? false;
   }
 }

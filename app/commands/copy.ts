@@ -18,7 +18,7 @@ export class CopyCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "c", ctrl: true });
+      editor.handle_input({ name: "c", ctrl: true });
 
       editor.render();
     }

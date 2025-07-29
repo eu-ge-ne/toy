@@ -18,7 +18,7 @@ export class RedoCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "y", ctrl: true });
+      editor.handle_input({ name: "y", ctrl: true });
 
       editor.render();
     }
