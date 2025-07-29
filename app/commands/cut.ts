@@ -1,4 +1,4 @@
-import { display_keys } from "@lib/input";
+import { display_keys } from "@lib/key";
 
 import { Command } from "./command.ts";
 
