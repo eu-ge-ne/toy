@@ -63,13 +63,16 @@ export class App extends Control {
       Deno.exit();
     }
 
-    this.ui.editor.history.on_changed = (x) => {
+    const { editor, debug, header, footer } = this.ui;
+
+    editor.enabled = true;
+    editor.on_input_handled = (x) => debug.set_input_time(x);
+    editor.on_render = (x) => debug.set_render_time(x);
+    editor.on_cursor = (x) => footer.set_cursor_status(x);
+    editor.history.on_changed = (x) => {
       this.changes = x > 0;
-      this.ui.header.set_unsaved_flag(x > 0);
+      header.set_unsaved_flag(x > 0);
     };
-    this.ui.editor.on_render = (x) => this.ui.debug.set_render_time(x);
-    this.ui.editor.on_cursor = (x) => this.ui.footer.set_cursor_status(x);
-    this.ui.editor.enabled = true;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.stop);
@@ -256,7 +259,7 @@ export class App extends Control {
         }
 
         if (this.ui.editor.enabled) {
-          if (this.ui.editor.handle_key(key)) {
+          if (this.ui.editor.handle_input(key)) {
             this.ui.editor.render();
           }
         }

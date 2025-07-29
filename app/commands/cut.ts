@@ -18,7 +18,7 @@ export class CutCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "x", ctrl: true });
+      editor.handle_input({ name: "x", ctrl: true });
 
       editor.render();
     }

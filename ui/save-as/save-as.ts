@@ -53,7 +53,7 @@ export class SaveAs extends Modal<[string], string> {
           }
         }
 
-        if (this.#editor.handle_key(key)) {
+        if (this.#editor.handle_input(key)) {
           this.#editor.render();
         }
       }

@@ -18,7 +18,8 @@ export class SelectAllCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "a", ctrl: true });
+      editor.handle_input({ name: "a", ctrl: true });
+
       editor.render();
     }
   }

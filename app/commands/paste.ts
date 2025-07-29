@@ -18,7 +18,7 @@ export class PasteCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_key({ name: "v", ctrl: true });
+      editor.handle_input({ name: "v", ctrl: true });
 
       editor.render();
     }

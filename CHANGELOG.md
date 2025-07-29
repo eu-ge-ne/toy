@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.19
+
+- Added memory info to Debug panel
+
 ## v0.0.18
 
 - Improved synchronized rendering
