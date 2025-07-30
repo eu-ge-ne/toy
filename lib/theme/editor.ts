@@ -36,7 +36,7 @@ export const EDITOR_SELECTED_CHAR_COLORS = new Uint8Array([
   ...sgr(["fg", ...LIGHTEST]),
 ]);
 
-export const EDITOR_SELECTED_INVISIBLE_COLORS = new Uint8Array([
+export const EDITOR_SELECTED_WHITESPACE_COLORS = new Uint8Array([
   ...sgr(["bg", ...TOP]),
   ...sgr(["fg", ...DARKER]),
 ]);
