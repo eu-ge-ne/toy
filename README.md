@@ -46,7 +46,7 @@ brew install eu-ge-ne/tap/toy
 - Rendering whitespace characters
 - Leveraging the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
-  extension for fast rendering (median 5 ms)
+  extension for fast rendering (5 ms median)
 
 ### Input
 
