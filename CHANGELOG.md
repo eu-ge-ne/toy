@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.20
+
+- Added `⌘+F1` shortcut for opening Command Palette
+
 ## v0.0.19
 
 - Added memory info to Debug panel
