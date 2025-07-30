@@ -6,7 +6,7 @@ third-party dependencies.
 ![toy](etc/toy.png)
 
 - [Installation](#installation)
-  - [Homebrew (macOS only)](#homebrew-macos-only)
+  - [Homebrew](#homebrew)
 - [Features](#features)
   - [Text](#text)
   - [Rendering](#rendering)
@@ -23,9 +23,9 @@ third-party dependencies.
 
 ## Installation
 
-### Homebrew (macOS only)
+### Homebrew
 
-Install from a tap (Third-Party Repository):
+Install from a tap:
 
 ```bash
 brew install eu-ge-ne/tap/toy
@@ -73,9 +73,9 @@ brew install eu-ge-ne/tap/toy
 
 - `F1` - Open Command Palette (`⇧+F1`, `⌃+F1`, `⌥+F1`, `⌘+F1`)
 - `F2` - Save
-- `F5` - Toggle invisible characters
-- `F6` - Toggle line wrapping
-- `F9` - Toggle debug panel
+- `F5` - Toggle render whitespace
+- `F6` - Toggle line wrap
+- `F9` - Toggle Debug panel
 - `F10` - Exit
 - `F11` - Toggle Zen mode
 
