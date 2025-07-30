@@ -5,6 +5,7 @@ import { Command } from "./command.ts";
 export class SaveCommand extends Command {
   match_keys = [
     { name: "F2" },
+    { name: "F2", super: true },
   ];
 
   option = {

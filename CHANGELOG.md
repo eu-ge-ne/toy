@@ -3,6 +3,7 @@
 ## v0.0.20
 
 - Added `⌘+F1` shortcut for opening Command Palette
+- Added `⌘+F2` shortcut for Save command
 
 ## v0.0.19
 
