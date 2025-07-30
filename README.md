@@ -6,7 +6,7 @@ third-party dependencies.
 ![toy](etc/toy.png)
 
 - [Installation](#installation)
-  - [Homebrew (macOS only)](#homebrew-macos-only)
+  - [Homebrew](#homebrew)
 - [Features](#features)
   - [Text](#text)
   - [Rendering](#rendering)
@@ -23,9 +23,9 @@ third-party dependencies.
 
 ## Installation
 
-### Homebrew (macOS only)
+### Homebrew
 
-Install from a tap (Third-Party Repository):
+Install from a tap:
 
 ```bash
 brew install eu-ge-ne/tap/toy
