@@ -3,6 +3,9 @@ import { Command } from "./command.ts";
 export class PaletteCommand extends Command {
   match_keys = [
     { name: "F1" },
+    { name: "F1", shift: true },
+    { name: "F1", ctrl: true },
+    { name: "F1", alt: true },
     { name: "F1", super: true },
   ];
 

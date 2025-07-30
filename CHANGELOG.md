@@ -2,7 +2,7 @@
 
 ## v0.0.20
 
-- Added `⌘+F1` shortcut for opening Command Palette
+- Added `⇧+F1`, `⌃+F1`, `⌥+F1`, `⌘+F1` shortcuts for opening Command Palette
 
 ## v0.0.19
 
