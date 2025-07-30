@@ -3,11 +3,11 @@ import {
   EDITOR_BG,
   EDITOR_BLANK_LINE_INDEX_COLORS,
   EDITOR_CHAR_COLORS,
+  EDITOR_EMPTY_COLORS,
   EDITOR_LINE_INDEX_COLORS,
   EDITOR_SELECTED_CHAR_COLORS,
-  EDITOR_SELECTED_INVISIBLE_COLORS,
-  EDITOR_WHITESPACE_OFF_COLORS,
-  EDITOR_WHITESPACE_ON_COLORS,
+  EDITOR_SELECTED_WHITESPACE_COLORS,
+  EDITOR_WHITESPACE_COLORS,
 } from "@lib/theme";
 import * as vt from "@lib/vt";
 
@@ -129,13 +129,13 @@ export class View {
       if (cursor.is_selected(this.#ln, cell.i)) {
         color = cell.grapheme.is_visible
           ? EDITOR_SELECTED_CHAR_COLORS
-          : EDITOR_SELECTED_INVISIBLE_COLORS;
+          : EDITOR_SELECTED_WHITESPACE_COLORS;
       } else {
         color = cell.grapheme.is_visible
           ? EDITOR_CHAR_COLORS
           : (whitespace_enabled
-            ? EDITOR_WHITESPACE_ON_COLORS
-            : EDITOR_WHITESPACE_OFF_COLORS);
+            ? EDITOR_WHITESPACE_COLORS
+            : EDITOR_EMPTY_COLORS);
       }
 
       vt.write_buf(color, cell.grapheme.bytes);
