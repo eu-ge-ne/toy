@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { SLATE, switch_theme } from "@lib/theme";
+import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -81,7 +81,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    switch_theme(SLATE);
+    theme.switch_theme(theme.NEUTRAL);
 
     this.enable_zen(true);
 
