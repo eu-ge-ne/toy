@@ -1,17 +1,15 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { HIGHEST, LIGHTEST, TOP } from "./tokens.ts";
+import * as t from "./tokens.ts";
 
-export const PALETTE_BG = new Uint8Array([
-  ...sgr(["bg", ...HIGHEST]),
+export const BACKGROUND = sgr(["bg", ...t.HIGHEST]);
+
+export const OPTION = new Uint8Array([
+  ...BACKGROUND,
+  ...sgr(["fg", ...t.LIGHTEST]),
 ]);
 
-export const PALETTE_COLORS = new Uint8Array([
-  ...PALETTE_BG,
-  ...sgr(["fg", ...LIGHTEST]),
-]);
-
-export const PALETTE_SELECTED_COLORS = new Uint8Array([
-  ...sgr(["bg", ...TOP]),
-  ...sgr(["fg", ...LIGHTEST]),
+export const SELECTED_OPTION = new Uint8Array([
+  ...sgr(["bg", ...t.TOP]),
+  ...sgr(["fg", ...t.LIGHTEST]),
 ]);

@@ -1,9 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
-import {
-  PALETTE_BG,
-  PALETTE_COLORS,
-  PALETTE_SELECTED_COLORS,
-} from "@lib/theme";
+import { palette as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -108,7 +104,7 @@ export class Palette
 
     vt.write_buf(
       vt.cursor.hide,
-      PALETTE_BG,
+      theme.BACKGROUND,
       ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
     );
 
@@ -169,7 +165,7 @@ export class Palette
   #render_empty(): void {
     vt.write_buf(
       vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
-      PALETTE_COLORS,
+      theme.OPTION,
       ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
     );
   }
@@ -194,9 +190,7 @@ export class Palette
       const space = { len: this.area.w - 4 };
 
       vt.write_buf(
-        index === this.#selected_index
-          ? PALETTE_SELECTED_COLORS
-          : PALETTE_COLORS,
+        index === this.#selected_index ? theme.SELECTED_OPTION : theme.OPTION,
         vt.cursor.set(y, this.area.x0 + 2),
         ...vt.fmt.text(space, option.description),
       );
