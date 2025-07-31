@@ -1,8 +1,4 @@
-import {
-  HEADER_BG,
-  HEADER_FILE_PATH_COLORS,
-  HEADER_UNSAVED_FLAG_COLORS,
-} from "@lib/theme";
+import { header as theme } from "@lib/theme";
 import { Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -23,14 +19,14 @@ export class Header extends Control {
 
     vt.flush_buf(
       vt.cursor.save,
-      HEADER_BG,
+      theme.BACKGROUND,
       ...vt.clear(y0, x0, h, w),
       vt.cursor.set(y0, x0),
       ...vt.fmt.center(
         { len: w },
-        HEADER_FILE_PATH_COLORS,
+        theme.FILE_PATH,
         this.#file_path,
-        ...(this.#unsaved_flag ? [HEADER_UNSAVED_FLAG_COLORS, FLAG] : []),
+        ...(this.#unsaved_flag ? [theme.UNSAVED_FLAG, FLAG] : []),
       ),
       vt.cursor.restore,
     );
