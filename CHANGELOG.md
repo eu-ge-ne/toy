@@ -3,6 +3,7 @@
 ## v0.0.21
 
 - Improved editor background colors
+- Added commands for theme switching
 
 ## v0.0.20
 
