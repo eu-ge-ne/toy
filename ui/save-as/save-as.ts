@@ -1,5 +1,5 @@
 import { GraphemePool } from "@lib/grapheme";
-import { SAVE_AS_BG, SAVE_AS_COLORS } from "@lib/theme";
+import { save_as as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -79,10 +79,10 @@ export class SaveAs extends Modal<[string], string> {
 
     vt.write_buf(
       vt.cursor.hide,
-      SAVE_AS_BG,
+      theme.BACKGROUND,
       ...vt.clear(y0, x0, h, w),
       vt.cursor.set(y0 + 1, x0),
-      SAVE_AS_COLORS,
+      theme.TEXT,
       ...vt.fmt.center({ len: w }, "Save As"),
       vt.cursor.set(y1 - 2, x0),
       ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
