@@ -1,42 +1,40 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { DARK, DARKER, HIGHER, LIGHTEST, LOWER, TOP } from "./tokens.ts";
+import * as t from "./tokens.ts";
 
-export const EDITOR_BG = new Uint8Array([
-  ...sgr(["bg", ...LOWER]),
-]);
+export const EDITOR_BG = sgr(["bg", ...t.LOWER]);
 
 export const EDITOR_LINE_INDEX_COLORS = new Uint8Array([
-  ...sgr(["bg", ...HIGHER]),
-  ...sgr(["fg", ...DARK]),
+  ...sgr(["bg", ...t.HIGHER]),
+  ...sgr(["fg", ...t.DARK]),
 ]);
 
 export const EDITOR_BLANK_LINE_INDEX_COLORS = new Uint8Array([
   ...EDITOR_BG,
-  ...sgr(["fg", ...DARK]),
+  ...sgr(["fg", ...t.DARK]),
 ]);
 
 export const EDITOR_CHAR_COLORS = new Uint8Array([
   ...EDITOR_BG,
-  ...sgr(["fg", ...LIGHTEST]),
+  ...sgr(["fg", ...t.LIGHTEST]),
 ]);
 
 export const EDITOR_EMPTY_COLORS = new Uint8Array([
   ...EDITOR_BG,
-  ...sgr(["fg", ...LOWER]),
+  ...sgr(["fg", ...t.LOWER]),
 ]);
 
 export const EDITOR_WHITESPACE_COLORS = new Uint8Array([
   ...EDITOR_BG,
-  ...sgr(["fg", ...DARK]),
+  ...sgr(["fg", ...t.DARK]),
 ]);
 
 export const EDITOR_SELECTED_CHAR_COLORS = new Uint8Array([
-  ...sgr(["bg", ...TOP]),
-  ...sgr(["fg", ...LIGHTEST]),
+  ...sgr(["bg", ...t.TOP]),
+  ...sgr(["fg", ...t.LIGHTEST]),
 ]);
 
 export const EDITOR_SELECTED_WHITESPACE_COLORS = new Uint8Array([
-  ...sgr(["bg", ...TOP]),
-  ...sgr(["fg", ...DARKER]),
+  ...sgr(["bg", ...t.TOP]),
+  ...sgr(["fg", ...t.DARKER]),
 ]);
