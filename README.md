@@ -60,6 +60,7 @@ brew install eu-ge-ne/tap/toy
 - Zen mode
 - Undo/Redo buffer
 - Line wrapping
+- Color themes
 
 ## Supported terminal emulators
 
