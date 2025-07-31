@@ -1,5 +1,5 @@
 export * as alert from "./alert.ts";
-export * from "./ask.ts";
+export * as ask from "./ask.ts";
 export * from "./debug.ts";
 export * as editor from "./editor.ts";
 export * from "./footer.ts";
