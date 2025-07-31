@@ -6,7 +6,7 @@ export class ThemeNeutralCommand extends Command {
   match_keys = [];
 
   option = {
-    id: "ThemeNeutral",
+    id: "Theme Neutral",
     description: "Theme: Neutral",
   };
 

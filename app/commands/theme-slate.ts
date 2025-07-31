@@ -6,7 +6,7 @@ export class ThemeSlateCommand extends Command {
   match_keys = [];
 
   option = {
-    id: "ThemeSlate",
+    id: "Theme Slate",
     description: "Theme: Slate",
   };
 
