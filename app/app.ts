@@ -30,6 +30,7 @@ export class App extends Control {
     new cmd.ThemeGrayCommand(this),
     new cmd.ThemeNeutralCommand(this),
     new cmd.ThemeSlateCommand(this),
+    new cmd.ThemeStoneCommand(this),
     new cmd.ThemeZincCommand(this),
     new cmd.UndoCommand(this),
     new cmd.WhitespaceCommand(this),
