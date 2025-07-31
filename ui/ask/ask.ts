@@ -1,4 +1,4 @@
-import { ASK_BG, ASK_COLORS } from "@lib/theme";
+import { ask as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -53,7 +53,7 @@ export class Ask extends Modal<[string], boolean> {
 
     vt.write_buf(
       vt.cursor.hide,
-      ASK_BG,
+      theme.BACKGROUND,
       ...vt.clear(y0, x0, h, w),
     );
 
@@ -71,7 +71,7 @@ export class Ask extends Modal<[string], boolean> {
 
       vt.write_buf(
         vt.cursor.set(y, x0 + 1),
-        ASK_COLORS,
+        theme.TEXT,
         ...vt.fmt.center(space, line),
       );
     }

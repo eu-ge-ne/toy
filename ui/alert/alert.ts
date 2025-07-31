@@ -1,4 +1,4 @@
-import { ALERT_BG, ALERT_COLORS } from "@lib/theme";
+import { alert as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -49,7 +49,7 @@ export class Alert extends Modal<[unknown], void> {
 
     vt.write_buf(
       vt.cursor.hide,
-      ALERT_BG,
+      theme.BACKGROUND,
       ...vt.clear(y0, x0, h, w),
     );
 
@@ -67,7 +67,7 @@ export class Alert extends Modal<[unknown], void> {
 
       vt.write_buf(
         vt.cursor.set(y, x0 + 2),
-        ALERT_COLORS,
+        theme.TEXT,
         ...vt.fmt.text(space, line),
       );
     }

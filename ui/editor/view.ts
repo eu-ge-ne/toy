@@ -1,14 +1,5 @@
 import { range, sum } from "@lib/std";
-import {
-  EDITOR_BG,
-  EDITOR_BLANK_LINE_INDEX_COLORS,
-  EDITOR_CHAR_COLORS,
-  EDITOR_EMPTY_COLORS,
-  EDITOR_LINE_INDEX_COLORS,
-  EDITOR_SELECTED_CHAR_COLORS,
-  EDITOR_SELECTED_WHITESPACE_COLORS,
-  EDITOR_WHITESPACE_COLORS,
-} from "@lib/theme";
+import { editor as theme } from "@lib/theme";
 import * as vt from "@lib/vt";
 
 import { Editor } from "./editor.ts";
@@ -42,7 +33,7 @@ export class View {
 
     vt.write_buf(
       ...(enabled ? [] : [vt.cursor.save]),
-      EDITOR_BG,
+      theme.BACKGROUND,
       ...vt.clear(area.y0, area.x0, area.h, area.w),
     );
 
@@ -68,7 +59,7 @@ export class View {
       if (this.#ln < buffer.ln_count) {
         this.#render_line(span);
       } else {
-        this.#blank_line_index(span);
+        this.#render_blank(span);
       }
 
       if (this.#end_ln()) {
@@ -109,7 +100,7 @@ export class View {
       whitespace_enabled,
     } = this.editor;
 
-    this.#render_line_index(span);
+    this.#render_index(span);
 
     for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
       if (cell.i > 0 && cell.col === 0) {
@@ -117,7 +108,7 @@ export class View {
           return;
         }
         span = this.#begin_ln();
-        this.#blank_line_index(span);
+        this.#blank_index(span);
       }
 
       if ((cell.col < this.#scroll_col) || (cell.grapheme.width > span.len)) {
@@ -128,14 +119,12 @@ export class View {
 
       if (cursor.is_selected(this.#ln, cell.i)) {
         color = cell.grapheme.is_visible
-          ? EDITOR_SELECTED_CHAR_COLORS
-          : EDITOR_SELECTED_WHITESPACE_COLORS;
+          ? theme.SELECTED_CHAR
+          : theme.SELECTED_WHITESPACE;
       } else {
         color = cell.grapheme.is_visible
-          ? EDITOR_CHAR_COLORS
-          : (whitespace_enabled
-            ? EDITOR_WHITESPACE_COLORS
-            : EDITOR_EMPTY_COLORS);
+          ? theme.CHAR
+          : (whitespace_enabled ? theme.WHITESPACE : theme.EMPTY);
       }
 
       vt.write_buf(color, cell.grapheme.bytes);
@@ -144,22 +133,29 @@ export class View {
     }
   }
 
-  #render_line_index(span: vt.fmt.Span): void {
+  #render_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
       vt.write_buf(
-        EDITOR_LINE_INDEX_COLORS,
+        theme.INDEX,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
     }
   }
 
-  #blank_line_index(span: vt.fmt.Span): void {
+  #blank_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
       vt.write_buf(
-        EDITOR_BLANK_LINE_INDEX_COLORS,
+        theme.BACKGROUND,
         vt.fmt.space(span, this.#index_width),
       );
     }
+  }
+
+  #render_blank(span: vt.fmt.Span): void {
+    vt.write_buf(
+      theme.BLANK,
+      vt.fmt.space(span, span.len),
+    );
   }
 
   center(): void {

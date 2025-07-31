@@ -1,12 +1,10 @@
 import { sgr } from "@eu-ge-ne/ctlseqs";
 
-import { DANGER, LIGHTEST } from "./tokens.ts";
+import * as t from "./tokens.ts";
 
-export const ALERT_BG = new Uint8Array([
-  ...sgr(["bg", ...DANGER]),
-]);
+export const BACKGROUND = sgr(["bg", ...t.DANGER]);
 
-export const ALERT_COLORS = new Uint8Array([
-  ...ALERT_BG,
-  ...sgr(["fg", ...LIGHTEST]),
+export const TEXT = new Uint8Array([
+  ...BACKGROUND,
+  ...sgr(["fg", ...t.LIGHTEST]),
 ]);

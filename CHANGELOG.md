@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.21
+
+- Improved editor background colors
+
 ## v0.0.20
 
 - Added `⇧+F1`, `⌃+F1`, `⌥+F1`, `⌘+F1` shortcuts for opening Command Palette
