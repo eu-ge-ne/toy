@@ -11,6 +11,7 @@ export * from "./select-all.ts";
 export * from "./theme-gray.ts";
 export * from "./theme-neutral.ts";
 export * from "./theme-slate.ts";
+export * from "./theme-zinc.ts";
 export * from "./undo.ts";
 export * from "./whitespace.ts";
 export * from "./wrap.ts";
