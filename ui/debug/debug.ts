@@ -1,4 +1,4 @@
-import { DEBUG_BG, DEBUG_COLORS } from "@lib/theme";
+import { debug as theme } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -38,9 +38,9 @@ export class Debug extends Control {
 
     vt.flush_buf(
       vt.cursor.save,
-      DEBUG_BG,
+      theme.BACKGROUND,
       ...vt.clear(y0, x0, h, w),
-      DEBUG_COLORS,
+      theme.TEXT,
       vt.cursor.set(y0 + 1, x0 + 1),
       ...vt.fmt.text(
         { len: w - 1 },
