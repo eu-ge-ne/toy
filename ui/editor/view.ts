@@ -1,6 +1,7 @@
 import { range, sum } from "@lib/std";
 import {
   EDITOR_BG,
+  EDITOR_BLANK_BG,
   EDITOR_CHAR_COLORS,
   EDITOR_EMPTY_COLORS,
   EDITOR_LINE_INDEX_COLORS,
@@ -67,7 +68,7 @@ export class View {
       if (this.#ln < buffer.ln_count) {
         this.#render_line(span);
       } else {
-        this.#blank_line_index(span);
+        this.#render_blank(span);
       }
 
       if (this.#end_ln()) {
@@ -159,6 +160,13 @@ export class View {
         vt.fmt.space(span, this.#index_width),
       );
     }
+  }
+
+  #render_blank(span: vt.fmt.Span): void {
+    vt.write_buf(
+      EDITOR_BLANK_BG,
+      vt.fmt.space(span, span.len),
+    );
   }
 
   center(): void {

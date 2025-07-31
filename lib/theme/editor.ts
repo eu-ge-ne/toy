@@ -3,6 +3,7 @@ import { sgr } from "@eu-ge-ne/ctlseqs";
 import * as t from "./tokens.ts";
 
 export const EDITOR_BG = sgr(["bg", ...t.LOWER]);
+export const EDITOR_BLANK_BG = sgr(["bg", ...t.LOWEST]);
 
 export const EDITOR_LINE_INDEX_COLORS = new Uint8Array([
   ...sgr(["bg", ...t.HIGHER]),
