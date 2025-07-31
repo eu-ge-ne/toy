@@ -13,9 +13,7 @@ export class Grapheme {
   readonly is_visible: boolean;
   readonly is_eol: boolean;
 
-  width = -1;
-
-  constructor(readonly seg: string, override = seg) {
+  constructor(readonly seg: string, public width = -1, override = seg) {
     this.bytes = encoder.encode(override);
 
     this.is_letter = RE_LETTER.test(seg);

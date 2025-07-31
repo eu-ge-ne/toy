@@ -1,7 +1,7 @@
 import { Grapheme } from "./grapheme.ts";
 
 interface GraphemePoolOptions {
-  overrides?: Map<string, string>;
+  overrides?: Record<string, [string, number]>;
 }
 
 export class GraphemePool {
@@ -9,8 +9,8 @@ export class GraphemePool {
 
   constructor({ overrides }: GraphemePoolOptions = {}) {
     if (overrides) {
-      for (const [seg, override] of overrides) {
-        this.#pool.set(seg, new Grapheme(seg, override));
+      for (const [seg, [override, width]] of Object.entries(overrides)) {
+        this.#pool.set(seg, new Grapheme(seg, width, override));
       }
     }
   }
