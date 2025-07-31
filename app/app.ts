@@ -56,7 +56,11 @@ export class App extends Control {
   constructor() {
     super();
 
-    this.options = this.commands.filter((x) => x.option).map((x) => x.option!);
+    this.options = this.commands.filter((x) => x.option).map((x) => ({
+      ...x.option!,
+      shortcuts: x.option!.shortcuts ?? "",
+    }));
+
     this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
 

@@ -9,7 +9,7 @@ const MAX_LIST_SIZE = 10;
 export interface PaletteOption {
   id: string;
   description: string;
-  shortcuts?: string;
+  shortcuts: string;
 }
 
 export class Palette
@@ -195,11 +195,9 @@ export class Palette
         ...vt.fmt.text(space, option.description),
       );
 
-      if (option.shortcuts) {
-        vt.write_buf(
-          ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
-        );
-      }
+      vt.write_buf(
+        ...vt.fmt.text(space, option.shortcuts.padStart(space.len)),
+      );
 
       i += 1;
       y += 1;
