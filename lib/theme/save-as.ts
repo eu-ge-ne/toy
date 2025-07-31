@@ -2,9 +2,14 @@ import { sgr } from "@eu-ge-ne/ctlseqs";
 
 import * as t from "./tokens.ts";
 
-export const BACKGROUND = sgr(["bg", ...t.HIGHEST]);
+export let BACKGROUND: Uint8Array;
+export let TEXT: Uint8Array;
 
-export const TEXT = new Uint8Array([
-  ...BACKGROUND,
-  ...sgr(["fg", ...t.LIGHTEST]),
-]);
+export function init(): void {
+  BACKGROUND = sgr(["bg", ...t.HIGHEST]);
+
+  TEXT = new Uint8Array([
+    ...BACKGROUND,
+    ...sgr(["fg", ...t.LIGHTEST]),
+  ]);
+}

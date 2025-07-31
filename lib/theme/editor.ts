@@ -2,35 +2,46 @@ import { sgr } from "@eu-ge-ne/ctlseqs";
 
 import * as t from "./tokens.ts";
 
-export const BACKGROUND = sgr(["bg", ...t.LOWER]);
-export const BLANK = sgr(["bg", ...t.LOWEST]);
+export let BACKGROUND: Uint8Array;
+export let BLANK: Uint8Array;
+export let INDEX: Uint8Array;
+export let EMPTY: Uint8Array;
+export let CHAR: Uint8Array;
+export let WHITESPACE: Uint8Array;
+export let SELECTED_CHAR: Uint8Array;
+export let SELECTED_WHITESPACE: Uint8Array;
 
-export const INDEX = new Uint8Array([
-  ...sgr(["bg", ...t.HIGHER]),
-  ...sgr(["fg", ...t.DARK]),
-]);
+export function init(): void {
+  BACKGROUND = sgr(["bg", ...t.LOWER]);
+  BLANK = sgr(["bg", ...t.LOWEST]);
 
-export const EMPTY = new Uint8Array([
-  ...BACKGROUND,
-  ...sgr(["fg", ...t.LOWER]),
-]);
+  INDEX = new Uint8Array([
+    ...sgr(["bg", ...t.HIGHER]),
+    ...sgr(["fg", ...t.DARK]),
+  ]);
 
-export const CHAR = new Uint8Array([
-  ...BACKGROUND,
-  ...sgr(["fg", ...t.LIGHTEST]),
-]);
+  EMPTY = new Uint8Array([
+    ...BACKGROUND,
+    ...sgr(["fg", ...t.LOWER]),
+  ]);
 
-export const WHITESPACE = new Uint8Array([
-  ...BACKGROUND,
-  ...sgr(["fg", ...t.DARK]),
-]);
+  CHAR = new Uint8Array([
+    ...BACKGROUND,
+    ...sgr(["fg", ...t.LIGHTEST]),
+  ]);
 
-export const SELECTED_CHAR = new Uint8Array([
-  ...sgr(["bg", ...t.TOP]),
-  ...sgr(["fg", ...t.LIGHTEST]),
-]);
+  WHITESPACE = new Uint8Array([
+    ...BACKGROUND,
+    ...sgr(["fg", ...t.DARK]),
+  ]);
 
-export const SELECTED_WHITESPACE = new Uint8Array([
-  ...sgr(["bg", ...t.TOP]),
-  ...sgr(["fg", ...t.DARKER]),
-]);
+  SELECTED_CHAR = new Uint8Array([
+    ...sgr(["bg", ...t.TOP]),
+    ...sgr(["fg", ...t.LIGHTEST]),
+  ]);
+
+  SELECTED_WHITESPACE = new Uint8Array([
+    ...sgr(["bg", ...t.TOP]),
+    ...sgr(["fg", ...t.DARKER]),
+  ]);
+}
