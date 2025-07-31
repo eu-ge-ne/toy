@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -26,6 +27,11 @@ export class App extends Control {
     new cmd.RedoCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
+    new cmd.ThemeGrayCommand(this),
+    new cmd.ThemeNeutralCommand(this),
+    new cmd.ThemeSlateCommand(this),
+    new cmd.ThemeStoneCommand(this),
+    new cmd.ThemeZincCommand(this),
     new cmd.UndoCommand(this),
     new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
@@ -53,7 +59,11 @@ export class App extends Control {
   constructor() {
     super();
 
-    this.options = this.commands.filter((x) => x.option).map((x) => x.option!);
+    this.options = this.commands.filter((x) => x.option).map((x) => ({
+      ...x.option!,
+      shortcuts: x.option!.shortcuts ?? "",
+    }));
+
     this.options.sort((a, b) => a.description.localeCompare(b.description));
   }
 
@@ -77,6 +87,8 @@ export class App extends Control {
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
+
+    theme.switch_theme(theme.NEUTRAL);
 
     this.enable_zen(true);
 
