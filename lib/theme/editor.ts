@@ -9,11 +9,6 @@ export const EDITOR_LINE_INDEX_COLORS = new Uint8Array([
   ...sgr(["fg", ...t.DARK]),
 ]);
 
-export const EDITOR_BLANK_LINE_INDEX_COLORS = new Uint8Array([
-  ...EDITOR_BG,
-  ...sgr(["fg", ...t.DARK]),
-]);
-
 export const EDITOR_CHAR_COLORS = new Uint8Array([
   ...EDITOR_BG,
   ...sgr(["fg", ...t.LIGHTEST]),

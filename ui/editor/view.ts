@@ -1,7 +1,6 @@
 import { range, sum } from "@lib/std";
 import {
   EDITOR_BG,
-  EDITOR_BLANK_LINE_INDEX_COLORS,
   EDITOR_CHAR_COLORS,
   EDITOR_EMPTY_COLORS,
   EDITOR_LINE_INDEX_COLORS,
@@ -156,7 +155,7 @@ export class View {
   #blank_line_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
       vt.write_buf(
-        EDITOR_BLANK_LINE_INDEX_COLORS,
+        EDITOR_BG,
         vt.fmt.space(span, this.#index_width),
       );
     }
