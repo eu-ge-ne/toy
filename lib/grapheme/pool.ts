@@ -1,17 +1,11 @@
 import { Grapheme } from "./grapheme.ts";
 
-interface GraphemePoolOptions {
-  overrides?: Record<string, [string, number]>;
-}
-
 export class GraphemePool {
   #pool = new Map<string, Grapheme>();
 
-  constructor({ overrides }: GraphemePoolOptions = {}) {
-    if (overrides) {
-      for (const [seg, [override, width]] of Object.entries(overrides)) {
-        this.#pool.set(seg, new Grapheme(seg, width, override));
-      }
+  constructor(overrides: Record<string, [string, number]>) {
+    for (const [seg, [override, width]] of Object.entries(overrides)) {
+      this.#pool.set(seg, new Grapheme(seg, width, override));
     }
   }
 
