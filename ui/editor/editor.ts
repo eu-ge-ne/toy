@@ -1,6 +1,5 @@
 import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
-import { GraphemePool } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Shaper } from "@lib/shaper";
 import { Control } from "@lib/ui";
@@ -55,12 +54,11 @@ export class Editor extends Control {
 
   constructor(
     parent: Control,
-    readonly graphemes: GraphemePool,
     readonly opts: EditorOptions,
   ) {
     super(parent);
 
-    this.shaper = new Shaper(graphemes, this.buffer);
+    this.shaper = new Shaper(this.buffer);
     this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();

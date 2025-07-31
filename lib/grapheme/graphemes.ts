@@ -1,6 +1,6 @@
-import { GraphemePool } from "@lib/grapheme";
+import { GraphemePool } from "./pool.ts";
 
-export const editor_graphemes = new GraphemePool({
+export const graphemes = new GraphemePool({
   overrides: new Map([
     ["\u0000", "␀"],
     ["\u0001", "␁"],
