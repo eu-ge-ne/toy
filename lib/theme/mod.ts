@@ -1,7 +1,7 @@
-export * from "./alert.ts";
+export * as alert from "./alert.ts";
 export * from "./ask.ts";
 export * from "./debug.ts";
-export * as editor_colors from "./editor.ts";
+export * as editor from "./editor.ts";
 export * from "./footer.ts";
 export * from "./header.ts";
 export * from "./save-as.ts";
