@@ -14,7 +14,6 @@ import { SaveAs } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
-import { editor_graphemes } from "./graphemes.ts";
 
 export class App extends Control {
   commands: cmd.Command[] = [
@@ -47,7 +46,7 @@ export class App extends Control {
 
   ui = {
     debug: new Debug(this),
-    editor: new Editor(this, editor_graphemes, { multi_line: true }),
+    editor: new Editor(this, { multi_line: true }),
     footer: new Footer(this),
     header: new Header(this),
     alert: new Alert(this),

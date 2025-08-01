@@ -1,2 +1,2 @@
 export * from "./grapheme.ts";
-export * from "./pool.ts";
+export * from "./graphemes.ts";

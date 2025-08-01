@@ -1,4 +1,3 @@
-import { GraphemePool } from "@lib/grapheme";
 import { palette as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -16,7 +15,7 @@ export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   protected size = new Area(0, 0, 0, 0);
 
-  #editor = new Editor(this, new GraphemePool(), { multi_line: false });
+  #editor = new Editor(this, { multi_line: false });
   #parent_area!: Area;
 
   #all: PaletteOption[] = [];

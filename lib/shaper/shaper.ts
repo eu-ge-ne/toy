@@ -1,5 +1,5 @@
 import { Buffer } from "@lib/buffer";
-import { Grapheme, GraphemePool } from "@lib/grapheme";
+import { Grapheme, graphemes } from "@lib/grapheme";
 import * as vt from "@lib/vt";
 
 interface Cell {
@@ -13,15 +13,12 @@ export class Shaper {
   y!: number;
   x!: number;
 
-  constructor(
-    private graphemes: GraphemePool,
-    private buffer: Buffer,
-  ) {
+  constructor(private buffer: Buffer) {
   }
 
   *line(ln: number): Generator<Grapheme> {
     for (const seg of this.buffer.line(ln)) {
-      yield this.graphemes.get(seg);
+      yield graphemes.get(seg);
     }
   }
 
@@ -35,7 +32,7 @@ export class Shaper {
     wrap_width = Number.MAX_SAFE_INTEGER,
     add_tail_cell = false,
   ): Generator<Cell> {
-    const { buffer, graphemes } = this;
+    const { buffer } = this;
 
     let i = 0;
     let w = 0;

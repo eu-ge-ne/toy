@@ -1,4 +1,3 @@
-import { GraphemePool } from "@lib/grapheme";
 import { save_as as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -7,7 +6,7 @@ import { Editor } from "@ui/editor";
 export class SaveAs extends Modal<[string], string> {
   protected size = new Area(0, 0, 60, 10);
 
-  #editor = new Editor(this, new GraphemePool(), { multi_line: false });
+  #editor = new Editor(this, { multi_line: false });
 
   async open(file_path: string): Promise<string> {
     const { buffer } = this.#editor;
