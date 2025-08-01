@@ -1,5 +1,5 @@
 import * as alert from "./alert.ts";
-import * as ask from "./alert.ts";
+import * as ask from "./ask.ts";
 import { Colors } from "./colors.ts";
 import * as debug from "./debug.ts";
 import * as editor from "./editor.ts";
