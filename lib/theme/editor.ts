@@ -1,4 +1,4 @@
-import { sgr } from "@eu-ge-ne/ctlseqs";
+import { sgr_256_bf, sgr_256_bg } from "@eu-ge-ne/ctlseqs";
 
 import * as t from "./tokens.ts";
 
@@ -12,36 +12,12 @@ export let SELECTED_CHAR: Uint8Array;
 export let SELECTED_WHITESPACE: Uint8Array;
 
 export function init(): void {
-  BACKGROUND = sgr(["bg", ...t.LOWER]);
-  BLANK = sgr(["bg", ...t.LOWEST]);
-
-  INDEX = new Uint8Array([
-    ...sgr(["bg", ...t.HIGHER]),
-    ...sgr(["fg", ...t.DARK]),
-  ]);
-
-  EMPTY = new Uint8Array([
-    ...BACKGROUND,
-    ...sgr(["fg", ...t.LOWER]),
-  ]);
-
-  CHAR = new Uint8Array([
-    ...BACKGROUND,
-    ...sgr(["fg", ...t.LIGHTEST]),
-  ]);
-
-  WHITESPACE = new Uint8Array([
-    ...BACKGROUND,
-    ...sgr(["fg", ...t.DARK]),
-  ]);
-
-  SELECTED_CHAR = new Uint8Array([
-    ...sgr(["bg", ...t.TOP]),
-    ...sgr(["fg", ...t.LIGHTEST]),
-  ]);
-
-  SELECTED_WHITESPACE = new Uint8Array([
-    ...sgr(["bg", ...t.TOP]),
-    ...sgr(["fg", ...t.DARKER]),
-  ]);
+  BACKGROUND = sgr_256_bg(t.LOWER);
+  BLANK = sgr_256_bg(t.LOWEST);
+  INDEX = sgr_256_bf(t.HIGHER, t.DARK);
+  EMPTY = sgr_256_bf(t.LOWER, t.LOWER);
+  CHAR = sgr_256_bf(t.LOWER, t.LIGHTEST);
+  WHITESPACE = sgr_256_bf(t.LOWER, t.DARK);
+  SELECTED_CHAR = sgr_256_bf(t.TOP, t.LIGHTEST);
+  SELECTED_WHITESPACE = sgr_256_bf(t.TOP, t.DARKER);
 }

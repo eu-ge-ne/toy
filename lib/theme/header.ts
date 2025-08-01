@@ -1,4 +1,4 @@
-import { sgr } from "@eu-ge-ne/ctlseqs";
+import { sgr_256_bf, sgr_256_bg } from "@eu-ge-ne/ctlseqs";
 
 import * as t from "./tokens.ts";
 
@@ -7,15 +7,7 @@ export let FILE_PATH: Uint8Array;
 export let UNSAVED_FLAG: Uint8Array;
 
 export function init(): void {
-  BACKGROUND = sgr(["bg", ...t.LOWEST]);
-
-  FILE_PATH = new Uint8Array([
-    ...BACKGROUND,
-    ...sgr(["fg", ...t.DARK]),
-  ]);
-
-  UNSAVED_FLAG = new Uint8Array([
-    ...BACKGROUND,
-    ...sgr(["fg", ...t.BRIGHT]),
-  ]);
+  BACKGROUND = sgr_256_bg(t.LOWEST);
+  FILE_PATH = sgr_256_bf(t.LOWEST, t.DARK);
+  UNSAVED_FLAG = sgr_256_bf(t.LOWEST, t.BRIGHT);
 }
