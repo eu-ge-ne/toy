@@ -8,7 +8,6 @@ export class Alert extends Modal<[unknown], void> {
 
   async open(err: unknown): Promise<void> {
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
-    this.done = Promise.withResolvers();
 
     this.enabled = true;
 
@@ -77,7 +76,6 @@ export class Alert extends Modal<[unknown], void> {
         switch (key.name) {
           case "ESC":
           case "ENTER":
-            this.done.resolve();
             return;
         }
       }
