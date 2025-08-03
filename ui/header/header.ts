@@ -1,7 +1,8 @@
 import { clamp } from "@lib/std";
-import { header as theme } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import * as colors from "./colors.ts";
 
 const FLAG = " +";
 
@@ -26,14 +27,14 @@ export class Header extends Control {
 
     vt.flush_buf(
       vt.cursor.save,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
       vt.cursor.set(this.y, this.x),
       ...vt.fmt.center(
         { len: this.w },
-        theme.FILE_PATH,
+        colors.FILE_PATH,
         this.#file_path,
-        ...(this.#unsaved_flag ? [theme.UNSAVED_FLAG, FLAG] : []),
+        ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
       ),
       vt.cursor.restore,
     );

@@ -8,7 +8,7 @@ import { Ask, set_ask_colors } from "@ui/ask";
 import { Debug, set_debug_colors } from "@ui/debug";
 import { Editor, set_editor_colors } from "@ui/editor";
 import { Footer, set_footer_colors } from "@ui/footer";
-import { Header } from "@ui/header";
+import { Header, set_header_colors } from "@ui/header";
 import { Palette, PaletteOption } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
@@ -164,6 +164,7 @@ export class App extends Control {
     set_editor_colors(tokens);
     set_debug_colors(tokens);
     set_footer_colors(tokens);
+    set_header_colors(tokens);
   }
 
   async save(): Promise<void> {
