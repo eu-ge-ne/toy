@@ -12,10 +12,10 @@ export let SELECTED_WHITESPACE: Uint8Array;
 export function set_editor_colors(t: Tokens): void {
   BACKGROUND = t.bg_main;
   BLANK = t.bg_dark0;
-  INDEX = new Uint8Array([...t.bg_light0, ...t.fg_dark]);
+  INDEX = new Uint8Array([...t.bg_light0, ...t.fg_dark0]);
   EMPTY = new Uint8Array([...t.bg_main, ...t.fg_main]);
-  CHAR = new Uint8Array([...t.bg_main, ...t.fg_lightest]);
-  WHITESPACE = new Uint8Array([...t.bg_main, ...t.fg_dark]);
-  SELECTED_CHAR = new Uint8Array([...t.bg_light2, ...t.fg_lightest]);
-  SELECTED_WHITESPACE = new Uint8Array([...t.bg_light2, ...t.fg_darker]);
+  CHAR = new Uint8Array([...t.bg_main, ...t.fg_light1]);
+  WHITESPACE = new Uint8Array([...t.bg_main, ...t.fg_dark0]);
+  SELECTED_CHAR = new Uint8Array([...t.bg_light2, ...t.fg_light1]);
+  SELECTED_WHITESPACE = new Uint8Array([...t.bg_light2, ...t.fg_dark1]);
 }

@@ -5,5 +5,5 @@ export let TEXT: Uint8Array;
 
 export function set_debug_colors(t: Tokens): void {
   BACKGROUND = t.bg_light0;
-  TEXT = new Uint8Array([...t.bg_light0, ...t.fg_dark]);
+  TEXT = new Uint8Array([...t.bg_light0, ...t.fg_dark0]);
 }

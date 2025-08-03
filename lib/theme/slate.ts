@@ -30,10 +30,10 @@ export const SLATE: Tokens = {
   fg_main: sgr_256_fg(slate[900]!),
   bg_dark0: sgr_256_bg(slate[950]!),
 
-  fg_bright: sgr_256_fg(slate[100]!),
-  fg_lightest: sgr_256_fg(slate[200]!),
-  fg_light: sgr_256_fg(slate[300]!),
-  fg_dark: sgr_256_fg(slate[400]!),
-  fg_darker: sgr_256_fg(slate[600]!),
-  fg_darkest: sgr_256_fg(slate[700]!),
+  fg_light2: sgr_256_fg(slate[100]!),
+  fg_light1: sgr_256_fg(slate[200]!),
+  fg_light0: sgr_256_fg(slate[300]!),
+  fg_dark0: sgr_256_fg(slate[400]!),
+  fg_dark1: sgr_256_fg(slate[600]!),
+  fg_dark2: sgr_256_fg(slate[700]!),
 };

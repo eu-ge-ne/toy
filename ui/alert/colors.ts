@@ -5,5 +5,5 @@ export let TEXT: Uint8Array;
 
 export function set_alert_colors(t: Tokens): void {
   BACKGROUND = t.bg_danger;
-  TEXT = new Uint8Array([...t.bg_danger, ...t.fg_lightest]);
+  TEXT = new Uint8Array([...t.bg_danger, ...t.fg_light1]);
 }

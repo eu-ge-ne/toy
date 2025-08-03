@@ -8,10 +8,10 @@ export interface Tokens {
   fg_main: Uint8Array;
   bg_dark0: Uint8Array;
 
-  fg_bright: Uint8Array;
-  fg_lightest: Uint8Array;
-  fg_light: Uint8Array;
-  fg_dark: Uint8Array;
-  fg_darker: Uint8Array;
-  fg_darkest: Uint8Array;
+  fg_light2: Uint8Array;
+  fg_light1: Uint8Array;
+  fg_light0: Uint8Array;
+  fg_dark0: Uint8Array;
+  fg_dark1: Uint8Array;
+  fg_dark2: Uint8Array;
 }
