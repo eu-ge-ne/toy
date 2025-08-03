@@ -1,4 +1,3 @@
-import * as debug from "./debug.ts";
 import * as footer from "./footer.ts";
 import * as header from "./header.ts";
 import * as palette from "./palette.ts";
@@ -6,7 +5,6 @@ import * as save_as from "./save-as.ts";
 import { Tokens } from "./tokens.ts";
 
 export function switch_theme(t: Tokens): void {
-  debug.init(t);
   footer.init(t);
   header.init(t);
   palette.init(t);

@@ -5,7 +5,7 @@ import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert, set_alert_colors } from "@ui/alert";
 import { Ask, set_ask_colors } from "@ui/ask";
-import { Debug } from "@ui/debug";
+import { Debug, set_debug_colors } from "@ui/debug";
 import { Editor, set_editor_colors } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
@@ -162,6 +162,7 @@ export class App extends Control {
     set_alert_colors(tokens);
     set_ask_colors(tokens);
     set_editor_colors(tokens);
+    set_debug_colors(tokens);
   }
 
   async save(): Promise<void> {
