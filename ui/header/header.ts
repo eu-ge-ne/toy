@@ -1,5 +1,6 @@
+import { clamp } from "@lib/std";
 import { header as theme } from "@lib/theme";
-import { Control } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 const FLAG = " +";
@@ -8,22 +9,28 @@ export class Header extends Control {
   #file_path = "";
   #unsaved_flag = false;
 
+  layout({ y, x, w, h }: Area): void {
+    this.w = w;
+    this.h = clamp(1, 0, h);
+
+    this.y = y;
+    this.x = x;
+  }
+
   render(): void {
     if (!this.enabled) {
       return;
     }
-
-    const { y0, x0, h, w } = this.area;
 
     vt.bsu();
 
     vt.flush_buf(
       vt.cursor.save,
       theme.BACKGROUND,
-      ...vt.clear(y0, x0, h, w),
-      vt.cursor.set(y0, x0),
+      ...vt.clear(this),
+      vt.cursor.set(this.y, this.x),
       ...vt.fmt.center(
-        { len: w },
+        { len: this.w },
         theme.FILE_PATH,
         this.#file_path,
         ...(this.#unsaved_flag ? [theme.UNSAVED_FLAG, FLAG] : []),
@@ -36,11 +43,13 @@ export class Header extends Control {
 
   set_file_path(x: string): void {
     this.#file_path = x;
+
     this.render();
   }
 
   set_unsaved_flag(x: boolean): void {
     this.#unsaved_flag = x;
+
     this.render();
   }
 }

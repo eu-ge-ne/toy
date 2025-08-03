@@ -1,35 +1,70 @@
+import { clamp } from "@lib/std";
 import { save_as as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 export class SaveAs extends Modal<[string], string> {
-  protected size = new Area(0, 0, 60, 10);
-
   #editor = new Editor(this, { multi_line: false });
 
-  async open(file_path: string): Promise<string> {
+  async open(path: string): Promise<string> {
     const { buffer } = this.#editor;
-
-    this.done = Promise.withResolvers();
 
     this.enabled = true;
     this.#editor.enabled = true;
 
-    buffer.set_text(file_path);
+    buffer.set_text(path);
     this.#editor.reset(true);
 
     this.render();
 
-    await this.#process_input();
+    const result = await this.#process_input();
 
     this.enabled = false;
     this.#editor.enabled = false;
 
-    return this.done.promise;
+    return result;
   }
 
-  async #process_input(): Promise<void> {
+  layout({ y, x, w, h }: Area): void {
+    this.w = clamp(60, 0, w);
+    this.h = clamp(10, 0, h);
+
+    this.y = y + Math.trunc((h - this.h) / 2);
+    this.x = x + Math.trunc((w - this.w) / 2);
+
+    this.#editor.layout({
+      y: this.y + 4,
+      x: this.x + 2,
+      w: this.w - 4,
+      h: 1,
+    });
+  }
+
+  render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
+    vt.bsu();
+
+    vt.write_buf(
+      vt.cursor.hide,
+      theme.BACKGROUND,
+      ...vt.clear(this),
+      vt.cursor.set(this.y + 1, this.x),
+      theme.TEXT,
+      ...vt.fmt.center({ len: this.w }, "Save As"),
+      vt.cursor.set(this.y + this.h - 2, this.x),
+      ...vt.fmt.center({ len: this.w }, "ESC‧cancel    ENTER‧ok"),
+    );
+
+    this.#editor.render();
+
+    vt.esu();
+  }
+
+  async #process_input(): Promise<string> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -40,13 +75,11 @@ export class SaveAs extends Modal<[string], string> {
         if (typeof key !== "string") {
           switch (key.name) {
             case "ESC":
-              this.done.resolve("");
-              return;
+              return "";
             case "ENTER": {
               const path = this.#editor.buffer.get_text();
               if (path) {
-                this.done.resolve(path);
-                return;
+                return path;
               }
             }
           }
@@ -57,38 +90,5 @@ export class SaveAs extends Modal<[string], string> {
         }
       }
     }
-  }
-
-  override resize(area: Area): void {
-    super.resize(area);
-
-    this.#editor.resize(
-      new Area(this.area.x0 + 2, this.area.y0 + 4, this.area.w - 4, 1),
-    );
-  }
-
-  render(): void {
-    if (!this.enabled) {
-      return;
-    }
-
-    const { y0, x0, y1, h, w } = this.area;
-
-    vt.bsu();
-
-    vt.write_buf(
-      vt.cursor.hide,
-      theme.BACKGROUND,
-      ...vt.clear(y0, x0, h, w),
-      vt.cursor.set(y0 + 1, x0),
-      theme.TEXT,
-      ...vt.fmt.center({ len: w }, "Save As"),
-      vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ESC‧cancel    ENTER‧ok"),
-    );
-
-    this.#editor.render();
-
-    vt.esu();
   }
 }

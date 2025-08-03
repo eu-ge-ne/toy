@@ -1,34 +1,41 @@
+import { clamp } from "@lib/std";
 import { footer as theme } from "@lib/theme";
-import { Control } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 export class Footer extends Control {
   #cursor_status = "";
+
+  layout({ y, x, w, h }: Area): void {
+    this.w = w;
+    this.h = clamp(1, 0, h);
+
+    this.y = y + h - 1;
+    this.x = x;
+  }
 
   render(): void {
     if (!this.enabled) {
       return;
     }
 
-    const { y0, x0, h, w } = this.area;
-    const space = { len: w };
-
     vt.bsu();
 
     vt.write_buf(
       vt.cursor.save,
       theme.BACKGROUND,
-      ...vt.clear(y0, x0, h, w),
+      ...vt.clear(this),
     );
+
+    const space = { len: this.w };
 
     const data = [
       theme.TEXT,
       ...vt.fmt.text(space, this.#cursor_status),
-      vt.fmt.space(space, 1),
     ];
 
     vt.flush_buf(
-      vt.cursor.set(y0, x0 + space.len),
+      vt.cursor.set(this.y, this.x + space.len),
       ...data,
       vt.cursor.restore,
     );
@@ -47,7 +54,7 @@ export class Footer extends Control {
       ? 0
       : ((ln / data.ln_count) * 100).toFixed(0);
 
-    this.#cursor_status = `${ln} ${col}  ${pct}%`;
+    this.#cursor_status = `${ln} ${col}  ${pct}% `;
 
     this.render();
   }

@@ -3,14 +3,15 @@ import { Area } from "./area.ts";
 export abstract class Control {
   enabled = false;
 
-  area!: Area;
+  y = 0;
+  x = 0;
+  w = 0;
+  h = 0;
 
   constructor(protected parent?: Control) {
   }
 
-  resize(area: Area): void {
-    this.area = area;
-  }
+  abstract layout(_: Area): void;
 
   abstract render(): void;
 }

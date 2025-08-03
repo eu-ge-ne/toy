@@ -1,23 +1,68 @@
+import { clamp } from "@lib/std";
 import { alert as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 export class Alert extends Modal<[unknown], void> {
-  protected size = new Area(0, 0, 60, 10);
-
   #text = "";
 
   async open(err: unknown): Promise<void> {
-    this.done = Promise.withResolvers();
-
-    this.enabled = true;
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
 
-    this.render();
+    this.enabled = true;
 
+    this.render();
     await this.#process_input();
 
     this.enabled = false;
+  }
+
+  layout({ y, x, w, h }: Area): void {
+    this.w = clamp(60, 0, w);
+    this.h = clamp(10, 0, h);
+
+    this.y = y + Math.trunc((h - this.h) / 2);
+    this.x = x + Math.trunc((w - this.w) / 2);
+  }
+
+  render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
+    vt.bsu();
+
+    vt.write_buf(
+      vt.cursor.hide,
+      theme.BACKGROUND,
+      ...vt.clear(this),
+    );
+
+    let pos = 0;
+
+    for (let y = this.y + 1; y < this.y + this.h - 3; y += 1) {
+      if (pos === this.#text.length) {
+        break;
+      }
+
+      const space = { len: this.w - 4 };
+      const line = this.#text.slice(pos, pos + space.len);
+
+      pos += line.length;
+
+      vt.write_buf(
+        vt.cursor.set(y, this.x + 2),
+        theme.TEXT,
+        ...vt.fmt.text(space, line),
+      );
+    }
+
+    vt.flush_buf(
+      vt.cursor.set(this.y + this.h - 2, this.x),
+      ...vt.fmt.center({ len: this.w }, "ENTER‧ok"),
+    );
+
+    vt.esu();
   }
 
   async #process_input(): Promise<void> {
@@ -31,52 +76,9 @@ export class Alert extends Modal<[unknown], void> {
         switch (key.name) {
           case "ESC":
           case "ENTER":
-            this.done.resolve();
             return;
         }
       }
     }
-  }
-
-  render(): void {
-    if (!this.enabled) {
-      return;
-    }
-
-    const { y0, x0, y1, h, w } = this.area;
-
-    vt.bsu();
-
-    vt.write_buf(
-      vt.cursor.hide,
-      theme.BACKGROUND,
-      ...vt.clear(y0, x0, h, w),
-    );
-
-    let pos = 0;
-
-    for (let y = y0 + 1; y < y1 - 3; y += 1) {
-      if (pos === this.#text.length) {
-        break;
-      }
-
-      const space = { len: w - 4 };
-      const line = this.#text.slice(pos, pos + space.len);
-
-      pos += line.length;
-
-      vt.write_buf(
-        vt.cursor.set(y, x0 + 2),
-        theme.TEXT,
-        ...vt.fmt.text(space, line),
-      );
-    }
-
-    vt.flush_buf(
-      vt.cursor.set(y1 - 2, x0),
-      ...vt.fmt.center({ len: w }, "ENTER‧ok"),
-    );
-
-    vt.esu();
   }
 }
