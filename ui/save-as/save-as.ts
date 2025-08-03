@@ -1,8 +1,9 @@
 import { clamp } from "@lib/std";
-import { save_as as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
+
+import * as colors from "./colors.ts";
 
 export class SaveAs extends Modal<[string], string> {
   #editor = new Editor(this, { multi_line: false });
@@ -50,10 +51,10 @@ export class SaveAs extends Modal<[string], string> {
 
     vt.write_buf(
       vt.cursor.hide,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
       vt.cursor.set(this.y + 1, this.x),
-      theme.TEXT,
+      colors.TEXT,
       ...vt.fmt.center({ len: this.w }, "Save As"),
       vt.cursor.set(this.y + this.h - 2, this.x),
       ...vt.fmt.center({ len: this.w }, "ESC‧cancel    ENTER‧ok"),
