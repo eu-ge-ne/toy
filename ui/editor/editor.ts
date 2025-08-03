@@ -2,7 +2,7 @@ import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { History } from "@lib/history";
 import { Shaper } from "@lib/shaper";
-import { Control } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import { Key } from "@lib/vt";
 
 import * as keys from "./keys/mod.ts";
@@ -62,6 +62,14 @@ export class Editor extends Control {
     this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();
+  }
+
+  layout({ y, x, w, h }: Area): void {
+    this.y = y;
+    this.x = x;
+
+    this.w = w;
+    this.h = h;
   }
 
   render(): void {
