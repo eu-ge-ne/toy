@@ -26,10 +26,10 @@ export const SLATE: Tokens = {
   bg_top: sgr_256_bg(slate[500]!),
   bg_highest: sgr_256_bg(slate[700]!),
   bg_higher: sgr_256_bg(slate[800]!),
-  bg_lower: sgr_256_bg(slate[900]!),
+  bg_main: sgr_256_bg(slate[900]!),
   bg_lowest: sgr_256_bg(slate[950]!),
 
-  fg_lower: sgr_256_fg(slate[900]!),
+  fg_main: sgr_256_fg(slate[900]!),
 
   fg_bright: sgr_256_fg(slate[100]!),
   fg_lightest: sgr_256_fg(slate[200]!),

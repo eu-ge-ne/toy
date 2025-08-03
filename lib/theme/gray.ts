@@ -26,10 +26,10 @@ export const GRAY: Tokens = {
   bg_top: sgr_256_bg(gray[500]!),
   bg_highest: sgr_256_bg(gray[700]!),
   bg_higher: sgr_256_bg(gray[800]!),
-  bg_lower: sgr_256_bg(gray[900]!),
+  bg_main: sgr_256_bg(gray[900]!),
   bg_lowest: sgr_256_bg(gray[950]!),
 
-  fg_lower: sgr_256_fg(gray[900]!),
+  fg_main: sgr_256_fg(gray[900]!),
 
   fg_bright: sgr_256_fg(gray[100]!),
   fg_lightest: sgr_256_fg(gray[200]!),
