@@ -1,7 +1,8 @@
 import { clamp } from "@lib/std";
-import { footer as theme } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import * as colors from "./colors.ts";
 
 export class Footer extends Control {
   #cursor_status = "";
@@ -23,14 +24,14 @@ export class Footer extends Control {
 
     vt.write_buf(
       vt.cursor.save,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
     );
 
     const space = { len: this.w };
 
     const data = [
-      theme.TEXT,
+      colors.TEXT,
       ...vt.fmt.text(space, this.#cursor_status),
     ];
 

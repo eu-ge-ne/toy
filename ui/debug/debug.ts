@@ -1,7 +1,8 @@
 import { clamp } from "@lib/std";
-import { debug as theme } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import * as colors from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
@@ -32,9 +33,9 @@ export class Debug extends Control {
 
     vt.flush_buf(
       vt.cursor.save,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
-      theme.TEXT,
+      colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
       ...vt.fmt.text(
         { len: this.w - 1 },

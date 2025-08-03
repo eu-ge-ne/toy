@@ -1,16 +1,16 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as theme from "@lib/theme";
+import { NEUTRAL, Tokens } from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Alert } from "@ui/alert";
-import { Ask } from "@ui/ask";
-import { Debug } from "@ui/debug";
-import { Editor } from "@ui/editor";
-import { Footer } from "@ui/footer";
-import { Header } from "@ui/header";
-import { Palette, PaletteOption } from "@ui/palette";
-import { SaveAs } from "@ui/save-as";
+import { Alert, set_alert_colors } from "@ui/alert";
+import { Ask, set_ask_colors } from "@ui/ask";
+import { Debug, set_debug_colors } from "@ui/debug";
+import { Editor, set_editor_colors } from "@ui/editor";
+import { Footer, set_footer_colors } from "@ui/footer";
+import { Header, set_header_colors } from "@ui/header";
+import { Palette, PaletteOption, set_palette_colors } from "@ui/palette";
+import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
@@ -87,8 +87,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    theme.switch_theme(theme.NEUTRAL);
-
+    this.set_colors(NEUTRAL);
     this.enable_zen(true);
 
     await this.#load();
@@ -155,6 +154,17 @@ export class App extends Control {
     this.ui.palette.render();
 
     vt.esu();
+  }
+
+  set_colors(tokens: Tokens): void {
+    set_alert_colors(tokens);
+    set_ask_colors(tokens);
+    set_editor_colors(tokens);
+    set_debug_colors(tokens);
+    set_footer_colors(tokens);
+    set_header_colors(tokens);
+    set_palette_colors(tokens);
+    set_save_as_colors(tokens);
   }
 
   async save(): Promise<void> {

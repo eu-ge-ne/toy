@@ -1,4 +1,4 @@
-import { STONE, switch_theme } from "@lib/theme";
+import { STONE } from "@lib/theme";
 
 import { Command } from "./command.ts";
 
@@ -11,8 +11,7 @@ export class ThemeStoneCommand extends Command {
   };
 
   async command(): Promise<void> {
-    switch_theme(STONE);
-
+    this.app.set_colors(STONE);
     this.app.render();
   }
 }

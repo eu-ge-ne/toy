@@ -1,7 +1,8 @@
-import { palette as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
+
+import * as colors from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
@@ -57,7 +58,7 @@ export class Palette
 
     vt.write_buf(
       vt.cursor.hide,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
     );
 
@@ -162,7 +163,7 @@ export class Palette
   #render_empty(): void {
     vt.write_buf(
       vt.cursor.set(this.y + 2, this.x + 2),
-      theme.OPTION,
+      colors.OPTION,
       ...vt.fmt.text({ len: this.w - 4 }, "No matching commands"),
     );
   }
@@ -187,7 +188,7 @@ export class Palette
       const space = { len: this.w - 4 };
 
       vt.write_buf(
-        index === this.#selected_index ? theme.SELECTED_OPTION : theme.OPTION,
+        index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
         vt.cursor.set(y, this.x + 2),
         ...vt.fmt.text(space, option.description),
       );

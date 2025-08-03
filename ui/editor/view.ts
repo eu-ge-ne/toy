@@ -1,7 +1,7 @@
 import { range, sum } from "@lib/std";
-import { editor as theme } from "@lib/theme";
 import * as vt from "@lib/vt";
 
+import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
 
 export class View {
@@ -27,7 +27,7 @@ export class View {
 
     vt.write_buf(
       ...(enabled ? [] : [vt.cursor.save]),
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this.editor),
     );
 
@@ -111,12 +111,12 @@ export class View {
 
       if (cursor.is_selected(this.#ln, cell.i)) {
         color = cell.grapheme.is_visible
-          ? theme.SELECTED_CHAR
-          : theme.SELECTED_WHITESPACE;
+          ? colors.SELECTED_CHAR
+          : colors.SELECTED_WHITESPACE;
       } else {
         color = cell.grapheme.is_visible
-          ? theme.CHAR
-          : (whitespace_enabled ? theme.WHITESPACE : theme.EMPTY);
+          ? colors.CHAR
+          : (whitespace_enabled ? colors.WHITESPACE : colors.EMPTY);
       }
 
       vt.write_buf(color, cell.grapheme.bytes);
@@ -128,7 +128,7 @@ export class View {
   #render_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
       vt.write_buf(
-        theme.INDEX,
+        colors.INDEX,
         ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
       );
     }
@@ -137,7 +137,7 @@ export class View {
   #blank_index(span: vt.fmt.Span): void {
     if (this.#index_width > 0) {
       vt.write_buf(
-        theme.BACKGROUND,
+        colors.BACKGROUND,
         vt.fmt.space(span, this.#index_width),
       );
     }
@@ -145,7 +145,7 @@ export class View {
 
   #render_blank(span: vt.fmt.Span): void {
     vt.write_buf(
-      theme.BLANK,
+      colors.BLANK,
       vt.fmt.space(span, span.len),
     );
   }
