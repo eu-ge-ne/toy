@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.22
+
+- Optimized VT cursor positioning
+
 ## v0.0.21
 
 - Improved editor background colors
