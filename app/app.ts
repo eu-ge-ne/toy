@@ -3,10 +3,10 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Alert } from "@ui/alert";
+import { Alert, set_alert_colors } from "@ui/alert";
 import { Ask } from "@ui/ask";
 import { Debug } from "@ui/debug";
-import { Editor } from "@ui/editor";
+import { Editor, set_editor_colors } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
 import { Palette, PaletteOption } from "@ui/palette";
@@ -87,8 +87,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    theme.switch_theme(theme.NEUTRAL);
-
+    this.set_colors(theme.NEUTRAL);
     this.enable_zen(true);
 
     await this.#load();
@@ -155,6 +154,12 @@ export class App extends Control {
     this.ui.palette.render();
 
     vt.esu();
+  }
+
+  set_colors(tokens: theme.Tokens): void {
+    theme.switch_theme(tokens);
+    set_alert_colors(tokens);
+    set_editor_colors(tokens);
   }
 
   async save(): Promise<void> {

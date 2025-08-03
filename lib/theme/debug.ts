@@ -1,11 +1,9 @@
-import { sgr_256_bf, sgr_256_bg } from "@eu-ge-ne/ctlseqs";
-
-import * as t from "./tokens.ts";
+import { Tokens } from "./tokens.ts";
 
 export let BACKGROUND: Uint8Array;
 export let TEXT: Uint8Array;
 
-export function init(): void {
-  BACKGROUND = sgr_256_bg(t.HIGHER);
-  TEXT = sgr_256_bf(t.HIGHER, t.DARK);
+export function init(t: Tokens): void {
+  BACKGROUND = t.bg_higher;
+  TEXT = new Uint8Array([...t.bg_higher, ...t.fg_dark]);
 }

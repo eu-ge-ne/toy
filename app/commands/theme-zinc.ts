@@ -1,4 +1,4 @@
-import { switch_theme, ZINC } from "@lib/theme";
+import { ZINC } from "@lib/theme";
 
 import { Command } from "./command.ts";
 
@@ -11,8 +11,7 @@ export class ThemeZincCommand extends Command {
   };
 
   async command(): Promise<void> {
-    switch_theme(ZINC);
-
+    this.app.set_colors(ZINC);
     this.app.render();
   }
 }

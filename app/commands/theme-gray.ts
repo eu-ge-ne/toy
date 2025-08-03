@@ -1,4 +1,4 @@
-import { GRAY, switch_theme } from "@lib/theme";
+import { GRAY } from "@lib/theme";
 
 import { Command } from "./command.ts";
 
@@ -11,8 +11,7 @@ export class ThemeGrayCommand extends Command {
   };
 
   async command(): Promise<void> {
-    switch_theme(GRAY);
-
+    this.app.set_colors(GRAY);
     this.app.render();
   }
 }

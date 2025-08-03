@@ -1,4 +1,4 @@
-import { NEUTRAL, switch_theme } from "@lib/theme";
+import { NEUTRAL } from "@lib/theme";
 
 import { Command } from "./command.ts";
 
@@ -11,8 +11,7 @@ export class ThemeNeutralCommand extends Command {
   };
 
   async command(): Promise<void> {
-    switch_theme(NEUTRAL);
-
+    this.app.set_colors(NEUTRAL);
     this.app.render();
   }
 }

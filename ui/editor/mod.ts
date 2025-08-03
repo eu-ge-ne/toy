@@ -1,1 +1,2 @@
-export { Editor } from "./editor.ts";
+export * from "./colors.ts";
+export * from "./editor.ts";

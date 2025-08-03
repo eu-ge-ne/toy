@@ -1,7 +1,8 @@
 import { clamp } from "@lib/std";
-import { alert as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import * as colors from "./colors.ts";
 
 export class Alert extends Modal<[unknown], void> {
   #text = "";
@@ -34,7 +35,7 @@ export class Alert extends Modal<[unknown], void> {
 
     vt.write_buf(
       vt.cursor.hide,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
     );
 
@@ -52,7 +53,7 @@ export class Alert extends Modal<[unknown], void> {
 
       vt.write_buf(
         vt.cursor.set(y, this.x + 2),
-        theme.TEXT,
+        colors.TEXT,
         ...vt.fmt.text(space, line),
       );
     }
