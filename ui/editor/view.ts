@@ -21,34 +21,28 @@ export class View {
   }
 
   render(): void {
-    const {
-      buffer,
-      enabled,
-      area,
-      wrap_enabled,
-      line_index_enabled,
-    } = this.editor;
+    const { buffer, enabled, wrap_enabled, line_index_enabled } = this.editor;
 
     vt.bsu();
 
     vt.write_buf(
       ...(enabled ? [] : [vt.cursor.save]),
       theme.BACKGROUND,
-      ...vt.clear(area.y0, area.x0, area.h, area.w),
+      ...vt.clear(this.editor),
     );
 
     this.#index_width = 0;
     if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
     }
-    this.#text_width = area.w - this.#index_width;
+    this.#text_width = this.editor.w - this.#index_width;
     this.#wrap_width = wrap_enabled
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
 
     this.#scroll();
 
-    this.#y = area.y0;
+    this.#y = this.editor.y;
     this.#ln = this.#scroll_ln;
 
     let span = { len: 0 };
@@ -82,23 +76,21 @@ export class View {
   }
 
   #begin_ln(): vt.fmt.Span {
-    const { x0, w } = this.editor.area;
-    vt.write_buf(vt.cursor.set(this.#y, x0));
-    return { len: w };
+    vt.write_buf(vt.cursor.set(this.#y, this.editor.x));
+
+    return { len: this.editor.w };
   }
 
   #end_ln(): boolean {
-    const { y1 } = this.editor.area;
-    this.#y = Math.min(this.#y + 1, y1);
-    return this.#y === y1;
+    const { y, h } = this.editor;
+
+    this.#y = Math.min(this.#y + 1, y + h);
+
+    return this.#y === y + h;
   }
 
   #render_line(span: vt.fmt.Span): void {
-    const {
-      shaper,
-      cursor,
-      whitespace_enabled,
-    } = this.editor;
+    const { shaper, cursor, whitespace_enabled } = this.editor;
 
     this.#render_index(span);
 
@@ -159,9 +151,9 @@ export class View {
   }
 
   center(): void {
-    const { shaper, cursor, area } = this.editor;
+    const { shaper, cursor, h } = this.editor;
 
-    let height = Math.trunc(area.h / 2);
+    let height = Math.trunc(h / 2);
 
     for (let i = cursor.ln - 1; i >= 0; i -= 1) {
       const h = shaper.count_wraps(i, this.#wrap_width);
@@ -175,17 +167,17 @@ export class View {
   }
 
   #scroll(): void {
-    const { shaper, area } = this.editor;
+    const { shaper, y, x } = this.editor;
 
-    shaper.y = this.#cursor_y = area.y0;
-    shaper.x = this.#cursor_x = area.x0 + this.#index_width;
+    shaper.y = this.#cursor_y = y;
+    shaper.x = this.#cursor_x = x + this.#index_width;
 
     this.#scroll_vertical();
     this.#scroll_horizontal();
   }
 
   #scroll_vertical(): void {
-    const { shaper, cursor, area } = this.editor;
+    const { shaper, cursor, h } = this.editor;
 
     const delta_ln = cursor.ln - this.#scroll_ln;
 
@@ -197,8 +189,8 @@ export class View {
 
     // Did the cursor move below the scroll area?
 
-    if (delta_ln > area.h) {
-      this.#scroll_ln = cursor.ln - area.h;
+    if (delta_ln > h) {
+      this.#scroll_ln = cursor.ln - h;
     }
 
     const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) =>
@@ -207,7 +199,7 @@ export class View {
 
     let i = 0;
 
-    for (let height = sum(hh); height > area.h; i += 1) {
+    for (let height = sum(hh); height > h; i += 1) {
       height -= hh[i]!;
       this.#scroll_ln += 1;
     }
