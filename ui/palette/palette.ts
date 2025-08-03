@@ -13,10 +13,8 @@ export interface PaletteOption {
 
 export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
-  protected size = new Area(0, 0, 0, 0);
-
   #editor = new Editor(this, { multi_line: false });
-  #parent_area!: Area;
+  #area!: Area;
 
   #all: PaletteOption[] = [];
   #options: PaletteOption[] = [];
@@ -25,8 +23,6 @@ export class Palette
   #scroll_index = 0;
 
   async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
-    this.done = Promise.withResolvers();
-
     this.enabled = true;
     this.#editor.enabled = true;
 
@@ -37,15 +33,46 @@ export class Palette
     this.#filter();
     this.parent?.render();
 
-    await this.#process_input();
+    const result = await this.#process_input();
 
     this.enabled = false;
     this.#editor.enabled = false;
 
-    return this.done.promise;
+    return result;
   }
 
-  async #process_input(): Promise<void> {
+  layout(area: Area): void {
+    this.#area = area;
+  }
+
+  render(): void {
+    if (!this.enabled) {
+      return;
+    }
+
+    vt.bsu();
+
+    this.#resize();
+    this.#scroll();
+
+    vt.write_buf(
+      vt.cursor.hide,
+      theme.BACKGROUND,
+      ...vt.clear(this),
+    );
+
+    if (this.#options.length === 0) {
+      this.#render_empty();
+    } else {
+      this.#render_options();
+    }
+
+    this.#editor.render();
+
+    vt.esu();
+  }
+
+  async #process_input(): Promise<PaletteOption | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -56,11 +83,9 @@ export class Palette
         if (typeof key !== "string") {
           switch (key.name) {
             case "ESC":
-              this.done.resolve(undefined);
               return;
             case "ENTER":
-              this.done.resolve(this.#options[this.#selected_index]);
-              return;
+              return this.#options[this.#selected_index];
             case "UP":
               if (this.#options.length > 0) {
                 this.#selected_index = Math.max(this.#selected_index - 1, 0);
@@ -87,37 +112,6 @@ export class Palette
     }
   }
 
-  override resize(area: Area): void {
-    this.#parent_area = area;
-  }
-
-  render(): void {
-    if (!this.enabled) {
-      return;
-    }
-
-    vt.bsu();
-
-    this.#resize();
-    this.#scroll();
-
-    vt.write_buf(
-      vt.cursor.hide,
-      theme.BACKGROUND,
-      ...vt.clear(this.area.y0, this.area.x0, this.area.h, this.area.w),
-    );
-
-    if (this.#options.length === 0) {
-      this.#render_empty();
-    } else {
-      this.#render_options();
-    }
-
-    this.#editor.render();
-
-    vt.esu();
-  }
-
   #filter(): void {
     const text = this.#editor.buffer.get_text().toUpperCase();
 
@@ -135,21 +129,25 @@ export class Palette
   #resize(): void {
     this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
 
-    let area_height = 3 + Math.max(this.#list_size, 1);
-    if (area_height > this.#parent_area.h) {
-      area_height = this.#parent_area.h;
+    this.w = Math.min(60, this.#area.w);
+
+    this.h = 3 + Math.max(this.#list_size, 1);
+    if (this.h > this.#area.h) {
+      this.h = this.#area.h;
       if (this.#list_size > 0) {
-        this.#list_size = area_height - 3;
+        this.#list_size = this.h - 3;
       }
     }
-    const area_width = Math.min(60, this.#parent_area.w);
 
-    const x0 = Math.trunc((this.#parent_area.w - area_width) / 2);
-    const y0 = Math.trunc((this.#parent_area.h - area_height) / 2);
+    this.y = this.#area.y + Math.trunc((this.#area.h - this.h) / 2);
+    this.x = this.#area.x + Math.trunc((this.#area.w - this.w) / 2);
 
-    this.area = new Area(x0, y0, area_width, area_height);
-
-    this.#editor.resize(new Area(x0 + 2, y0 + 1, area_width - 4, 1));
+    this.#editor.layout({
+      y: this.y + 1,
+      x: this.x + 2,
+      w: this.w - 4,
+      h: 1,
+    });
   }
 
   #scroll(): void {
@@ -163,15 +161,15 @@ export class Palette
 
   #render_empty(): void {
     vt.write_buf(
-      vt.cursor.set(this.area.y0 + 2, this.area.x0 + 2),
+      vt.cursor.set(this.y + 2, this.x + 2),
       theme.OPTION,
-      ...vt.fmt.text({ len: this.area.w - 4 }, "No matching commands"),
+      ...vt.fmt.text({ len: this.w - 4 }, "No matching commands"),
     );
   }
 
   #render_options(): void {
     let i = 0;
-    let y = this.area.y0 + 2;
+    let y = this.y + 2;
 
     while (true) {
       if (i === this.#list_size) {
@@ -182,15 +180,15 @@ export class Palette
       if (!option) {
         break;
       }
-      if (y === this.area.y1) {
+      if (y === this.y + this.h) {
         break;
       }
 
-      const space = { len: this.area.w - 4 };
+      const space = { len: this.w - 4 };
 
       vt.write_buf(
         index === this.#selected_index ? theme.SELECTED_OPTION : theme.OPTION,
-        vt.cursor.set(y, this.area.x0 + 2),
+        vt.cursor.set(y, this.x + 2),
         ...vt.fmt.text(space, option.description),
       );
 
