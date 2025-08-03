@@ -6,14 +6,6 @@ import * as vt from "@lib/vt";
 export class Ask extends Modal<[string], boolean> {
   #text = "";
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = clamp(60, 0, w);
-    this.h = clamp(7, 0, h);
-
-    this.y = y + Math.trunc((h - this.h) / 2);
-    this.x = x + Math.trunc((w - this.w) / 2);
-  }
-
   async open(text: string): Promise<boolean> {
     this.#text = text;
 
@@ -27,22 +19,12 @@ export class Ask extends Modal<[string], boolean> {
     return result;
   }
 
-  async #process_input(): Promise<boolean> {
-    while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array || typeof key === "string") {
-          this.parent?.render();
-          continue;
-        }
+  layout({ y, x, w, h }: Area): void {
+    this.w = clamp(60, 0, w);
+    this.h = clamp(7, 0, h);
 
-        switch (key.name) {
-          case "ESC":
-            return false;
-          case "ENTER":
-            return true;
-        }
-      }
-    }
+    this.y = y + Math.trunc((h - this.h) / 2);
+    this.x = x + Math.trunc((w - this.w) / 2);
   }
 
   render(): void {
@@ -83,5 +65,23 @@ export class Ask extends Modal<[string], boolean> {
     );
 
     vt.esu();
+  }
+
+  async #process_input(): Promise<boolean> {
+    while (true) {
+      for await (const key of vt.read()) {
+        if (key instanceof Uint8Array || typeof key === "string") {
+          this.parent?.render();
+          continue;
+        }
+
+        switch (key.name) {
+          case "ESC":
+            return false;
+          case "ENTER":
+            return true;
+        }
+      }
+    }
   }
 }
