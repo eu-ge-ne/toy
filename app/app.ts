@@ -45,14 +45,14 @@ export class App extends Control {
   changes = false;
 
   ui = {
-    debug: new Debug(this),
-    editor: new Editor(this, { multi_line: true }),
-    footer: new Footer(this),
     header: new Header(this),
+    footer: new Footer(this),
+    editor: new Editor(this, { multi_line: true }),
+    debug: new Debug(this),
+    palette: new Palette(this),
     alert: new Alert(this),
     ask: new Ask(this),
     save_as: new SaveAs(this),
-    palette: new Palette(this),
   };
 
   constructor() {
@@ -106,28 +106,40 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  override resize(screen: Area): void {
-    const { palette, editor, debug, header, footer, save_as, alert, ask } =
-      this.ui;
+  override layout({ y, x, w, h }: Area): void {
+    this.y = y;
+    this.x = x;
+    this.w = w;
+    this.h = h;
 
-    if (this.zen_enabled) {
-      editor.resize(screen);
-      debug.resize(screen);
-    } else {
-      const [header_area, a0] = screen.div_y(1);
-      header.resize(header_area);
+    const {
+      header,
+      footer,
+      editor,
+      debug,
+      palette,
+      alert,
+      ask,
+      save_as,
+    } = this.ui;
 
-      const [editor_area, footer_area] = a0.div_y(-1);
-      editor.resize(editor_area);
-      debug.resize(editor_area);
+    header.layout(this);
+    footer.layout(this);
+    editor.layout(
+      this.zen_enabled ? this : {
+        y: this.y + 1,
+        x: this.x,
+        w: this.w,
+        h: this.h - 2,
+      },
+    );
 
-      footer.resize(footer_area);
-    }
+    debug.layout(editor);
+    palette.layout(editor);
 
-    save_as.resize(screen);
-    alert.resize(screen);
-    ask.resize(screen);
-    palette.resize(screen);
+    alert.layout(editor);
+    ask.layout(editor);
+    save_as.layout(editor);
   }
 
   render(): void {
@@ -177,12 +189,15 @@ export class App extends Control {
     footer.enabled = !enabled;
     editor.line_index_enabled = !enabled;
 
-    this.resize(Area.from_screen());
+    const { columns: w, rows: h } = Deno.consoleSize();
+    this.layout({ y: 0, x: 0, w, h });
+
     this.render();
   }
 
   #on_sigwinch = () => {
-    this.resize(Area.from_screen());
+    const { columns: w, rows: h } = Deno.consoleSize();
+    this.layout({ y: 0, x: 0, w, h });
 
     vt.dummy_req();
   };
