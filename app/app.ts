@@ -4,7 +4,7 @@ import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert, set_alert_colors } from "@ui/alert";
-import { Ask } from "@ui/ask";
+import { Ask, set_ask_colors } from "@ui/ask";
 import { Debug } from "@ui/debug";
 import { Editor, set_editor_colors } from "@ui/editor";
 import { Footer } from "@ui/footer";
@@ -158,7 +158,9 @@ export class App extends Control {
 
   set_colors(tokens: theme.Tokens): void {
     theme.switch_theme(tokens);
+
     set_alert_colors(tokens);
+    set_ask_colors(tokens);
     set_editor_colors(tokens);
   }
 

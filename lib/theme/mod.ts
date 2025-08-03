@@ -1,4 +1,3 @@
-export * as ask from "./ask.ts";
 export * as debug from "./debug.ts";
 export * as footer from "./footer.ts";
 export * as header from "./header.ts";

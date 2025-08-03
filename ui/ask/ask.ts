@@ -1,7 +1,8 @@
 import { clamp } from "@lib/std";
-import { ask as theme } from "@lib/theme";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import * as colors from "./colors.ts";
 
 export class Ask extends Modal<[string], boolean> {
   #text = "";
@@ -36,7 +37,7 @@ export class Ask extends Modal<[string], boolean> {
 
     vt.write_buf(
       vt.cursor.hide,
-      theme.BACKGROUND,
+      colors.BACKGROUND,
       ...vt.clear(this),
     );
 
@@ -54,7 +55,7 @@ export class Ask extends Modal<[string], boolean> {
 
       vt.write_buf(
         vt.cursor.set(y, this.x + 1),
-        theme.TEXT,
+        colors.TEXT,
         ...vt.fmt.center(space, line),
       );
     }
