@@ -13,6 +13,6 @@ export class PageDownHandler extends KeyHandler {
       return false;
     }
 
-    return this.editor.cursor.move(this.editor.area.h, 0, Boolean(key.shift));
+    return this.editor.cursor.move(this.editor.h, 0, Boolean(key.shift));
   }
 }
