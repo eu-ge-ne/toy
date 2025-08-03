@@ -26,6 +26,7 @@ export class App extends Control {
     new cmd.RedoCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
+    new cmd.ThemeBase16Command(this),
     new cmd.ThemeGrayCommand(this),
     new cmd.ThemeNeutralCommand(this),
     new cmd.ThemeSlateCommand(this),
