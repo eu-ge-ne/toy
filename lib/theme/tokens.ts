@@ -1,13 +1,12 @@
 export interface Tokens {
   bg_danger: Uint8Array;
 
-  bg_top: Uint8Array;
-  bg_highest: Uint8Array;
-  bg_higher: Uint8Array;
+  bg_light2: Uint8Array;
+  bg_light1: Uint8Array;
+  bg_light0: Uint8Array;
   bg_main: Uint8Array;
-  bg_lowest: Uint8Array;
-
   fg_main: Uint8Array;
+  bg_dark0: Uint8Array;
 
   fg_bright: Uint8Array;
   fg_lightest: Uint8Array;

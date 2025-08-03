@@ -4,6 +4,6 @@ export let BACKGROUND: Uint8Array;
 export let TEXT: Uint8Array;
 
 export function set_footer_colors(t: Tokens): void {
-  BACKGROUND = t.bg_lowest;
-  TEXT = new Uint8Array([...t.bg_lowest, ...t.fg_dark]);
+  BACKGROUND = t.bg_dark0;
+  TEXT = new Uint8Array([...t.bg_dark0, ...t.fg_dark]);
 }

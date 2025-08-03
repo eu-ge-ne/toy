@@ -23,13 +23,12 @@ const stone: Record<number, SGRColor256> = {
 export const STONE: Tokens = {
   bg_danger: sgr_256_bg(red[900]!),
 
-  bg_top: sgr_256_bg(stone[500]!),
-  bg_highest: sgr_256_bg(stone[700]!),
-  bg_higher: sgr_256_bg(stone[800]!),
+  bg_light2: sgr_256_bg(stone[500]!),
+  bg_light1: sgr_256_bg(stone[700]!),
+  bg_light0: sgr_256_bg(stone[800]!),
   bg_main: sgr_256_bg(stone[900]!),
-  bg_lowest: sgr_256_bg(stone[950]!),
-
   fg_main: sgr_256_fg(stone[900]!),
+  bg_dark0: sgr_256_bg(stone[950]!),
 
   fg_bright: sgr_256_fg(stone[100]!),
   fg_lightest: sgr_256_fg(stone[200]!),
