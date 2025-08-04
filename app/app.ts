@@ -15,8 +15,6 @@ import { args } from "./args.ts";
 import * as cmd from "./commands/mod.ts";
 
 export class App extends Control {
-  args = args();
-
   commands: cmd.Command[] = [
     new cmd.CopyCommand(this),
     new cmd.CutCommand(this),
@@ -27,7 +25,7 @@ export class App extends Control {
     new cmd.RedoCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
-    ...this.args.old ? [] : [
+    ...args.old ? [] : [
       new cmd.ThemeGrayCommand(this),
       new cmd.ThemeNeutralCommand(this),
       new cmd.ThemeSlateCommand(this),
@@ -69,7 +67,7 @@ export class App extends Control {
   }
 
   async run(): Promise<void> {
-    if (this.args.version) {
+    if (args.version) {
       console.log(`toy ${deno.version}`);
       Deno.exit();
     }
@@ -89,7 +87,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.set_colors(this.args.old ? theme.BASE16 : theme.NEUTRAL);
+    this.set_colors(args.old ? theme.BASE16 : theme.NEUTRAL);
     this.enable_zen(true);
 
     await this.#load();
@@ -215,7 +213,7 @@ export class App extends Control {
   };
 
   async #load(): Promise<void> {
-    const path = this.args._[0];
+    const path = args._[0];
     if (typeof path !== "string") {
       return;
     }
