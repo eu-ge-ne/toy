@@ -22,12 +22,12 @@ const zinc: Record<number, SGRColor256> = {
 
 export const ZINC: Tokens = {
   bg_danger: sgr_256_bg(red[900]!),
+  bg_main: sgr_256_bg(zinc[900]!),
+  fg_main: sgr_256_fg(zinc[900]!),
 
   bg_light2: sgr_256_bg(zinc[500]!),
   bg_light1: sgr_256_bg(zinc[700]!),
   bg_light0: sgr_256_bg(zinc[800]!),
-  bg_main: sgr_256_bg(zinc[900]!),
-  fg_main: sgr_256_fg(zinc[900]!),
   bg_dark0: sgr_256_bg(zinc[950]!),
 
   fg_light2: sgr_256_fg(zinc[100]!),
