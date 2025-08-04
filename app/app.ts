@@ -88,7 +88,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.set_colors(theme.BASE16);
+    this.set_colors(theme.NEUTRAL);
     this.enable_zen(true);
 
     await this.#load();
