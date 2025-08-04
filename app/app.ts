@@ -1,5 +1,3 @@
-import { parseArgs } from "@std/cli/parse-args";
-
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -13,6 +11,7 @@ import { Palette, PaletteOption, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
+import { args } from "./args.ts";
 import * as cmd from "./commands/mod.ts";
 
 export class App extends Control {
@@ -26,12 +25,13 @@ export class App extends Control {
     new cmd.RedoCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
-    new cmd.ThemeBase16Command(this),
-    new cmd.ThemeGrayCommand(this),
-    new cmd.ThemeNeutralCommand(this),
-    new cmd.ThemeSlateCommand(this),
-    new cmd.ThemeStoneCommand(this),
-    new cmd.ThemeZincCommand(this),
+    ...args.old ? [] : [
+      new cmd.ThemeGrayCommand(this),
+      new cmd.ThemeNeutralCommand(this),
+      new cmd.ThemeSlateCommand(this),
+      new cmd.ThemeStoneCommand(this),
+      new cmd.ThemeZincCommand(this),
+    ],
     new cmd.UndoCommand(this),
     new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
@@ -40,7 +40,6 @@ export class App extends Control {
 
   options: PaletteOption[];
 
-  args = parseArgs(Deno.args);
   zen_enabled = true;
   file_path = "";
   changes = false;
@@ -68,7 +67,7 @@ export class App extends Control {
   }
 
   async run(): Promise<void> {
-    if (this.args.v || this.args.version) {
+    if (args.version) {
       console.log(`toy ${deno.version}`);
       Deno.exit();
     }
@@ -88,7 +87,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.set_colors(theme.NEUTRAL);
+    this.set_colors(args.old ? theme.BASE16 : theme.NEUTRAL);
     this.enable_zen(true);
 
     await this.#load();
@@ -214,7 +213,7 @@ export class App extends Control {
   };
 
   async #load(): Promise<void> {
-    const path = this.args._[0];
+    const path = args._[0];
     if (typeof path !== "string") {
       return;
     }
