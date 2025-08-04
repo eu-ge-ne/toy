@@ -1,5 +1,3 @@
-import { parseArgs } from "@std/cli/parse-args";
-
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -13,10 +11,11 @@ import { Palette, PaletteOption, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
+import { args } from "./args.ts";
 import * as cmd from "./commands/mod.ts";
 
 export class App extends Control {
-  args = parseArgs(Deno.args);
+  args = args();
 
   commands: cmd.Command[] = [
     new cmd.CopyCommand(this),
@@ -70,7 +69,7 @@ export class App extends Control {
   }
 
   async run(): Promise<void> {
-    if (this.args.v || this.args.version) {
+    if (this.args.version) {
       console.log(`toy ${deno.version}`);
       Deno.exit();
     }
