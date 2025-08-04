@@ -22,12 +22,12 @@ const gray: Record<number, SGRColor256> = {
 
 export const GRAY: Tokens = {
   bg_danger: sgr_256_bg(red[900]!),
+  bg_main: sgr_256_bg(gray[900]!),
+  fg_main: sgr_256_fg(gray[900]!),
 
   bg_light2: sgr_256_bg(gray[500]!),
   bg_light1: sgr_256_bg(gray[700]!),
   bg_light0: sgr_256_bg(gray[800]!),
-  bg_main: sgr_256_bg(gray[900]!),
-  fg_main: sgr_256_fg(gray[900]!),
   bg_dark0: sgr_256_bg(gray[950]!),
 
   fg_light2: sgr_256_fg(gray[100]!),
