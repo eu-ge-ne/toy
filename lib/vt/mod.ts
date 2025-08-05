@@ -7,3 +7,4 @@ export * from "./dummy.ts";
 export * from "./read.ts";
 export * from "./init.ts";
 export * from "./sync.ts";
+export * from "./truecolor.ts";

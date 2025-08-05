@@ -25,13 +25,15 @@ export class App extends Control {
     new cmd.RedoCommand(this),
     new cmd.SaveCommand(this),
     new cmd.SelectAllCommand(this),
-    ...args.old ? [] : [
-      new cmd.ThemeGrayCommand(this),
-      new cmd.ThemeNeutralCommand(this),
-      new cmd.ThemeSlateCommand(this),
-      new cmd.ThemeStoneCommand(this),
-      new cmd.ThemeZincCommand(this),
-    ],
+    ...vt.TRUECOLOR
+      ? [
+        new cmd.ThemeGrayCommand(this),
+        new cmd.ThemeNeutralCommand(this),
+        new cmd.ThemeSlateCommand(this),
+        new cmd.ThemeStoneCommand(this),
+        new cmd.ThemeZincCommand(this),
+      ]
+      : [],
     new cmd.UndoCommand(this),
     new cmd.WhitespaceCommand(this),
     new cmd.WrapCommand(this),
@@ -87,7 +89,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.stop);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.set_colors(args.old ? theme.BASE16 : theme.NEUTRAL);
+    this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
     this.enable_zen(true);
 
     await this.#load();
