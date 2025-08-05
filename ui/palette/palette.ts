@@ -51,6 +51,9 @@ export class Palette
       return;
     }
 
+    this.#resize();
+    this.#scroll();
+
     vt.bsu();
 
     vt.write_buf(
@@ -58,9 +61,6 @@ export class Palette
       colors.BACKGROUND,
       ...vt.clear(this),
     );
-
-    this.#resize();
-    this.#scroll();
 
     if (this.#options.length === 0) {
       this.#render_empty();

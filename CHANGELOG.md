@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.23
+
+- Fixed Command Palette rendering issue
+
 ## v0.0.22
 
 - Added Base16 theme
