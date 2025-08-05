@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.24
+
+- Test release
+
 ## v0.0.23
 
 - Fixed Command Palette rendering issue

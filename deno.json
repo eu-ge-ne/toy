@@ -1,6 +1,6 @@
 {
   "name": "@eu-ge-ne/toy",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "license": "MIT",
   "exports": "./main.ts",
   "workspace": ["app", "ui/*", "lib/*"],
