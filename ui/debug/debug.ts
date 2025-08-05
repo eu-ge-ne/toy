@@ -32,6 +32,7 @@ export class Debug extends Control {
     vt.bsu();
 
     vt.flush_buf(
+      vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
       ...vt.clear(this),
@@ -73,6 +74,7 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.restore,
+      vt.cursor.show,
     );
 
     vt.esu();

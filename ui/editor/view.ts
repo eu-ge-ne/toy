@@ -26,7 +26,8 @@ export class View {
     vt.bsu();
 
     vt.write_buf(
-      ...(enabled ? [] : [vt.cursor.save]),
+      vt.cursor.hide,
+      vt.cursor.save,
       colors.BACKGROUND,
       ...vt.clear(this.editor),
     );
@@ -63,14 +64,12 @@ export class View {
       this.#ln += 1;
     }
 
-    if (enabled) {
-      vt.flush_buf(
-        vt.cursor.show,
-        vt.cursor.set(this.#cursor_y, this.#cursor_x),
-      );
-    } else {
-      vt.flush_buf(vt.cursor.restore);
-    }
+    vt.flush_buf(
+      ...enabled
+        ? [vt.cursor.set(this.#cursor_y, this.#cursor_x)]
+        : [vt.cursor.restore],
+      vt.cursor.show,
+    );
 
     vt.esu();
   }

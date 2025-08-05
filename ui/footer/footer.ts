@@ -23,6 +23,7 @@ export class Footer extends Control {
     vt.bsu();
 
     vt.write_buf(
+      vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
       ...vt.clear(this),
@@ -39,6 +40,7 @@ export class Footer extends Control {
       vt.cursor.set(this.y, this.x + space.len),
       ...data,
       vt.cursor.restore,
+      vt.cursor.show,
     );
 
     vt.esu();
