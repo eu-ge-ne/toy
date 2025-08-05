@@ -1,12 +1,14 @@
-name: PR
+name: deno
 
 on:
   pull_request:
     branches: ["main"]
     types: ["opened", "synchronize", "reopened"]
+  push:
+    branches: ["main"]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
 
     permissions:
@@ -23,8 +25,8 @@ jobs:
       - run: deno fmt --check
       - run: deno lint
 
-  compile:
-    needs: test
+  build:
+    needs: lint
 
     runs-on: ubuntu-latest
 
