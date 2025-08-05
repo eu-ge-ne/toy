@@ -27,6 +27,7 @@ export class App extends Control {
     new cmd.SelectAllCommand(this),
     ...vt.TRUECOLOR
       ? [
+        new cmd.ThemeBase16Command(this),
         new cmd.ThemeGrayCommand(this),
         new cmd.ThemeNeutralCommand(this),
         new cmd.ThemeSlateCommand(this),
