@@ -26,6 +26,7 @@ export class Header extends Control {
     vt.bsu();
 
     vt.flush_buf(
+      vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
       ...vt.clear(this),
@@ -37,6 +38,7 @@ export class Header extends Control {
         ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
       ),
       vt.cursor.restore,
+      vt.cursor.show,
     );
 
     vt.esu();

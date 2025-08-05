@@ -53,14 +53,14 @@ export class Palette
 
     vt.bsu();
 
-    this.#resize();
-    this.#scroll();
-
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
       ...vt.clear(this),
     );
+
+    this.#resize();
+    this.#scroll();
 
     if (this.#options.length === 0) {
       this.#render_empty();
