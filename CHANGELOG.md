@@ -2,6 +2,7 @@
 
 ## v0.0.22
 
+- Added Base16 theme
 - Check `COLORTERM=truecolor` for truecolor support
 
 ## v0.0.21
