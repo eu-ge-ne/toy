@@ -2,7 +2,7 @@
 
 ## v0.0.22
 
-- Introduced "--old" mode
+- Check `COLORTERM=truecolor` for truecolor support
 
 ## v0.0.21
 

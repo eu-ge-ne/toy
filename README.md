@@ -42,7 +42,7 @@ brew install eu-ge-ne/tap/toy
 
 ### Rendering
 
-- 256-color palette
+- Truecolor palette (if `COLORTERM=truecolor` is set in the environment)
 - Rendering whitespace characters
 - Leveraging the
   [Synchronized Output](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036)
