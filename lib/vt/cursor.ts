@@ -18,23 +18,8 @@ export const restore = decrc;
 export const hide = decrst(DECResetMode.DECTCEM);
 export const show = decset(DECSetMode.DECTCEM);
 
-const cups: Map<number, Map<number, Uint8Array | undefined> | undefined> =
-  new Map();
-
 export function set(y: number, x: number): Uint8Array {
-  let a = cups.get(y);
-  if (!a) {
-    a = new Map();
-    cups.set(y, a);
-  }
-
-  let b = a.get(x);
-  if (!b) {
-    b = cup(y + 1, x + 1);
-    a.set(x, b);
-  }
-
-  return b;
+  return cup(y + 1, x + 1);
 }
 
 const buf = new Uint8Array(1024);
