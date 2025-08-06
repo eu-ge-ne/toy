@@ -79,9 +79,10 @@ export class View {
   #layout(): void {
     const { buffer, wrap_enabled, line_index_enabled } = this.editor;
 
-    this.#index_width = 0;
     if (line_index_enabled && buffer.ln_count > 0) {
       this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+    } else {
+      this.#index_width = 0;
     }
 
     this.#text_width = this.editor.w - this.#index_width;
