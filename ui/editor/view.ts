@@ -16,6 +16,7 @@ export class View {
   #cursor_x = 0;
 
   #y = 0;
+  #span: fmt.Span = { len: 0 };
 
   get #y_end(): boolean {
     const { y, h } = this.editor;
@@ -47,7 +48,12 @@ export class View {
       if (ln < buffer.ln_count) {
         this.#render_line(ln);
       } else {
-        this.#blank_line();
+        this.#begin_ln();
+
+        vt.write_buf(
+          colors.BLANK,
+          fmt.space(this.#span, this.#span.len),
+        );
       }
 
       this.#y += 1;
@@ -85,9 +91,9 @@ export class View {
   #render_line(ln: number): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
-    let span = this.#begin_ln();
+    this.#begin_ln();
 
-    this.#render_index(span, ln);
+    this.#render_index(ln);
 
     let current_color!: Uint8Array;
 
@@ -99,11 +105,11 @@ export class View {
         if (this.#y_end) {
           return;
         }
-        span = this.#begin_ln();
-        this.#blank_index(span);
+        this.#begin_ln();
+        this.#blank_index();
       }
 
-      if ((col < this.#scroll_col) || (width > span.len)) {
+      if ((col < this.#scroll_col) || (width > this.#span.len)) {
         continue;
       }
 
@@ -129,41 +135,32 @@ export class View {
 
       vt.write_buf(bytes);
 
-      span.len -= width;
+      this.#span.len -= width;
     }
   }
 
-  #blank_line(): void {
-    const span = this.#begin_ln();
-
-    vt.write_buf(
-      colors.BLANK,
-      fmt.space(span, span.len),
-    );
-  }
-
-  #begin_ln(): vt.fmt.Span {
+  #begin_ln(): void {
     vt.write_buf(
       vt.cursor.set(this.#y, this.editor.x),
     );
 
-    return { len: this.editor.w };
+    this.#span.len = this.editor.w;
   }
 
-  #render_index(span: vt.fmt.Span, ln: number): void {
+  #render_index(ln: number): void {
     if (this.#index_width > 0) {
       vt.write_buf(
         colors.INDEX,
-        ...fmt.text(span, `${ln + 1} `.padStart(this.#index_width)),
+        ...fmt.text(this.#span, `${ln + 1} `.padStart(this.#index_width)),
       );
     }
   }
 
-  #blank_index(span: vt.fmt.Span): void {
+  #blank_index(): void {
     if (this.#index_width > 0) {
       vt.write_buf(
         colors.BACKGROUND,
-        fmt.space(span, this.#index_width),
+        fmt.space(this.#span, this.#index_width),
       );
     }
   }
