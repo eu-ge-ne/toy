@@ -95,8 +95,10 @@ export class View {
 
     let current_color!: Uint8Array;
 
-    for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
-      if (cell.i > 0 && cell.col === 0) {
+    const gg = shaper.wrap_line(this.#ln, this.#wrap_width);
+
+    for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
+      if (i > 0 && col === 0) {
         if (this.#end_ln()) {
           return;
         }
@@ -104,17 +106,17 @@ export class View {
         this.#blank_index(span);
       }
 
-      if ((cell.col < this.#scroll_col) || (cell.grapheme.width > span.len)) {
+      if ((col < this.#scroll_col) || (width > span.len)) {
         continue;
       }
 
       let color!: Uint8Array;
       {
-        const char_colors = cursor.is_selected(this.#ln, cell.i)
+        const char_colors = cursor.is_selected(this.#ln, i)
           ? colors.SELECTED
           : colors.CHAR;
 
-        if (cell.grapheme.is_visible) {
+        if (is_visible) {
           color = char_colors.Char;
         } else if (whitespace_enabled) {
           color = char_colors.Whitespace;
@@ -128,9 +130,9 @@ export class View {
         vt.write_buf(color);
       }
 
-      vt.write_buf(cell.grapheme.bytes);
+      vt.write_buf(bytes);
 
-      span.len -= cell.grapheme.width;
+      span.len -= width;
     }
   }
 
