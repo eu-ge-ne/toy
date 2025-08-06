@@ -91,9 +91,9 @@ export class View {
 
     let current_color!: Uint8Array;
 
-    const gg = shaper.wrap_line(ln, this.#wrap_width);
+    const xs = shaper.wrap_line(ln, this.#wrap_width);
 
-    for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
+    for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (i > 0 && col === 0) {
         this.#y += 1;
         if (this.#y_end) {
