@@ -20,8 +20,6 @@ export class View {
   }
 
   render(): void {
-    const { buffer, enabled } = this.editor;
-
     vt.bsu();
 
     vt.write_buf(
@@ -37,13 +35,7 @@ export class View {
     this.#y = this.editor.y;
 
     for (let ln = this.#scroll_ln;; ln += 1) {
-      const span = this.#begin_ln();
-
-      if (ln < buffer.ln_count) {
-        this.#render_line(span, ln);
-      } else {
-        this.#render_blank(span);
-      }
+      this.#render_line(ln);
 
       if (this.#end_ln()) {
         break;
@@ -51,7 +43,7 @@ export class View {
     }
 
     vt.flush_buf(
-      enabled
+      this.editor.enabled
         ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
         : vt.cursor.restore,
       vt.cursor.show,
@@ -75,12 +67,6 @@ export class View {
       : Number.MAX_SAFE_INTEGER;
   }
 
-  #begin_ln(): vt.fmt.Span {
-    vt.write_buf(vt.cursor.set(this.#y, this.editor.x));
-
-    return { len: this.editor.w };
-  }
-
   #end_ln(): boolean {
     const { y, h } = this.editor;
 
@@ -89,8 +75,19 @@ export class View {
     return this.#y === y + h;
   }
 
-  #render_line(span: vt.fmt.Span, ln: number): void {
-    const { shaper, cursor, whitespace_enabled } = this.editor;
+  #render_line(ln: number): void {
+    const { buffer, shaper, cursor, whitespace_enabled } = this.editor;
+
+    let span = this.#begin_ln();
+
+    if (ln >= buffer.ln_count) {
+      vt.write_buf(
+        colors.BLANK,
+        vt.fmt.space(span, span.len),
+      );
+
+      return;
+    }
 
     this.#render_index(span, ln);
 
@@ -137,6 +134,12 @@ export class View {
     }
   }
 
+  #begin_ln(): vt.fmt.Span {
+    vt.write_buf(vt.cursor.set(this.#y, this.editor.x));
+
+    return { len: this.editor.w };
+  }
+
   #render_index(span: vt.fmt.Span, ln: number): void {
     if (this.#index_width > 0) {
       vt.write_buf(
@@ -153,13 +156,6 @@ export class View {
         vt.fmt.space(span, this.#index_width),
       );
     }
-  }
-
-  #render_blank(span: vt.fmt.Span): void {
-    vt.write_buf(
-      colors.BLANK,
-      vt.fmt.space(span, span.len),
-    );
   }
 
   #scroll(): void {
