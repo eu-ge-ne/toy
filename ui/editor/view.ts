@@ -1,5 +1,6 @@
 import { range, sum } from "@lib/std";
 import * as vt from "@lib/vt";
+import { fmt } from "@lib/vt";
 
 import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
@@ -17,13 +18,17 @@ export class View {
   #y = 0;
 
   get #y_end(): boolean {
-    return this.#y >= this.editor.y + this.editor.h;
+    const { y, h } = this.editor;
+
+    return this.#y >= y + h;
   }
 
   constructor(private editor: Editor) {
   }
 
   render(): void {
+    const { y, buffer, enabled } = this.editor;
+
     vt.bsu();
 
     vt.write_buf(
@@ -36,10 +41,14 @@ export class View {
     this.#layout();
     this.#scroll();
 
-    this.#y = this.editor.y;
+    this.#y = y;
 
     for (let ln = this.#scroll_ln;; ln += 1) {
-      this.#render_line(ln);
+      if (ln < buffer.ln_count) {
+        this.#render_line(ln);
+      } else {
+        this.#blank_line();
+      }
 
       this.#y += 1;
 
@@ -49,7 +58,7 @@ export class View {
     }
 
     vt.flush_buf(
-      this.editor.enabled
+      enabled
         ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
         : vt.cursor.restore,
       vt.cursor.show,
@@ -74,17 +83,9 @@ export class View {
   }
 
   #render_line(ln: number): void {
-    const { buffer, shaper, cursor, whitespace_enabled } = this.editor;
+    const { shaper, cursor, whitespace_enabled } = this.editor;
 
     let span = this.#begin_ln();
-
-    if (ln >= buffer.ln_count) {
-      vt.write_buf(
-        colors.BLANK,
-        vt.fmt.space(span, span.len),
-      );
-      return;
-    }
 
     this.#render_index(span, ln);
 
@@ -132,8 +133,19 @@ export class View {
     }
   }
 
+  #blank_line(): void {
+    const span = this.#begin_ln();
+
+    vt.write_buf(
+      colors.BLANK,
+      fmt.space(span, span.len),
+    );
+  }
+
   #begin_ln(): vt.fmt.Span {
-    vt.write_buf(vt.cursor.set(this.#y, this.editor.x));
+    vt.write_buf(
+      vt.cursor.set(this.#y, this.editor.x),
+    );
 
     return { len: this.editor.w };
   }
@@ -142,7 +154,7 @@ export class View {
     if (this.#index_width > 0) {
       vt.write_buf(
         colors.INDEX,
-        ...vt.fmt.text(span, `${ln + 1} `.padStart(this.#index_width)),
+        ...fmt.text(span, `${ln + 1} `.padStart(this.#index_width)),
       );
     }
   }
@@ -151,7 +163,7 @@ export class View {
     if (this.#index_width > 0) {
       vt.write_buf(
         colors.BACKGROUND,
-        vt.fmt.space(span, this.#index_width),
+        fmt.space(span, this.#index_width),
       );
     }
   }
