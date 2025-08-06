@@ -14,12 +14,11 @@ export class View {
   #cursor_y = 0;
   #cursor_x = 0;
 
-  #y = 0;
   #span: vt.fmt.Span = { len: 0 };
+  #y = 0;
 
   get #y_end(): boolean {
     const { y, h } = this.editor;
-
     return this.#y >= y + h;
   }
 
