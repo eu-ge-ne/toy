@@ -16,6 +16,10 @@ export class View {
 
   #y = 0;
 
+  get #y_end(): boolean {
+    return this.#y >= this.editor.y + this.editor.h;
+  }
+
   constructor(private editor: Editor) {
   }
 
@@ -37,7 +41,9 @@ export class View {
     for (let ln = this.#scroll_ln;; ln += 1) {
       this.#render_line(ln);
 
-      if (this.#end_ln()) {
+      this.#y += 1;
+
+      if (this.#y_end) {
         break;
       }
     }
@@ -67,14 +73,6 @@ export class View {
       : Number.MAX_SAFE_INTEGER;
   }
 
-  #end_ln(): boolean {
-    const { y, h } = this.editor;
-
-    this.#y = Math.min(this.#y + 1, y + h);
-
-    return this.#y === y + h;
-  }
-
   #render_line(ln: number): void {
     const { buffer, shaper, cursor, whitespace_enabled } = this.editor;
 
@@ -85,7 +83,6 @@ export class View {
         colors.BLANK,
         vt.fmt.space(span, span.len),
       );
-
       return;
     }
 
@@ -97,7 +94,8 @@ export class View {
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
       if (i > 0 && col === 0) {
-        if (this.#end_ln()) {
+        this.#y += 1;
+        if (this.#y_end) {
           return;
         }
         span = this.#begin_ln();
