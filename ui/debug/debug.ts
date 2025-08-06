@@ -56,6 +56,7 @@ export class Debug extends Control {
         { len: this.w - 1 },
         "RSS      : ",
         rss,
+        " MiB",
       ),
       vt.cursor.set(this.y + 4, this.x + 1),
       ...vt.fmt.text(
