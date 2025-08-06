@@ -48,7 +48,7 @@ export class View {
       if (ln < buffer.ln_count) {
         this.#render_line(ln);
       } else {
-        this.#begin_ln();
+        this.#begin_line();
 
         vt.write_buf(
           colors.BLANK,
@@ -88,10 +88,18 @@ export class View {
       : Number.MAX_SAFE_INTEGER;
   }
 
+  #begin_line(): void {
+    vt.write_buf(
+      vt.cursor.set(this.#y, this.editor.x),
+    );
+
+    this.#span.len = this.editor.w;
+  }
+
   #render_line(ln: number): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
-    this.#begin_ln();
+    this.#begin_line();
 
     this.#render_index(ln);
 
@@ -105,7 +113,7 @@ export class View {
         if (this.#y_end) {
           return;
         }
-        this.#begin_ln();
+        this.#begin_line();
         this.#blank_index();
       }
 
@@ -137,14 +145,6 @@ export class View {
 
       this.#span.len -= width;
     }
-  }
-
-  #begin_ln(): void {
-    vt.write_buf(
-      vt.cursor.set(this.#y, this.editor.x),
-    );
-
-    this.#span.len = this.editor.w;
   }
 
   #render_index(ln: number): void {
