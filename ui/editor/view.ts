@@ -65,9 +65,9 @@ export class View {
     }
 
     vt.flush_buf(
-      ...enabled
-        ? [vt.cursor.set(this.#cursor_y, this.#cursor_x)]
-        : [vt.cursor.restore],
+      enabled
+        ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
+        : vt.cursor.restore,
       vt.cursor.show,
     );
 
