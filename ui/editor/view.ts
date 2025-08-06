@@ -112,16 +112,16 @@ export class View {
 
       let color!: Uint8Array;
       {
-        const char_colors = cursor.is_selected(this.#ln, i)
+        const { Char, Whitespace, Empty } = cursor.is_selected(this.#ln, i)
           ? colors.SELECTED
           : colors.CHAR;
 
         if (is_visible) {
-          color = char_colors.Char;
+          color = Char;
         } else if (whitespace_enabled) {
-          color = char_colors.Whitespace;
+          color = Whitespace;
         } else {
-          color = char_colors.Empty;
+          color = Empty;
         }
       }
 
