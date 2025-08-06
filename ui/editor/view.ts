@@ -16,6 +16,7 @@ export class View {
 
   #y = 0;
   #ln = 0;
+  #color!: Uint8Array;
 
   constructor(private editor: Editor) {
   }
@@ -106,21 +107,28 @@ export class View {
         continue;
       }
 
-      let color: Uint8Array;
+      const char_colors = cursor.is_selected(this.#ln, cell.i)
+        ? colors.SELECTED
+        : colors.CHAR;
 
-      if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_visible
-          ? colors.SELECTED_CHAR
-          : colors.SELECTED_WHITESPACE;
+      if (cell.grapheme.is_visible) {
+        this.#render_color(char_colors.Char);
+      } else if (whitespace_enabled) {
+        this.#render_color(char_colors.Whitespace);
       } else {
-        color = cell.grapheme.is_visible
-          ? colors.CHAR
-          : (whitespace_enabled ? colors.WHITESPACE : colors.EMPTY);
+        this.#render_color(char_colors.Empty);
       }
 
-      vt.write_buf(color, cell.grapheme.bytes);
+      vt.write_buf(cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
+    }
+  }
+
+  #render_color(color: Uint8Array): void {
+    if (this.#color !== color) {
+      this.#color = color;
+      vt.write_buf(color);
     }
   }
 
