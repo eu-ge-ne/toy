@@ -91,9 +91,9 @@ export class View {
   #render_line(span: vt.fmt.Span): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
-    let last_color!: Uint8Array;
-
     this.#render_index(span);
+
+    let current_color!: Uint8Array;
 
     for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
       if (cell.i > 0 && cell.col === 0) {
@@ -109,21 +109,22 @@ export class View {
       }
 
       let color!: Uint8Array;
+      {
+        const char_colors = cursor.is_selected(this.#ln, cell.i)
+          ? colors.SELECTED
+          : colors.CHAR;
 
-      const char_colors = cursor.is_selected(this.#ln, cell.i)
-        ? colors.SELECTED
-        : colors.CHAR;
-
-      if (cell.grapheme.is_visible) {
-        color = char_colors.Char;
-      } else if (whitespace_enabled) {
-        color = char_colors.Whitespace;
-      } else {
-        color = char_colors.Empty;
+        if (cell.grapheme.is_visible) {
+          color = char_colors.Char;
+        } else if (whitespace_enabled) {
+          color = char_colors.Whitespace;
+        } else {
+          color = char_colors.Empty;
+        }
       }
 
-      if (last_color !== color) {
-        last_color = color;
+      if (current_color !== color) {
+        current_color = color;
         vt.write_buf(color);
       }
 
