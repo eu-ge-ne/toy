@@ -28,7 +28,7 @@ export class View {
   }
 
   render(): void {
-    const { y, buffer, enabled } = this.editor;
+    const { y, x, buffer, shaper, enabled } = this.editor;
 
     vt.bsu();
 
@@ -40,7 +40,12 @@ export class View {
     );
 
     this.#layout();
-    this.#scroll();
+
+    shaper.y = this.#cursor_y = y;
+    shaper.x = this.#cursor_x = x + this.#index_width;
+
+    this.#scroll_v();
+    this.#scroll_h();
 
     this.#y = y;
 
@@ -161,17 +166,7 @@ export class View {
     }
   }
 
-  #scroll(): void {
-    const { shaper, y, x } = this.editor;
-
-    shaper.y = this.#cursor_y = y;
-    shaper.x = this.#cursor_x = x + this.#index_width;
-
-    this.#scroll_vertical();
-    this.#scroll_horizontal();
-  }
-
-  #scroll_vertical(): void {
+  #scroll_v(): void {
     const { shaper, cursor, h } = this.editor;
 
     const delta_ln = cursor.ln - this.#scroll_ln;
@@ -204,7 +199,7 @@ export class View {
     }
   }
 
-  #scroll_horizontal(): void {
+  #scroll_h(): void {
     const { shaper, cursor } = this.editor;
 
     let c = 0; // c = f(cursor.col)
