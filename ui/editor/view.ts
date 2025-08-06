@@ -16,7 +16,6 @@ export class View {
 
   #y = 0;
   #ln = 0;
-  #color!: Uint8Array;
 
   constructor(private editor: Editor) {
   }
@@ -92,6 +91,8 @@ export class View {
   #render_line(span: vt.fmt.Span): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
+    let last_color!: Uint8Array;
+
     this.#render_index(span);
 
     for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
@@ -107,28 +108,28 @@ export class View {
         continue;
       }
 
+      let color!: Uint8Array;
+
       const char_colors = cursor.is_selected(this.#ln, cell.i)
         ? colors.SELECTED
         : colors.CHAR;
 
       if (cell.grapheme.is_visible) {
-        this.#render_color(char_colors.Char);
+        color = char_colors.Char;
       } else if (whitespace_enabled) {
-        this.#render_color(char_colors.Whitespace);
+        color = char_colors.Whitespace;
       } else {
-        this.#render_color(char_colors.Empty);
+        color = char_colors.Empty;
+      }
+
+      if (last_color !== color) {
+        last_color = color;
+        vt.write_buf(color);
       }
 
       vt.write_buf(cell.grapheme.bytes);
 
       span.len -= cell.grapheme.width;
-    }
-  }
-
-  #render_color(color: Uint8Array): void {
-    if (this.#color !== color) {
-      this.#color = color;
-      vt.write_buf(color);
     }
   }
 
