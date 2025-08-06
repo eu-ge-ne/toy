@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.25
+
+- Optimized char color rendering
+
 ## v0.0.24
 
 - Test release

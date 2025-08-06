@@ -93,8 +93,12 @@ export class View {
 
     this.#render_index(span);
 
-    for (const cell of shaper.wrap_line(this.#ln, this.#wrap_width)) {
-      if (cell.i > 0 && cell.col === 0) {
+    let current_color!: Uint8Array;
+
+    const gg = shaper.wrap_line(this.#ln, this.#wrap_width);
+
+    for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
+      if (i > 0 && col === 0) {
         if (this.#end_ln()) {
           return;
         }
@@ -102,25 +106,33 @@ export class View {
         this.#blank_index(span);
       }
 
-      if ((cell.col < this.#scroll_col) || (cell.grapheme.width > span.len)) {
+      if ((col < this.#scroll_col) || (width > span.len)) {
         continue;
       }
 
-      let color: Uint8Array;
+      let color!: Uint8Array;
+      {
+        const { Char, Whitespace, Empty } = cursor.is_selected(this.#ln, i)
+          ? colors.SELECTED
+          : colors.CHAR;
 
-      if (cursor.is_selected(this.#ln, cell.i)) {
-        color = cell.grapheme.is_visible
-          ? colors.SELECTED_CHAR
-          : colors.SELECTED_WHITESPACE;
-      } else {
-        color = cell.grapheme.is_visible
-          ? colors.CHAR
-          : (whitespace_enabled ? colors.WHITESPACE : colors.EMPTY);
+        if (is_visible) {
+          color = Char;
+        } else if (whitespace_enabled) {
+          color = Whitespace;
+        } else {
+          color = Empty;
+        }
       }
 
-      vt.write_buf(color, cell.grapheme.bytes);
+      if (current_color !== color) {
+        current_color = color;
+        vt.write_buf(color);
+      }
 
-      span.len -= cell.grapheme.width;
+      vt.write_buf(bytes);
+
+      span.len -= width;
     }
   }
 
