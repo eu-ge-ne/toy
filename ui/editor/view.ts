@@ -15,13 +15,12 @@ export class View {
   #cursor_x = 0;
 
   #y = 0;
-  #ln = 0;
 
   constructor(private editor: Editor) {
   }
 
   render(): void {
-    const { buffer, enabled, wrap_enabled, line_index_enabled } = this.editor;
+    const { buffer, enabled } = this.editor;
 
     vt.bsu();
 
@@ -32,27 +31,16 @@ export class View {
       ...vt.clear(this.editor),
     );
 
-    this.#index_width = 0;
-    if (line_index_enabled && buffer.ln_count > 0) {
-      this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
-    }
-    this.#text_width = this.editor.w - this.#index_width;
-    this.#wrap_width = wrap_enabled
-      ? this.#text_width
-      : Number.MAX_SAFE_INTEGER;
-
+    this.#layout();
     this.#scroll();
 
     this.#y = this.editor.y;
-    this.#ln = this.#scroll_ln;
 
-    let span = { len: 0 };
+    for (let ln = this.#scroll_ln;; ln += 1) {
+      const span = this.#begin_ln();
 
-    while (true) {
-      span = this.#begin_ln();
-
-      if (this.#ln < buffer.ln_count) {
-        this.#render_line(span);
+      if (ln < buffer.ln_count) {
+        this.#render_line(span, ln);
       } else {
         this.#render_blank(span);
       }
@@ -60,8 +48,6 @@ export class View {
       if (this.#end_ln()) {
         break;
       }
-
-      this.#ln += 1;
     }
 
     vt.flush_buf(
@@ -72,6 +58,21 @@ export class View {
     );
 
     vt.esu();
+  }
+
+  #layout(): void {
+    const { buffer, wrap_enabled, line_index_enabled } = this.editor;
+
+    this.#index_width = 0;
+    if (line_index_enabled && buffer.ln_count > 0) {
+      this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+    }
+
+    this.#text_width = this.editor.w - this.#index_width;
+
+    this.#wrap_width = wrap_enabled
+      ? this.#text_width
+      : Number.MAX_SAFE_INTEGER;
   }
 
   #begin_ln(): vt.fmt.Span {
@@ -88,14 +89,14 @@ export class View {
     return this.#y === y + h;
   }
 
-  #render_line(span: vt.fmt.Span): void {
+  #render_line(span: vt.fmt.Span, ln: number): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
-    this.#render_index(span);
+    this.#render_index(span, ln);
 
     let current_color!: Uint8Array;
 
-    const gg = shaper.wrap_line(this.#ln, this.#wrap_width);
+    const gg = shaper.wrap_line(ln, this.#wrap_width);
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
       if (i > 0 && col === 0) {
@@ -112,7 +113,7 @@ export class View {
 
       let color!: Uint8Array;
       {
-        const { Char, Whitespace, Empty } = cursor.is_selected(this.#ln, i)
+        const { Char, Whitespace, Empty } = cursor.is_selected(ln, i)
           ? colors.SELECTED
           : colors.CHAR;
 
@@ -136,11 +137,11 @@ export class View {
     }
   }
 
-  #render_index(span: vt.fmt.Span): void {
+  #render_index(span: vt.fmt.Span, ln: number): void {
     if (this.#index_width > 0) {
       vt.write_buf(
         colors.INDEX,
-        ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
+        ...vt.fmt.text(span, `${ln + 1} `.padStart(this.#index_width)),
       );
     }
   }
@@ -159,22 +160,6 @@ export class View {
       colors.BLANK,
       vt.fmt.space(span, span.len),
     );
-  }
-
-  center(): void {
-    const { shaper, cursor, h } = this.editor;
-
-    let height = Math.trunc(h / 2);
-
-    for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = shaper.count_wraps(i, this.#wrap_width);
-      if (h > height) {
-        break;
-      }
-
-      height -= h;
-      this.#scroll_ln = i;
-    }
   }
 
   #scroll(): void {
