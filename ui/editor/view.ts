@@ -42,9 +42,12 @@ export class View {
 
   #layout(): void {
     const {
+      y,
+      x,
       w,
       wrap_enabled,
       line_index_enabled,
+      shaper,
       buffer: { ln_count },
     } = this.editor;
 
@@ -63,6 +66,10 @@ export class View {
     this.#wrap_width = wrap_enabled
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
+
+    shaper.y = this.#cursor_y = y;
+    shaper.x = this.#cursor_x = x + this.#index_width;
+    shaper.wrap_width = this.#wrap_width;
   }
 
   #y = 0;
@@ -73,10 +80,7 @@ export class View {
   }
 
   #render_lines(): void {
-    const { y, x, w, shaper, buffer: { ln_count } } = this.editor;
-
-    shaper.y = this.#cursor_y = y;
-    shaper.x = this.#cursor_x = x + this.#index_width;
+    const { y, x, w, buffer: { ln_count } } = this.editor;
 
     this.#scroll_v();
     this.#scroll_h();
@@ -106,7 +110,7 @@ export class View {
     let available_w = 0;
     let current_color!: Uint8Array;
 
-    const xs = shaper.wrap_line(ln, this.#wrap_width, false);
+    const xs = shaper.cells(ln, false);
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
@@ -189,7 +193,7 @@ export class View {
     }
 
     const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) =>
-      shaper.count_wraps(i, this.#wrap_width)
+      shaper.count_wraps(i)
     );
 
     let i = 0;
@@ -210,7 +214,7 @@ export class View {
   #scroll_h(): void {
     const { shaper, cursor } = this.editor;
 
-    const cell = shaper.cell(cursor.ln, cursor.col, this.#wrap_width);
+    const cell = shaper.cell(cursor.ln, cursor.col);
     if (cell) {
       this.#cursor_y += cell.ln;
     }
@@ -226,7 +230,7 @@ export class View {
 
     // After?
 
-    const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
+    const line = shaper.cells(cursor.ln, true).toArray();
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
     );

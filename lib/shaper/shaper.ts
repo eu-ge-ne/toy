@@ -12,32 +12,13 @@ interface Cell {
 export class Shaper {
   y!: number;
   x!: number;
+  wrap_width!: number;
 
   constructor(private buffer: Buffer) {
   }
 
-  max_non_eol(ln: number): number {
-    let col = 0;
-
-    for (const seg of this.buffer.line(ln)) {
-      const { is_eol } = graphemes.get(seg);
-
-      if (is_eol) {
-        break;
-      }
-
-      col += 1;
-    }
-
-    return col;
-  }
-
-  *wrap_line(
-    ln: number,
-    wrap_width: number,
-    add_tail_cell: boolean,
-  ): Generator<Cell> {
-    const { buffer } = this;
+  *cells(ln: number, add_tail_cell: boolean): Generator<Cell> {
+    const { buffer, wrap_width } = this;
 
     let i = 0;
     let w = 0;
@@ -78,12 +59,12 @@ export class Shaper {
     }
   }
 
-  count_wraps(ln: number, wrap_width: number): number {
-    return this.wrap_line(ln, wrap_width, false)
-      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
+  cell(ln: number, col: number): Cell | undefined {
+    return this.cells(ln, true).drop(col).next().value;
   }
 
-  cell(ln: number, col: number, wrap_width: number): Cell | undefined {
-    return this.wrap_line(ln, wrap_width, true).drop(col).next().value;
+  count_wraps(ln: number): number {
+    return this.cells(ln, false)
+      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
   }
 }

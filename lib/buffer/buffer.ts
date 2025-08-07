@@ -1,5 +1,7 @@
 import { TextBuf } from "@eu-ge-ne/text-buf";
 
+import { graphemes } from "@lib/grapheme";
+
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
 type Pos = [number, number];
@@ -72,6 +74,18 @@ export class Buffer {
 
   line_length(ln: number): number {
     return this.#count_segments(this.#line_text(ln));
+  }
+
+  max_non_eol(ln: number): number {
+    let col = 0;
+    for (const seg of this.line(ln)) {
+      const { is_eol } = graphemes.get(seg);
+      if (is_eol) {
+        break;
+      }
+      col += 1;
+    }
+    return col;
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {

@@ -1,5 +1,4 @@
 import { Buffer } from "@lib/buffer";
-import { Shaper } from "@lib/shaper";
 import { clamp } from "@lib/std";
 
 export class Cursor {
@@ -12,7 +11,7 @@ export class Cursor {
   #start_ln = 0;
   #start_col = 0;
 
-  constructor(private shaper: Shaper, private buffer: Buffer) {
+  constructor(private buffer: Buffer) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
@@ -71,7 +70,7 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    const max = this.shaper.max_non_eol(this.ln);
+    const max = this.buffer.max_non_eol(this.ln);
 
     this.col = clamp(col, 0, max);
   }

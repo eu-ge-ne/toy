@@ -42,8 +42,8 @@ export class Editor extends Control {
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
   readonly buffer = new Buffer();
+  readonly cursor = new Cursor(this.buffer);
   readonly shaper: Shaper;
-  readonly cursor: Cursor;
   readonly history: History;
   readonly view = new View(this);
 
@@ -59,7 +59,6 @@ export class Editor extends Control {
     super(parent);
 
     this.shaper = new Shaper(this.buffer);
-    this.cursor = new Cursor(this.shaper, this.buffer);
     this.history = new History(this.buffer, this.cursor);
     this.history.reset();
   }
