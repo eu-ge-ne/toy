@@ -15,7 +15,6 @@ export class View {
   #cursor_x = 0;
 
   #y = 0;
-  readonly #x_span: vt.fmt.Span = { len: 0 };
 
   get #y_end(): boolean {
     return this.#y >= this.editor.y + this.editor.h;
@@ -25,7 +24,7 @@ export class View {
   }
 
   render(): void {
-    const { y, x, buffer, shaper, enabled } = this.editor;
+    const { y, x, w, buffer, shaper, enabled } = this.editor;
 
     vt.bsu();
 
@@ -38,29 +37,31 @@ export class View {
 
     this.#layout();
 
-    shaper.y = this.#cursor_y = y;
-    shaper.x = this.#cursor_x = x + this.#index_width;
+    if (w >= this.#index_width) {
+      shaper.y = this.#cursor_y = y;
+      shaper.x = this.#cursor_x = x + this.#index_width;
 
-    this.#scroll_v();
-    this.#scroll_h();
+      this.#scroll_v();
+      this.#scroll_h();
 
-    this.#y = y;
+      this.#y = y;
 
-    for (let ln = this.#scroll_ln;; ln += 1) {
-      if (ln < buffer.ln_count) {
-        this.#render_line(ln);
-      } else {
-        vt.write_buf(
-          vt.cursor.set(this.#y, this.editor.x),
-          colors.VOID,
-          vt.clear_line(this.editor.w),
-        );
-      }
+      for (let ln = this.#scroll_ln;; ln += 1) {
+        if (ln < buffer.ln_count) {
+          this.#render_line(ln);
+        } else {
+          vt.write_buf(
+            vt.cursor.set(this.#y, this.editor.x),
+            colors.VOID,
+            vt.clear_line(this.editor.w),
+          );
+        }
 
-      this.#y += 1;
+        this.#y += 1;
 
-      if (this.#y_end) {
-        break;
+        if (this.#y_end) {
+          break;
+        }
       }
     }
 
@@ -93,6 +94,7 @@ export class View {
   #render_line(ln: number): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
+    let available_w = 0;
     let current_color!: Uint8Array;
 
     const xs = shaper.wrap_line(ln, this.#wrap_width);
@@ -110,34 +112,36 @@ export class View {
           vt.cursor.set(this.#y, this.editor.x),
         );
 
-        this.#x_span.len = this.editor.w;
-
-        if (i === 0) {
-          if (this.#index_width > 0) {
+        if (this.#index_width > 0) {
+          if (i === 0) {
             vt.write_buf(
               colors.INDEX,
               ...vt.fmt.text(
-                this.#x_span,
+                { len: this.#index_width },
                 `${ln + 1} `.padStart(this.#index_width),
               ),
             );
-          }
-        } else {
-          if (this.#index_width > 0) {
+          } else {
             vt.write_buf(
               colors.BACKGROUND,
-              vt.fmt.space(this.#x_span, this.#index_width),
+              ...vt.fmt.text(
+                { len: this.#index_width },
+                "".padStart(this.#index_width),
+              ),
             );
           }
         }
+
+        available_w = this.editor.w - this.#index_width;
       }
 
-      if ((col < this.#scroll_col) || (width > this.#x_span.len)) {
+      if ((col < this.#scroll_col) || (width > available_w)) {
         continue;
       }
 
-      let color!: Uint8Array;
       {
+        let color!: Uint8Array;
+
         const { Char, Whitespace, Empty } = cursor.is_selected(ln, i)
           ? colors.SELECTED
           : colors.CHAR;
@@ -149,16 +153,16 @@ export class View {
         } else {
           color = Empty;
         }
-      }
 
-      if (current_color !== color) {
-        current_color = color;
-        vt.write_buf(color);
+        if (current_color !== color) {
+          current_color = color;
+          vt.write_buf(color);
+        }
       }
 
       vt.write_buf(bytes);
 
-      this.#x_span.len -= width;
+      available_w -= width;
     }
   }
 
