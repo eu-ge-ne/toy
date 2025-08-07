@@ -83,7 +83,7 @@ export class Shaper {
       .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
   }
 
-  col(ln: number, col: number, wrap_width: number): Cell | undefined {
+  cell(ln: number, col: number, wrap_width: number): Cell | undefined {
     return this.wrap_line(ln, wrap_width, true).drop(col).next().value;
   }
 }
