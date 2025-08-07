@@ -54,7 +54,7 @@ export class View {
 
         vt.write_buf(
           colors.VOID,
-          vt.fmt.space(this.#x_span, this.#x_span.len),
+          vt.fmt.fill_space(this.#x_span, this.#x_span.len),
         );
       }
 
@@ -131,7 +131,7 @@ export class View {
           if (this.#index_width > 0) {
             vt.write_buf(
               colors.BACKGROUND,
-              vt.fmt.space(this.#x_span, this.#index_width),
+              vt.fmt.fill_space(this.#x_span, this.#index_width),
             );
           }
         }

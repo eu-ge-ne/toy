@@ -2,7 +2,7 @@ import { Span } from "./span.ts";
 
 let bytes = new Uint8Array(1024).fill(0x20);
 
-export function space(span: Span, len: number): Uint8Array {
+export function fill_space(span: Span, len: number): Uint8Array {
   if (len > span.len) {
     throw new Error("len > span.len");
   }
