@@ -39,7 +39,7 @@ export class Shaper {
 
   *wrap_line(
     ln: number,
-    wrap_width = Number.MAX_SAFE_INTEGER,
+    wrap_width: number,
     add_tail_cell = false,
   ): Generator<Cell> {
     const { buffer } = this;
