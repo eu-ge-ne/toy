@@ -5,18 +5,13 @@ import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
 
 export class View {
-  #scroll_ln = 0;
-  #scroll_col = 0;
-  #cursor_y = 0;
-  #cursor_x = 0;
+  constructor(private editor: Editor) {
+  }
 
   #y = 0;
 
   get #y_end(): boolean {
     return this.#y >= this.editor.y + this.editor.h;
-  }
-
-  constructor(private editor: Editor) {
   }
 
   render(): void {
@@ -166,6 +161,9 @@ export class View {
     }
   }
 
+  #scroll_ln = 0;
+  #cursor_y = 0;
+
   #scroll_v(): void {
     const { shaper, cursor, h } = this.editor;
 
@@ -198,6 +196,9 @@ export class View {
       this.#cursor_y += hh[i]!;
     }
   }
+
+  #scroll_col = 0;
+  #cursor_x = 0;
 
   #scroll_h(): void {
     const { shaper, cursor } = this.editor;
