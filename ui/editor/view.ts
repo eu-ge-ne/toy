@@ -192,8 +192,11 @@ export class View {
       this.#scroll_ln = cursor.ln - h;
     }
 
-    const hh = range(this.#scroll_ln, cursor.ln + 1).map((i) =>
-      shaper.count_wraps(i)
+    const hh = range(this.#scroll_ln, cursor.ln + 1).map((ln) =>
+      shaper.cells(ln, false).reduce(
+        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
+        1,
+      )
     );
 
     let i = 0;

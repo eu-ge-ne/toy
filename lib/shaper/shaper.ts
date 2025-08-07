@@ -58,9 +58,4 @@ export class Shaper {
       yield { grapheme, i, ln: l, col: c };
     }
   }
-
-  count_wraps(ln: number): number {
-    return this.cells(ln, false)
-      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
-  }
 }
