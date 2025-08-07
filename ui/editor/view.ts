@@ -41,19 +41,24 @@ export class View {
   #wrap_width!: number;
 
   #layout(): void {
-    const { buffer, wrap_enabled, line_index_enabled } = this.editor;
+    const {
+      w,
+      wrap_enabled,
+      line_index_enabled,
+      buffer: { ln_count },
+    } = this.editor;
 
-    if (line_index_enabled && buffer.ln_count > 0) {
-      if (this.#ln_count !== buffer.ln_count) {
-        this.#ln_count = buffer.ln_count;
-        this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+    if (line_index_enabled && ln_count > 0) {
+      if (this.#ln_count !== ln_count) {
+        this.#ln_count = ln_count;
+        this.#index_width = Math.trunc(Math.log10(ln_count)) + 3;
         this.#index_blank = vt.fmt.spaces(this.#index_width);
       }
     } else {
       this.#index_width = 0;
     }
 
-    this.#text_width = this.editor.w - this.#index_width;
+    this.#text_width = w - this.#index_width;
 
     this.#wrap_width = wrap_enabled
       ? this.#text_width
