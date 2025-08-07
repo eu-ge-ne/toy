@@ -90,14 +90,6 @@ export class View {
       : Number.MAX_SAFE_INTEGER;
   }
 
-  #begin_line(): void {
-    vt.write_buf(
-      vt.cursor.set(this.#y, this.editor.x),
-    );
-
-    this.#x_span.len = this.editor.w;
-  }
-
   #render_line(ln: number): void {
     const { shaper, cursor, whitespace_enabled } = this.editor;
 
@@ -107,9 +99,20 @@ export class View {
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
-        if (i === 0) {
-          this.#begin_line();
+        if (i > 0) {
+          this.#y += 1;
+          if (this.#y_end) {
+            return;
+          }
+        }
 
+        vt.write_buf(
+          vt.cursor.set(this.#y, this.editor.x),
+        );
+
+        this.#x_span.len = this.editor.w;
+
+        if (i === 0) {
           if (this.#index_width > 0) {
             vt.write_buf(
               colors.INDEX,
@@ -120,13 +123,6 @@ export class View {
             );
           }
         } else {
-          this.#y += 1;
-          if (this.#y_end) {
-            return;
-          }
-
-          this.#begin_line();
-
           if (this.#index_width > 0) {
             vt.write_buf(
               colors.BACKGROUND,
