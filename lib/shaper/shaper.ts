@@ -32,15 +32,10 @@ export class Shaper {
     return col;
   }
 
-  count_wraps(ln: number, wrap_width: number): number {
-    return this.wrap_line(ln, wrap_width)
-      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
-  }
-
   *wrap_line(
     ln: number,
     wrap_width: number,
-    add_tail_cell = false,
+    add_tail_cell: boolean,
   ): Generator<Cell> {
     const { buffer } = this;
 
@@ -81,5 +76,14 @@ export class Shaper {
 
       yield { grapheme, i, ln: l, col: c };
     }
+  }
+
+  count_wraps(ln: number, wrap_width: number): number {
+    return this.wrap_line(ln, wrap_width, false)
+      .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1);
+  }
+
+  col(ln: number, col: number, wrap_width: number): Cell | undefined {
+    return this.wrap_line(ln, wrap_width, true).drop(col).next().value;
   }
 }

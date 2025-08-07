@@ -106,7 +106,7 @@ export class View {
     let available_w = 0;
     let current_color!: Uint8Array;
 
-    const xs = shaper.wrap_line(ln, this.#wrap_width);
+    const xs = shaper.wrap_line(ln, this.#wrap_width, false);
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
@@ -210,18 +210,12 @@ export class View {
   #scroll_h(): void {
     const { shaper, cursor } = this.editor;
 
-    let c = 0; // c = f(cursor.col)
-
-    // TODO: optimize
-    const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
-    if (line.length > 0) {
-      const cell = line[cursor.col];
-      if (cell) {
-        c = cell.col;
-        this.#cursor_y += cell.ln;
-      }
+    const cell = shaper.col(cursor.ln, cursor.col, this.#wrap_width);
+    if (cell) {
+      this.#cursor_y += cell.ln;
     }
 
+    const c = cell?.col ?? 0; // c = f(cursor.col)
     const delta_col = c - this.#scroll_col;
 
     // Before?
@@ -232,6 +226,7 @@ export class View {
 
     // After?
 
+    const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
     );
