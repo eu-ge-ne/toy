@@ -29,7 +29,7 @@ export class Header extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
       vt.cursor.set(this.y, this.x),
       ...vt.fmt.center(
         { len: this.w },

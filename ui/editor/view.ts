@@ -33,7 +33,7 @@ export class View {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear(this.editor),
+      ...vt.clear_area(this.editor),
     );
 
     this.#layout();
@@ -53,7 +53,7 @@ export class View {
         vt.write_buf(
           vt.cursor.set(this.#y, this.editor.x),
           colors.VOID,
-          vt.fmt.space(this.editor.w),
+          vt.clear_line(this.editor.w),
         );
       }
 

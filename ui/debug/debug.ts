@@ -35,7 +35,7 @@ export class Debug extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
       ...vt.fmt.text(

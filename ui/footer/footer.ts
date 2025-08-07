@@ -26,7 +26,7 @@ export class Footer extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
     );
 
     const space = { len: this.w };

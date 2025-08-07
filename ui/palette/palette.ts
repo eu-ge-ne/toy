@@ -59,7 +59,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
     );
 
     if (this.#options.length === 0) {
