@@ -50,11 +50,10 @@ export class View {
       if (ln < buffer.ln_count) {
         this.#render_line(ln);
       } else {
-        this.#begin_line();
-
         vt.write_buf(
+          vt.cursor.set(this.#y, this.editor.x),
           colors.VOID,
-          vt.fmt.fill_space(this.#x_span, this.#x_span.len),
+          vt.fmt.space(this.editor.w),
         );
       }
 
