@@ -350,6 +350,7 @@ export class Editor extends Control {
       this.scroll_ln = cursor.ln - h;
     }
 
+    // TODO: optimize
     const hh = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
       this.#cells(ln, false).reduce(
         (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
