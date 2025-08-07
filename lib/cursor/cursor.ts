@@ -71,13 +71,7 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    let max = 0;
-
-    for (const { is_eol } of this.shaper.line(this.ln)) {
-      if (!is_eol) {
-        max += 1;
-      }
-    }
+    const max = this.shaper.max_col(this.ln);
 
     this.col = clamp(col, 0, max);
   }
