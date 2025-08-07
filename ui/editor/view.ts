@@ -73,7 +73,7 @@ export class View {
   }
 
   #render_lines(): void {
-    const { y, x, buffer, shaper } = this.editor;
+    const { y, x, w, shaper, buffer: { ln_count } } = this.editor;
 
     shaper.y = this.#cursor_y = y;
     shaper.x = this.#cursor_x = x + this.#index_width;
@@ -84,13 +84,13 @@ export class View {
     this.#y = y;
 
     for (let ln = this.#scroll_ln;; ln += 1) {
-      if (ln < buffer.ln_count) {
+      if (ln < ln_count) {
         this.#render_line(ln);
       } else {
         vt.write_buf(
-          vt.cursor.set(this.#y, this.editor.x),
+          vt.cursor.set(this.#y, x),
           colors.VOID,
-          vt.clear_line(this.editor.w),
+          vt.clear_line(w),
         );
       }
 
