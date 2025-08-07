@@ -167,10 +167,16 @@ export class Editor extends Control {
   }
 
   #ln_count = -1;
-  private index_width!: number;
+  private index_width = 0;
   private index_blank!: Uint8Array;
-  private text_width!: number;
-  private wrap_width!: number;
+  private text_width = 0;
+  private wrap_width = 0;
+  private cursor_y = 0;
+  private cursor_x = 0;
+  private measure_y = 0;
+  private measure_x = 0;
+  private scroll_ln = 0;
+  private scroll_col = 0;
   #y = 0;
 
   render(): void {
@@ -209,17 +215,15 @@ export class Editor extends Control {
 
     this.wrap_width = wrap_enabled ? this.text_width : Number.MAX_SAFE_INTEGER;
 
-    this.measure_y = this.#cursor_y = y;
-    this.measure_x = this.#cursor_x = x + this.index_width;
+    this.measure_y = this.cursor_y = y;
+    this.measure_x = this.cursor_x = x + this.index_width;
 
     if (w >= this.index_width) {
       this.#render_lines();
     }
 
     vt.flush_buf(
-      enabled
-        ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
-        : vt.cursor.restore,
+      enabled ? vt.cursor.set(this.cursor_y, this.cursor_x) : vt.cursor.restore,
       vt.cursor.show,
     );
 
@@ -244,7 +248,7 @@ export class Editor extends Control {
 
     this.#y = y;
 
-    for (let ln = this.#scroll_ln;; ln += 1) {
+    for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < ln_count) {
         this.#render_line(ln);
       } else {
@@ -298,7 +302,7 @@ export class Editor extends Control {
         available_w = this.w - this.index_width;
       }
 
-      if ((col < this.#scroll_col) || (width > available_w)) {
+      if ((col < this.scroll_col) || (width > available_w)) {
         continue;
       }
 
@@ -329,27 +333,24 @@ export class Editor extends Control {
     }
   }
 
-  #scroll_ln = 0;
-  #cursor_y = 0;
-
   #scroll_v(): void {
     const { cursor, h } = this;
 
-    const delta_ln = cursor.ln - this.#scroll_ln;
+    const delta_ln = cursor.ln - this.scroll_ln;
 
     // Above?
     if (delta_ln <= 0) {
-      this.#scroll_ln = cursor.ln;
+      this.scroll_ln = cursor.ln;
       return;
     }
 
     // Below?
 
     if (delta_ln > h) {
-      this.#scroll_ln = cursor.ln - h;
+      this.scroll_ln = cursor.ln - h;
     }
 
-    const hh = range(this.#scroll_ln, cursor.ln + 1).map((ln) =>
+    const hh = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
       this.#cells(ln, false).reduce(
         (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
         1,
@@ -360,31 +361,28 @@ export class Editor extends Control {
 
     for (let height = sum(hh); height > h; i += 1) {
       height -= hh[i]!;
-      this.#scroll_ln += 1;
+      this.scroll_ln += 1;
     }
 
     for (; i < hh.length - 1; i += 1) {
-      this.#cursor_y += hh[i]!;
+      this.cursor_y += hh[i]!;
     }
   }
-
-  #scroll_col = 0;
-  #cursor_x = 0;
 
   #scroll_h(): void {
     const { cursor } = this;
 
     const cell = this.#cells(cursor.ln, true).drop(cursor.col).next().value;
     if (cell) {
-      this.#cursor_y += cell.ln;
+      this.cursor_y += cell.ln;
     }
 
     const c = cell?.col ?? 0; // c = f(cursor.col)
-    const delta_col = c - this.#scroll_col;
+    const delta_col = c - this.scroll_col;
 
     // Before?
     if (delta_col <= 0) {
-      this.#scroll_col = c;
+      this.scroll_col = c;
       return;
     }
 
@@ -402,15 +400,12 @@ export class Editor extends Control {
         break;
       }
 
-      this.#scroll_col += 1;
+      this.scroll_col += 1;
       width -= w;
     }
 
-    this.#cursor_x += width;
+    this.cursor_x += width;
   }
-
-  private measure_y!: number;
-  private measure_x!: number;
 
   *#cells(ln: number, with_tail: boolean): Generator<Cell> {
     const { buffer, measure_y, measure_x, wrap_width } = this;
