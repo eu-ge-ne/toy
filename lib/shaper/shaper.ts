@@ -16,7 +16,7 @@ export class Shaper {
   constructor(private buffer: Buffer) {
   }
 
-  max_col(ln: number): number {
+  max_non_eol(ln: number): number {
     let col = 0;
 
     for (const seg of this.buffer.line(ln)) {
