@@ -1,4 +1,5 @@
 export * from "./center.ts";
-export * from "./space.ts";
+export * from "./fit.ts";
+export * from "./spaces.ts";
 export * from "./span.ts";
 export * from "./text.ts";

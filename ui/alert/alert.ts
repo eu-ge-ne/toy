@@ -36,7 +36,7 @@ export class Alert extends Modal<[unknown], void> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
     );
 
     let pos = 0;
@@ -54,7 +54,7 @@ export class Alert extends Modal<[unknown], void> {
       vt.write_buf(
         vt.cursor.set(y, this.x + 2),
         colors.TEXT,
-        ...vt.fmt.text(space, line),
+        ...vt.fmt.fit(space, line),
       );
     }
 

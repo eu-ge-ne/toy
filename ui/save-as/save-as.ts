@@ -52,7 +52,7 @@ export class SaveAs extends Modal<[string], string> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
       vt.cursor.set(this.y + 1, this.x),
       colors.TEXT,
       ...vt.fmt.center({ len: this.w }, "Save As"),

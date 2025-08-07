@@ -38,7 +38,7 @@ export class Ask extends Modal<[string], boolean> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear(this),
+      ...vt.clear_area(this),
     );
 
     let pos = 0;

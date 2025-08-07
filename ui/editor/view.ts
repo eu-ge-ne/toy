@@ -5,67 +5,27 @@ import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
 
 export class View {
-  #index_width!: number;
-  #text_width!: number;
-  #wrap_width!: number;
-
-  #scroll_ln = 0;
-  #scroll_col = 0;
-  #cursor_y = 0;
-  #cursor_x = 0;
-
-  #y = 0;
-  #ln = 0;
-
   constructor(private editor: Editor) {
   }
 
   render(): void {
-    const { buffer, enabled, wrap_enabled, line_index_enabled } = this.editor;
-
     vt.bsu();
 
     vt.write_buf(
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear(this.editor),
+      ...vt.clear_area(this.editor),
     );
 
-    this.#index_width = 0;
-    if (line_index_enabled && buffer.ln_count > 0) {
-      this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
-    }
-    this.#text_width = this.editor.w - this.#index_width;
-    this.#wrap_width = wrap_enabled
-      ? this.#text_width
-      : Number.MAX_SAFE_INTEGER;
+    this.#layout();
 
-    this.#scroll();
-
-    this.#y = this.editor.y;
-    this.#ln = this.#scroll_ln;
-
-    let span = { len: 0 };
-
-    while (true) {
-      span = this.#begin_ln();
-
-      if (this.#ln < buffer.ln_count) {
-        this.#render_line(span);
-      } else {
-        this.#render_blank(span);
-      }
-
-      if (this.#end_ln()) {
-        break;
-      }
-
-      this.#ln += 1;
+    if (this.editor.w >= this.#index_width) {
+      this.#render_lines();
     }
 
     vt.flush_buf(
-      enabled
+      this.editor.enabled
         ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
         : vt.cursor.restore,
       vt.cursor.show,
@@ -74,45 +34,117 @@ export class View {
     vt.esu();
   }
 
-  #begin_ln(): vt.fmt.Span {
-    vt.write_buf(vt.cursor.set(this.#y, this.editor.x));
+  #ln_count = -1;
+  #index_width!: number;
+  #index_blank!: Uint8Array;
+  #text_width!: number;
+  #wrap_width!: number;
 
-    return { len: this.editor.w };
+  #layout(): void {
+    const {
+      w,
+      wrap_enabled,
+      line_index_enabled,
+      buffer: { ln_count },
+    } = this.editor;
+
+    if (line_index_enabled && ln_count > 0) {
+      if (this.#ln_count !== ln_count) {
+        this.#ln_count = ln_count;
+        this.#index_width = Math.trunc(Math.log10(ln_count)) + 3;
+        this.#index_blank = vt.fmt.spaces(this.#index_width);
+      }
+    } else {
+      this.#index_width = 0;
+    }
+
+    this.#text_width = w - this.#index_width;
+
+    this.#wrap_width = wrap_enabled
+      ? this.#text_width
+      : Number.MAX_SAFE_INTEGER;
   }
 
-  #end_ln(): boolean {
-    const { y, h } = this.editor;
+  #y = 0;
 
-    this.#y = Math.min(this.#y + 1, y + h);
-
-    return this.#y === y + h;
+  #next_y(): boolean {
+    this.#y += 1;
+    return this.#y < this.editor.y + this.editor.h;
   }
 
-  #render_line(span: vt.fmt.Span): void {
-    const { shaper, cursor, whitespace_enabled } = this.editor;
+  #render_lines(): void {
+    const { y, x, w, shaper, buffer: { ln_count } } = this.editor;
 
-    this.#render_index(span);
+    shaper.y = this.#cursor_y = y;
+    shaper.x = this.#cursor_x = x + this.#index_width;
 
-    let current_color!: Uint8Array;
+    this.#scroll_v();
+    this.#scroll_h();
 
-    const gg = shaper.wrap_line(this.#ln, this.#wrap_width);
+    this.#y = y;
 
-    for (const { i, col, grapheme: { width, is_visible, bytes } } of gg) {
-      if (i > 0 && col === 0) {
-        if (this.#end_ln()) {
-          return;
-        }
-        span = this.#begin_ln();
-        this.#blank_index(span);
+    for (let ln = this.#scroll_ln;; ln += 1) {
+      if (ln < ln_count) {
+        this.#render_line(ln);
+      } else {
+        vt.write_buf(
+          vt.cursor.set(this.#y, x),
+          colors.VOID,
+          vt.clear_line(w),
+        );
       }
 
-      if ((col < this.#scroll_col) || (width > span.len)) {
+      if (!this.#next_y()) {
+        break;
+      }
+    }
+  }
+
+  #render_line(ln: number): void {
+    const { shaper, cursor, whitespace_enabled } = this.editor;
+
+    let available_w = 0;
+    let current_color!: Uint8Array;
+
+    const xs = shaper.wrap_line(ln, this.#wrap_width);
+
+    for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
+      if (col === 0) {
+        if (i > 0) {
+          if (!this.#next_y()) {
+            return;
+          }
+        }
+
+        vt.write_buf(
+          vt.cursor.set(this.#y, this.editor.x),
+        );
+
+        if (this.#index_width > 0) {
+          if (i === 0) {
+            vt.write_buf(
+              colors.INDEX,
+              vt.fmt.text(`${ln + 1} `.padStart(this.#index_width)),
+            );
+          } else {
+            vt.write_buf(
+              colors.BACKGROUND,
+              this.#index_blank,
+            );
+          }
+        }
+
+        available_w = this.editor.w - this.#index_width;
+      }
+
+      if ((col < this.#scroll_col) || (width > available_w)) {
         continue;
       }
 
-      let color!: Uint8Array;
       {
-        const { Char, Whitespace, Empty } = cursor.is_selected(this.#ln, i)
+        let color!: Uint8Array;
+
+        const { Char, Whitespace, Empty } = cursor.is_selected(ln, i)
           ? colors.SELECTED
           : colors.CHAR;
 
@@ -123,82 +155,34 @@ export class View {
         } else {
           color = Empty;
         }
-      }
 
-      if (current_color !== color) {
-        current_color = color;
-        vt.write_buf(color);
+        if (current_color !== color) {
+          current_color = color;
+          vt.write_buf(color);
+        }
       }
 
       vt.write_buf(bytes);
 
-      span.len -= width;
+      available_w -= width;
     }
   }
 
-  #render_index(span: vt.fmt.Span): void {
-    if (this.#index_width > 0) {
-      vt.write_buf(
-        colors.INDEX,
-        ...vt.fmt.text(span, `${this.#ln + 1} `.padStart(this.#index_width)),
-      );
-    }
-  }
+  #scroll_ln = 0;
+  #cursor_y = 0;
 
-  #blank_index(span: vt.fmt.Span): void {
-    if (this.#index_width > 0) {
-      vt.write_buf(
-        colors.BACKGROUND,
-        vt.fmt.space(span, this.#index_width),
-      );
-    }
-  }
-
-  #render_blank(span: vt.fmt.Span): void {
-    vt.write_buf(
-      colors.BLANK,
-      vt.fmt.space(span, span.len),
-    );
-  }
-
-  center(): void {
-    const { shaper, cursor, h } = this.editor;
-
-    let height = Math.trunc(h / 2);
-
-    for (let i = cursor.ln - 1; i >= 0; i -= 1) {
-      const h = shaper.count_wraps(i, this.#wrap_width);
-      if (h > height) {
-        break;
-      }
-
-      height -= h;
-      this.#scroll_ln = i;
-    }
-  }
-
-  #scroll(): void {
-    const { shaper, y, x } = this.editor;
-
-    shaper.y = this.#cursor_y = y;
-    shaper.x = this.#cursor_x = x + this.#index_width;
-
-    this.#scroll_vertical();
-    this.#scroll_horizontal();
-  }
-
-  #scroll_vertical(): void {
+  #scroll_v(): void {
     const { shaper, cursor, h } = this.editor;
 
     const delta_ln = cursor.ln - this.#scroll_ln;
 
-    // Did the cursor move above the scroll line?
+    // Above?
     if (delta_ln <= 0) {
       this.#scroll_ln = cursor.ln;
       return;
     }
 
-    // Did the cursor move below the scroll area?
+    // Below?
 
     if (delta_ln > h) {
       this.#scroll_ln = cursor.ln - h;
@@ -220,11 +204,15 @@ export class View {
     }
   }
 
-  #scroll_horizontal(): void {
+  #scroll_col = 0;
+  #cursor_x = 0;
+
+  #scroll_h(): void {
     const { shaper, cursor } = this.editor;
 
     let c = 0; // c = f(cursor.col)
 
+    // TODO: optimize
     const line = shaper.wrap_line(cursor.ln, this.#wrap_width, true).toArray();
     if (line.length > 0) {
       const cell = line[cursor.col];
@@ -236,13 +224,13 @@ export class View {
 
     const delta_col = c - this.#scroll_col;
 
-    // Did the cursor move to the left of the scroll column?
+    // Before?
     if (delta_col <= 0) {
       this.#scroll_col = c;
       return;
     }
 
-    // Did the cursor move to the right of the scroll area?
+    // After?
 
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
