@@ -9,8 +9,6 @@ export class View {
   }
 
   render(): void {
-    const { w, enabled } = this.editor;
-
     vt.bsu();
 
     vt.write_buf(
@@ -22,12 +20,12 @@ export class View {
 
     this.#layout();
 
-    if (w >= this.#index_width) {
+    if (this.editor.w >= this.#index_width) {
       this.#render_lines();
     }
 
     vt.flush_buf(
-      enabled
+      this.editor.enabled
         ? vt.cursor.set(this.#cursor_y, this.#cursor_x)
         : vt.cursor.restore,
       vt.cursor.show,
