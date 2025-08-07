@@ -9,7 +9,7 @@ export class View {
   }
 
   render(): void {
-    const { y, x, w, buffer, shaper, enabled } = this.editor;
+    const { w, enabled } = this.editor;
 
     vt.bsu();
 
@@ -23,29 +23,7 @@ export class View {
     this.#layout();
 
     if (w >= this.#index_width) {
-      shaper.y = this.#cursor_y = y;
-      shaper.x = this.#cursor_x = x + this.#index_width;
-
-      this.#scroll_v();
-      this.#scroll_h();
-
-      this.#y = y;
-
-      for (let ln = this.#scroll_ln;; ln += 1) {
-        if (ln < buffer.ln_count) {
-          this.#render_line(ln);
-        } else {
-          vt.write_buf(
-            vt.cursor.set(this.#y, this.editor.x),
-            colors.VOID,
-            vt.clear_line(this.editor.w),
-          );
-        }
-
-        if (!this.#next_y()) {
-          break;
-        }
-      }
+      this.#render_lines();
     }
 
     vt.flush_buf(
@@ -56,13 +34,6 @@ export class View {
     );
 
     vt.esu();
-  }
-
-  #y = 0;
-
-  #next_y(): boolean {
-    this.#y += 1;
-    return this.#y < this.editor.y + this.editor.h;
   }
 
   #ln_count = -1;
@@ -89,6 +60,41 @@ export class View {
     this.#wrap_width = wrap_enabled
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
+  }
+
+  #y = 0;
+
+  #next_y(): boolean {
+    this.#y += 1;
+    return this.#y < this.editor.y + this.editor.h;
+  }
+
+  #render_lines(): void {
+    const { y, x, buffer, shaper } = this.editor;
+
+    shaper.y = this.#cursor_y = y;
+    shaper.x = this.#cursor_x = x + this.#index_width;
+
+    this.#scroll_v();
+    this.#scroll_h();
+
+    this.#y = y;
+
+    for (let ln = this.#scroll_ln;; ln += 1) {
+      if (ln < buffer.ln_count) {
+        this.#render_line(ln);
+      } else {
+        vt.write_buf(
+          vt.cursor.set(this.#y, this.editor.x),
+          colors.VOID,
+          vt.clear_line(this.editor.w),
+        );
+      }
+
+      if (!this.#next_y()) {
+        break;
+      }
+    }
   }
 
   #render_line(ln: number): void {
@@ -167,13 +173,13 @@ export class View {
 
     const delta_ln = cursor.ln - this.#scroll_ln;
 
-    // Did the cursor move above the scroll line?
+    // Above?
     if (delta_ln <= 0) {
       this.#scroll_ln = cursor.ln;
       return;
     }
 
-    // Did the cursor move below the scroll area?
+    // Below?
 
     if (delta_ln > h) {
       this.#scroll_ln = cursor.ln - h;
@@ -215,13 +221,13 @@ export class View {
 
     const delta_col = c - this.#scroll_col;
 
-    // Did the cursor move to the left of the scroll column?
+    // Before?
     if (delta_col <= 0) {
       this.#scroll_col = c;
       return;
     }
 
-    // Did the cursor move to the right of the scroll area?
+    // After?
 
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
