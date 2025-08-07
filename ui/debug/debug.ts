@@ -38,28 +38,28 @@ export class Debug extends Control {
       ...vt.clear_area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
-      ...vt.fmt.text(
+      ...vt.fmt.fit(
         { len: this.w - 1 },
         "Input    : ",
         this.#input_time,
         " ms",
       ),
       vt.cursor.set(this.y + 2, this.x + 1),
-      ...vt.fmt.text(
+      ...vt.fmt.fit(
         { len: this.w - 1 },
         "Render   : ",
         this.#render_time,
         " ms",
       ),
       vt.cursor.set(this.y + 3, this.x + 1),
-      ...vt.fmt.text(
+      ...vt.fmt.fit(
         { len: this.w - 1 },
         "RSS      : ",
         rss,
         " MiB",
       ),
       vt.cursor.set(this.y + 4, this.x + 1),
-      ...vt.fmt.text(
+      ...vt.fmt.fit(
         { len: this.w - 1 },
         "Heap     : ",
         heap_used,
@@ -68,7 +68,7 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.set(this.y + 5, this.x + 1),
-      ...vt.fmt.text(
+      ...vt.fmt.fit(
         { len: this.w - 1 },
         "External : ",
         external_mem,

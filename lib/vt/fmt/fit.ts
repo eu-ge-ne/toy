@@ -1,9 +1,8 @@
+import { text } from "../text.ts";
 import { Chunks } from "./chunks.ts";
 import { Span } from "./span.ts";
 
-const encoder = new TextEncoder();
-
-export function* text(span: Span, ...chunks: Chunks): Generator<Uint8Array> {
+export function* fit(span: Span, ...chunks: Chunks): Generator<Uint8Array> {
   for (let chunk of chunks) {
     if (typeof chunk !== "string") {
       yield chunk;
@@ -18,7 +17,7 @@ export function* text(span: Span, ...chunks: Chunks): Generator<Uint8Array> {
       chunk = chunk.slice(0, span.len);
     }
 
-    yield encoder.encode(chunk);
+    yield text(chunk);
 
     span.len -= chunk.length;
   }

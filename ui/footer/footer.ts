@@ -33,7 +33,7 @@ export class Footer extends Control {
 
     const data = [
       colors.TEXT,
-      ...vt.fmt.text(space, this.#cursor_status),
+      ...vt.fmt.fit(space, this.#cursor_status),
     ];
 
     vt.flush_buf(
