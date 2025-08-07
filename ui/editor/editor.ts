@@ -177,7 +177,7 @@ export class Editor extends Control {
   private measure_x = 0;
   private scroll_ln = 0;
   private scroll_col = 0;
-  #y = 0;
+  private render_y = 0;
 
   render(): void {
     const t0 = performance.now();
@@ -235,9 +235,9 @@ export class Editor extends Control {
     this.on_render?.(t1 - t0);
   }
 
-  #next_y(): boolean {
-    this.#y += 1;
-    return this.#y < this.y + this.h;
+  #next_render_y(): boolean {
+    this.render_y += 1;
+    return this.render_y < this.y + this.h;
   }
 
   #render_lines(): void {
@@ -246,20 +246,20 @@ export class Editor extends Control {
     this.#scroll_v();
     this.#scroll_h();
 
-    this.#y = y;
+    this.render_y = y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < ln_count) {
         this.#render_line(ln);
       } else {
         vt.write_buf(
-          vt.cursor.set(this.#y, x),
+          vt.cursor.set(this.render_y, x),
           colors.VOID,
           vt.clear_line(w),
         );
       }
 
-      if (!this.#next_y()) {
+      if (!this.#next_render_y()) {
         break;
       }
     }
@@ -276,13 +276,13 @@ export class Editor extends Control {
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
         if (i > 0) {
-          if (!this.#next_y()) {
+          if (!this.#next_render_y()) {
             return;
           }
         }
 
         vt.write_buf(
-          vt.cursor.set(this.#y, this.x),
+          vt.cursor.set(this.render_y, this.x),
         );
 
         if (this.index_width > 0) {
