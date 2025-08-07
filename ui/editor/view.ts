@@ -17,6 +17,15 @@ export class View {
   }
 
   render(): void {
+    const {
+      y,
+      x,
+      w,
+      wrap_enabled,
+      line_index_enabled,
+      buffer: { ln_count },
+    } = this.editor;
+
     vt.bsu();
 
     vt.write_buf(
@@ -26,7 +35,24 @@ export class View {
       ...vt.clear_area(this.editor),
     );
 
-    this.#layout();
+    if (line_index_enabled && ln_count > 0) {
+      if (this.#ln_count !== ln_count) {
+        this.#ln_count = ln_count;
+        this.#index_width = Math.trunc(Math.log10(ln_count)) + 3;
+        this.#index_blank = vt.fmt.spaces(this.#index_width);
+      }
+    } else {
+      this.#index_width = 0;
+    }
+
+    this.#text_width = w - this.#index_width;
+
+    this.#wrap_width = wrap_enabled
+      ? this.#text_width
+      : Number.MAX_SAFE_INTEGER;
+
+    this.#cursor_y = y;
+    this.#cursor_x = x + this.#index_width;
 
     if (this.editor.w >= this.#index_width) {
       this.#render_lines();
@@ -47,36 +73,6 @@ export class View {
   #index_blank!: Uint8Array;
   #text_width!: number;
   #wrap_width!: number;
-
-  #layout(): void {
-    const {
-      y,
-      x,
-      w,
-      wrap_enabled,
-      line_index_enabled,
-      buffer: { ln_count },
-    } = this.editor;
-
-    if (line_index_enabled && ln_count > 0) {
-      if (this.#ln_count !== ln_count) {
-        this.#ln_count = ln_count;
-        this.#index_width = Math.trunc(Math.log10(ln_count)) + 3;
-        this.#index_blank = vt.fmt.spaces(this.#index_width);
-      }
-    } else {
-      this.#index_width = 0;
-    }
-
-    this.#text_width = w - this.#index_width;
-
-    this.#wrap_width = wrap_enabled
-      ? this.#text_width
-      : Number.MAX_SAFE_INTEGER;
-
-    this.#cursor_y = y;
-    this.#cursor_x = x + this.#index_width;
-  }
 
   #y = 0;
 
