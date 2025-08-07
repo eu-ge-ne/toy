@@ -1,8 +1,16 @@
+import { Grapheme, graphemes } from "@lib/grapheme";
 import { range, sum } from "@lib/std";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
+
+interface Cell {
+  grapheme: Grapheme;
+  i: number;
+  ln: number;
+  col: number;
+}
 
 export class View {
   constructor(private editor: Editor) {
@@ -47,7 +55,6 @@ export class View {
       w,
       wrap_enabled,
       line_index_enabled,
-      shaper,
       buffer: { ln_count },
     } = this.editor;
 
@@ -67,9 +74,8 @@ export class View {
       ? this.#text_width
       : Number.MAX_SAFE_INTEGER;
 
-    shaper.y = this.#cursor_y = y;
-    shaper.x = this.#cursor_x = x + this.#index_width;
-    shaper.wrap_width = this.#wrap_width;
+    this.#cursor_y = y;
+    this.#cursor_x = x + this.#index_width;
   }
 
   #y = 0;
@@ -105,12 +111,12 @@ export class View {
   }
 
   #render_line(ln: number): void {
-    const { shaper, cursor, whitespace_enabled } = this.editor;
+    const { cursor, whitespace_enabled } = this.editor;
 
     let available_w = 0;
     let current_color!: Uint8Array;
 
-    const xs = shaper.cells(ln, false);
+    const xs = this.#cells(ln, false);
 
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
@@ -176,7 +182,7 @@ export class View {
   #cursor_y = 0;
 
   #scroll_v(): void {
-    const { shaper, cursor, h } = this.editor;
+    const { cursor, h } = this.editor;
 
     const delta_ln = cursor.ln - this.#scroll_ln;
 
@@ -193,7 +199,7 @@ export class View {
     }
 
     const hh = range(this.#scroll_ln, cursor.ln + 1).map((ln) =>
-      shaper.cells(ln, false).reduce(
+      this.#cells(ln, false).reduce(
         (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
         1,
       )
@@ -215,9 +221,9 @@ export class View {
   #cursor_x = 0;
 
   #scroll_h(): void {
-    const { shaper, cursor } = this.editor;
+    const { cursor } = this.editor;
 
-    const cell = shaper.cells(cursor.ln, true).drop(cursor.col).next().value;
+    const cell = this.#cells(cursor.ln, true).drop(cursor.col).next().value;
     if (cell) {
       this.#cursor_y += cell.ln;
     }
@@ -233,7 +239,7 @@ export class View {
 
     // After?
 
-    const line = shaper.cells(cursor.ln, true).toArray();
+    const line = this.#cells(cursor.ln, true).toArray();
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
     );
@@ -250,5 +256,52 @@ export class View {
     }
 
     this.#cursor_x += width;
+  }
+
+  *#cells(ln: number, with_tail: boolean): Generator<Cell> {
+    const { y, x, buffer } = this.editor;
+    const wrap_width = this.#wrap_width;
+
+    let i = 0;
+    let w = 0;
+    let l = 0;
+    let c = 0;
+
+    for (const seg of buffer.line(ln)) {
+      const grapheme = graphemes.get(seg);
+
+      if (grapheme.width < 0) {
+        grapheme.width = vt.cursor.measure(
+          y,
+          x + this.#index_width,
+          grapheme.bytes,
+        );
+      }
+
+      w += grapheme.width;
+      if (w > wrap_width) {
+        w = grapheme.width;
+        l += 1;
+        c = 0;
+      }
+
+      yield { grapheme, i, ln: l, col: c };
+
+      i += 1;
+      c += 1;
+    }
+
+    if (with_tail) {
+      const grapheme = graphemes.get(" ");
+
+      w += grapheme.width;
+      if (w > wrap_width) {
+        w = grapheme.width;
+        l += 1;
+        c = 0;
+      }
+
+      yield { grapheme, i, ln: l, col: c };
+    }
   }
 }

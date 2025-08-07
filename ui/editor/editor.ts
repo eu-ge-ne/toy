@@ -1,7 +1,6 @@
 import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { History } from "@lib/history";
-import { Shaper } from "@lib/shaper";
 import { Area, Control } from "@lib/ui";
 import { Key } from "@lib/vt";
 
@@ -43,8 +42,7 @@ export class Editor extends Control {
 
   readonly buffer = new Buffer();
   readonly cursor = new Cursor(this.buffer);
-  readonly shaper: Shaper;
-  readonly history: History;
+  readonly history = new History(this.buffer, this.cursor);
   readonly view = new View(this);
 
   line_index_enabled = false;
@@ -58,8 +56,6 @@ export class Editor extends Control {
   ) {
     super(parent);
 
-    this.shaper = new Shaper(this.buffer);
-    this.history = new History(this.buffer, this.cursor);
     this.history.reset();
   }
 
