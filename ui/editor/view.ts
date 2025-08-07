@@ -14,13 +14,14 @@ export class View {
   #cursor_y = 0;
   #cursor_x = 0;
 
-  #span: vt.fmt.Span = { len: 0 };
   #y = 0;
 
   get #y_end(): boolean {
     const { y, h } = this.editor;
     return this.#y >= y + h;
   }
+
+  readonly #x_span: vt.fmt.Span = { len: 0 };
 
   constructor(private editor: Editor) {
   }
@@ -55,7 +56,7 @@ export class View {
 
         vt.write_buf(
           colors.VOID,
-          vt.fmt.space(this.#span, this.#span.len),
+          vt.fmt.space(this.#x_span, this.#x_span.len),
         );
       }
 
@@ -97,7 +98,7 @@ export class View {
       vt.cursor.set(this.#y, this.editor.x),
     );
 
-    this.#span.len = this.editor.w;
+    this.#x_span.len = this.editor.w;
   }
 
   #render_line(ln: number): void {
@@ -116,7 +117,7 @@ export class View {
             vt.write_buf(
               colors.INDEX,
               ...vt.fmt.text(
-                this.#span,
+                this.#x_span,
                 `${ln + 1} `.padStart(this.#index_width),
               ),
             );
@@ -132,13 +133,13 @@ export class View {
           if (this.#index_width > 0) {
             vt.write_buf(
               colors.BACKGROUND,
-              vt.fmt.space(this.#span, this.#index_width),
+              vt.fmt.space(this.#x_span, this.#index_width),
             );
           }
         }
       }
 
-      if ((col < this.#scroll_col) || (width > this.#span.len)) {
+      if ((col < this.#scroll_col) || (width > this.#x_span.len)) {
         continue;
       }
 
@@ -164,7 +165,7 @@ export class View {
 
       vt.write_buf(bytes);
 
-      this.#span.len -= width;
+      this.#x_span.len -= width;
     }
   }
 
