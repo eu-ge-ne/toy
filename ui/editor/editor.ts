@@ -388,6 +388,7 @@ export class Editor extends Control {
 
     // After?
 
+    // TODO: optimize
     const line = this.#cells(cursor.ln, true).toArray();
     const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
       x.grapheme.width
