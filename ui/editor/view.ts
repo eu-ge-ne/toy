@@ -67,7 +67,7 @@ export class View {
 
   #ln_count = -1;
   #index_width!: number;
-  #index_blank!: Uint8Array[];
+  #index_blank!: Uint8Array;
   #text_width!: number;
   #wrap_width!: number;
 
@@ -78,7 +78,7 @@ export class View {
       if (this.#ln_count !== buffer.ln_count) {
         this.#ln_count = buffer.ln_count;
         this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
-        this.#index_blank = vt.fmt.space(this.#index_width).toArray();
+        this.#index_blank = vt.fmt.spaces(this.#index_width);
       }
     } else {
       this.#index_width = 0;
@@ -120,7 +120,7 @@ export class View {
           } else {
             vt.write_buf(
               colors.BACKGROUND,
-              ...this.#index_blank,
+              this.#index_blank,
             );
           }
         }
