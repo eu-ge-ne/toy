@@ -214,7 +214,7 @@ export class View {
   #scroll_h(): void {
     const { shaper, cursor } = this.editor;
 
-    const cell = shaper.cell(cursor.ln, cursor.col);
+    const cell = shaper.cells(cursor.ln, true).drop(cursor.col).next().value;
     if (cell) {
       this.#cursor_y += cell.ln;
     }

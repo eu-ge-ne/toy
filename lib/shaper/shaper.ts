@@ -17,7 +17,7 @@ export class Shaper {
   constructor(private buffer: Buffer) {
   }
 
-  *cells(ln: number, add_tail_cell: boolean): Generator<Cell> {
+  *cells(ln: number, with_tail: boolean): Generator<Cell> {
     const { buffer, wrap_width } = this;
 
     let i = 0;
@@ -45,7 +45,7 @@ export class Shaper {
       c += 1;
     }
 
-    if (add_tail_cell) {
+    if (with_tail) {
       const grapheme = graphemes.get(" ");
 
       w += grapheme.width;
@@ -57,10 +57,6 @@ export class Shaper {
 
       yield { grapheme, i, ln: l, col: c };
     }
-  }
-
-  cell(ln: number, col: number): Cell | undefined {
-    return this.cells(ln, true).drop(col).next().value;
   }
 
   count_wraps(ln: number): number {
