@@ -1,11 +1,6 @@
-let bytes = new Uint8Array(1024).fill(0x20);
+import { cuf, ech } from "@eu-ge-ne/ctlseqs";
 
-export function space(len: number): Uint8Array {
-  if (len < bytes.length) {
-    return bytes.subarray(0, len);
-  }
-
-  bytes = new Uint8Array(len).fill(0x20);
-
-  return bytes;
+export function* space(len: number): Generator<Uint8Array> {
+  yield ech(len);
+  yield cuf(len);
 }
