@@ -18,8 +18,7 @@ export class View {
   readonly #x_span: vt.fmt.Span = { len: 0 };
 
   get #y_end(): boolean {
-    const { y, h } = this.editor;
-    return this.#y >= y + h;
+    return this.#y >= this.editor.y + this.editor.h;
   }
 
   constructor(private editor: Editor) {
