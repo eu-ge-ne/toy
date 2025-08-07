@@ -377,12 +377,12 @@ export class Editor extends Control {
       this.cursor_y += cell.ln;
     }
 
-    const c = cell?.col ?? 0; // c = f(cursor.col)
-    const delta_col = c - this.scroll_col;
+    const col = cell?.col ?? 0; // col = f(cursor.col)
+    const delta_col = col - this.scroll_col;
 
     // Before?
     if (delta_col <= 0) {
-      this.scroll_col = c;
+      this.scroll_col = col;
       return;
     }
 
