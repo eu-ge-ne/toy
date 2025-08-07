@@ -8,12 +8,6 @@ export class View {
   constructor(private editor: Editor) {
   }
 
-  #y = 0;
-
-  get #y_end(): boolean {
-    return this.#y >= this.editor.y + this.editor.h;
-  }
-
   render(): void {
     const { y, x, w, buffer, shaper, enabled } = this.editor;
 
@@ -48,9 +42,7 @@ export class View {
           );
         }
 
-        this.#y += 1;
-
-        if (this.#y_end) {
+        if (!this.#next_y()) {
           break;
         }
       }
@@ -64,6 +56,13 @@ export class View {
     );
 
     vt.esu();
+  }
+
+  #y = 0;
+
+  #next_y(): boolean {
+    this.#y += 1;
+    return this.#y < this.editor.y + this.editor.h;
   }
 
   #ln_count = -1;
@@ -103,8 +102,7 @@ export class View {
     for (const { i, col, grapheme: { width, is_visible, bytes } } of xs) {
       if (col === 0) {
         if (i > 0) {
-          this.#y += 1;
-          if (this.#y_end) {
+          if (!this.#next_y()) {
             return;
           }
         }
