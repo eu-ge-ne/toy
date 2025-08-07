@@ -167,10 +167,11 @@ export class Editor extends Control {
   }
 
   #ln_count = -1;
-  #index_width!: number;
-  #index_blank!: Uint8Array;
-  #text_width!: number;
+  private index_width!: number;
+  private index_blank!: Uint8Array;
+  private text_width!: number;
   private wrap_width!: number;
+  #y = 0;
 
   render(): void {
     const t0 = performance.now();
@@ -197,21 +198,21 @@ export class Editor extends Control {
     if (line_index_enabled && ln_count > 0) {
       if (this.#ln_count !== ln_count) {
         this.#ln_count = ln_count;
-        this.#index_width = Math.trunc(Math.log10(ln_count)) + 3;
-        this.#index_blank = vt.fmt.spaces(this.#index_width);
+        this.index_width = Math.trunc(Math.log10(ln_count)) + 3;
+        this.index_blank = vt.fmt.spaces(this.index_width);
       }
     } else {
-      this.#index_width = 0;
+      this.index_width = 0;
     }
 
-    this.#text_width = w - this.#index_width;
+    this.text_width = w - this.index_width;
 
-    this.wrap_width = wrap_enabled ? this.#text_width : Number.MAX_SAFE_INTEGER;
+    this.wrap_width = wrap_enabled ? this.text_width : Number.MAX_SAFE_INTEGER;
 
     this.measure_y = this.#cursor_y = y;
-    this.measure_x = this.#cursor_x = x + this.#index_width;
+    this.measure_x = this.#cursor_x = x + this.index_width;
 
-    if (w >= this.#index_width) {
+    if (w >= this.index_width) {
       this.#render_lines();
     }
 
@@ -229,8 +230,6 @@ export class Editor extends Control {
     const t1 = performance.now();
     this.on_render?.(t1 - t0);
   }
-
-  #y = 0;
 
   #next_y(): boolean {
     this.#y += 1;
@@ -282,21 +281,21 @@ export class Editor extends Control {
           vt.cursor.set(this.#y, this.x),
         );
 
-        if (this.#index_width > 0) {
+        if (this.index_width > 0) {
           if (i === 0) {
             vt.write_buf(
               colors.INDEX,
-              vt.fmt.text(`${ln + 1} `.padStart(this.#index_width)),
+              vt.fmt.text(`${ln + 1} `.padStart(this.index_width)),
             );
           } else {
             vt.write_buf(
               colors.BACKGROUND,
-              this.#index_blank,
+              this.index_blank,
             );
           }
         }
 
-        available_w = this.w - this.#index_width;
+        available_w = this.w - this.index_width;
       }
 
       if ((col < this.#scroll_col) || (width > available_w)) {
@@ -399,7 +398,7 @@ export class Editor extends Control {
     let width = sum(ww);
 
     for (const w of ww) {
-      if (width < this.#text_width) {
+      if (width < this.text_width) {
         break;
       }
 
