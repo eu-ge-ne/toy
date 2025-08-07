@@ -12,6 +12,7 @@ function space(len: number): Uint8Array {
   return bytes;
 }
 
+// TODO: remove
 export function fill_space(span: Span, len: number): Uint8Array {
   if (len > span.len) {
     throw new Error("len > span.len");
