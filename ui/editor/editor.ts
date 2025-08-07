@@ -53,15 +53,12 @@ export class Editor extends Control {
   readonly cursor = new Cursor(this.buffer);
   readonly history = new History(this.buffer, this.cursor);
 
-  line_index_enabled = false;
+  index_enabled = false;
   whitespace_enabled = false;
   wrap_enabled = false;
   clipboard = "";
 
-  constructor(
-    parent: Control,
-    readonly opts: EditorOptions,
-  ) {
+  constructor(parent: Control, readonly opts: EditorOptions) {
     super(parent);
 
     this.history.reset();
@@ -188,7 +185,7 @@ export class Editor extends Control {
       w,
       enabled,
       wrap_enabled,
-      line_index_enabled,
+      index_enabled,
       buffer: { ln_count },
     } = this;
 
@@ -201,7 +198,7 @@ export class Editor extends Control {
       ...vt.clear_area(this),
     );
 
-    if (line_index_enabled && ln_count > 0) {
+    if (index_enabled && ln_count > 0) {
       if (this.#ln_count !== ln_count) {
         this.#ln_count = ln_count;
         this.index_width = Math.trunc(Math.log10(ln_count)) + 3;
@@ -212,7 +209,6 @@ export class Editor extends Control {
     }
 
     this.text_width = w - this.index_width;
-
     this.wrap_width = wrap_enabled ? this.text_width : Number.MAX_SAFE_INTEGER;
 
     this.measure_y = this.cursor_y = y;

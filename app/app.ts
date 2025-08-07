@@ -193,14 +193,14 @@ export class App extends Control {
     }
   }
 
-  enable_zen(enabled: boolean): void {
+  enable_zen(enable: boolean): void {
     const { header, footer, editor } = this.ui;
 
-    this.zen_enabled = enabled;
+    this.zen_enabled = enable;
 
-    header.enabled = !enabled;
-    footer.enabled = !enabled;
-    editor.line_index_enabled = !enabled;
+    header.enabled = !enable;
+    footer.enabled = !enable;
+    editor.index_enabled = !enable;
 
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
