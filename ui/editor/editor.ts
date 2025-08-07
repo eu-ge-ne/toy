@@ -350,8 +350,7 @@ export class Editor extends Control {
       this.scroll_ln = cursor.ln - h;
     }
 
-    // TODO: optimize
-    const hh = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
+    const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
       this.#cells(ln, false).reduce(
         (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
         1,
@@ -360,13 +359,13 @@ export class Editor extends Control {
 
     let i = 0;
 
-    for (let height = sum(hh); height > h; i += 1) {
-      height -= hh[i]!;
+    for (let height = sum(xs); height > h; i += 1) {
+      height -= xs[i]!;
       this.scroll_ln += 1;
     }
 
-    for (; i < hh.length - 1; i += 1) {
-      this.cursor_y += hh[i]!;
+    for (; i < xs.length - 1; i += 1) {
+      this.cursor_y += xs[i]!;
     }
   }
 
