@@ -5,10 +5,6 @@ import * as colors from "./colors.ts";
 import { Editor } from "./editor.ts";
 
 export class View {
-  #index_width!: number;
-  #text_width!: number;
-  #wrap_width!: number;
-
   #scroll_ln = 0;
   #scroll_col = 0;
   #cursor_y = 0;
@@ -75,11 +71,21 @@ export class View {
     vt.esu();
   }
 
+  #ln_count = -1;
+  #index_width!: number;
+  #index_blank!: Uint8Array;
+  #text_width!: number;
+  #wrap_width!: number;
+
   #layout(): void {
     const { buffer, wrap_enabled, line_index_enabled } = this.editor;
 
     if (line_index_enabled && buffer.ln_count > 0) {
-      this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+      if (this.#ln_count !== buffer.ln_count) {
+        this.#ln_count = buffer.ln_count;
+        this.#index_width = Math.trunc(Math.log10(buffer.ln_count)) + 3;
+        this.#index_blank = vt.text(" ".repeat(this.#index_width));
+      }
     } else {
       this.#index_width = 0;
     }
@@ -116,18 +122,12 @@ export class View {
           if (i === 0) {
             vt.write_buf(
               colors.INDEX,
-              ...vt.fmt.text(
-                { len: this.#index_width },
-                `${ln + 1} `.padStart(this.#index_width),
-              ),
+              vt.text(`${ln + 1} `.padStart(this.#index_width)),
             );
           } else {
             vt.write_buf(
               colors.BACKGROUND,
-              ...vt.fmt.text(
-                { len: this.#index_width },
-                "".padStart(this.#index_width),
-              ),
+              this.#index_blank,
             );
           }
         }
