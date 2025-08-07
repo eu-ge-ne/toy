@@ -15,13 +15,12 @@ export class View {
   #cursor_x = 0;
 
   #y = 0;
+  readonly #x_span: vt.fmt.Span = { len: 0 };
 
   get #y_end(): boolean {
     const { y, h } = this.editor;
     return this.#y >= y + h;
   }
-
-  readonly #x_span: vt.fmt.Span = { len: 0 };
 
   constructor(private editor: Editor) {
   }
