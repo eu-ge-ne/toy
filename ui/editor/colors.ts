@@ -1,8 +1,8 @@
 import { Tokens } from "@lib/theme";
 
 export let BACKGROUND: Uint8Array;
-export let BLANK: Uint8Array;
 export let INDEX: Uint8Array;
+export let VOID: Uint8Array;
 
 export const CHAR = {
   Char: new Uint8Array(),
@@ -18,8 +18,8 @@ export const SELECTED = {
 
 export function set_editor_colors(t: Tokens): void {
   BACKGROUND = t.bg_main;
-  BLANK = t.bg_dark0;
   INDEX = new Uint8Array([...t.bg_light0, ...t.fg_dark0]);
+  VOID = t.bg_dark0;
 
   CHAR.Char = new Uint8Array([...t.bg_main, ...t.fg_light1]);
   CHAR.Whitespace = new Uint8Array([...t.bg_main, ...t.fg_dark0]);

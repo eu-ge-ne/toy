@@ -54,7 +54,7 @@ export class View {
         this.#begin_line();
 
         vt.write_buf(
-          colors.BLANK,
+          colors.VOID,
           vt.fmt.space(this.#span, this.#span.len),
         );
       }
