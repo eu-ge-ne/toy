@@ -17,16 +17,19 @@ export class Shaper {
   }
 
   max_col(ln: number): number {
-    let max = 0;
+    let col = 0;
 
     for (const seg of this.buffer.line(ln)) {
       const { is_eol } = graphemes.get(seg);
-      if (!is_eol) {
-        max += 1;
+
+      if (is_eol) {
+        break;
       }
+
+      col += 1;
     }
 
-    return max;
+    return col;
   }
 
   count_wraps(ln: number, wrap_width: number): number {
