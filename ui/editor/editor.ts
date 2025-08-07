@@ -388,15 +388,13 @@ export class Editor extends Control {
 
     // After?
 
-    // TODO: optimize
-    const line = this.#cells(cursor.ln, true).toArray();
-    const ww = line.slice(cursor.col - delta_col, cursor.col).map((x) =>
-      x.grapheme.width
-    );
+    const xs = this.#cells(cursor.ln, true).drop(cursor.col - delta_col).take(
+      delta_col,
+    ).map((x) => x.grapheme.width).toArray();
 
-    let width = sum(ww);
+    let width = sum(xs);
 
-    for (const w of ww) {
+    for (const w of xs) {
       if (width < this.text_width) {
         break;
       }
