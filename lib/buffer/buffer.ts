@@ -7,7 +7,7 @@ type Pos = [number, number];
 const EOL_RE = /\r?\n/gm;
 
 export class Buffer {
-  #segmenter = new Intl.Segmenter();
+  #sgr = new Intl.Segmenter();
   #buf = new TextBuf();
 
   set_text(text: string): void {
@@ -65,7 +65,7 @@ export class Buffer {
   }
 
   *line(ln: number): Generator<string> {
-    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
+    for (const { segment } of this.#sgr.segment(this.#line_text(ln))) {
       yield segment;
     }
   }
@@ -113,20 +113,20 @@ export class Buffer {
   }
 
   #count_segments(text: string): number {
-    return [...this.#segmenter.segment(text)].length;
+    return [...this.#sgr.segment(text)].length;
   }
 
-  #line_unit_index(ln: number, grapheme_index: number): number {
+  #line_unit_index(ln: number, grm_index: number): number {
     let unit_index = 0;
-
     let i = 0;
-    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
-      if (i === grapheme_index) {
+
+    for (const seg of this.line(ln)) {
+      if (i === grm_index) {
         break;
       }
 
-      if (i < grapheme_index) {
-        unit_index += segment.length;
+      if (i < grm_index) {
+        unit_index += seg.length;
       }
 
       i += 1;
