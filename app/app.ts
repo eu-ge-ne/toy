@@ -170,29 +170,6 @@ export class App extends Control {
     set_save_as_colors(tokens);
   }
 
-  async save(): Promise<void> {
-    const { editor, alert } = this.ui;
-
-    if (!this.file_path) {
-      await this.#save_as();
-      return;
-    }
-
-    try {
-      using file = await Deno.open(this.file_path, {
-        create: true,
-        write: true,
-        truncate: true,
-      });
-
-      await editor.buffer.save(file);
-    } catch (err) {
-      await alert.open(err);
-
-      await this.#save_as();
-    }
-  }
-
   enable_zen(enable: boolean): void {
     const { header, footer, editor } = this.ui;
 
@@ -206,6 +183,30 @@ export class App extends Control {
     this.layout({ y: 0, x: 0, w, h });
 
     this.render();
+  }
+
+  async save(): Promise<boolean> {
+    const { editor, alert } = this.ui;
+
+    if (!this.file_path) {
+      return await this.#save_as();
+    }
+
+    try {
+      using file = await Deno.open(this.file_path, {
+        create: true,
+        write: true,
+        truncate: true,
+      });
+
+      await editor.buffer.save(file);
+
+      return true;
+    } catch (err) {
+      await alert.open(err);
+
+      return await this.#save_as();
+    }
   }
 
   #on_sigwinch = () => {
@@ -248,13 +249,13 @@ export class App extends Control {
     }
   }
 
-  async #save_as(): Promise<void> {
+  async #save_as(): Promise<boolean> {
     const { save_as, editor, alert } = this.ui;
 
     while (true) {
       const path = await save_as.open(this.file_path);
       if (!path) {
-        return;
+        return false;
       }
 
       try {
@@ -268,7 +269,7 @@ export class App extends Control {
 
         this.#set_file_path(path);
 
-        return;
+        return true;
       } catch (err) {
         await alert.open(err);
       }
