@@ -65,13 +65,15 @@ export class Buffer {
   }
 
   *line(ln: number): Generator<string> {
-    for (const { segment } of this.#sgr.segment(this.#line_text(ln))) {
-      yield segment;
+    for (const chunk of this.#read_line(ln)) {
+      for (const { segment } of this.#sgr.segment(chunk)) {
+        yield segment;
+      }
     }
   }
 
   line_length(ln: number): number {
-    return this.#count_segments(this.#line_text(ln));
+    return this.#read_line(ln).reduce((a, x) => a + this.#count_segments(x), 0);
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {
@@ -108,8 +110,8 @@ export class Buffer {
     );
   }
 
-  #line_text(ln: number): string {
-    return this.#buf.read([ln, 0], [ln + 1, 0]).reduce((a, x) => a + x, "");
+  *#read_line(ln: number): Generator<string> {
+    yield* this.#buf.read([ln, 0], [ln + 1, 0]);
   }
 
   #count_segments(text: string): number {
