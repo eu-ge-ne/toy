@@ -2,6 +2,7 @@
 
 ## v0.0.25
 
+- Fixed cancelling SaveAs modal
 - Optimized char color rendering
 
 ## v0.0.24

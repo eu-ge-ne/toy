@@ -170,29 +170,6 @@ export class App extends Control {
     set_save_as_colors(tokens);
   }
 
-  async save(): Promise<void> {
-    const { editor, alert } = this.ui;
-
-    if (!this.file_path) {
-      await this.#save_as();
-      return;
-    }
-
-    try {
-      using file = await Deno.open(this.file_path, {
-        create: true,
-        write: true,
-        truncate: true,
-      });
-
-      await editor.buffer.save(file);
-    } catch (err) {
-      await alert.open(err);
-
-      await this.#save_as();
-    }
-  }
-
   enable_zen(enable: boolean): void {
     const { header, footer, editor } = this.ui;
 
@@ -206,6 +183,22 @@ export class App extends Control {
     this.layout({ y: 0, x: 0, w, h });
 
     this.render();
+  }
+
+  async save(): Promise<boolean> {
+    if (!this.file_path) {
+      return await this.#save_as();
+    }
+
+    try {
+      await this.#save_buffer(this.file_path);
+
+      return true;
+    } catch (err) {
+      await this.ui.alert.open(err);
+
+      return await this.#save_as();
+    }
   }
 
   #on_sigwinch = () => {
@@ -224,14 +217,7 @@ export class App extends Control {
     const { editor, alert } = this.ui;
 
     try {
-      using file = await Deno.open(path, { read: true });
-
-      const info = await file.stat();
-      if (!info.isFile) {
-        throw new Error(`${path} is not a file`);
-      }
-
-      await editor.buffer.load(file);
+      await this.#load_buffer(path);
 
       editor.reset(true);
       editor.render();
@@ -244,33 +230,6 @@ export class App extends Control {
         await alert.open(err);
 
         this.stop();
-      }
-    }
-  }
-
-  async #save_as(): Promise<void> {
-    const { save_as, editor, alert } = this.ui;
-
-    while (true) {
-      const path = await save_as.open(this.file_path);
-      if (!path) {
-        return;
-      }
-
-      try {
-        using file = await Deno.open(path, {
-          create: true,
-          write: true,
-          truncate: true,
-        });
-
-        await editor.buffer.save(file);
-
-        this.#set_file_path(path);
-
-        return;
-      } catch (err) {
-        await alert.open(err);
       }
     }
   }
@@ -302,6 +261,76 @@ export class App extends Control {
             this.ui.editor.render();
           }
         }
+      }
+    }
+  }
+
+  async #load_buffer(path: string): Promise<void> {
+    const { buffer } = this.ui.editor;
+
+    using file = await Deno.open(path, { read: true });
+
+    const info = await file.stat();
+    if (!info.isFile) {
+      throw new Error(`${path} is not a file`);
+    }
+
+    const decoder = new TextDecoder();
+    const bytes = new Uint8Array(1024 * 1024 * 64);
+
+    while (true) {
+      const n = await file.read(bytes);
+      if (typeof n !== "number") {
+        break;
+      }
+
+      if (n > 0) {
+        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
+
+        buffer.append(text);
+      }
+    }
+
+    const text = decoder.decode();
+
+    if (text.length > 0) {
+      buffer.append(text);
+    }
+  }
+
+  async #save_buffer(path: string): Promise<void> {
+    const { buffer } = this.ui.editor;
+
+    using file = await Deno.open(path, {
+      create: true,
+      write: true,
+      truncate: true,
+    });
+
+    const stream = new TextEncoderStream();
+    stream.readable.pipeTo(file.writable);
+    const writer = stream.writable.getWriter();
+
+    for (const text of buffer.read()) {
+      await writer.write(text);
+    }
+  }
+
+  async #save_as(): Promise<boolean> {
+    while (true) {
+      const path = await this.ui.save_as.open(this.file_path);
+      if (!path) {
+        return false;
+      }
+
+      try {
+        await this.#save_buffer(path);
+
+        this.#set_file_path(path);
+
+        return true;
+      } catch (err) {
+        await this.ui.alert.open(err);
       }
     }
   }

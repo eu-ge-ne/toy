@@ -18,11 +18,12 @@ export class SaveCommand extends Command {
 
     editor.enabled = false;
 
-    await this.app.save();
+    if (await this.app.save()) {
+      editor.reset(false);
+    }
 
     editor.enabled = true;
 
-    editor.reset(false);
     editor.render();
   }
 }

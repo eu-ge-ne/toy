@@ -10,53 +10,24 @@ export class Buffer {
   #sgr = new Intl.Segmenter();
   #buf = new TextBuf();
 
-  set_text(text: string): void {
+  get text(): string {
+    return this.#buf.read(0).reduce((a, x) => a + x, "");
+  }
+
+  set text(text: string) {
     this.#buf.delete(0);
     this.#buf.insert(0, text);
   }
 
-  get_text(): string {
-    return this.#buf.read(0).reduce((a, x) => a + x, "");
+  *read(): Generator<string> {
+    yield* this.#buf.read(0);
   }
 
-  async load(file: Deno.FsFile): Promise<void> {
-    const decoder = new TextDecoder();
-    const bytes = new Uint8Array(1024 * 1024 * 64);
-
-    while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
-        break;
-      }
-
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-
-        this.#buf.insert(this.#buf.count, text);
-      }
-    }
-
-    const text = decoder.decode();
-    if (text.length > 0) {
-      this.#buf.insert(this.#buf.count, text);
-    }
-  }
-
-  async save(file: Deno.FsFile): Promise<void> {
-    const stream = new TextEncoderStream();
-    stream.readable.pipeTo(file.writable);
-    const writer = stream.writable.getWriter();
-
-    for (const text of this.#buf.read(0)) {
-      await writer.write(text);
-    }
-  }
-
-  save_snapshot(): Snapshot {
+  save(): Snapshot {
     return structuredClone(this.#buf.root);
   }
 
-  restore_snapshot(x: Snapshot): void {
+  restore(x: Snapshot): void {
     this.#buf.root = structuredClone(x);
   }
 
@@ -74,6 +45,10 @@ export class Buffer {
 
   line_length(ln: number): number {
     return this.#read_line(ln).reduce((a, x) => a + this.#count_segments(x), 0);
+  }
+
+  append(text: string): void {
+    this.#buf.insert(this.#buf.count, text);
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {
