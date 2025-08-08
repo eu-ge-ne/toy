@@ -70,7 +70,7 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    const max = this.buffer.max_non_eol(this.ln);
+    const max = this.buffer.line_char_count(this.ln);
 
     this.col = clamp(col, 0, max);
   }

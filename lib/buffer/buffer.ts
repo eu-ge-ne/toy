@@ -73,19 +73,19 @@ export class Buffer {
   }
 
   line_length(ln: number): number {
-    return this.#count_segments(this.#line_text(ln));
+    return [...this.#segmenter.segment(this.#line_text(ln))].length;
   }
 
-  max_non_eol(ln: number): number {
-    let col = 0;
-    for (const seg of this.line(ln)) {
-      const { is_eol } = graphemes.get(seg);
+  line_char_count(ln: number): number {
+    let len = 0;
+    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
+      const { is_eol } = graphemes.get(segment);
       if (is_eol) {
         break;
       }
-      col += 1;
+      len += 1;
     }
-    return col;
+    return len;
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {
