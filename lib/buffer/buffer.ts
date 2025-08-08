@@ -52,11 +52,11 @@ export class Buffer {
     }
   }
 
-  get_snapshot(): Snapshot {
+  save_snapshot(): Snapshot {
     return structuredClone(this.#buf.root);
   }
 
-  set_snapshot(x: Snapshot): void {
+  restore_snapshot(x: Snapshot): void {
     this.#buf.root = structuredClone(x);
   }
 
