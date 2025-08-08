@@ -23,11 +23,11 @@ export class Buffer {
     yield* this.#buf.read(0);
   }
 
-  save_snapshot(): Snapshot {
+  save(): Snapshot {
     return structuredClone(this.#buf.root);
   }
 
-  restore_snapshot(x: Snapshot): void {
+  restore(x: Snapshot): void {
     this.#buf.root = structuredClone(x);
   }
 
