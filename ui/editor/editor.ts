@@ -173,7 +173,6 @@ export class Editor extends Control {
   private measure_x = 0;
   private scroll_ln = 0;
   private scroll_col = 0;
-  private render_y = 0;
 
   render(): void {
     const t0 = performance.now();
@@ -230,38 +229,34 @@ export class Editor extends Control {
     this.on_render?.(t1 - t0);
   }
 
-  #next_render_y(): boolean {
-    this.render_y += 1;
-    return this.render_y < this.y + this.h;
-  }
-
   #render_lines(): void {
-    const { y, x, w, buffer: { ln_count } } = this;
+    const { y, x, w, h, buffer: { ln_count } } = this;
 
     this.#scroll_v();
     this.#scroll_h();
 
-    this.render_y = y;
+    let row = y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < ln_count) {
-        this.#render_line(ln);
+        row = this.#render_line(ln, row);
       } else {
         vt.write_buf(
-          vt.cursor.set(this.render_y, x),
+          vt.cursor.set(row, x),
           colors.VOID,
           vt.clear_line(w),
         );
       }
 
-      if (!this.#next_render_y()) {
+      row += 1;
+      if (row >= y + h) {
         break;
       }
     }
   }
 
-  #render_line(ln: number): void {
-    const { cursor, whitespace_enabled } = this;
+  #render_line(ln: number, row: number): number {
+    const { y, h, cursor, whitespace_enabled } = this;
 
     let available_w = 0;
     let current_color!: Uint8Array;
@@ -271,13 +266,14 @@ export class Editor extends Control {
     for (const { grm: { width, is_visible, bytes }, i, col } of xs) {
       if (col === 0) {
         if (i > 0) {
-          if (!this.#next_render_y()) {
-            return;
+          row += 1;
+          if (row >= y + h) {
+            return row;
           }
         }
 
         vt.write_buf(
-          vt.cursor.set(this.render_y, this.x),
+          vt.cursor.set(row, this.x),
         );
 
         if (this.index_width > 0) {
@@ -326,6 +322,8 @@ export class Editor extends Control {
 
       available_w -= width;
     }
+
+    return row;
   }
 
   #scroll_v(): void {
