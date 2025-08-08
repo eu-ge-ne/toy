@@ -186,24 +186,16 @@ export class App extends Control {
   }
 
   async save(): Promise<boolean> {
-    const { editor, alert } = this.ui;
-
     if (!this.file_path) {
       return await this.#save_as();
     }
 
     try {
-      using file = await Deno.open(this.file_path, {
-        create: true,
-        write: true,
-        truncate: true,
-      });
-
-      await editor.buffer.save(file);
+      await this.#save_buffer(this.file_path);
 
       return true;
     } catch (err) {
-      await alert.open(err);
+      await this.ui.alert.open(err);
 
       return await this.#save_as();
     }
@@ -249,33 +241,6 @@ export class App extends Control {
     }
   }
 
-  async #save_as(): Promise<boolean> {
-    const { save_as, editor, alert } = this.ui;
-
-    while (true) {
-      const path = await save_as.open(this.file_path);
-      if (!path) {
-        return false;
-      }
-
-      try {
-        using file = await Deno.open(path, {
-          create: true,
-          write: true,
-          truncate: true,
-        });
-
-        await editor.buffer.save(file);
-
-        this.#set_file_path(path);
-
-        return true;
-      } catch (err) {
-        await alert.open(err);
-      }
-    }
-  }
-
   #set_file_path(x: string): void {
     this.file_path = x;
 
@@ -303,6 +268,41 @@ export class App extends Control {
             this.ui.editor.render();
           }
         }
+      }
+    }
+  }
+
+  async #save_buffer(path: string): Promise<void> {
+    using file = await Deno.open(path, {
+      create: true,
+      write: true,
+      truncate: true,
+    });
+
+    const stream = new TextEncoderStream();
+    stream.readable.pipeTo(file.writable);
+    const writer = stream.writable.getWriter();
+
+    for (const text of this.ui.editor.buffer.read()) {
+      await writer.write(text);
+    }
+  }
+
+  async #save_as(): Promise<boolean> {
+    while (true) {
+      const path = await this.ui.save_as.open(this.file_path);
+      if (!path) {
+        return false;
+      }
+
+      try {
+        await this.#save_buffer(path);
+
+        this.#set_file_path(path);
+
+        return true;
+      } catch (err) {
+        await this.ui.alert.open(err);
       }
     }
   }

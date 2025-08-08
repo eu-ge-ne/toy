@@ -28,7 +28,7 @@ export class Palette
     this.#editor.enabled = true;
 
     this.#all = options;
-    this.#editor.buffer.set_text("");
+    this.#editor.buffer.text = "";
     this.#editor.reset(false);
 
     this.#filter();
@@ -114,7 +114,7 @@ export class Palette
   }
 
   #filter(): void {
-    const text = this.#editor.buffer.get_text().toUpperCase();
+    const text = this.#editor.buffer.text.toUpperCase();
 
     if (!text) {
       this.#options = this.#all;

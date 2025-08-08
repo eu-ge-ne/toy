@@ -10,13 +10,17 @@ export class Buffer {
   #sgr = new Intl.Segmenter();
   #buf = new TextBuf();
 
-  set_text(text: string): void {
+  get text(): string {
+    return this.#buf.read(0).reduce((a, x) => a + x, "");
+  }
+
+  set text(text: string) {
     this.#buf.delete(0);
     this.#buf.insert(0, text);
   }
 
-  get_text(): string {
-    return this.#buf.read(0).reduce((a, x) => a + x, "");
+  *read(): Generator<string> {
+    yield* this.#buf.read(0);
   }
 
   async load(file: Deno.FsFile): Promise<void> {
@@ -39,16 +43,6 @@ export class Buffer {
     const text = decoder.decode();
     if (text.length > 0) {
       this.#buf.insert(this.#buf.count, text);
-    }
-  }
-
-  async save(file: Deno.FsFile): Promise<void> {
-    const stream = new TextEncoderStream();
-    stream.readable.pipeTo(file.writable);
-    const writer = stream.writable.getWriter();
-
-    for (const text of this.#buf.read(0)) {
-      await writer.write(text);
     }
   }
 

@@ -14,7 +14,7 @@ export class SaveAs extends Modal<[string], string> {
     this.enabled = true;
     this.#editor.enabled = true;
 
-    buffer.set_text(path);
+    buffer.text = path;
     this.#editor.reset(true);
 
     this.render();
@@ -78,7 +78,7 @@ export class SaveAs extends Modal<[string], string> {
             case "ESC":
               return "";
             case "ENTER": {
-              const path = this.#editor.buffer.get_text();
+              const path = this.#editor.buffer.text;
               if (path) {
                 return path;
               }
