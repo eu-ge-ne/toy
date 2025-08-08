@@ -1,7 +1,5 @@
 import { TextBuf } from "@eu-ge-ne/text-buf";
 
-import { graphemes } from "@lib/grapheme";
-
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
 type Pos = [number, number];
@@ -9,7 +7,7 @@ type Pos = [number, number];
 const EOL_RE = /\r?\n/gm;
 
 export class Buffer {
-  #segmenter = new Intl.Segmenter();
+  #sgr = new Intl.Segmenter();
   #buf = new TextBuf();
 
   set_text(text: string): void {
@@ -54,11 +52,11 @@ export class Buffer {
     }
   }
 
-  get_snapshot(): Snapshot {
+  save_snapshot(): Snapshot {
     return structuredClone(this.#buf.root);
   }
 
-  set_snapshot(x: Snapshot): void {
+  restore_snapshot(x: Snapshot): void {
     this.#buf.root = structuredClone(x);
   }
 
@@ -67,25 +65,15 @@ export class Buffer {
   }
 
   *line(ln: number): Generator<string> {
-    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
-      yield segment;
+    for (const chunk of this.#read_line(ln)) {
+      for (const { segment } of this.#sgr.segment(chunk)) {
+        yield segment;
+      }
     }
   }
 
   line_length(ln: number): number {
-    return [...this.#segmenter.segment(this.#line_text(ln))].length;
-  }
-
-  line_char_count(ln: number): number {
-    let len = 0;
-    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
-      const { is_eol } = graphemes.get(segment);
-      if (is_eol) {
-        break;
-      }
-      len += 1;
-    }
-    return len;
+    return this.#read_line(ln).reduce((a, x) => a + this.#count_segments(x), 0);
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {
@@ -122,25 +110,25 @@ export class Buffer {
     );
   }
 
-  #line_text(ln: number): string {
-    return this.#buf.read([ln, 0], [ln + 1, 0]).reduce((a, x) => a + x, "");
+  *#read_line(ln: number): Generator<string> {
+    yield* this.#buf.read([ln, 0], [ln + 1, 0]);
   }
 
   #count_segments(text: string): number {
-    return [...this.#segmenter.segment(text)].length;
+    return [...this.#sgr.segment(text)].length;
   }
 
-  #line_unit_index(ln: number, grapheme_index: number): number {
+  #line_unit_index(ln: number, grm_index: number): number {
     let unit_index = 0;
-
     let i = 0;
-    for (const { segment } of this.#segmenter.segment(this.#line_text(ln))) {
-      if (i === grapheme_index) {
+
+    for (const seg of this.line(ln)) {
+      if (i === grm_index) {
         break;
       }
 
-      if (i < grapheme_index) {
-        unit_index += segment.length;
+      if (i < grm_index) {
+        unit_index += seg.length;
       }
 
       i += 1;

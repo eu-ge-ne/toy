@@ -1,3 +1,4 @@
+import { graphemes } from "@lib/grapheme";
 import { Buffer } from "@lib/buffer";
 import { clamp } from "@lib/std";
 
@@ -70,9 +71,17 @@ export class Cursor {
   }
 
   #set_col(col: number): void {
-    const max = this.buffer.line_char_count(this.ln);
+    let len = 0;
 
-    this.col = clamp(col, 0, max);
+    for (const seg of this.buffer.line(this.ln)) {
+      const { is_eol } = graphemes.get(seg);
+      if (is_eol) {
+        break;
+      }
+      len += 1;
+    }
+
+    this.col = clamp(col, 0, len);
   }
 
   #set_range(
