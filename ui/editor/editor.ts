@@ -67,7 +67,6 @@ export class Editor extends Control {
   layout({ y, x, w, h }: Area): void {
     this.y = y;
     this.x = x;
-
     this.w = w;
     this.h = h;
   }
