@@ -217,14 +217,7 @@ export class App extends Control {
     const { editor, alert } = this.ui;
 
     try {
-      using file = await Deno.open(path, { read: true });
-
-      const info = await file.stat();
-      if (!info.isFile) {
-        throw new Error(`${path} is not a file`);
-      }
-
-      await editor.buffer.load(file);
+      await this.#load_buffer(path);
 
       editor.reset(true);
       editor.render();
@@ -272,7 +265,42 @@ export class App extends Control {
     }
   }
 
+  async #load_buffer(path: string): Promise<void> {
+    const { buffer } = this.ui.editor;
+
+    using file = await Deno.open(path, { read: true });
+
+    const info = await file.stat();
+    if (!info.isFile) {
+      throw new Error(`${path} is not a file`);
+    }
+
+    const decoder = new TextDecoder();
+    const bytes = new Uint8Array(1024 * 1024 * 64);
+
+    while (true) {
+      const n = await file.read(bytes);
+      if (typeof n !== "number") {
+        break;
+      }
+
+      if (n > 0) {
+        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
+
+        buffer.append(text);
+      }
+    }
+
+    const text = decoder.decode();
+
+    if (text.length > 0) {
+      buffer.append(text);
+    }
+  }
+
   async #save_buffer(path: string): Promise<void> {
+    const { buffer } = this.ui.editor;
+
     using file = await Deno.open(path, {
       create: true,
       write: true,
@@ -283,7 +311,7 @@ export class App extends Control {
     stream.readable.pipeTo(file.writable);
     const writer = stream.writable.getWriter();
 
-    for (const text of this.ui.editor.buffer.read()) {
+    for (const text of buffer.read()) {
       await writer.write(text);
     }
   }

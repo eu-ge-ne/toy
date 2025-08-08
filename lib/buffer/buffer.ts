@@ -23,29 +23,6 @@ export class Buffer {
     yield* this.#buf.read(0);
   }
 
-  async load(file: Deno.FsFile): Promise<void> {
-    const decoder = new TextDecoder();
-    const bytes = new Uint8Array(1024 * 1024 * 64);
-
-    while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
-        break;
-      }
-
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-
-        this.#buf.insert(this.#buf.count, text);
-      }
-    }
-
-    const text = decoder.decode();
-    if (text.length > 0) {
-      this.#buf.insert(this.#buf.count, text);
-    }
-  }
-
   save_snapshot(): Snapshot {
     return structuredClone(this.#buf.root);
   }
@@ -68,6 +45,10 @@ export class Buffer {
 
   line_length(ln: number): number {
     return this.#read_line(ln).reduce((a, x) => a + this.#count_segments(x), 0);
+  }
+
+  append(text: string): void {
+    this.#buf.insert(this.#buf.count, text);
   }
 
   insert([ln, col]: Pos, text: string): [number, number] {
