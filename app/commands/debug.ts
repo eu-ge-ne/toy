@@ -1,16 +1,11 @@
-import { display_keys } from "@lib/key";
-
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
-  match_keys = [
-    { name: "F9" },
-  ];
+  match_keys = [];
 
   option = {
     id: "Debug",
     description: "Global: Toggle Debug Panel",
-    shortcuts: display_keys(this.match_keys),
   };
 
   async command(): Promise<void> {

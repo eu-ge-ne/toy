@@ -76,7 +76,6 @@ brew install eu-ge-ne/tap/toy
 - `F2` - Save
 - `F5` - Toggle render whitespace
 - `F6` - Toggle line wrap
-- `F9` - Toggle Debug panel
 - `F10` - Exit
 - `F11` - Toggle Zen mode
 
