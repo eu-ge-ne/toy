@@ -1,6 +1,5 @@
 import {
   cpr_req,
-  cup,
   decrc,
   DECResetMode,
   decrst,
@@ -10,6 +9,7 @@ import {
   parse_cpr_res,
 } from "@eu-ge-ne/ctlseqs";
 
+import { csi } from "./csi.ts";
 import { write } from "./write.ts";
 
 export const save = decsc;
@@ -18,8 +18,22 @@ export const restore = decrc;
 export const hide = decrst(DECResetMode.DECTCEM);
 export const show = decset(DECSetMode.DECTCEM);
 
+const set_cache: Record<number, Record<number, Uint8Array>> = {};
+
 export function set(y: number, x: number): Uint8Array {
-  return cup(y + 1, x + 1);
+  let bytes = set_cache[y]?.[x];
+
+  if (!bytes) {
+    bytes = csi(`${y + 1};${x + 1}H`);
+
+    if (!set_cache[y]) {
+      set_cache[y] = { [x]: bytes };
+    } else {
+      set_cache[y][x] = bytes;
+    }
+  }
+
+  return bytes;
 }
 
 const buf = new Uint8Array(1024);
