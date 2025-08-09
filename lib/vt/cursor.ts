@@ -1,13 +1,4 @@
-import {
-  cpr_req,
-  decrc,
-  DECResetMode,
-  decrst,
-  decsc,
-  decset,
-  DECSetMode,
-  parse_cpr_res,
-} from "@eu-ge-ne/ctlseqs";
+import { cpr_req, decrc, decsc, parse_cpr_res } from "@eu-ge-ne/ctlseqs";
 
 import { csi } from "./csi.ts";
 import { write } from "./write.ts";
@@ -15,8 +6,8 @@ import { write } from "./write.ts";
 export const save = decsc;
 export const restore = decrc;
 
-export const hide = decrst(DECResetMode.DECTCEM);
-export const show = decset(DECSetMode.DECTCEM);
+export const hide = csi("?25l");
+export const show = csi("?25h");
 
 const set_cache: Record<number, Record<number, Uint8Array>> = {};
 
