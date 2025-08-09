@@ -15,7 +15,7 @@
         "explicit-module-boundary-types",
         "explicit-function-return-type"
       ],
-      "exclude": ["require-await"]
+      "exclude": ["require-await", "no-control-regex"]
     }
   },
   "imports": {
