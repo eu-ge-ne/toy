@@ -291,7 +291,7 @@ export class Editor extends Control {
           if (i === 0) {
             vt.write_buf(
               colors.INDEX,
-              vt.text(`${ln + 1} `.padStart(this.index_width)),
+              vt.fmt.text(`${ln + 1} `.padStart(this.index_width)),
             );
           } else {
             vt.write_buf(

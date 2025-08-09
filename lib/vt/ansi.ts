@@ -13,7 +13,3 @@ export function CSI(code: string): Uint8Array {
 export function OSC(code: string): Uint8Array {
   return encoder.encode(`\x1b]${code}`);
 }
-
-export function text(text: string): Uint8Array {
-  return encoder.encode(text);
-}
