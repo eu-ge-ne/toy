@@ -1,12 +1,12 @@
-import { sgr_256_bg, sgr_256_fg, SGRColor256 } from "@eu-ge-ne/ctlseqs";
+import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
 import { Tokens } from "./tokens.ts";
 
-const red: Record<number, SGRColor256> = {
+const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
 };
 
-const gray: Record<number, SGRColor256> = {
+const gray: Record<number, RGBColor> = {
   50: [0xf9, 0xfa, 0xfb],
   100: [0xf3, 0xf4, 0xf6],
   200: [0xe5, 0xe7, 0xeb],
@@ -21,19 +21,19 @@ const gray: Record<number, SGRColor256> = {
 };
 
 export const GRAY: Tokens = {
-  bg_danger: sgr_256_bg(red[900]!),
-  bg_main: sgr_256_bg(gray[900]!),
-  fg_main: sgr_256_fg(gray[900]!),
+  bg_danger: char_bg(red[900]!),
+  bg_main: char_bg(gray[900]!),
+  fg_main: char_fg(gray[900]!),
 
-  bg_light2: sgr_256_bg(gray[500]!),
-  bg_light1: sgr_256_bg(gray[700]!),
-  bg_light0: sgr_256_bg(gray[800]!),
-  bg_dark0: sgr_256_bg(gray[950]!),
+  bg_light2: char_bg(gray[500]!),
+  bg_light1: char_bg(gray[700]!),
+  bg_light0: char_bg(gray[800]!),
+  bg_dark0: char_bg(gray[950]!),
 
-  fg_light2: sgr_256_fg(gray[100]!),
-  fg_light1: sgr_256_fg(gray[200]!),
-  fg_light0: sgr_256_fg(gray[300]!),
-  fg_dark0: sgr_256_fg(gray[400]!),
-  fg_dark1: sgr_256_fg(gray[600]!),
-  fg_dark2: sgr_256_fg(gray[700]!),
+  fg_light2: char_fg(gray[100]!),
+  fg_light1: char_fg(gray[200]!),
+  fg_light0: char_fg(gray[300]!),
+  fg_dark0: char_fg(gray[400]!),
+  fg_dark1: char_fg(gray[600]!),
+  fg_dark2: char_fg(gray[700]!),
 };

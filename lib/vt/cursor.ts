@@ -1,11 +1,11 @@
-import { csi, esc } from "./ansi.ts";
+import { CSI, ESC } from "./ansi.ts";
 import { write } from "./write.ts";
 
-export const save = esc("7");
-export const restore = esc("8");
+export const save = ESC("7");
+export const restore = ESC("8");
 
-export const hide = csi("?25l");
-export const show = csi("?25h");
+export const hide = CSI("?25l");
+export const show = CSI("?25h");
 
 const set_cache: Record<number, Record<number, Uint8Array>> = {};
 
@@ -13,7 +13,7 @@ export function set(y: number, x: number): Uint8Array {
   let bytes = set_cache[y]?.[x];
 
   if (!bytes) {
-    bytes = csi(`${y + 1};${x + 1}H`);
+    bytes = CSI(`${y + 1};${x + 1}H`);
 
     if (!set_cache[y]) {
       set_cache[y] = { [x]: bytes };
@@ -25,8 +25,9 @@ export function set(y: number, x: number): Uint8Array {
   return bytes;
 }
 
+export const cpr_req = CSI("6n");
+
 const cpr_buf = new Uint8Array(1024);
-const cpr_req = csi("6n");
 const decoder = new TextDecoder();
 
 export function measure(y: number, x: number, bytes: Uint8Array): number {

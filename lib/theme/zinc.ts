@@ -1,12 +1,12 @@
-import { sgr_256_bg, sgr_256_fg, SGRColor256 } from "@eu-ge-ne/ctlseqs";
+import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
 import { Tokens } from "./tokens.ts";
 
-const red: Record<number, SGRColor256> = {
+const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
 };
 
-const zinc: Record<number, SGRColor256> = {
+const zinc: Record<number, RGBColor> = {
   50: [0xfa, 0xfa, 0xfa],
   100: [0xf4, 0xf4, 0xf5],
   200: [0xe4, 0xe4, 0xe7],
@@ -21,19 +21,19 @@ const zinc: Record<number, SGRColor256> = {
 };
 
 export const ZINC: Tokens = {
-  bg_danger: sgr_256_bg(red[900]!),
-  bg_main: sgr_256_bg(zinc[900]!),
-  fg_main: sgr_256_fg(zinc[900]!),
+  bg_danger: char_bg(red[900]!),
+  bg_main: char_bg(zinc[900]!),
+  fg_main: char_fg(zinc[900]!),
 
-  bg_light2: sgr_256_bg(zinc[500]!),
-  bg_light1: sgr_256_bg(zinc[700]!),
-  bg_light0: sgr_256_bg(zinc[800]!),
-  bg_dark0: sgr_256_bg(zinc[950]!),
+  bg_light2: char_bg(zinc[500]!),
+  bg_light1: char_bg(zinc[700]!),
+  bg_light0: char_bg(zinc[800]!),
+  bg_dark0: char_bg(zinc[950]!),
 
-  fg_light2: sgr_256_fg(zinc[100]!),
-  fg_light1: sgr_256_fg(zinc[200]!),
-  fg_light0: sgr_256_fg(zinc[300]!),
-  fg_dark0: sgr_256_fg(zinc[400]!),
-  fg_dark1: sgr_256_fg(zinc[600]!),
-  fg_dark2: sgr_256_fg(zinc[700]!),
+  fg_light2: char_fg(zinc[100]!),
+  fg_light1: char_fg(zinc[200]!),
+  fg_light0: char_fg(zinc[300]!),
+  fg_dark0: char_fg(zinc[400]!),
+  fg_dark1: char_fg(zinc[600]!),
+  fg_dark2: char_fg(zinc[700]!),
 };

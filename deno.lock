@@ -1,15 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@eu-ge-ne/ctlseqs@^0.0.18": "0.0.18",
     "jsr:@eu-ge-ne/kitty-keys@0.6": "0.6.0",
     "jsr:@eu-ge-ne/text-buf@0.12": "0.12.0",
     "jsr:@std/cli@^1.0.21": "1.0.21"
   },
   "jsr": {
-    "@eu-ge-ne/ctlseqs@0.0.18": {
-      "integrity": "2f99c87a5e02715b4998e12e61c0c5616528f17a9db1d23a284fdb0cd71d98b5"
-    },
     "@eu-ge-ne/kitty-keys@0.6.0": {
       "integrity": "8dfdb35b75448c1a0df1f69e3ca1dd92ac7091438ab00b8dddd97ea0f4eb957b"
     },
@@ -22,7 +18,6 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@eu-ge-ne/ctlseqs@^0.0.18",
       "jsr:@eu-ge-ne/kitty-keys@0.6",
       "jsr:@eu-ge-ne/text-buf@0.12",
       "jsr:@std/cli@^1.0.21"
