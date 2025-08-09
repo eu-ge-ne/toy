@@ -4,8 +4,6 @@ export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
 type Pos = [number, number];
 
-const EOL_RE = /\r?\n/gm;
-
 export class Buffer {
   #sgr = new Intl.Segmenter();
   #buf = new TextBuf();
@@ -44,71 +42,57 @@ export class Buffer {
   }
 
   line_length(ln: number): number {
-    return this.#read_line(ln).reduce((a, x) => a + this.#count_segments(x), 0);
+    return this.#read_line(ln).reduce(
+      (a, x) => a + [...this.#sgr.segment(x)].length,
+      0,
+    );
   }
 
   append(text: string): void {
     this.#buf.insert(this.#buf.count, text);
   }
 
-  insert([ln, col]: Pos, text: string): [number, number] {
-    const col0 = this.#line_unit_index(ln, col);
-
-    this.#buf.insert([ln, col0], text);
-
-    const eols = text.matchAll(EOL_RE).toArray();
-
-    if (eols.length === 0) {
-      return [0, this.#count_segments(text)];
-    } else {
-      const eol = eols.at(-1)!;
-      const last_line = text.slice(eol.index + eol[0].length);
-
-      return [eols.length, this.#count_segments(last_line)];
-    }
+  insert([ln, col]: Pos, text: string): void {
+    this.#buf.insert(
+      [ln, this.#unit_col(ln, col)],
+      text,
+    );
   }
 
   delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
-    const col0 = this.#line_unit_index(from_ln, from_col);
-    const col1 = this.#line_unit_index(to_ln, to_col + 1);
-
-    this.#buf.delete([from_ln, col0], [to_ln, col1]);
+    this.#buf.delete(
+      [from_ln, this.#unit_col(from_ln, from_col)],
+      [to_ln, this.#unit_col(to_ln, to_col + 1)],
+    );
   }
 
   copy([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): string {
-    const col0 = this.#line_unit_index(from_ln, from_col);
-    const col1 = this.#line_unit_index(to_ln, to_col + 1);
-
-    return this.#buf.read([from_ln, col0], [to_ln, col1]).reduce(
-      (a, x) => a + x,
-      "",
-    );
+    return this.#buf.read(
+      [from_ln, this.#unit_col(from_ln, from_col)],
+      [to_ln, this.#unit_col(to_ln, to_col + 1)],
+    ).reduce((a, x) => a + x, "");
   }
 
   *#read_line(ln: number): Generator<string> {
     yield* this.#buf.read([ln, 0], [ln + 1, 0]);
   }
 
-  #count_segments(text: string): number {
-    return [...this.#sgr.segment(text)].length;
-  }
-
-  #line_unit_index(ln: number, grm_index: number): number {
-    let unit_index = 0;
+  #unit_col(ln: number, col: number): number {
+    let unit_col = 0;
     let i = 0;
 
     for (const seg of this.line(ln)) {
-      if (i === grm_index) {
+      if (i === col) {
         break;
       }
 
-      if (i < grm_index) {
-        unit_index += seg.length;
+      if (i < col) {
+        unit_col += seg.length;
       }
 
       i += 1;
     }
 
-    return unit_index;
+    return unit_col;
   }
 }
