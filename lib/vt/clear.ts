@@ -1,8 +1,19 @@
-import { csi, csi_cached } from "./ansi.ts";
+import { csi } from "./ansi.ts";
 import * as cursor from "./cursor.ts";
 
-const ech = (n: number) => csi_cached(n, () => `${n}X`);
 const cud = csi("B");
+
+const ech_cache: Record<number, Uint8Array> = {};
+
+function ech(n: number): Uint8Array {
+  let bytes = ech_cache[n];
+
+  if (!bytes) {
+    bytes = ech_cache[n] = csi(`${n}X`);
+  }
+
+  return bytes;
+}
 
 export function clear_line(w: number): Uint8Array {
   return ech(w);
