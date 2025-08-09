@@ -110,10 +110,10 @@ export class Editor extends Control {
 
     if (cursor.selecting) {
       buffer.delete(cursor.from, cursor.to);
-      cursor.set(...cursor.from, false);
+      cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
-    buffer.insert([cursor.ln, cursor.col], text);
+    buffer.insert(cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -136,17 +136,20 @@ export class Editor extends Control {
     if (cursor.ln > 0 && cursor.col === 0) {
       switch (buffer.line_length(cursor.ln)) {
         case 1: {
-          buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+          buffer.delete(cursor, cursor);
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
           break;
         }
         default: {
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+          buffer.delete(cursor, cursor);
         }
       }
     } else {
-      buffer.delete([cursor.ln, cursor.col - 1], [cursor.ln, cursor.col - 1]);
+      buffer.delete(
+        { ln: cursor.ln, col: cursor.col - 1 },
+        { ln: cursor.ln, col: cursor.col - 1 },
+      );
       cursor.move(0, -1, false);
     }
 
@@ -156,7 +159,7 @@ export class Editor extends Control {
   delete_char(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.delete([cursor.ln, cursor.col], [cursor.ln, cursor.col]);
+    buffer.delete(cursor, cursor);
 
     history.push();
   }
@@ -165,7 +168,7 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     buffer.delete(cursor.from, cursor.to);
-    cursor.set(...cursor.from, false);
+    cursor.set(cursor.from.ln, cursor.from.col, false);
 
     history.push();
   }

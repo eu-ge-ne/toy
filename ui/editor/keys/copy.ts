@@ -16,10 +16,7 @@ export class CopyHandler extends KeyHandler {
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
-        cursor.ln,
-        cursor.col,
-      ]);
+      this.editor.clipboard = buffer.copy(cursor, cursor);
     }
 
     copy_to_clipboard(this.editor.clipboard);

@@ -2,7 +2,7 @@ import { TextBuf } from "@eu-ge-ne/text-buf";
 
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
-type Pos = [number, number];
+type Pos = { ln: number; col: number };
 
 export class Buffer {
   #sgr = new Intl.Segmenter();
@@ -52,24 +52,24 @@ export class Buffer {
     this.#buf.insert(this.#buf.count, text);
   }
 
-  insert([ln, col]: Pos, text: string): void {
+  insert({ ln, col }: Pos, text: string): void {
     this.#buf.insert(
       [ln, this.#unit_col(ln, col)],
       text,
     );
   }
 
-  delete([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): void {
+  delete(from: Pos, to: Pos): void {
     this.#buf.delete(
-      [from_ln, this.#unit_col(from_ln, from_col)],
-      [to_ln, this.#unit_col(to_ln, to_col + 1)],
+      [from.ln, this.#unit_col(from.ln, from.col)],
+      [to.ln, this.#unit_col(to.ln, to.col + 1)],
     );
   }
 
-  copy([from_ln, from_col]: Pos, [to_ln, to_col]: Pos): string {
+  copy(from: Pos, to: Pos): string {
     return this.#buf.read(
-      [from_ln, this.#unit_col(from_ln, from_col)],
-      [to_ln, this.#unit_col(to_ln, to_col + 1)],
+      [from.ln, this.#unit_col(from.ln, from.col)],
+      [to.ln, this.#unit_col(to.ln, to.col + 1)],
     ).reduce((a, x) => a + x, "");
   }
 
