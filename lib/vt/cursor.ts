@@ -1,5 +1,3 @@
-import { parse_cpr_res } from "@eu-ge-ne/ctlseqs";
-
 import { csi, esc } from "./ansi.ts";
 import { write } from "./write.ts";
 
@@ -28,6 +26,7 @@ export function set(y: number, x: number): Uint8Array {
 
 const cpr_buf = new Uint8Array(1024);
 const cpr_req = csi("6n");
+const decoder = new TextDecoder();
 
 export function measure(y: number, x: number, bytes: Uint8Array): number {
   write(
@@ -37,14 +36,20 @@ export function measure(y: number, x: number, bytes: Uint8Array): number {
   );
 
   for (let i = 0; i < 4; i += 1) {
-    const len = Deno.stdin.readSync(cpr_buf)!;
-    if (len) {
-      const pos = parse_cpr_res(cpr_buf.subarray(0, len));
-      if (pos) {
-        return pos[1] - 1 - x;
-      }
+    const len = Deno.stdin.readSync(cpr_buf);
+    if (!len) {
+      continue;
     }
+
+    const bytes = cpr_buf.subarray(0, len);
+
+    const match = decoder.decode(bytes).match(/\x1b\[\d+;(\d+)R/);
+    if (!match) {
+      continue;
+    }
+
+    return Number.parseInt(match[1]!) - 1 - x;
   }
 
-  throw new Error("cursor.get(): timeout");
+  throw new Error("cursor.measure(): timeout");
 }
