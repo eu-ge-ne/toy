@@ -103,6 +103,8 @@ export class Editor extends Control {
     return handled;
   }
 
+  #sgr = new Intl.Segmenter();
+
   insert(text: string): void {
     const { cursor, buffer, history } = this;
 
@@ -111,12 +113,18 @@ export class Editor extends Control {
       cursor.set(...cursor.from, false);
     }
 
-    const [ln, col] = buffer.insert([cursor.ln, cursor.col], text);
+    buffer.insert([cursor.ln, cursor.col], text);
 
-    if (ln === 0) {
-      cursor.move(0, col, false);
+    const grms = [...this.#sgr.segment(text)].map((x) =>
+      graphemes.get(x.segment)
+    );
+    const eol_count = grms.filter((x) => x.is_eol).length;
+
+    if (eol_count === 0) {
+      cursor.move(0, grms.length, false);
     } else {
-      cursor.set(cursor.ln + ln, col, false);
+      const col = grms.length - grms.findLastIndex((x) => x.is_eol);
+      cursor.set(cursor.ln + eol_count, col, false);
     }
 
     history.push();
