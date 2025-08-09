@@ -1,4 +1,4 @@
-import { cpr_req, parse_cpr_res } from "@eu-ge-ne/ctlseqs";
+import { parse_cpr_res } from "@eu-ge-ne/ctlseqs";
 
 import { csi, esc } from "./ansi.ts";
 import { write } from "./write.ts";
@@ -26,7 +26,8 @@ export function set(y: number, x: number): Uint8Array {
   return bytes;
 }
 
-const buf = new Uint8Array(1024);
+const cpr_buf = new Uint8Array(1024);
+const cpr_req = csi("6n");
 
 export function measure(y: number, x: number, bytes: Uint8Array): number {
   write(
@@ -36,9 +37,9 @@ export function measure(y: number, x: number, bytes: Uint8Array): number {
   );
 
   for (let i = 0; i < 4; i += 1) {
-    const len = Deno.stdin.readSync(buf)!;
+    const len = Deno.stdin.readSync(cpr_buf)!;
     if (len) {
-      const pos = parse_cpr_res(buf.subarray(0, len));
+      const pos = parse_cpr_res(cpr_buf.subarray(0, len));
       if (pos) {
         return pos[1] - 1 - x;
       }
