@@ -1,4 +1,5 @@
 export * as fmt from "./fmt/mod.ts";
+export { text } from "./ansi.ts";
 export * from "./buf.ts";
 export * from "./clear.ts";
 export * from "./clipboard.ts";

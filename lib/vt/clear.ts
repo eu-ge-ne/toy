@@ -1,7 +1,7 @@
-import { csi } from "./ansi.ts";
+import { CSI } from "./ansi.ts";
 import * as cursor from "./cursor.ts";
 
-const cud = csi("B");
+const cud = CSI("B");
 
 const ech_cache: Record<number, Uint8Array> = {};
 
@@ -9,7 +9,7 @@ function ech(n: number): Uint8Array {
   let bytes = ech_cache[n];
 
   if (!bytes) {
-    bytes = ech_cache[n] = csi(`${n}X`);
+    bytes = ech_cache[n] = CSI(`${n}X`);
   }
 
   return bytes;

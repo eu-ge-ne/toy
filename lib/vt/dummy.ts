@@ -1,5 +1,4 @@
-import { cpr_req } from "@eu-ge-ne/ctlseqs";
-
+import { cpr_req } from "./cursor.ts";
 import { write } from "./write.ts";
 
 export function dummy_req(): void {
