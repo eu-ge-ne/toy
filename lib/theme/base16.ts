@@ -1,21 +1,21 @@
-import { sgr, SGRAttr } from "@lib/vt";
+import { char_attrs, CharAttr } from "@lib/vt";
 
 import { Tokens } from "./tokens.ts";
 
 export const BASE16: Tokens = {
-  bg_danger: sgr(SGRAttr.BgRed),
-  bg_main: sgr(SGRAttr.BgBlack),
-  fg_main: sgr(SGRAttr.FgBlack),
+  bg_danger: char_attrs(CharAttr.BgRed),
+  bg_main: char_attrs(CharAttr.BgBlack),
+  fg_main: char_attrs(CharAttr.FgBlack),
 
-  bg_light2: sgr(SGRAttr.BgCyan),
-  bg_light1: sgr(SGRAttr.BgBrightBlack),
-  bg_light0: sgr(SGRAttr.BgBrightBlack),
-  bg_dark0: sgr(SGRAttr.BgBlack),
+  bg_light2: char_attrs(CharAttr.BgCyan),
+  bg_light1: char_attrs(CharAttr.BgBrightBlack),
+  bg_light0: char_attrs(CharAttr.BgBrightBlack),
+  bg_dark0: char_attrs(CharAttr.BgBlack),
 
-  fg_light2: sgr(SGRAttr.FgCyan),
-  fg_light1: sgr(SGRAttr.FgBrightWhite),
-  fg_light0: sgr(SGRAttr.FgBrightWhite),
-  fg_dark0: sgr(SGRAttr.FgWhite),
-  fg_dark1: sgr(SGRAttr.FgWhite),
-  fg_dark2: sgr(SGRAttr.FgWhite),
+  fg_light2: char_attrs(CharAttr.FgCyan),
+  fg_light1: char_attrs(CharAttr.FgBrightWhite),
+  fg_light0: char_attrs(CharAttr.FgBrightWhite),
+  fg_dark0: char_attrs(CharAttr.FgWhite),
+  fg_dark1: char_attrs(CharAttr.FgWhite),
+  fg_dark2: char_attrs(CharAttr.FgWhite),
 };

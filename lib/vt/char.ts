@@ -2,7 +2,7 @@ import { CSI } from "./ansi.ts";
 
 // https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Pm-m.1CA7
 
-export const enum SGRAttr {
+export const enum CharAttr {
   Default = 0,
   Bold = 1,
   Faint = 2,
@@ -61,16 +61,16 @@ export const enum SGRAttr {
   BgBrightWhite = 107,
 }
 
-export type RGBColor = [number, number, number];
-
-export function sgr(...attrs: SGRAttr[]): Uint8Array {
+export function char_attrs(...attrs: CharAttr[]): Uint8Array {
   return CSI(attrs.join(";") + "m");
 }
 
-export function sgr_rgb_fg(fg: RGBColor): Uint8Array {
+export type RGBColor = [number, number, number];
+
+export function char_fg(fg: RGBColor): Uint8Array {
   return CSI("38;2;" + fg.join(";") + "m");
 }
 
-export function sgr_rgb_bg(bg: RGBColor): Uint8Array {
+export function char_bg(bg: RGBColor): Uint8Array {
   return CSI("48;2;" + bg.join(";") + "m");
 }

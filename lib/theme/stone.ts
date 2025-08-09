@@ -1,4 +1,4 @@
-import { RGBColor, sgr_rgb_bg, sgr_rgb_fg } from "@lib/vt";
+import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
 import { Tokens } from "./tokens.ts";
 
@@ -21,19 +21,19 @@ const stone: Record<number, RGBColor> = {
 };
 
 export const STONE: Tokens = {
-  bg_danger: sgr_rgb_bg(red[900]!),
-  bg_main: sgr_rgb_bg(stone[900]!),
-  fg_main: sgr_rgb_fg(stone[900]!),
+  bg_danger: char_bg(red[900]!),
+  bg_main: char_bg(stone[900]!),
+  fg_main: char_fg(stone[900]!),
 
-  bg_light2: sgr_rgb_bg(stone[500]!),
-  bg_light1: sgr_rgb_bg(stone[700]!),
-  bg_light0: sgr_rgb_bg(stone[800]!),
-  bg_dark0: sgr_rgb_bg(stone[950]!),
+  bg_light2: char_bg(stone[500]!),
+  bg_light1: char_bg(stone[700]!),
+  bg_light0: char_bg(stone[800]!),
+  bg_dark0: char_bg(stone[950]!),
 
-  fg_light2: sgr_rgb_fg(stone[100]!),
-  fg_light1: sgr_rgb_fg(stone[200]!),
-  fg_light0: sgr_rgb_fg(stone[300]!),
-  fg_dark0: sgr_rgb_fg(stone[400]!),
-  fg_dark1: sgr_rgb_fg(stone[600]!),
-  fg_dark2: sgr_rgb_fg(stone[700]!),
+  fg_light2: char_fg(stone[100]!),
+  fg_light1: char_fg(stone[200]!),
+  fg_light0: char_fg(stone[300]!),
+  fg_dark0: char_fg(stone[400]!),
+  fg_dark1: char_fg(stone[600]!),
+  fg_dark2: char_fg(stone[700]!),
 };
