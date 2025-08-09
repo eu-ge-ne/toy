@@ -1,11 +1,10 @@
-import { cpr_req, decrc, decsc, parse_cpr_res } from "@eu-ge-ne/ctlseqs";
+import { cpr_req, parse_cpr_res } from "@eu-ge-ne/ctlseqs";
 
-import { csi } from "./csi.ts";
+import { csi, esc } from "./ansi.ts";
 import { write } from "./write.ts";
 
-export const save = decsc;
-export const restore = decrc;
-
+export const save = esc("7");
+export const restore = esc("8");
 export const hide = csi("?25l");
 export const show = csi("?25h");
 
