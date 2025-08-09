@@ -1,4 +1,4 @@
-import { sgr, SGRAttr } from "@eu-ge-ne/ctlseqs";
+import { sgr, SGRAttr } from "@lib/vt";
 
 import { Tokens } from "./tokens.ts";
 
