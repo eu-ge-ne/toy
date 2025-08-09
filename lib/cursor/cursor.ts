@@ -6,8 +6,8 @@ export class Cursor {
   ln = 0;
   col = 0;
   selecting = false;
-  from: [number, number] = [0, 0];
-  to: [number, number] = [0, 0];
+  readonly from = { ln: 0, col: 0 };
+  readonly to = { ln: 0, col: 0 };
 
   #start_ln = 0;
   #start_col = 0;
@@ -28,18 +28,17 @@ export class Cursor {
       return false;
     }
 
-    const [from_ln, from_col] = this.from;
-    const [to_ln, to_col] = this.to;
+    const { from, to } = this;
 
-    if (ln < from_ln || ln > to_ln) {
+    if (ln < from.ln || ln > to.ln) {
       return false;
     }
 
-    if (ln === from_ln && col < from_col) {
+    if (ln === from.ln && col < from.col) {
       return false;
     }
 
-    if (ln === to_ln && col > to_col) {
+    if (ln === to.ln && col > to.col) {
       return false;
     }
 
@@ -103,21 +102,23 @@ export class Cursor {
 
     this.selecting = true;
 
+    const { from, to } = this;
+
     if (
       (this.#start_ln > new_ln) ||
       (this.#start_ln === new_ln && this.#start_col > new_col)
     ) {
-      this.from[0] = new_ln;
-      this.from[1] = new_col;
+      from.ln = new_ln;
+      from.col = new_col;
 
-      this.to[0] = this.#start_ln;
-      this.to[1] = this.#start_col;
+      to.ln = this.#start_ln;
+      to.col = this.#start_col;
     } else {
-      this.from[0] = this.#start_ln;
-      this.from[1] = this.#start_col;
+      from.ln = this.#start_ln;
+      from.col = this.#start_col;
 
-      this.to[0] = new_ln;
-      this.to[1] = new_col;
+      to.ln = new_ln;
+      to.col = new_col;
     }
   }
 }

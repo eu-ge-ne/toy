@@ -16,10 +16,7 @@ export class CutHandler extends KeyHandler {
 
       this.editor.delete_selection();
     } else {
-      this.editor.clipboard = buffer.copy([cursor.ln, cursor.col], [
-        cursor.ln,
-        cursor.col,
-      ]);
+      this.editor.clipboard = buffer.copy(cursor, cursor);
 
       this.editor.delete_char();
     }
