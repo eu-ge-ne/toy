@@ -1,9 +1,10 @@
-import { DECResetMode, decrst, decset, DECSetMode } from "@eu-ge-ne/ctlseqs";
+import { csi } from "./ansi.ts";
 
 import { write } from "./write.ts";
 
-const bsu_bytes = decset(DECSetMode.BSU);
-const esu_bytes = decrst(DECResetMode.ESU);
+// https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036
+const bsu_bytes = csi("?2026h");
+const esu_bytes = csi("?2026l");
 
 let c = 0;
 
