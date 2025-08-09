@@ -123,8 +123,7 @@ export class Editor extends Control {
     if (eol_count === 0) {
       cursor.move(0, grms.length, false);
     } else {
-      // TODO: fix
-      const col = grms.length - grms.findLastIndex((x) => x.is_eol);
+      const col = grms.length - grms.findLastIndex((x) => x.is_eol) - 1;
       cursor.set(cursor.ln + eol_count, col, false);
     }
 
