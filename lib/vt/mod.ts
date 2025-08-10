@@ -1,4 +1,3 @@
-export * as fmt from "./fmt/mod.ts";
 export * from "./buf.ts";
 export * from "./char.ts";
 export * from "./clear.ts";

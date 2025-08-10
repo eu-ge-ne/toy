@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Modal } from "@lib/ui";
+import { Area, Modal, fmt } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -54,13 +54,13 @@ export class Alert extends Modal<[unknown], void> {
       vt.write_buf(
         vt.cursor.set(y, this.x + 2),
         colors.TEXT,
-        ...vt.fmt.fit(space, line),
+        ...fmt.fit(space, line),
       );
     }
 
     vt.flush_buf(
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...vt.fmt.center({ len: this.w }, "ENTER‧ok"),
+      ...fmt.center({ len: this.w }, "ENTER‧ok"),
     );
 
     vt.esu();

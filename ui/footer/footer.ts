@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Control } from "@lib/ui";
+import { Area, Control, fmt } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -33,7 +33,7 @@ export class Footer extends Control {
 
     const data = [
       colors.TEXT,
-      ...vt.fmt.fit(space, this.#cursor_status),
+      ...fmt.fit(space, this.#cursor_status),
     ];
 
     vt.flush_buf(
