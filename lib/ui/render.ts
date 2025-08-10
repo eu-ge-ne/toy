@@ -14,7 +14,11 @@ export function* text(
   ...xs: Chunks
 ): Generator<Uint8Array> {
   if (align === "center") {
-    const w0 = Math.trunc((span[0] - chunks_length(xs)) / 2);
+    const len = xs.filter((x) => typeof x === "string").reduce(
+      (a, x) => a + x.length,
+      0,
+    );
+    const w0 = Math.trunc((span[0] - len) / 2);
     if (w0 > 0) {
       span[0] -= w0;
       yield space(w0);
@@ -51,9 +55,4 @@ export function* text(
 
 export function space(n: number): Uint8Array {
   return encoder.encode(` \x1b[${n - 1}b`);
-}
-
-function chunks_length(xs: Chunks): number {
-  return xs.filter((x) => typeof x === "string")
-    .reduce((a, x) => a + x.length, 0);
 }
