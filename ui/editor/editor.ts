@@ -3,7 +3,7 @@ import { Cursor } from "@lib/cursor";
 import { Grapheme, graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { range, sum } from "@lib/std";
-import { Area, Control, fmt } from "@lib/ui";
+import { Area, Control, fmt, text } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as keys from "./keys/mod.ts";
@@ -291,7 +291,7 @@ export class Editor extends Control {
           if (i === 0) {
             vt.write_buf(
               colors.INDEX,
-              fmt.text(`${ln + 1} `.padStart(this.index_width)),
+              text(`${ln + 1} `.padStart(this.index_width)),
             );
           } else {
             vt.write_buf(

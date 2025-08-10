@@ -1,6 +1,6 @@
+import { text } from "../text.ts";
 import { Chunks } from "./chunks.ts";
 import { Span } from "./span.ts";
-import { text } from "./text.ts";
 
 export function* fit(span: Span, ...chunks: Chunks): Generator<Uint8Array> {
   for (let chunk of chunks) {
