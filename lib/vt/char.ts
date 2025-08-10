@@ -1,7 +1,5 @@
 import { CSI } from "./ansi.ts";
 
-// https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Pm-m.1CA7
-
 export const enum CharAttr {
   Default = 0,
   Bold = 1,

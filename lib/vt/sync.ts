@@ -2,7 +2,6 @@ import { CSI } from "./ansi.ts";
 
 import { write } from "./write.ts";
 
-// https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036
 const bsu_bytes = CSI("?2026h");
 const esu_bytes = CSI("?2026l");
 
