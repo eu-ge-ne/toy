@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, clear_area, Control, fmt } from "@lib/ui";
+import { Area, clear, Control, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -26,18 +26,18 @@ export class Footer extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...clear_area(this),
+      ...clear.area(this),
     );
 
-    const space = { len: this.w };
+    const span: render.Span = [this.w];
 
     const data = [
       colors.TEXT,
-      ...fmt.fit(space, this.#cursor_status),
+      ...render.text(span, this.#cursor_status),
     ];
 
     vt.flush_buf(
-      vt.cursor.set(this.y, this.x + space.len),
+      vt.cursor.set(this.y, this.x + span[0]),
       ...data,
       vt.cursor.restore,
       vt.cursor.show,

@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, clear_area, fmt, Modal } from "@lib/ui";
+import { Area, clear, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -38,7 +38,7 @@ export class Ask extends Modal<[string], boolean> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...clear_area(this),
+      ...clear.area(this),
     );
 
     let pos = 0;
@@ -48,21 +48,21 @@ export class Ask extends Modal<[string], boolean> {
         break;
       }
 
-      const space = { len: this.w - 2 };
-      const line = this.#text.slice(pos, pos + space.len);
+      const span: render.Span = [this.w - 2];
+      const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
 
       vt.write_buf(
         vt.cursor.set(y, this.x + 1),
         colors.TEXT,
-        ...fmt.center(space, line),
+        ...render.center(span, line),
       );
     }
 
     vt.flush_buf(
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...fmt.center({ len: this.w }, "ESC‧no    ENTER‧yes"),
+      ...render.center([this.w], "ESC‧no    ENTER‧yes"),
     );
 
     vt.esu();

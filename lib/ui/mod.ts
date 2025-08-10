@@ -1,5 +1,5 @@
-export * as fmt from "./fmt/mod.ts";
 export * from "./area.ts";
+export * as clear from "./clear.ts";
 export * from "./control.ts";
 export * from "./modal.ts";
-export * from "./text.ts";
+export * as render from "./render.ts";

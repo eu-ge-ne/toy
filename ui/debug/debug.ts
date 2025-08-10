@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, clear_area, Control, fmt } from "@lib/ui";
+import { Area, clear, Control, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -35,32 +35,32 @@ export class Debug extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...clear_area(this),
+      ...clear.area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
-      ...fmt.fit(
-        { len: this.w - 1 },
+      ...render.text(
+        [this.w - 1],
         "Input    : ",
         this.#input_time,
         " ms",
       ),
       vt.cursor.set(this.y + 2, this.x + 1),
-      ...fmt.fit(
-        { len: this.w - 1 },
+      ...render.text(
+        [this.w - 1],
         "Render   : ",
         this.#render_time,
         " ms",
       ),
       vt.cursor.set(this.y + 3, this.x + 1),
-      ...fmt.fit(
-        { len: this.w - 1 },
+      ...render.text(
+        [this.w - 1],
         "RSS      : ",
         rss,
         " MiB",
       ),
       vt.cursor.set(this.y + 4, this.x + 1),
-      ...fmt.fit(
-        { len: this.w - 1 },
+      ...render.text(
+        [this.w - 1],
         "Heap     : ",
         heap_used,
         "/",
@@ -68,8 +68,8 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.set(this.y + 5, this.x + 1),
-      ...fmt.fit(
-        { len: this.w - 1 },
+      ...render.text(
+        [this.w - 1],
         "External : ",
         external_mem,
         " MiB",
