@@ -16,3 +16,7 @@ export function* clear_area({ y, x, w, h }: Area): Generator<Uint8Array> {
     yield cursor.down;
   }
 }
+
+export function clear_line(w: number): Uint8Array {
+  return ech(w);
+}
