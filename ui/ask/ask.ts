@@ -56,13 +56,13 @@ export class Ask extends Modal<[string], boolean> {
       vt.write_buf(
         vt.cursor.set(y, this.x + 1),
         colors.TEXT,
-        ...render.center(span, line),
+        ...render.text(span, "center", line),
       );
     }
 
     vt.flush_buf(
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...render.center([this.w], "ESC‧no    ENTER‧yes"),
+      ...render.text([this.w], "center", "ESC‧no    ENTER‧yes"),
     );
 
     vt.esu();

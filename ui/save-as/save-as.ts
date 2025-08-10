@@ -55,9 +55,9 @@ export class SaveAs extends Modal<[string], string> {
       ...clear.area(this),
       vt.cursor.set(this.y + 1, this.x),
       colors.TEXT,
-      ...render.center([this.w], "Save As"),
+      ...render.text([this.w], "center", "Save As"),
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...render.center([this.w], "ESC‧cancel    ENTER‧ok"),
+      ...render.text([this.w], "center", "ESC‧cancel    ENTER‧ok"),
     );
 
     this.#editor.render();

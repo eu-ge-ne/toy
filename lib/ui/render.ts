@@ -1,14 +1,26 @@
 const encoder = new TextEncoder();
 
-export type Span = [number];
-
 type Chunks = (string | Uint8Array)[];
+
+export type Span = [number];
 
 export function txt(x: string): Uint8Array {
   return encoder.encode(x);
 }
 
-export function* text(span: Span, ...xs: Chunks): Generator<Uint8Array> {
+export function* text(
+  span: Span,
+  align: "left" | "center",
+  ...xs: Chunks
+): Generator<Uint8Array> {
+  if (align === "center") {
+    const w0 = Math.trunc((span[0] - chunks_length(xs)) / 2);
+    if (w0 > 0) {
+      span[0] -= w0;
+      yield space(w0);
+    }
+  }
+
   for (let chunk of xs) {
     if (typeof chunk !== "string") {
       yield chunk;
@@ -27,21 +39,13 @@ export function* text(span: Span, ...xs: Chunks): Generator<Uint8Array> {
 
     span[0] -= chunk.length;
   }
-}
 
-export function* center(span: Span, ...xs: Chunks): Generator<Uint8Array> {
-  const w0 = Math.trunc((span[0] - chunks_length(xs)) / 2);
-  if (w0 > 0) {
-    span[0] -= w0;
-    yield space(w0);
-  }
-
-  yield* text(span, ...xs);
-
-  const w1 = span[0];
-  if (w1) {
-    span[0] = 0;
-    yield space(w1);
+  if (align === "center") {
+    const w1 = span[0];
+    if (w1) {
+      span[0] = 0;
+      yield space(w1);
+    }
   }
 }
 

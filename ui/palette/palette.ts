@@ -164,7 +164,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.set(this.y + 2, this.x + 2),
       colors.OPTION,
-      ...render.text([this.w - 4], "No matching commands"),
+      ...render.text([this.w - 4], "left", "No matching commands"),
     );
   }
 
@@ -190,11 +190,11 @@ export class Palette
       vt.write_buf(
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
         vt.cursor.set(y, this.x + 2),
-        ...render.text(span, option.description),
+        ...render.text(span, "left", option.description),
       );
 
       vt.write_buf(
-        ...render.text(span, option.shortcuts.padStart(span[0])),
+        ...render.text(span, "left", option.shortcuts.padStart(span[0])),
       );
 
       i += 1;

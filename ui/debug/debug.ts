@@ -40,6 +40,7 @@ export class Debug extends Control {
       vt.cursor.set(this.y + 1, this.x + 1),
       ...render.text(
         [this.w - 1],
+        "left",
         "Input    : ",
         this.#input_time,
         " ms",
@@ -47,6 +48,7 @@ export class Debug extends Control {
       vt.cursor.set(this.y + 2, this.x + 1),
       ...render.text(
         [this.w - 1],
+        "left",
         "Render   : ",
         this.#render_time,
         " ms",
@@ -54,6 +56,7 @@ export class Debug extends Control {
       vt.cursor.set(this.y + 3, this.x + 1),
       ...render.text(
         [this.w - 1],
+        "left",
         "RSS      : ",
         rss,
         " MiB",
@@ -61,6 +64,7 @@ export class Debug extends Control {
       vt.cursor.set(this.y + 4, this.x + 1),
       ...render.text(
         [this.w - 1],
+        "left",
         "Heap     : ",
         heap_used,
         "/",
@@ -70,6 +74,7 @@ export class Debug extends Control {
       vt.cursor.set(this.y + 5, this.x + 1),
       ...render.text(
         [this.w - 1],
+        "left",
         "External : ",
         external_mem,
         " MiB",

@@ -31,8 +31,9 @@ export class Header extends Control {
       colors.BACKGROUND,
       ...clear.area(this),
       vt.cursor.set(this.y, this.x),
-      ...render.center(
+      ...render.text(
         [this.w],
+        "center",
         colors.FILE_PATH,
         this.#file_path,
         ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
