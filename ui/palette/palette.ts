@@ -1,4 +1,4 @@
-import { Area, fmt, Modal } from "@lib/ui";
+import { Area, clear_area, fmt, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -59,7 +59,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear_area(this),
+      ...clear_area(this),
     );
 
     if (this.#options.length === 0) {

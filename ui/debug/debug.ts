@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Control, fmt } from "@lib/ui";
+import { Area, clear_area, Control, fmt } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -35,7 +35,7 @@ export class Debug extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear_area(this),
+      ...clear_area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
       ...fmt.fit(

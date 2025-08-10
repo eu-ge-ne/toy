@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, fmt, Modal } from "@lib/ui";
+import { Area, clear_area, fmt, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -38,7 +38,7 @@ export class Ask extends Modal<[string], boolean> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear_area(this),
+      ...clear_area(this),
     );
 
     let pos = 0;
