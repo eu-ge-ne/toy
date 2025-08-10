@@ -3,7 +3,7 @@ import { Cursor } from "@lib/cursor";
 import { Grapheme, graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { range, sum } from "@lib/std";
-import { Area, Control } from "@lib/ui";
+import { Area, clear, Control, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as keys from "./keys/mod.ts";
@@ -204,14 +204,14 @@ export class Editor extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...vt.clear_area(this),
+      ...clear.area(this),
     );
 
     if (index_enabled && ln_count > 0) {
       if (this.#ln_count !== ln_count) {
         this.#ln_count = ln_count;
         this.index_width = Math.trunc(Math.log10(ln_count)) + 3;
-        this.index_blank = vt.fmt.spaces(this.index_width);
+        this.index_blank = render.space(this.index_width);
       }
     } else {
       this.index_width = 0;
@@ -255,7 +255,7 @@ export class Editor extends Control {
         vt.write_buf(
           vt.cursor.set(row, x),
           colors.VOID,
-          vt.clear_line(w),
+          clear.line(w),
         );
       }
 
@@ -291,7 +291,7 @@ export class Editor extends Control {
           if (i === 0) {
             vt.write_buf(
               colors.INDEX,
-              vt.fmt.text(`${ln + 1} `.padStart(this.index_width)),
+              render.txt(`${ln + 1} `.padStart(this.index_width)),
             );
           } else {
             vt.write_buf(

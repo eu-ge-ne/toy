@@ -7,6 +7,8 @@ export const restore = ESC("8");
 export const hide = CSI("?25l");
 export const show = CSI("?25h");
 
+export const down = CSI("B");
+
 const set_cache: Record<number, Record<number, Uint8Array>> = {};
 
 export function set(y: number, x: number): Uint8Array {

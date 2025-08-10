@@ -1,4 +1,4 @@
-import { Area, Modal } from "@lib/ui";
+import { Area, clear, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -59,7 +59,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...vt.clear_area(this),
+      ...clear.area(this),
     );
 
     if (this.#options.length === 0) {
@@ -164,7 +164,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.set(this.y + 2, this.x + 2),
       colors.OPTION,
-      ...vt.fmt.fit({ len: this.w - 4 }, "No matching commands"),
+      ...render.text([this.w - 4], "left", "No matching commands"),
     );
   }
 
@@ -185,16 +185,16 @@ export class Palette
         break;
       }
 
-      const space = { len: this.w - 4 };
+      const span: render.Span = [this.w - 4];
 
       vt.write_buf(
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
         vt.cursor.set(y, this.x + 2),
-        ...vt.fmt.fit(space, option.description),
+        ...render.text(span, "left", option.description),
       );
 
       vt.write_buf(
-        ...vt.fmt.fit(space, option.shortcuts.padStart(space.len)),
+        ...render.text(span, "left", option.shortcuts.padStart(span[0])),
       );
 
       i += 1;
