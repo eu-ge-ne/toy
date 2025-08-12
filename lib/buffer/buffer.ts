@@ -59,7 +59,7 @@ export class Buffer {
     );
   }
 
-  delete(from: Pos, to: Pos): void {
+  seg_delete(from: Pos, to: Pos): void {
     this.#buf.delete(
       [from.ln, this.#unit_col(from.ln, from.col)],
       [to.ln, this.#unit_col(to.ln, to.col + 1)],

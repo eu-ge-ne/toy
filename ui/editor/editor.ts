@@ -109,7 +109,7 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.selecting) {
-      buffer.delete(cursor.from, cursor.to);
+      buffer.seg_delete(cursor.from, cursor.to);
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
@@ -137,17 +137,17 @@ export class Editor extends Control {
       const len = buffer.seg_line(cursor.ln).take(2).reduce((a) => a + 1, 0);
       switch (len) {
         case 1: {
-          buffer.delete(cursor, cursor);
+          buffer.seg_delete(cursor, cursor);
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
           break;
         }
         default: {
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          buffer.delete(cursor, cursor);
+          buffer.seg_delete(cursor, cursor);
         }
       }
     } else {
-      buffer.delete(
+      buffer.seg_delete(
         { ln: cursor.ln, col: cursor.col - 1 },
         { ln: cursor.ln, col: cursor.col - 1 },
       );
@@ -160,7 +160,7 @@ export class Editor extends Control {
   delete_char(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.delete(cursor, cursor);
+    buffer.seg_delete(cursor, cursor);
 
     history.push();
   }
@@ -168,7 +168,7 @@ export class Editor extends Control {
   delete_selection(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.delete(cursor.from, cursor.to);
+    buffer.seg_delete(cursor.from, cursor.to);
     cursor.set(cursor.from.ln, cursor.from.col, false);
 
     history.push();
