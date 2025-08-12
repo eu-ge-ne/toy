@@ -2,6 +2,7 @@ import { TextBuf } from "@eu-ge-ne/text-buf";
 
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
+type SegPos = { ln: number; col: number };
 type Pos = { ln: number; col: number };
 
 export class Buffer extends TextBuf {
@@ -24,11 +25,8 @@ export class Buffer extends TextBuf {
     this.insert(0, text);
   }
 
-  seg_read(from: Pos, to: Pos): string {
-    return this.read(
-      this.#unit_pos(from),
-      this.#unit_pos({ ln: to.ln, col: to.col + 1 }),
-    ).reduce((a, x) => a + x, "");
+  *seg_read(start: SegPos, end: SegPos): Generator<string> {
+    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   *seg_line(ln: number): Generator<string> {
@@ -40,17 +38,17 @@ export class Buffer extends TextBuf {
   }
 
   seg_insert(pos: Pos, text: string): void {
-    this.insert(this.#unit_pos(pos), text);
+    this.insert(this.#to_unit_pos(pos), text);
   }
 
   seg_delete(from: Pos, to: Pos): void {
     this.delete(
-      this.#unit_pos(from),
-      this.#unit_pos({ ln: to.ln, col: to.col + 1 }),
+      this.#to_unit_pos(from),
+      this.#to_unit_pos({ ln: to.ln, col: to.col + 1 }),
     );
   }
 
-  #unit_pos({ ln, col }: Pos): [number, number] {
+  #to_unit_pos({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 
