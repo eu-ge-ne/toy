@@ -26,8 +26,8 @@ export class Buffer extends TextBuf {
 
   seg_read(from: Pos, to: Pos): string {
     return this.read(
-      [from.ln, this.#unit_col(from.ln, from.col)],
-      [to.ln, this.#unit_col(to.ln, to.col + 1)],
+      this.#unit_col(from),
+      this.#unit_col({ ln: to.ln, col: to.col + 1 }),
     ).reduce((a, x) => a + x, "");
   }
 
@@ -39,21 +39,18 @@ export class Buffer extends TextBuf {
     }
   }
 
-  seg_insert({ ln, col }: Pos, text: string): void {
-    this.insert(
-      [ln, this.#unit_col(ln, col)],
-      text,
-    );
+  seg_insert(pos: Pos, text: string): void {
+    this.insert(this.#unit_col(pos), text);
   }
 
   seg_delete(from: Pos, to: Pos): void {
     this.delete(
-      [from.ln, this.#unit_col(from.ln, from.col)],
-      [to.ln, this.#unit_col(to.ln, to.col + 1)],
+      this.#unit_col(from),
+      this.#unit_col({ ln: to.ln, col: to.col + 1 }),
     );
   }
 
-  #unit_col(ln: number, col: number): number {
+  #unit_col({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 
@@ -69,6 +66,6 @@ export class Buffer extends TextBuf {
       i += 1;
     }
 
-    return unit_col;
+    return [ln, unit_col];
   }
 }
