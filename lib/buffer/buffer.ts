@@ -7,15 +7,6 @@ type Pos = { ln: number; col: number };
 export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
-  get text(): string {
-    return this.read(0).reduce((a, x) => a + x, "");
-  }
-
-  set text(text: string) {
-    this.delete(0);
-    this.insert(0, text);
-  }
-
   save(): Snapshot {
     return structuredClone(this.root);
   }
@@ -24,8 +15,13 @@ export class Buffer extends TextBuf {
     this.root = structuredClone(x);
   }
 
-  append(text: string): void {
-    this.insert(this.count, text);
+  get text(): string {
+    return this.read(0).reduce((a, x) => a + x, "");
+  }
+
+  set text(text: string) {
+    this.delete(0);
+    this.insert(0, text);
   }
 
   seg_read(from: Pos, to: Pos): string {
