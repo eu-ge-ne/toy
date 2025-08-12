@@ -7,14 +7,6 @@ type Pos = { ln: number; col: number };
 export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
-  save(): Snapshot {
-    return structuredClone(this.root);
-  }
-
-  restore(x: Snapshot): void {
-    this.root = structuredClone(x);
-  }
-
   get text(): string {
     return this.read(0).reduce((a, x) => a + x);
   }
