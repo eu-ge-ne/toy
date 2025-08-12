@@ -7,16 +7,16 @@ type Pos = { ln: number; col: number };
 export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
-  *seg_read(start: Pos, end: Pos): Generator<string> {
-    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
-  }
-
   *seg_line(ln: number): Generator<string> {
     for (const chunk of this.read([ln, 0], [ln + 1, 0])) {
       for (const { segment } of this.#sgr.segment(chunk)) {
         yield segment;
       }
     }
+  }
+
+  *seg_read(start: Pos, end: Pos): Generator<string> {
+    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   seg_insert(pos: Pos, text: string): void {
