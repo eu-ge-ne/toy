@@ -153,7 +153,7 @@ export class Editor extends Control {
   delete_char(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.seg_delete(cursor, cursor);
+    buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
 
     history.push();
   }
