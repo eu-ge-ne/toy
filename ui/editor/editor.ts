@@ -147,10 +147,7 @@ export class Editor extends Control {
         }
       }
     } else {
-      buffer.seg_delete(
-        { ln: cursor.ln, col: cursor.col - 1 },
-        { ln: cursor.ln, col: cursor.col - 1 },
-      );
+      buffer.seg_delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
       cursor.move(0, -1, false);
     }
 
