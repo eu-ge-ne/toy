@@ -161,7 +161,10 @@ export class Editor extends Control {
   delete_selection(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.seg_delete(cursor.from, cursor.to);
+    buffer.seg_delete(cursor.from, {
+      ln: cursor.to.ln,
+      col: cursor.to.col + 1,
+    });
     cursor.set(cursor.from.ln, cursor.from.col, false);
 
     history.push();
