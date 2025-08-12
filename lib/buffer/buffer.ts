@@ -1,4 +1,4 @@
-import { TextBuf } from "@eu-ge-ne/text-buf";
+import { Position, TextBuf } from "@eu-ge-ne/text-buf";
 
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
@@ -17,8 +17,8 @@ export class Buffer {
     this.#buf.insert(0, text);
   }
 
-  *read(): Generator<string> {
-    yield* this.#buf.read(0);
+  *read(start: Position, end?: Position): Generator<string> {
+    yield* this.#buf.read(start, end);
   }
 
   save(): Snapshot {
@@ -33,16 +33,16 @@ export class Buffer {
     return this.#buf.line_count;
   }
 
+  append(text: string): void {
+    this.#buf.insert(this.#buf.count, text);
+  }
+
   *seg_line(ln: number): Generator<string> {
     for (const chunk of this.#buf.read([ln, 0], [ln + 1, 0])) {
       for (const { segment } of this.#sgr.segment(chunk)) {
         yield segment;
       }
     }
-  }
-
-  append(text: string): void {
-    this.#buf.insert(this.#buf.count, text);
   }
 
   insert({ ln, col }: Pos, text: string): void {
