@@ -29,7 +29,7 @@ export class Palette
     this.#editor.enabled = true;
 
     this.#all = options;
-    this.#editor.buffer.set_text("");
+    this.#editor.buffer.reset();
     this.#editor.reset(false);
 
     this.#filter();

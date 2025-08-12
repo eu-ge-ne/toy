@@ -7,11 +7,6 @@ type Pos = { ln: number; col: number };
 export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
-  set_text(text: string): void {
-    this.delete(0);
-    this.insert(0, text);
-  }
-
   *seg_read(start: Pos, end: Pos): Generator<string> {
     yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
