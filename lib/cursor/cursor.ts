@@ -61,7 +61,7 @@ export class Cursor {
   }
 
   #set_ln(ln: number): void {
-    let max = this.buffer.ln_count - 1;
+    let max = this.buffer.line_count - 1;
     if (max < 0) {
       max = 0;
     }

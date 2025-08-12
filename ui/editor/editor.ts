@@ -196,7 +196,7 @@ export class Editor extends Control {
       enabled,
       wrap_enabled,
       index_enabled,
-      buffer: { ln_count },
+      buffer: { line_count },
     } = this;
 
     vt.bsu();
@@ -208,10 +208,10 @@ export class Editor extends Control {
       ...clear.area(this),
     );
 
-    if (index_enabled && ln_count > 0) {
-      if (this.#ln_count !== ln_count) {
-        this.#ln_count = ln_count;
-        this.index_width = Math.trunc(Math.log10(ln_count)) + 3;
+    if (index_enabled && line_count > 0) {
+      if (this.#ln_count !== line_count) {
+        this.#ln_count = line_count;
+        this.index_width = Math.trunc(Math.log10(line_count)) + 3;
         this.index_blank = render.space(this.index_width);
       }
     } else {
@@ -235,14 +235,14 @@ export class Editor extends Control {
 
     vt.esu();
 
-    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.ln_count });
+    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
 
     const t1 = performance.now();
     this.on_render?.(t1 - t0);
   }
 
   #render_lines(): void {
-    const { y, x, w, h, buffer: { ln_count } } = this;
+    const { y, x, w, h, buffer: { line_count } } = this;
 
     this.#scroll_v();
     this.#scroll_h();
@@ -250,7 +250,7 @@ export class Editor extends Control {
     let row = y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < ln_count) {
+      if (ln < line_count) {
         row = this.#render_line(ln, row);
       } else {
         vt.write_buf(
