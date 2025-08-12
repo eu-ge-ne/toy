@@ -1,4 +1,3 @@
-import { iter_to_str } from "@lib/std";
 import { copy_to_clipboard } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
@@ -13,12 +12,11 @@ export class CopyHandler extends KeyHandler {
     const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
-      const text = iter_to_str(buffer.seg_read(cursor.from, cursor.to));
-      this.editor.clipboard = text;
+      this.editor.clipboard = buffer.seg_text(cursor.from, cursor.to);
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.editor.clipboard = iter_to_str(buffer.seg_read(cursor, cursor));
+      this.editor.clipboard = buffer.seg_text(cursor, cursor);
     }
 
     copy_to_clipboard(this.editor.clipboard);

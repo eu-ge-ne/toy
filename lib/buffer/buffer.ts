@@ -25,8 +25,9 @@ export class Buffer extends TextBuf {
     this.insert(0, text);
   }
 
-  *seg_read(start: SegPos, end: SegPos): Generator<string> {
-    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
+  seg_text(start: SegPos, end: SegPos): string {
+    return this.read(this.#to_unit_pos(start), this.#to_unit_pos(end))
+      .reduce((a, x) => a + x);
   }
 
   *seg_line(ln: number): Generator<string> {
