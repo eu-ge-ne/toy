@@ -12,11 +12,11 @@ export class CopyHandler extends KeyHandler {
     const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
-      this.editor.clipboard = buffer.copy(cursor.from, cursor.to);
+      this.editor.clipboard = buffer.seg_read(cursor.from, cursor.to);
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.editor.clipboard = buffer.copy(cursor, cursor);
+      this.editor.clipboard = buffer.seg_read(cursor, cursor);
     }
 
     copy_to_clipboard(this.editor.clipboard);

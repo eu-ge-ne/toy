@@ -12,11 +12,11 @@ export class CutHandler extends KeyHandler {
     const { cursor, buffer } = this.editor;
 
     if (cursor.selecting) {
-      this.editor.clipboard = buffer.copy(cursor.from, cursor.to);
+      this.editor.clipboard = buffer.seg_read(cursor.from, cursor.to);
 
       this.editor.delete_selection();
     } else {
-      this.editor.clipboard = buffer.copy(cursor, cursor);
+      this.editor.clipboard = buffer.seg_read(cursor, cursor);
 
       this.editor.delete_char();
     }
