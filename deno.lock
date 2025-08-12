@@ -2,15 +2,15 @@
   "version": "5",
   "specifiers": {
     "jsr:@eu-ge-ne/kitty-keys@0.6": "0.6.0",
-    "jsr:@eu-ge-ne/text-buf@0.12": "0.12.0",
+    "jsr:@eu-ge-ne/text-buf@0.13": "0.13.0",
     "jsr:@std/cli@^1.0.21": "1.0.21"
   },
   "jsr": {
     "@eu-ge-ne/kitty-keys@0.6.0": {
       "integrity": "8dfdb35b75448c1a0df1f69e3ca1dd92ac7091438ab00b8dddd97ea0f4eb957b"
     },
-    "@eu-ge-ne/text-buf@0.12.0": {
-      "integrity": "a0b6ea16a8012dd768836be35b72bc2582c7005f395f070418423a3dd2f15d6c"
+    "@eu-ge-ne/text-buf@0.13.0": {
+      "integrity": "35b1646cf7456c1f19aa67154e2f1807dd994e2483e452cf7a6dbfb9ebe13d74"
     },
     "@std/cli@1.0.21": {
       "integrity": "cd25b050bdf6282e321854e3822bee624f07aca7636a3a76d95f77a3a919ca2a"
@@ -19,7 +19,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@eu-ge-ne/kitty-keys@0.6",
-      "jsr:@eu-ge-ne/text-buf@0.12",
+      "jsr:@eu-ge-ne/text-buf@0.13",
       "jsr:@std/cli@^1.0.21"
     ]
   }

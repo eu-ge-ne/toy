@@ -109,11 +109,11 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.selecting) {
-      buffer.delete(cursor.from, cursor.to);
+      buffer.seg_delete(cursor.from, cursor.to);
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
-    buffer.insert(cursor, text);
+    buffer.seg_insert(cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -134,22 +134,16 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      switch (buffer.line_length(cursor.ln)) {
-        case 1: {
-          buffer.delete(cursor, cursor);
-          cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          break;
-        }
-        default: {
-          cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          buffer.delete(cursor, cursor);
-        }
+      const len = buffer.seg_line(cursor.ln).take(2).reduce((a) => a + 1, 0);
+      if (len === 1) {
+        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+      } else {
+        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
       }
     } else {
-      buffer.delete(
-        { ln: cursor.ln, col: cursor.col - 1 },
-        { ln: cursor.ln, col: cursor.col - 1 },
-      );
+      buffer.seg_delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
       cursor.move(0, -1, false);
     }
 
@@ -159,7 +153,7 @@ export class Editor extends Control {
   delete_char(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.delete(cursor, cursor);
+    buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
 
     history.push();
   }
@@ -167,7 +161,10 @@ export class Editor extends Control {
   delete_selection(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.delete(cursor.from, cursor.to);
+    buffer.seg_delete(cursor.from, {
+      ln: cursor.to.ln,
+      col: cursor.to.col + 1,
+    });
     cursor.set(cursor.from.ln, cursor.from.col, false);
 
     history.push();
@@ -195,7 +192,7 @@ export class Editor extends Control {
       enabled,
       wrap_enabled,
       index_enabled,
-      buffer: { ln_count },
+      buffer: { line_count },
     } = this;
 
     vt.bsu();
@@ -207,10 +204,10 @@ export class Editor extends Control {
       ...clear.area(this),
     );
 
-    if (index_enabled && ln_count > 0) {
-      if (this.#ln_count !== ln_count) {
-        this.#ln_count = ln_count;
-        this.index_width = Math.trunc(Math.log10(ln_count)) + 3;
+    if (index_enabled && line_count > 0) {
+      if (this.#ln_count !== line_count) {
+        this.#ln_count = line_count;
+        this.index_width = Math.trunc(Math.log10(line_count)) + 3;
         this.index_blank = render.space(this.index_width);
       }
     } else {
@@ -234,14 +231,14 @@ export class Editor extends Control {
 
     vt.esu();
 
-    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.ln_count });
+    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
 
     const t1 = performance.now();
     this.on_render?.(t1 - t0);
   }
 
   #render_lines(): void {
-    const { y, x, w, h, buffer: { ln_count } } = this;
+    const { y, x, w, h, buffer: { line_count } } = this;
 
     this.#scroll_v();
     this.#scroll_h();
@@ -249,7 +246,7 @@ export class Editor extends Control {
     let row = y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < ln_count) {
+      if (ln < line_count) {
         row = this.#render_line(ln, row);
       } else {
         vt.write_buf(
@@ -420,7 +417,7 @@ export class Editor extends Control {
     let ln = 0;
     let col = 0;
 
-    for (const seg of buffer.line(line)) {
+    for (const seg of buffer.seg_line(line)) {
       const grm = graphemes.get(seg);
 
       if (grm.width < 0) {

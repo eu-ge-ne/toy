@@ -311,7 +311,7 @@ export class App extends Control {
     stream.readable.pipeTo(file.writable);
     const writer = stream.writable.getWriter();
 
-    for (const text of buffer.read()) {
+    for (const text of buffer.read(0)) {
       await writer.write(text);
     }
   }

@@ -16,7 +16,7 @@ export class RightHandler extends KeyHandler {
       return true;
     }
 
-    if (cursor.ln < buffer.ln_count - 1) {
+    if (cursor.ln < buffer.line_count - 1) {
       return cursor.move(1, Number.MIN_SAFE_INTEGER, select);
     }
 

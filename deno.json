@@ -21,6 +21,6 @@
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.21",
     "@eu-ge-ne/kitty-keys": "jsr:@eu-ge-ne/kitty-keys@^0.6.0",
-    "@eu-ge-ne/text-buf": "jsr:@eu-ge-ne/text-buf@^0.12.0"
+    "@eu-ge-ne/text-buf": "jsr:@eu-ge-ne/text-buf@^0.13.0"
   }
 }
