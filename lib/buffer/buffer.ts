@@ -16,7 +16,7 @@ export class Buffer extends TextBuf {
   }
 
   get text(): string {
-    return this.read(0).reduce((a, x) => a + x, "");
+    return this.read(0).reduce((a, x) => a + x);
   }
 
   set text(text: string) {
