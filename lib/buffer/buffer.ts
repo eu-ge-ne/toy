@@ -1,24 +1,19 @@
-import { TextBuf } from "@eu-ge-ne/text-buf";
+import { Node, TextBuf } from "@eu-ge-ne/text-buf";
 
-export type Snapshot = InstanceType<typeof TextBuf>["root"];
+export type Snapshot = Node;
 
 type Pos = { ln: number; col: number };
 
 export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
-  get text(): string {
-    return this.read(0).reduce((a, x) => a + x);
-  }
-
-  set text(text: string) {
+  set_text(text: string): void {
     this.delete(0);
     this.insert(0, text);
   }
 
-  seg_text(start: Pos, end: Pos): string {
-    return this.read(this.#to_unit_pos(start), this.#to_unit_pos(end))
-      .reduce((a, x) => a + x);
+  *seg_read(start: Pos, end: Pos): Generator<string> {
+    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   *seg_line(ln: number): Generator<string> {

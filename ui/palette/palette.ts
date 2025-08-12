@@ -1,3 +1,4 @@
+import { iter_to_str } from "@lib/std";
 import { Area, clear, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -28,7 +29,7 @@ export class Palette
     this.#editor.enabled = true;
 
     this.#all = options;
-    this.#editor.buffer.text = "";
+    this.#editor.buffer.set_text("");
     this.#editor.reset(false);
 
     this.#filter();
@@ -114,7 +115,7 @@ export class Palette
   }
 
   #filter(): void {
-    const text = this.#editor.buffer.text.toUpperCase();
+    const text = iter_to_str(this.#editor.buffer.read(0)).toUpperCase();
 
     if (!text) {
       this.#options = this.#all;
