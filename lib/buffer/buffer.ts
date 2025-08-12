@@ -2,7 +2,6 @@ import { TextBuf } from "@eu-ge-ne/text-buf";
 
 export type Snapshot = InstanceType<typeof TextBuf>["root"];
 
-type SegPos = { ln: number; col: number };
 type Pos = { ln: number; col: number };
 
 export class Buffer extends TextBuf {
@@ -25,7 +24,7 @@ export class Buffer extends TextBuf {
     this.insert(0, text);
   }
 
-  seg_text(start: SegPos, end: SegPos): string {
+  seg_text(start: Pos, end: Pos): string {
     return this.read(this.#to_unit_pos(start), this.#to_unit_pos(end))
       .reduce((a, x) => a + x);
   }
