@@ -134,7 +134,8 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      switch (buffer.line_length(cursor.ln)) {
+      const len = buffer.seg_line(cursor.ln).take(2).reduce((a) => a + 1, 0);
+      switch (len) {
         case 1: {
           buffer.delete(cursor, cursor);
           cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
@@ -420,7 +421,7 @@ export class Editor extends Control {
     let ln = 0;
     let col = 0;
 
-    for (const seg of buffer.line(line)) {
+    for (const seg of buffer.seg_line(line)) {
       const grm = graphemes.get(seg);
 
       if (grm.width < 0) {

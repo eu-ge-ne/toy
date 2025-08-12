@@ -33,19 +33,12 @@ export class Buffer {
     return this.#buf.line_count;
   }
 
-  *line(ln: number): Generator<string> {
-    for (const chunk of this.#read_line(ln)) {
+  *seg_line(ln: number): Generator<string> {
+    for (const chunk of this.#buf.read([ln, 0], [ln + 1, 0])) {
       for (const { segment } of this.#sgr.segment(chunk)) {
         yield segment;
       }
     }
-  }
-
-  line_length(ln: number): number {
-    return this.#read_line(ln).reduce(
-      (a, x) => a + [...this.#sgr.segment(x)].length,
-      0,
-    );
   }
 
   append(text: string): void {
@@ -73,15 +66,11 @@ export class Buffer {
     ).reduce((a, x) => a + x, "");
   }
 
-  *#read_line(ln: number): Generator<string> {
-    yield* this.#buf.read([ln, 0], [ln + 1, 0]);
-  }
-
   #unit_col(ln: number, col: number): number {
     let unit_col = 0;
     let i = 0;
 
-    for (const seg of this.line(ln)) {
+    for (const seg of this.seg_line(ln)) {
       if (i === col) {
         break;
       }
