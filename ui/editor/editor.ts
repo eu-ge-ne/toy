@@ -135,16 +135,12 @@ export class Editor extends Control {
 
     if (cursor.ln > 0 && cursor.col === 0) {
       const len = buffer.seg_line(cursor.ln).take(2).reduce((a) => a + 1, 0);
-      switch (len) {
-        case 1: {
-          buffer.seg_delete(cursor, cursor);
-          cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          break;
-        }
-        default: {
-          cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
-          buffer.seg_delete(cursor, cursor);
-        }
+      if (len === 1) {
+        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+      } else {
+        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
       }
     } else {
       buffer.seg_delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
