@@ -113,7 +113,7 @@ export class Editor extends Control {
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
-    buffer.insert(cursor, text);
+    buffer.seg_insert(cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)

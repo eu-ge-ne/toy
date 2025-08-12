@@ -45,7 +45,7 @@ export class Buffer {
     }
   }
 
-  insert({ ln, col }: Pos, text: string): void {
+  seg_insert({ ln, col }: Pos, text: string): void {
     this.#buf.insert(
       [ln, this.#unit_col(ln, col)],
       text,
