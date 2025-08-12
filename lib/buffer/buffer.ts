@@ -41,11 +41,8 @@ export class Buffer extends TextBuf {
     this.insert(this.#to_unit_pos(pos), text);
   }
 
-  seg_delete(from: Pos, to: Pos): void {
-    this.delete(
-      this.#to_unit_pos(from),
-      this.#to_unit_pos({ ln: to.ln, col: to.col + 1 }),
-    );
+  seg_delete(start: Pos, end: Pos): void {
+    this.delete(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   #to_unit_pos({ ln, col }: Pos): [number, number] {
