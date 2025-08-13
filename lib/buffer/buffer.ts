@@ -9,8 +9,8 @@ export class Buffer extends TextBuf {
 
   *seg_line(ln: number): Generator<string> {
     for (const chunk of this.read([ln, 0], [ln + 1, 0])) {
-      for (const { segment } of this.#sgr.segment(chunk)) {
-        yield segment;
+      for (const x of this.#sgr.segment(chunk)) {
+        yield x.segment;
       }
     }
   }
