@@ -73,8 +73,8 @@ export class Cursor {
     let len = 0;
 
     for (const seg of this.buffer.seg_line(this.ln)) {
-      const { is_eol } = graphemes.get(seg);
-      if (is_eol) {
+      const grm = graphemes.get(seg);
+      if (grm.is_eol) {
         break;
       }
       len += 1;
