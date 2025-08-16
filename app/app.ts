@@ -71,7 +71,7 @@ export class App extends Control {
 
   async run(): Promise<void> {
     if (args.version) {
-      console.log(`toy ${deno.version}`);
+      console.log(`toy ${deno.version} (deno ${Deno.version.deno})`);
       Deno.exit();
     }
 
