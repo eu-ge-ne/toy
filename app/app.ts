@@ -275,26 +275,18 @@ export class App extends Control {
       throw new Error(`${path} is not a file`);
     }
 
-    const decoder = new TextDecoder();
-    const bytes = new Uint8Array(1024 * 1024 * 64);
+    const decoder = new TextDecoderStream();
+    const reader = decoder.readable.getReader();
+
+    file.readable.pipeThrough(decoder);
 
     while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
+      const { done, value } = await reader.read();
+      if (done) {
         break;
       }
 
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-
-        buffer.append(text);
-      }
-    }
-
-    const text = decoder.decode();
-
-    if (text.length > 0) {
-      buffer.append(text);
+      buffer.append(value);
     }
   }
 
@@ -307,9 +299,10 @@ export class App extends Control {
       truncate: true,
     });
 
-    const stream = new TextEncoderStream();
-    stream.readable.pipeTo(file.writable);
-    const writer = stream.writable.getWriter();
+    const encoder = new TextEncoderStream();
+    const writer = encoder.writable.getWriter();
+
+    encoder.readable.pipeTo(file.writable);
 
     for (const text of buffer.read(0)) {
       await writer.write(text);
