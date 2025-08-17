@@ -93,7 +93,9 @@ export class App extends Control {
     this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
     this.enable_zen(true);
 
-    await this.#load();
+    if (typeof args._[0] === "string") {
+      await this.#open_file(args._[0]);
+    }
 
     await this.#process_input();
   }
@@ -191,7 +193,7 @@ export class App extends Control {
     }
 
     try {
-      await this.#save_buffer(this.file_path);
+      await this.#save(this.file_path);
 
       return true;
     } catch (err) {
@@ -208,16 +210,11 @@ export class App extends Control {
     vt.dummy_req();
   };
 
-  async #load(): Promise<void> {
-    const path = args._[0];
-    if (typeof path !== "string") {
-      return;
-    }
-
+  async #open_file(path: string): Promise<void> {
     const { editor, alert } = this.ui;
 
     try {
-      await this.#load_buffer(path);
+      await this.#load(path);
 
       editor.reset(true);
       editor.render();
@@ -265,7 +262,7 @@ export class App extends Control {
     }
   }
 
-  async #load_buffer(path: string): Promise<void> {
+  async #load(path: string): Promise<void> {
     const { buffer } = this.ui.editor;
 
     using file = await Deno.open(path, { read: true });
@@ -275,30 +272,22 @@ export class App extends Control {
       throw new Error(`${path} is not a file`);
     }
 
-    const decoder = new TextDecoder();
-    const bytes = new Uint8Array(1024 * 1024 * 64);
+    const decoder = new TextDecoderStream();
+    const reader = decoder.readable.getReader();
+
+    file.readable.pipeThrough(decoder);
 
     while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
+      const { done, value } = await reader.read();
+      if (done) {
         break;
       }
 
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-
-        buffer.append(text);
-      }
-    }
-
-    const text = decoder.decode();
-
-    if (text.length > 0) {
-      buffer.append(text);
+      buffer.append(value);
     }
   }
 
-  async #save_buffer(path: string): Promise<void> {
+  async #save(path: string): Promise<void> {
     const { buffer } = this.ui.editor;
 
     using file = await Deno.open(path, {
@@ -307,9 +296,10 @@ export class App extends Control {
       truncate: true,
     });
 
-    const stream = new TextEncoderStream();
-    stream.readable.pipeTo(file.writable);
-    const writer = stream.writable.getWriter();
+    const encoder = new TextEncoderStream();
+    const writer = encoder.writable.getWriter();
+
+    encoder.readable.pipeTo(file.writable);
 
     for (const text of buffer.read(0)) {
       await writer.write(text);
@@ -324,7 +314,7 @@ export class App extends Control {
       }
 
       try {
-        await this.#save_buffer(path);
+        await this.#save(path);
 
         this.#set_file_path(path);
 
