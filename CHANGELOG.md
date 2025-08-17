@@ -2,7 +2,7 @@
 
 ## v0.0.27
 
--
+- @eu-ge-ne/text-buf updated to 0.13.2
 
 ## v0.0.26
 
