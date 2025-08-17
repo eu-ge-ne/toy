@@ -93,7 +93,9 @@ export class App extends Control {
     this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
     this.enable_zen(true);
 
-    await this.#load();
+    if (typeof args._[0] === "string") {
+      await this.#open_file(args._[0]);
+    }
 
     await this.#process_input();
   }
@@ -191,7 +193,7 @@ export class App extends Control {
     }
 
     try {
-      await this.#save_buffer(this.file_path);
+      await this.#save(this.file_path);
 
       return true;
     } catch (err) {
@@ -208,16 +210,11 @@ export class App extends Control {
     vt.dummy_req();
   };
 
-  async #load(): Promise<void> {
-    const path = args._[0];
-    if (typeof path !== "string") {
-      return;
-    }
-
+  async #open_file(path: string): Promise<void> {
     const { editor, alert } = this.ui;
 
     try {
-      await this.#load_buffer(path);
+      await this.#load(path);
 
       editor.reset(true);
       editor.render();
@@ -265,7 +262,7 @@ export class App extends Control {
     }
   }
 
-  async #load_buffer(path: string): Promise<void> {
+  async #load(path: string): Promise<void> {
     const { buffer } = this.ui.editor;
 
     using file = await Deno.open(path, { read: true });
@@ -290,7 +287,7 @@ export class App extends Control {
     }
   }
 
-  async #save_buffer(path: string): Promise<void> {
+  async #save(path: string): Promise<void> {
     const { buffer } = this.ui.editor;
 
     using file = await Deno.open(path, {
@@ -317,7 +314,7 @@ export class App extends Control {
       }
 
       try {
-        await this.#save_buffer(path);
+        await this.#save(path);
 
         this.#set_file_path(path);
 
