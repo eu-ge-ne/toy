@@ -272,18 +272,24 @@ export class App extends Control {
       throw new Error(`${path} is not a file`);
     }
 
-    const decoder = new TextDecoderStream();
-    const reader = decoder.readable.getReader();
-
-    file.readable.pipeThrough(decoder);
+    const bytes = new Uint8Array(1024 ** 2 * 64);
+    const decoder = new TextDecoder();
 
     while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
+      const n = await file.read(bytes);
+      if (typeof n !== "number") {
         break;
       }
 
-      buffer.append(value);
+      if (n > 0) {
+        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
+        buffer.append(text);
+      }
+    }
+
+    const text = decoder.decode();
+    if (text.length > 0) {
+      buffer.append(text);
     }
   }
 
