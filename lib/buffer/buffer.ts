@@ -8,7 +8,7 @@ export class Buffer extends TextBuf {
   #sgr = new Intl.Segmenter();
 
   *seg_line(ln: number): Generator<string> {
-    for (const chunk of this.read([ln, 0], [ln + 1, 0])) {
+    for (const chunk of this.read2([ln, 0], [ln + 1, 0])) {
       for (const x of this.#sgr.segment(chunk)) {
         yield x.segment;
       }
@@ -16,15 +16,15 @@ export class Buffer extends TextBuf {
   }
 
   *seg_read(start: Pos, end: Pos): Generator<string> {
-    yield* this.read(this.#to_unit_pos(start), this.#to_unit_pos(end));
+    yield* this.read2(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   seg_insert(pos: Pos, text: string): void {
-    this.insert(this.#to_unit_pos(pos), text);
+    this.insert2(this.#to_unit_pos(pos), text);
   }
 
   seg_delete(start: Pos, end: Pos): void {
-    this.delete(this.#to_unit_pos(start), this.#to_unit_pos(end));
+    this.delete2(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
   #to_unit_pos({ ln, col }: Pos): [number, number] {
