@@ -91,7 +91,7 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_input(key: vt.Key | string): boolean {
+  handle_input(key: vt.KittyKey | string): boolean {
     const t0 = performance.now();
 
     const handled = this.#handlers.find((x) => x.match(key))

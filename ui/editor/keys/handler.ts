@@ -1,14 +1,14 @@
-import { Key } from "@lib/vt";
+import { KittyKey } from "@lib/vt";
 
 import { Editor } from "../editor.ts";
 
 export abstract class KeyHandler {
-  abstract keys: Pick<Key, "name" | "super" | "shift" | "ctrl">[];
+  abstract keys: Pick<KittyKey, "name" | "super" | "shift" | "ctrl">[];
 
   constructor(protected editor: Editor) {
   }
 
-  match(key: Key | string): boolean {
+  match(key: KittyKey | string): boolean {
     return typeof key !== "string" &&
       this.keys.some((x) =>
         x.name === key.name && x.super === key.super && x.shift === key.shift &&
@@ -16,5 +16,5 @@ export abstract class KeyHandler {
       );
   }
 
-  abstract handle(key: Key | string): boolean;
+  abstract handle(key: KittyKey | string): boolean;
 }

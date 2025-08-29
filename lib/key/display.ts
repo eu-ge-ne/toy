@@ -1,6 +1,6 @@
-import { Key } from "@eu-ge-ne/kitty-keys";
+import { KittyKey } from "@eu-ge-ne/kitty-keys";
 
-export function display_keys(keys: Key[]): string {
+export function display_keys(keys: KittyKey[]): string {
   return keys.map((key) => {
     const { shift, ctrl, alt, super: super_, name } = key;
 
