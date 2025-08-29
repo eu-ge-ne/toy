@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { KittyKey } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -8,7 +8,7 @@ export class LeftHandler extends KeyHandler {
     { name: "LEFT", shift: true },
   ];
 
-  handle(key: Key): boolean {
+  handle(key: KittyKey): boolean {
     const { cursor } = this.editor;
     const select = Boolean(key.shift);
 

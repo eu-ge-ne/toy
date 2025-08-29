@@ -1,16 +1,32 @@
-export type { Key } from "@eu-ge-ne/kitty-keys";
+export type { KittyKey } from "@eu-ge-ne/kitty-keys";
 
-import { Key, parse_keys } from "@eu-ge-ne/kitty-keys";
+import { KittyKey, parse_key } from "@eu-ge-ne/kitty-keys";
 
-export async function* read(): AsyncGenerator<Key | string | Uint8Array> {
-  const bytes = new Uint8Array(1024);
+export async function* read(): AsyncGenerator<KittyKey | string | Uint8Array> {
+  const buf = new Uint8Array(1024);
 
-  const n = await Deno.stdin.read(bytes);
-  if (n === null) {
+  const bytes_read = await Deno.stdin.read(buf);
+  if (bytes_read === null) {
     return;
   }
+  const bytes = buf.subarray(0, bytes_read);
 
-  if (n > 0) {
-    yield* parse_keys(bytes.subarray(0, n));
+  for (let i = 0; i < bytes.length;) {
+    const [key, n] = parse_key(bytes.subarray(i));
+
+    if (typeof key !== "undefined") {
+      yield key;
+
+      i += n;
+    } else {
+      let next_esc_i = bytes.indexOf(0x1b, i + 1);
+      if (next_esc_i < 0) {
+        next_esc_i = bytes.length;
+      }
+
+      yield bytes.subarray(i, next_esc_i);
+
+      i = next_esc_i;
+    }
   }
 }
