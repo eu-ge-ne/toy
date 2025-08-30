@@ -91,11 +91,11 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_input(key: vt.KittyKey | string): boolean {
+  handle_input(key: Partial<vt.Key> | string): boolean {
     const t0 = performance.now();
 
-    const handled = this.#handlers.find((x) => x.match(key))
-      ?.handle(key) ?? false;
+    const handled = this.#handlers.find((x) => x.match(key))?.handle(key) ??
+      false;
 
     const t1 = performance.now();
     this.on_input_handled?.(t1 - t0);

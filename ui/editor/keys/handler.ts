@@ -1,20 +1,21 @@
-import { KittyKey } from "@lib/vt";
+import { Key } from "@lib/vt";
 
 import { Editor } from "../editor.ts";
 
 export abstract class KeyHandler {
-  abstract keys: Pick<KittyKey, "name" | "super" | "shift" | "ctrl">[];
+  abstract keys: Pick<Partial<Key>, "name" | "super" | "shift" | "ctrl">[];
 
   constructor(protected editor: Editor) {
   }
 
-  match(key: KittyKey | string): boolean {
+  match(key: Partial<Key> | string): boolean {
     return typeof key !== "string" &&
       this.keys.some((x) =>
-        x.name === key.name && x.super === key.super && x.shift === key.shift &&
-        x.ctrl === key.ctrl
+        Object.entries(x).every(([k, v]) =>
+          (key as unknown as Record<string, unknown>)[k] === v
+        )
       );
   }
 
-  abstract handle(key: KittyKey | string): boolean;
+  abstract handle(key: Partial<Key> | string): boolean;
 }
