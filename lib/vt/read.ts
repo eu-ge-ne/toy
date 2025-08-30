@@ -1,8 +1,8 @@
-export type { KittyKey } from "@eu-ge-ne/kitty-keys";
+export type { Key } from "@eu-ge-ne/kitty-keys";
 
-import { KittyKey, parse_key } from "@eu-ge-ne/kitty-keys";
+import { Key, parse_key } from "@eu-ge-ne/kitty-keys";
 
-export async function* read(): AsyncGenerator<KittyKey | string | Uint8Array> {
+export async function* read(): AsyncGenerator<Key | string | Uint8Array> {
   const buf = new Uint8Array(1024);
 
   const bytes_read = await Deno.stdin.read(buf);

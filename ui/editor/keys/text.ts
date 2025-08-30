@@ -1,15 +1,15 @@
-import { KittyKey } from "@lib/vt";
+import { Key } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
 export class TextHandler extends KeyHandler {
   keys = [];
 
-  override match(key: KittyKey | string): boolean {
+  override match(key: Key | string): boolean {
     return typeof key === "string" || typeof key.text === "string";
   }
 
-  handle(key: KittyKey | string): boolean {
+  handle(key: Key | string): boolean {
     const text = typeof key === "string" ? key : key.text!;
 
     this.editor.insert(text);

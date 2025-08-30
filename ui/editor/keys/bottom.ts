@@ -1,4 +1,4 @@
-import { KittyKey } from "@lib/vt";
+import { Key } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -8,7 +8,7 @@ export class BottomHandler extends KeyHandler {
     { name: "DOWN", super: true, shift: true },
   ];
 
-  handle(key: KittyKey): boolean {
+  handle(key: Key): boolean {
     if (!this.editor.opts.multi_line) {
       return false;
     }

@@ -1,4 +1,4 @@
-import { KittyKey } from "@lib/vt";
+import { Key } from "@lib/vt";
 
 import { KeyHandler } from "./handler.ts";
 
@@ -11,7 +11,7 @@ export class EndHandler extends KeyHandler {
     { name: "RIGHT", super: true, shift: true },
   ];
 
-  handle(key: KittyKey): boolean {
+  handle(key: Key): boolean {
     return this.editor.cursor.move(
       0,
       Number.MAX_SAFE_INTEGER,
