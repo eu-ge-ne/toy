@@ -3,10 +3,13 @@ import { Key } from "@lib/vt";
 import { App } from "../app.ts";
 
 export abstract class Command {
-  abstract match_keys: Pick<
-    Partial<Key>,
-    "name" | "super" | "shift" | "ctrl"
-  >[];
+  abstract match_keys: (
+    & Pick<Key, "name">
+    & Pick<
+      Partial<Key>,
+      "super" | "shift" | "ctrl"
+    >
+  )[];
 
   abstract option?: {
     id: string;
