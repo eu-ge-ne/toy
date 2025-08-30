@@ -1,9 +1,15 @@
-import { KittyKey } from "@lib/vt";
+import { Key } from "@lib/vt";
 
 import { App } from "../app.ts";
 
 export abstract class Command {
-  abstract match_keys: Pick<KittyKey, "name" | "super" | "shift" | "ctrl">[];
+  abstract match_keys: (
+    & Pick<Key, "name">
+    & Pick<
+      Partial<Key>,
+      "super" | "shift" | "ctrl"
+    >
+  )[];
 
   abstract option?: {
     id: string;
@@ -16,14 +22,15 @@ export abstract class Command {
   constructor(protected app: App) {
   }
 
-  match(key: KittyKey): boolean {
+  match(key: Key): boolean {
     return this.match_keys.some((x) =>
-      x.name === key.name && x.super === key.super && x.shift === key.shift &&
-      x.ctrl === key.ctrl
+      Object.entries(x).every(([k, v]) =>
+        (key as unknown as Record<string, unknown>)[k] === v
+      )
     );
   }
 
-  async run(key?: KittyKey | string): Promise<void> {
+  async run(key?: Key | string): Promise<void> {
     Command.running += 1;
 
     await this.command(key);
@@ -31,5 +38,5 @@ export abstract class Command {
     Command.running -= 1;
   }
 
-  protected abstract command(key?: KittyKey | string): Promise<void>;
+  protected abstract command(key?: Key | string): Promise<void>;
 }

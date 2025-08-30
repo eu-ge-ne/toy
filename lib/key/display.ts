@@ -1,28 +1,28 @@
-import { KittyKey } from "@eu-ge-ne/kitty-keys";
+import { Key } from "@eu-ge-ne/kitty-keys";
 
-export function display_keys(keys: KittyKey[]): string {
-  return keys.map((key) => {
-    const { shift, ctrl, alt, super: super_, name } = key;
-
+export function display_keys(
+  keys: (Pick<Key, "name"> & Partial<Key>)[],
+): string {
+  return keys.map((x) => {
     const chunks: string[] = [];
 
-    if (shift) {
+    if (x.shift) {
       chunks.push("⇧");
     }
 
-    if (ctrl) {
+    if (x.ctrl) {
       chunks.push("⌃");
     }
 
-    if (alt) {
+    if (x.alt) {
       chunks.push("⌥");
     }
 
-    if (super_) {
+    if (x.super) {
       chunks.push("⌘");
     }
 
-    chunks.push(name.toUpperCase());
+    chunks.push(x.name.toUpperCase());
 
     return chunks.join("");
   }).join(" ");
