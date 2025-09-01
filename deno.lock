@@ -1,13 +1,13 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@eu-ge-ne/kitty-keys@0.8": "0.8.0",
+    "jsr:@eu-ge-ne/kitty-keys@~0.8.1": "0.8.1",
     "jsr:@eu-ge-ne/text-buf@~0.14.2": "0.14.2",
     "jsr:@std/cli@^1.0.21": "1.0.21"
   },
   "jsr": {
-    "@eu-ge-ne/kitty-keys@0.8.0": {
-      "integrity": "4b08b3ef18bc5c31553678e0082388aec62bf5a36974bc7ef534910ba6536c16"
+    "@eu-ge-ne/kitty-keys@0.8.1": {
+      "integrity": "0cda4a02fca28f899f7675c7ec2237e248535e4662956df6a2949ba22e465fc5"
     },
     "@eu-ge-ne/text-buf@0.14.2": {
       "integrity": "baba9fb13e4fb8fcdda0cfe4a78a17a3417afbc7ef08c3363ff24a86754a63b3"
@@ -18,7 +18,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@eu-ge-ne/kitty-keys@0.8",
+      "jsr:@eu-ge-ne/kitty-keys@~0.8.1",
       "jsr:@eu-ge-ne/text-buf@~0.14.2",
       "jsr:@std/cli@^1.0.21"
     ]
