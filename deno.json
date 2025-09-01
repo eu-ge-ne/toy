@@ -20,7 +20,7 @@
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.21",
-    "@eu-ge-ne/kitty-keys": "jsr:@eu-ge-ne/kitty-keys@^0.8.0",
+    "@eu-ge-ne/kitty-keys": "jsr:@eu-ge-ne/kitty-keys@^0.8.1",
     "@eu-ge-ne/text-buf": "jsr:@eu-ge-ne/text-buf@^0.14.2"
   }
 }
