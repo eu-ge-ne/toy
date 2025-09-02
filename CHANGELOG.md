@@ -3,6 +3,7 @@
 ## v0.0.27
 
 - @eu-ge-ne/text-buf updated to 0.13.6
+- @eu-ge-ne/kitty-keys updated to 0.9.0
 
 ## v0.0.26
 
