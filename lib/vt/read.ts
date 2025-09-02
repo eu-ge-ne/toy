@@ -12,13 +12,9 @@ export async function* read(): AsyncGenerator<Key | string | Uint8Array> {
   const bytes = buf.subarray(0, bytes_read);
 
   for (let i = 0; i < bytes.length;) {
-    const [key, n] = parse_key(bytes.subarray(i));
+    const result = parse_key(bytes.subarray(i));
 
-    if (typeof key !== "undefined") {
-      yield key;
-
-      i += n;
-    } else {
+    if (!result) {
       let next_esc_i = bytes.indexOf(0x1b, i + 1);
       if (next_esc_i < 0) {
         next_esc_i = bytes.length;
@@ -27,6 +23,12 @@ export async function* read(): AsyncGenerator<Key | string | Uint8Array> {
       yield bytes.subarray(i, next_esc_i);
 
       i = next_esc_i;
+
+      continue;
     }
+
+    yield result[0];
+
+    i += result[1];
   }
 }
