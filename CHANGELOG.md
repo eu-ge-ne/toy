@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.28
+
+- @eu-ge-ne/kitty-keys updated to 0.10.0
+
 ## v0.0.27
 
 - @eu-ge-ne/text-buf updated to 0.13.6
