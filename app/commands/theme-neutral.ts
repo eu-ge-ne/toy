@@ -3,7 +3,7 @@ import { NEUTRAL } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeNeutralCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Neutral",

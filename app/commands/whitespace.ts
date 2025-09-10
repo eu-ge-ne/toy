@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class WhitespaceCommand extends Command {
-  match_keys = [
-    { name: "F5" },
+  keys = [
+    Key.create({ name: "F5" }),
   ];
 
   option = {
     id: "Whitespace",
     description: "View: Toggle Render Whitespace",
-    shortcuts: display_keys(this.match_keys),
+    shortcuts: display_keys(this.keys),
   };
 
   async command(): Promise<void> {

@@ -1,8 +1,10 @@
-import { KeyHandler } from "./handler.ts";
+import { Key } from "@lib/vt";
 
-export class BackspaceHandler extends KeyHandler {
+import { EditorHandler } from "./handler.ts";
+
+export class BackspaceHandler extends EditorHandler {
   keys = [
-    { name: "BACKSPACE" },
+    Key.create({ name: "BACKSPACE" }),
   ];
 
   handle(): boolean {

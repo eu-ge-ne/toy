@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Paste",
     description: "Edit: Paste",
     shortcuts: display_keys([
-      { name: "v", ctrl: true },
-      { name: "v", super: true },
+      Key.create({ name: "v", ctrl: true }),
+      Key.create({ name: "v", super: true }),
     ]),
   };
 
@@ -18,7 +18,7 @@ export class PasteCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_input({ name: "v", ctrl: true });
+      editor.handle_key(Key.create({ name: "v", ctrl: true }));
 
       editor.render();
     }

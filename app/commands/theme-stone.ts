@@ -3,7 +3,7 @@ import { STONE } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeStoneCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Stone",

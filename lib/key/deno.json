@@ -1,4 +1,0 @@
-{
-  "name": "@lib/key",
-  "exports": "./mod.ts"
-}

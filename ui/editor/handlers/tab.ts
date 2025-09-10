@@ -1,8 +1,10 @@
-import { KeyHandler } from "./handler.ts";
+import { Key } from "@lib/vt";
 
-export class TabHandler extends KeyHandler {
+import { EditorHandler } from "./handler.ts";
+
+export class TabHandler extends EditorHandler {
   keys = [
-    { name: "TAB" },
+    Key.create({ name: "TAB" }),
   ];
 
   handle(): boolean {

@@ -3,7 +3,7 @@ import { SLATE } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeSlateCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Slate",

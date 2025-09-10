@@ -3,7 +3,7 @@ import { GRAY } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeGrayCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Gray",

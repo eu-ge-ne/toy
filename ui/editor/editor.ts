@@ -6,7 +6,7 @@ import { range, sum } from "@lib/std";
 import { Area, clear, Control, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as keys from "./keys/mod.ts";
+import * as keys from "./handlers/mod.ts";
 import * as colors from "./colors.ts";
 
 interface EditorOptions {
@@ -21,7 +21,7 @@ interface Cell {
 }
 
 export class Editor extends Control {
-  #handlers: keys.KeyHandler[] = [
+  #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
     new keys.BackspaceHandler(this),
     new keys.BottomHandler(this),
@@ -74,13 +74,9 @@ export class Editor extends Control {
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
       if (this.opts.multi_line) {
-        this.cursor.move(
-          -Number.MAX_SAFE_INTEGER,
-          -Number.MAX_SAFE_INTEGER,
-          false,
-        );
+        this.cursor.set(0, 0, false);
       } else {
-        this.cursor.move(
+        this.cursor.set(
           Number.MAX_SAFE_INTEGER,
           Number.MAX_SAFE_INTEGER,
           false,
@@ -91,7 +87,7 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_input(key: Partial<vt.Key> | string): boolean {
+  handle_key(key: vt.Key): boolean {
     const t0 = performance.now();
 
     const handled = this.#handlers.find((x) => x.match(key))?.handle(key) ??
@@ -121,7 +117,7 @@ export class Editor extends Control {
     const eol_count = grms.filter((x) => x.is_eol).length;
 
     if (eol_count === 0) {
-      cursor.move(0, grms.length, false);
+      cursor.forward(grms.length);
     } else {
       const col = grms.length - grms.findLastIndex((x) => x.is_eol) - 1;
       cursor.set(cursor.ln + eol_count, col, false);
@@ -137,14 +133,14 @@ export class Editor extends Control {
       const len = buffer.seg_line(cursor.ln).take(2).reduce((a) => a + 1, 0);
       if (len === 1) {
         buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
-        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+        cursor.left(false);
       } else {
-        cursor.move(-1, Number.MAX_SAFE_INTEGER, false);
+        cursor.left(false);
         buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
       }
     } else {
       buffer.seg_delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
-      cursor.move(0, -1, false);
+      cursor.left(false);
     }
 
     history.push();

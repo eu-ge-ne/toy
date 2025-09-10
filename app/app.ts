@@ -245,16 +245,14 @@ export class App extends Control {
           continue;
         }
 
-        if (typeof key !== "string") {
-          const command = this.commands.find((x) => x.match(key));
-          if (command && !cmd.Command.running) {
-            await command.run(key);
-            continue;
-          }
+        const command = this.commands.find((x) => x.match(key));
+        if (command && !cmd.Command.running) {
+          await command.run(key);
+          continue;
         }
 
         if (this.ui.editor.enabled) {
-          if (this.ui.editor.handle_input(key)) {
+          if (this.ui.editor.handle_key(key)) {
             this.ui.editor.render();
           }
         }

@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class UndoCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Undo",
     description: "Edit: Undo",
     shortcuts: display_keys([
-      { name: "z", ctrl: true },
-      { name: "z", super: true },
+      Key.create({ name: "z", ctrl: true }),
+      Key.create({ name: "z", super: true }),
     ]),
   };
 
@@ -18,7 +18,7 @@ export class UndoCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_input({ name: "z", ctrl: true });
+      editor.handle_key(Key.create({ name: "z", ctrl: true }));
 
       editor.render();
     }

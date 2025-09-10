@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class ExitCommand extends Command {
-  match_keys = [
-    { name: "F10" },
+  keys = [
+    Key.create({ name: "F10" }),
   ];
 
   option = {
     id: "Exit",
     description: "Global: Exit",
-    shortcuts: display_keys(this.match_keys),
+    shortcuts: display_keys(this.keys),
   };
 
   async command(): Promise<void> {

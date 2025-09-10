@@ -1,8 +1,10 @@
-import { KeyHandler } from "./handler.ts";
+import { Key } from "@lib/vt";
 
-export class DeleteHandler extends KeyHandler {
+import { EditorHandler } from "./handler.ts";
+
+export class DeleteHandler extends EditorHandler {
   keys = [
-    { name: "DELETE" },
+    Key.create({ name: "DELETE" }),
   ];
 
   handle(): boolean {

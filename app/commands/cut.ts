@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class CutCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Cut",
     description: "Edit: Cut",
     shortcuts: display_keys([
-      { name: "x", ctrl: true },
-      { name: "x", super: true },
+      Key.create({ name: "x", ctrl: true }),
+      Key.create({ name: "x", super: true }),
     ]),
   };
 
@@ -18,7 +18,7 @@ export class CutCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_input({ name: "x", ctrl: true });
+      editor.handle_key(Key.create({ name: "x", ctrl: true }));
 
       editor.render();
     }

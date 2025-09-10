@@ -1,7 +1,7 @@
 import { Command } from "./command.ts";
 
 export class DebugCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Debug",
