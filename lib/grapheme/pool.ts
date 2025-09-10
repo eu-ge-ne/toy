@@ -1,23 +1,24 @@
 import { Grapheme } from "./grapheme.ts";
 
 export class GraphemePool {
+  #encoder = new TextEncoder();
   #pool = new Map<string, Grapheme>();
 
-  constructor(overrides: Record<string, [string, number]>) {
-    for (const [seg, [override, width]] of Object.entries(overrides)) {
-      this.#pool.set(seg, new Grapheme(seg, width, override));
+  constructor(pool: Record<string, [string, number]>) {
+    for (const [seg, [b, w]] of Object.entries(pool)) {
+      const g = new Grapheme(seg, this.#encoder.encode(b), w);
+      this.#pool.set(seg, g);
     }
   }
 
   get(seg: string): Grapheme {
-    let grapheme = this.#pool.get(seg);
+    let g = this.#pool.get(seg);
 
-    if (!grapheme) {
-      grapheme = new Grapheme(seg);
-
-      this.#pool.set(seg, grapheme);
+    if (!g) {
+      g = new Grapheme(seg, this.#encoder.encode(seg), -1);
+      this.#pool.set(seg, g);
     }
 
-    return grapheme;
+    return g;
   }
 }
