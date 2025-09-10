@@ -16,11 +16,9 @@ export abstract class Command {
   constructor(protected app: App) {
   }
 
-  match(key: Key): boolean {
+  match(key: Record<string, unknown>): boolean {
     return this.keys.some((x) =>
-      Object.entries(x).every(([k, v]) =>
-        (key as unknown as Record<string, unknown>)[k] === v
-      )
+      Object.entries(x).every(([k, v]) => k === "code" || key[k] === v)
     );
   }
 
