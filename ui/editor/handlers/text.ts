@@ -5,7 +5,7 @@ import { EditorHandler } from "./handler.ts";
 export class TextHandler extends EditorHandler {
   keys = [];
 
-  override match(key: Key): boolean {
+  override match(key: Record<string, unknown>): boolean {
     return typeof key.text === "string";
   }
 

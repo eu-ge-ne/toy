@@ -90,13 +90,15 @@ export class Editor extends Control {
   handle_key(key: vt.Key): boolean {
     const t0 = performance.now();
 
-    const handled = this.#handlers.find((x) => x.match(key))?.handle(key) ??
-      false;
+    const handler = this.#handlers.find((x) =>
+      x.match(key as unknown as Record<string, unknown>)
+    );
+    const r = handler?.handle(key) ?? false;
 
     const t1 = performance.now();
     this.on_input_handled?.(t1 - t0);
 
-    return handled;
+    return r;
   }
 
   #sgr = new Intl.Segmenter();
