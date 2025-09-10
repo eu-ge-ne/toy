@@ -1,8 +1,8 @@
 import { Key } from "@eu-ge-ne/kitty-keys";
 
-export function display_keys(
-  keys: (Pick<Key, "name"> & Partial<Key>)[],
-): string {
+export { Key } from "@eu-ge-ne/kitty-keys";
+
+export function display_keys(keys: Key[]): string {
   return keys.map((x) => {
     const chunks: string[] = [];
 

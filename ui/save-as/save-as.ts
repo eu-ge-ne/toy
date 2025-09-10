@@ -73,20 +73,18 @@ export class SaveAs extends Modal<[string], string> {
           continue;
         }
 
-        if (typeof key !== "string") {
-          switch (key.name) {
-            case "ESC":
-              return "";
-            case "ENTER": {
-              const path = iter_to_str(this.#editor.buffer.read(0));
-              if (path) {
-                return path;
-              }
+        switch (key.name) {
+          case "ESC":
+            return "";
+          case "ENTER": {
+            const path = iter_to_str(this.#editor.buffer.read(0));
+            if (path) {
+              return path;
             }
           }
         }
 
-        if (this.#editor.handle_input(key)) {
+        if (this.#editor.handle_key(key)) {
           this.#editor.render();
         }
       }

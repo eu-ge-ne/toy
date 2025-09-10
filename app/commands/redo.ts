@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class RedoCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Redo",
     description: "Edit: Redo",
     shortcuts: display_keys([
-      { name: "y", ctrl: true },
-      { name: "y", super: true },
+      Key.create({ name: "y", ctrl: true }),
+      Key.create({ name: "y", super: true }),
     ]),
   };
 
@@ -18,7 +18,7 @@ export class RedoCommand extends Command {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
-      editor.handle_input({ name: "y", ctrl: true });
+      editor.handle_key(Key.create({ name: "y", ctrl: true }));
 
       editor.render();
     }

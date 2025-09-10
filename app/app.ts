@@ -238,6 +238,8 @@ export class App extends Control {
   }
 
   async #process_input(): Promise<void> {
+    const { editor } = this.ui;
+
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -245,17 +247,17 @@ export class App extends Control {
           continue;
         }
 
-        if (typeof key !== "string") {
-          const command = this.commands.find((x) => x.match(key));
-          if (command && !cmd.Command.running) {
-            await command.run(key);
-            continue;
-          }
+        const command = this.commands.find((x) =>
+          x.match(key as unknown as Record<string, unknown>)
+        );
+        if (command && !cmd.Command.running) {
+          await command.run(key);
+          continue;
         }
 
-        if (this.ui.editor.enabled) {
-          if (this.ui.editor.handle_input(key)) {
-            this.ui.editor.render();
+        if (editor.enabled) {
+          if (editor.handle_key(key)) {
+            editor.render();
           }
         }
       }

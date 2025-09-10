@@ -3,13 +3,7 @@ import { Key } from "@lib/vt";
 import { App } from "../app.ts";
 
 export abstract class Command {
-  abstract match_keys: (
-    & Pick<Key, "name">
-    & Pick<
-      Partial<Key>,
-      "super" | "shift" | "ctrl"
-    >
-  )[];
+  abstract keys: Key[];
 
   abstract option?: {
     id: string;
@@ -22,15 +16,13 @@ export abstract class Command {
   constructor(protected app: App) {
   }
 
-  match(key: Key): boolean {
-    return this.match_keys.some((x) =>
-      Object.entries(x).every(([k, v]) =>
-        (key as unknown as Record<string, unknown>)[k] === v
-      )
+  match(key: Record<string, unknown>): boolean {
+    return this.keys.some((x) =>
+      Object.entries(x).every(([k, v]) => k === "code" || key[k] === v)
     );
   }
 
-  async run(key?: Key | string): Promise<void> {
+  async run(key?: Key): Promise<void> {
     Command.running += 1;
 
     await this.command(key);
@@ -38,5 +30,5 @@ export abstract class Command {
     Command.running -= 1;
   }
 
-  protected abstract command(key?: Key | string): Promise<void>;
+  protected abstract command(key?: Key): Promise<void>;
 }

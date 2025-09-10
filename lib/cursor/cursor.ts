@@ -19,8 +19,56 @@ export class Cursor {
     return this.#set(ln, col, sel);
   }
 
-  move(dy: number, dx: number, sel: boolean): boolean {
-    return this.#set(this.ln + dy, this.col + dx, sel);
+  top(sel: boolean): boolean {
+    return this.#set(0, 0, sel);
+  }
+
+  bottom(sel: boolean): boolean {
+    return this.#set(Number.MAX_SAFE_INTEGER, 0, sel);
+  }
+
+  home(sel: boolean): boolean {
+    return this.#set(this.ln, 0, sel);
+  }
+
+  end(sel: boolean): boolean {
+    return this.#set(this.ln, Number.MAX_SAFE_INTEGER, sel);
+  }
+
+  up(n: number, sel: boolean): boolean {
+    return this.#set(this.ln - n, this.col, sel);
+  }
+
+  down(n: number, sel: boolean): boolean {
+    return this.#set(this.ln + n, this.col, sel);
+  }
+
+  left(sel: boolean): boolean {
+    if (this.#set(this.ln, this.col - 1, sel)) {
+      return true;
+    }
+
+    if (this.ln > 0) {
+      return this.#set(this.ln - 1, Number.MAX_SAFE_INTEGER, sel);
+    }
+
+    return false;
+  }
+
+  right(sel: boolean): boolean {
+    if (this.#set(this.ln, this.col + 1, sel)) {
+      return true;
+    }
+
+    if (this.ln < this.buffer.line_count - 1) {
+      return this.#set(this.ln + 1, 0, sel);
+    }
+
+    return false;
+  }
+
+  forward(n: number): boolean {
+    return this.#set(this.ln, this.col + n, false);
   }
 
   is_selected(ln: number, col: number): boolean {

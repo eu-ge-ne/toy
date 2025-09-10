@@ -3,7 +3,7 @@ import { ZINC } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeZincCommand extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Zinc",

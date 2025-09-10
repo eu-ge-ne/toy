@@ -1,16 +1,16 @@
-import { display_keys } from "@lib/key";
+import { display_keys, Key } from "@lib/vt";
 
 import { Command } from "./command.ts";
 
 export class SaveCommand extends Command {
-  match_keys = [
-    { name: "F2" },
+  keys = [
+    Key.create({ name: "F2" }),
   ];
 
   option = {
     id: "Save",
     description: "Global: Save",
-    shortcuts: display_keys(this.match_keys),
+    shortcuts: display_keys(this.keys),
   };
 
   async command(): Promise<void> {

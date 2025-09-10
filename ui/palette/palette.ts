@@ -82,31 +82,29 @@ export class Palette
           continue;
         }
 
-        if (typeof key !== "string") {
-          switch (key.name) {
-            case "ESC":
-              return;
-            case "ENTER":
-              return this.#options[this.#selected_index];
-            case "UP":
-              if (this.#options.length > 0) {
-                this.#selected_index = Math.max(this.#selected_index - 1, 0);
-                this.parent?.render();
-              }
-              continue;
-            case "DOWN":
-              if (this.#options.length > 0) {
-                this.#selected_index = Math.min(
-                  this.#selected_index + 1,
-                  this.#options.length - 1,
-                );
-                this.parent?.render();
-              }
-              continue;
-          }
+        switch (key.name) {
+          case "ESC":
+            return;
+          case "ENTER":
+            return this.#options[this.#selected_index];
+          case "UP":
+            if (this.#options.length > 0) {
+              this.#selected_index = Math.max(this.#selected_index - 1, 0);
+              this.parent?.render();
+            }
+            continue;
+          case "DOWN":
+            if (this.#options.length > 0) {
+              this.#selected_index = Math.min(
+                this.#selected_index + 1,
+                this.#options.length - 1,
+              );
+              this.parent?.render();
+            }
+            continue;
         }
 
-        if (this.#editor.handle_input(key)) {
+        if (this.#editor.handle_key(key)) {
           this.#filter();
           this.parent?.render();
         }

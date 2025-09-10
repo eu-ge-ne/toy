@@ -3,7 +3,7 @@ import { BASE16 } from "@lib/theme";
 import { Command } from "./command.ts";
 
 export class ThemeBase16Command extends Command {
-  match_keys = [];
+  keys = [];
 
   option = {
     id: "Theme Base16",

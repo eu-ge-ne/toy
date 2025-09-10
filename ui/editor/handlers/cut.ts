@@ -1,12 +1,12 @@
 import { iter_to_str } from "@lib/std";
-import { copy_to_clipboard } from "@lib/vt";
+import { copy_to_clipboard, Key } from "@lib/vt";
 
-import { KeyHandler } from "./handler.ts";
+import { EditorHandler } from "./handler.ts";
 
-export class CopyHandler extends KeyHandler {
+export class CutHandler extends EditorHandler {
   keys = [
-    { name: "c", ctrl: true },
-    { name: "c", super: true },
+    Key.create({ name: "x", ctrl: true }),
+    Key.create({ name: "x", super: true }),
   ];
 
   handle(): boolean {
@@ -20,15 +20,17 @@ export class CopyHandler extends KeyHandler {
         }),
       );
 
-      cursor.set(cursor.ln, cursor.col, false);
+      this.editor.delete_selection();
     } else {
       this.editor.clipboard = iter_to_str(
         buffer.seg_read(cursor, { ln: cursor.ln, col: cursor.col + 1 }),
       );
+
+      this.editor.delete_char();
     }
 
     copy_to_clipboard(this.editor.clipboard);
 
-    return false;
+    return true;
   }
 }
