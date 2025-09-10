@@ -238,6 +238,8 @@ export class App extends Control {
   }
 
   async #process_input(): Promise<void> {
+    const { editor } = this.ui;
+
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -251,9 +253,9 @@ export class App extends Control {
           continue;
         }
 
-        if (this.ui.editor.enabled) {
-          if (this.ui.editor.handle_key(key)) {
-            this.ui.editor.render();
+        if (editor.enabled) {
+          if (editor.handle_key(key)) {
+            editor.render();
           }
         }
       }
