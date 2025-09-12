@@ -343,21 +343,22 @@ export class Editor extends Control {
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
-      this.#cells(ln, false).reduce(
-        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-        1,
-      )
+      this.#cells(ln, false)
+        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
     let i = 0;
+    let height = sum(xs);
 
-    for (let height = sum(xs); height > h; i += 1) {
+    while (height > h) {
       height -= xs[i]!;
       this.scroll_ln += 1;
+      i += 1;
     }
 
-    for (; i < xs.length - 1; i += 1) {
+    while (i < xs.length - 1) {
       this.cursor_y += xs[i]!;
+      i += 1;
     }
   }
 
