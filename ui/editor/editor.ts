@@ -13,13 +13,6 @@ interface EditorOptions {
   multi_line: boolean;
 }
 
-interface Cell {
-  grm: Grapheme;
-  i: number;
-  ln: number;
-  col: number;
-}
-
 export class Editor extends Control {
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -269,7 +262,7 @@ export class Editor extends Control {
 
     const xs = this.#cells(ln, false);
 
-    for (const { grm: { width, is_visible, bytes }, i, col } of xs) {
+    for (const { g: { width, is_visible, bytes }, i, col } of xs) {
       if (col === 0) {
         if (i > 0) {
           row += 1;
@@ -390,7 +383,7 @@ export class Editor extends Control {
     const xs = this.#cells(cursor.ln, true)
       .drop(cursor.col - delta_col)
       .take(delta_col)
-      .map((x) => x.grm.width)
+      .map((x) => x.g.width)
       .toArray();
 
     let width = sum(xs);
@@ -407,45 +400,52 @@ export class Editor extends Control {
     this.cursor_x += width;
   }
 
-  *#cells(line: number, with_tail: boolean): Generator<Cell> {
-    const { buffer, measure_y, measure_x, wrap_width } = this;
+  *#cells(
+    ln: number,
+    with_tail: boolean,
+  ): Generator<{ i: number; g: Grapheme; ln: number; col: number }> {
+    const { measure_y, measure_x, wrap_width } = this;
 
-    let i = 0;
+    const c = {
+      i: 0,
+      g: undefined as unknown as Grapheme,
+      ln: 0,
+      col: 0,
+    };
+
     let w = 0;
-    let ln = 0;
-    let col = 0;
 
-    for (const seg of buffer.seg_line(line)) {
-      const grm = graphemes.get(seg);
+    for (const seg of this.buffer.seg_line(ln)) {
+      c.g = graphemes.get(seg);
 
-      if (grm.width < 0) {
-        grm.width = vt.cursor.measure(measure_y, measure_x, grm.bytes);
+      if (c.g.width < 0) {
+        c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
       }
 
-      w += grm.width;
+      w += c.g.width;
       if (w > wrap_width) {
-        w = grm.width;
-        ln += 1;
-        col = 0;
+        w = c.g.width;
+        c.ln += 1;
+        c.col = 0;
       }
 
-      yield { grm, i, ln, col };
+      yield c;
 
-      i += 1;
-      col += 1;
+      c.i += 1;
+      c.col += 1;
     }
 
     if (with_tail) {
-      const grm = graphemes.get(" ");
+      c.g = graphemes.get(" ");
 
-      w += grm.width;
+      w += c.g.width;
       if (w > wrap_width) {
-        w = grm.width;
-        ln += 1;
-        col = 0;
+        w = c.g.width;
+        c.ln += 1;
+        c.col = 0;
       }
 
-      yield { grm, i, ln, col };
+      yield c;
     }
   }
 }
