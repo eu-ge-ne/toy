@@ -350,8 +350,9 @@ export class Editor extends Control {
     );
 
     let i = 0;
+    let height = sum(xs);
 
-    for (let height = sum(xs); height > h; i += 1) {
+    for (; height > h; i += 1) {
       height -= xs[i]!;
       this.scroll_ln += 1;
     }
