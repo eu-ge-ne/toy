@@ -352,13 +352,15 @@ export class Editor extends Control {
     let i = 0;
     let height = sum(xs);
 
-    for (; height > h; i += 1) {
+    for (; height > h;) {
       height -= xs[i]!;
       this.scroll_ln += 1;
+      i += 1;
     }
 
-    for (; i < xs.length - 1; i += 1) {
+    for (; i < xs.length - 1;) {
       this.cursor_y += xs[i]!;
+      i += 1;
     }
   }
 
