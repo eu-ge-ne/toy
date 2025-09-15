@@ -13,7 +13,7 @@ export class PaletteCommand extends Command {
 
   option = undefined;
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { editor, palette } = this.app.ui;
 
     editor.enabled = false;

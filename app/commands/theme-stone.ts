@@ -10,8 +10,9 @@ export class ThemeStoneCommand extends Command {
     description: "Theme: Stone",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(STONE);
+
     this.app.render();
   }
 }

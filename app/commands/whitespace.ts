@@ -13,7 +13,7 @@ export class WhitespaceCommand extends Command {
     shortcuts: display_keys(this.keys),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { editor } = this.app.ui;
 
     editor.whitespace_enabled = !editor.whitespace_enabled;

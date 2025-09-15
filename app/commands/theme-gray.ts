@@ -10,8 +10,9 @@ export class ThemeGrayCommand extends Command {
     description: "Theme: Gray",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(GRAY);
+
     this.app.render();
   }
 }

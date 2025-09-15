@@ -10,8 +10,9 @@ export class ThemeNeutralCommand extends Command {
     description: "Theme: Neutral",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(NEUTRAL);
+
     this.app.render();
   }
 }

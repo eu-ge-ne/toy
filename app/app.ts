@@ -247,11 +247,11 @@ export class App extends Control {
           continue;
         }
 
-        const command = this.commands.find((x) =>
+        const cmd = this.commands.find((x) =>
           x.match(key as unknown as Record<string, unknown>)
         );
-        if (command && !cmd.Command.running) {
-          await command.run(key);
+        if (cmd) {
+          await cmd.run(key);
           continue;
         }
 

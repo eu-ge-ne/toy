@@ -10,8 +10,9 @@ export class ThemeSlateCommand extends Command {
     description: "Theme: Slate",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(SLATE);
+
     this.app.render();
   }
 }

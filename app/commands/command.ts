@@ -11,8 +11,6 @@ export abstract class Command {
     shortcuts?: string;
   };
 
-  static running = 0;
-
   constructor(protected app: App) {
   }
 
@@ -22,13 +20,5 @@ export abstract class Command {
     );
   }
 
-  async run(key?: Key): Promise<void> {
-    Command.running += 1;
-
-    await this.command(key);
-
-    Command.running -= 1;
-  }
-
-  protected abstract command(key?: Key): Promise<void>;
+  abstract run(key?: Key): Promise<void>;
 }
