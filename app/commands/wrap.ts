@@ -13,7 +13,7 @@ export class WrapCommand extends Command {
     shortcuts: display_keys(this.keys),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { editor } = this.app.ui;
 
     editor.wrap_enabled = !editor.wrap_enabled;

@@ -10,8 +10,9 @@ export class ThemeZincCommand extends Command {
     description: "Theme: Zinc",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(ZINC);
+
     this.app.render();
   }
 }

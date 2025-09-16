@@ -8,7 +8,7 @@ export class DebugCommand extends Command {
     description: "Global: Toggle Debug Panel",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { debug, editor } = this.app.ui;
 
     debug.enabled = !debug.enabled;

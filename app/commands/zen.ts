@@ -13,7 +13,7 @@ export class ZenCommand extends Command {
     shortcuts: display_keys(this.keys),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.enable_zen(!this.app.zen_enabled);
   }
 }

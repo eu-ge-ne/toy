@@ -13,7 +13,7 @@ export class ExitCommand extends Command {
     shortcuts: display_keys(this.keys),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { changes, ui } = this.app;
 
     ui.editor.enabled = false;

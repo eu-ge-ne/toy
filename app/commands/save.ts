@@ -13,7 +13,7 @@ export class SaveCommand extends Command {
     shortcuts: display_keys(this.keys),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { editor } = this.app.ui;
 
     editor.enabled = false;

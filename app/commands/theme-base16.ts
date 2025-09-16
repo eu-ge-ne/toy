@@ -10,8 +10,9 @@ export class ThemeBase16Command extends Command {
     description: "Theme: Base16",
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     this.app.set_colors(BASE16);
+
     this.app.render();
   }
 }

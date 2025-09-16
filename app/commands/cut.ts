@@ -14,7 +14,7 @@ export class CutCommand extends Command {
     ]),
   };
 
-  async command(): Promise<void> {
+  async run(): Promise<void> {
     const { editor } = this.app.ui;
 
     if (editor.enabled) {
