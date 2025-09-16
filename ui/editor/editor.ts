@@ -258,7 +258,7 @@ export class Editor extends Control {
     const { y, h, cursor, whitespace_enabled } = this;
 
     let available_w = 0;
-    let current_color!: Uint8Array;
+    let current_color = colors.CharColor.Undefined;
 
     const xs = this.#cells(ln, false);
 
@@ -296,25 +296,15 @@ export class Editor extends Control {
         continue;
       }
 
-      {
-        let color!: Uint8Array;
+      const color = colors.create_char_color(
+        cursor.is_selected(ln, i),
+        is_visible,
+        whitespace_enabled,
+      );
 
-        const { Char, Whitespace, Empty } = cursor.is_selected(ln, i)
-          ? colors.SELECTED
-          : colors.CHAR;
-
-        if (is_visible) {
-          color = Char;
-        } else if (whitespace_enabled) {
-          color = Whitespace;
-        } else {
-          color = Empty;
-        }
-
-        if (current_color !== color) {
-          current_color = color;
-          vt.write_buf(color);
-        }
+      if (color !== current_color) {
+        current_color = color;
+        vt.write_buf(colors.CHAR[color]);
       }
 
       vt.write_buf(bytes);
