@@ -1,5 +1,5 @@
 import { clamp, iter_to_str } from "@lib/std";
-import { Area, Modal, render } from "@lib/ui";
+import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -55,9 +55,9 @@ export class SaveAs extends Modal<[string], string> {
       ...vt.clear_area(this),
       vt.cursor.set(this.y + 1, this.x),
       colors.TEXT,
-      ...render.text([this.w], "center", "Save As"),
+      ...vt.write_text_center([this.w], "Save As"),
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...render.text([this.w], "center", "ESC‧cancel    ENTER‧ok"),
+      ...vt.write_text_center([this.w], "ESC‧cancel    ENTER‧ok"),
     );
 
     this.#editor.render();

@@ -1,5 +1,5 @@
 import { iter_to_str } from "@lib/std";
-import { Area, Control, Modal, render } from "@lib/ui";
+import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -160,7 +160,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.set(this.y + 2, this.x + 2),
       colors.OPTION,
-      ...render.text([this.w - 4], "left", "No matching commands"),
+      ...vt.write_text([this.w - 4], "No matching commands"),
     );
   }
 
@@ -181,16 +181,16 @@ export class Palette
         break;
       }
 
-      const span: render.Span = [this.w - 4];
+      const span: [number] = [this.w - 4];
 
       vt.write_buf(
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
         vt.cursor.set(y, this.x + 2),
-        ...render.text(span, "left", option.description),
+        ...vt.write_text(span, option.description),
       );
 
       vt.write_buf(
-        ...render.text(span, "left", option.shortcuts.padStart(span[0])),
+        ...vt.write_text(span, option.shortcuts.padStart(span[0])),
       );
 
       i += 1;
