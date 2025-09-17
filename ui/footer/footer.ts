@@ -33,7 +33,7 @@ export class Footer extends Control {
 
     const data = [
       colors.TEXT,
-      ...vt.write_text_aligned(span, "left", this.#cursor_status),
+      ...vt.write_text(span, this.#cursor_status),
     ];
 
     vt.flush_buf(

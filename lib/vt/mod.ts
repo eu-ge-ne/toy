@@ -10,4 +10,4 @@ export * from "./init.ts";
 export * from "./key.ts";
 export * from "./sync.ts";
 export * from "./truecolor.ts";
-export { write_spaces, write_text, write_text_aligned } from "./write.ts";
+export { write_spaces, write_text, write_text_center } from "./write.ts";

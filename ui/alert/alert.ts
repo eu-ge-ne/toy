@@ -54,13 +54,13 @@ export class Alert extends Modal<[unknown], void> {
       vt.write_buf(
         vt.cursor.set(y, this.x + 2),
         colors.TEXT,
-        ...vt.write_text_aligned(span, "left", line),
+        ...vt.write_text(span, line),
       );
     }
 
     vt.flush_buf(
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...vt.write_text_aligned([this.w], "center", "ENTER‧ok"),
+      ...vt.write_text_center([this.w], "ENTER‧ok"),
     );
 
     vt.esu();

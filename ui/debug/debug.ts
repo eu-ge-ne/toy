@@ -38,33 +38,29 @@ export class Debug extends Control {
       ...vt.clear_area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
-      ...vt.write_text_aligned(
+      ...vt.write_text(
         [this.w - 1],
-        "left",
         "Input    : ",
         this.#input_time,
         " ms",
       ),
       vt.cursor.set(this.y + 2, this.x + 1),
-      ...vt.write_text_aligned(
+      ...vt.write_text(
         [this.w - 1],
-        "left",
         "Render   : ",
         this.#render_time,
         " ms",
       ),
       vt.cursor.set(this.y + 3, this.x + 1),
-      ...vt.write_text_aligned(
+      ...vt.write_text(
         [this.w - 1],
-        "left",
         "RSS      : ",
         rss,
         " MiB",
       ),
       vt.cursor.set(this.y + 4, this.x + 1),
-      ...vt.write_text_aligned(
+      ...vt.write_text(
         [this.w - 1],
-        "left",
         "Heap     : ",
         heap_used,
         "/",
@@ -72,9 +68,8 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.set(this.y + 5, this.x + 1),
-      ...vt.write_text_aligned(
+      ...vt.write_text(
         [this.w - 1],
-        "left",
         "External : ",
         external_mem,
         " MiB",
