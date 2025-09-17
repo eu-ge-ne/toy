@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Modal, render } from "@lib/ui";
+import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -46,7 +46,7 @@ export class Alert extends Modal<[unknown], void> {
         break;
       }
 
-      const span: render.Span = [this.w - 4];
+      const span: [number] = [this.w - 4];
       const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
@@ -54,13 +54,13 @@ export class Alert extends Modal<[unknown], void> {
       vt.write_buf(
         vt.cursor.set(y, this.x + 2),
         colors.TEXT,
-        ...render.text(span, "left", line),
+        ...vt.write_text_aligned(span, "left", line),
       );
     }
 
     vt.flush_buf(
       vt.cursor.set(this.y + this.h - 2, this.x),
-      ...render.text([this.w], "center", "ENTER‧ok"),
+      ...vt.write_text_aligned([this.w], "center", "ENTER‧ok"),
     );
 
     vt.esu();

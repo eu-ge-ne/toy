@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Control, render } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -31,7 +31,7 @@ export class Header extends Control {
       colors.BACKGROUND,
       ...vt.clear_area(this),
       vt.cursor.set(this.y, this.x),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w],
         "center",
         colors.FILE_PATH,

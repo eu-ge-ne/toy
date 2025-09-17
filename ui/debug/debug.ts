@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, Control, render } from "@lib/ui";
+import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -38,7 +38,7 @@ export class Debug extends Control {
       ...vt.clear_area(this),
       colors.TEXT,
       vt.cursor.set(this.y + 1, this.x + 1),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w - 1],
         "left",
         "Input    : ",
@@ -46,7 +46,7 @@ export class Debug extends Control {
         " ms",
       ),
       vt.cursor.set(this.y + 2, this.x + 1),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w - 1],
         "left",
         "Render   : ",
@@ -54,7 +54,7 @@ export class Debug extends Control {
         " ms",
       ),
       vt.cursor.set(this.y + 3, this.x + 1),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w - 1],
         "left",
         "RSS      : ",
@@ -62,7 +62,7 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.set(this.y + 4, this.x + 1),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w - 1],
         "left",
         "Heap     : ",
@@ -72,7 +72,7 @@ export class Debug extends Control {
         " MiB",
       ),
       vt.cursor.set(this.y + 5, this.x + 1),
-      ...render.text(
+      ...vt.write_text_aligned(
         [this.w - 1],
         "left",
         "External : ",
