@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, clear, Control, render } from "@lib/ui";
+import { Area, Control, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -29,7 +29,7 @@ export class Header extends Control {
       vt.cursor.hide,
       vt.cursor.save,
       colors.BACKGROUND,
-      ...clear.area(this),
+      ...vt.clear_area(this),
       vt.cursor.set(this.y, this.x),
       ...render.text(
         [this.w],
