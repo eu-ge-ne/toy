@@ -1,4 +1,5 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -7,11 +8,11 @@ export class WhitespaceCommand extends Command {
     Key.create({ name: "F5" }),
   ];
 
-  option = {
-    id: "Whitespace",
-    description: "View: Toggle Render Whitespace",
-    shortcuts: display_keys(this.keys),
-  };
+  option = new PaletteOption(
+    "Whitespace",
+    "View: Toggle Render Whitespace",
+    this.keys,
+  );
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;

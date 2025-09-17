@@ -1,4 +1,5 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -7,11 +8,7 @@ export class ZenCommand extends Command {
     Key.create({ name: "F11" }),
   ];
 
-  option = {
-    id: "Zen",
-    description: "Global: Toggle Zen Mode",
-    shortcuts: display_keys(this.keys),
-  };
+  option = new PaletteOption("Zen", "Global: Toggle Zen Mode", this.keys);
 
   async run(): Promise<void> {
     this.app.enable_zen(!this.app.zen_enabled);

@@ -1,18 +1,19 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class UndoCommand extends Command {
   keys = [];
 
-  option = {
-    id: "Undo",
-    description: "Edit: Undo",
-    shortcuts: display_keys([
+  option = new PaletteOption(
+    "Undo",
+    "Edit: Undo",
+    [
       Key.create({ name: "z", ctrl: true }),
       Key.create({ name: "z", super: true }),
-    ]),
-  };
+    ],
+  );
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;

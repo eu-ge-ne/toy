@@ -1,34 +1,31 @@
 import { iter_to_str } from "@lib/std";
-import { Area, clear, Modal, render } from "@lib/ui";
+import { Area, clear, Control, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 import * as colors from "./colors.ts";
+import { PaletteOption } from "./option.ts";
 
 const MAX_LIST_SIZE = 10;
-
-export interface PaletteOption {
-  id: string;
-  description: string;
-  shortcuts: string;
-}
 
 export class Palette
   extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
-  #all: PaletteOption[] = [];
-  #options: PaletteOption[] = [];
+  #filtered_options: PaletteOption[] = [];
   #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;
 
-  async open(options: PaletteOption[]): Promise<PaletteOption | undefined> {
+  constructor(parent: Control, private options: PaletteOption[]) {
+    super(parent);
+  }
+
+  async open(): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.#editor.enabled = true;
 
-    this.#all = options;
     this.#editor.buffer.reset();
     this.#editor.reset(false);
 
@@ -63,7 +60,7 @@ export class Palette
       ...clear.area(this),
     );
 
-    if (this.#options.length === 0) {
+    if (this.#filtered_options.length === 0) {
       this.#render_empty();
     } else {
       this.#render_options();
@@ -86,18 +83,18 @@ export class Palette
           case "ESC":
             return;
           case "ENTER":
-            return this.#options[this.#selected_index];
+            return this.#filtered_options[this.#selected_index];
           case "UP":
-            if (this.#options.length > 0) {
+            if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.max(this.#selected_index - 1, 0);
               this.parent?.render();
             }
             continue;
           case "DOWN":
-            if (this.#options.length > 0) {
+            if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.min(
                 this.#selected_index + 1,
-                this.#options.length - 1,
+                this.#filtered_options.length - 1,
               );
               this.parent?.render();
             }
@@ -116,9 +113,9 @@ export class Palette
     const text = iter_to_str(this.#editor.buffer.read(0)).toUpperCase();
 
     if (!text) {
-      this.#options = this.#all;
+      this.#filtered_options = this.options;
     } else {
-      this.#options = this.#all.filter((x) =>
+      this.#filtered_options = this.options.filter((x) =>
         x.description.toUpperCase().includes(text)
       );
     }
@@ -127,7 +124,7 @@ export class Palette
   }
 
   #resize(): void {
-    this.#list_size = Math.min(this.#options.length, MAX_LIST_SIZE);
+    this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
     this.w = Math.min(60, this.#area.w);
 
@@ -176,7 +173,7 @@ export class Palette
         break;
       }
       const index = this.#scroll_index + i;
-      const option = this.#options[index];
+      const option = this.#filtered_options[index];
       if (!option) {
         break;
       }

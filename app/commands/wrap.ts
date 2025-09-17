@@ -1,4 +1,5 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -7,11 +8,7 @@ export class WrapCommand extends Command {
     Key.create({ name: "F6" }),
   ];
 
-  option = {
-    id: "Wrap",
-    description: "View: Toggle Line Wrap",
-    shortcuts: display_keys(this.keys),
-  };
+  option = new PaletteOption("Wrap", "View: Toggle Line Wrap", this.keys);
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;

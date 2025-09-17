@@ -1,18 +1,19 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class SelectAllCommand extends Command {
   keys = [];
 
-  option = {
-    id: "Select All",
-    description: "Edit: Select All",
-    shortcuts: display_keys([
+  option = new PaletteOption(
+    "Select All",
+    "Edit: Select All",
+    [
       Key.create({ name: "a", ctrl: true }),
       Key.create({ name: "a", super: true }),
-    ]),
-  };
+    ],
+  );
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;
