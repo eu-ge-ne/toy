@@ -1,18 +1,19 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { Option } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class CutCommand extends Command {
   keys = [];
 
-  option = {
-    id: "Cut",
-    description: "Edit: Cut",
-    shortcuts: display_keys([
+  option = new Option(
+    "Cut",
+    "Edit: Cut",
+    [
       Key.create({ name: "x", ctrl: true }),
       Key.create({ name: "x", super: true }),
-    ]),
-  };
+    ],
+  );
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;

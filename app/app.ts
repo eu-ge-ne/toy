@@ -7,7 +7,7 @@ import { Debug, set_debug_colors } from "@ui/debug";
 import { Editor, set_editor_colors } from "@ui/editor";
 import { Footer, set_footer_colors } from "@ui/footer";
 import { Header, set_header_colors } from "@ui/header";
-import { Palette, PaletteOption, set_palette_colors } from "@ui/palette";
+import { Palette, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
@@ -41,32 +41,41 @@ export class App extends Control {
     new cmd.ZenCommand(this),
   ];
 
-  options: PaletteOption[];
-
   zen_enabled = true;
   file_path = "";
   changes = false;
 
-  ui = {
-    header: new Header(this),
-    footer: new Footer(this),
-    editor: new Editor(this, { multi_line: true }),
-    debug: new Debug(this),
-    palette: new Palette(this),
-    alert: new Alert(this),
-    ask: new Ask(this),
-    save_as: new SaveAs(this),
+  ui: {
+    header: Header;
+    footer: Footer;
+    editor: Editor;
+    debug: Debug;
+    palette: Palette;
+    alert: Alert;
+    ask: Ask;
+    save_as: SaveAs;
   };
 
   constructor() {
     super();
 
-    this.options = this.commands.filter((x) => x.option).map((x) => ({
+    const options = this.commands.filter((x) => x.option).map((x) => ({
       ...x.option!,
       shortcuts: x.option!.shortcuts ?? "",
     }));
 
-    this.options.sort((a, b) => a.description.localeCompare(b.description));
+    options.sort((a, b) => a.description.localeCompare(b.description));
+
+    this.ui = {
+      header: new Header(this),
+      footer: new Footer(this),
+      editor: new Editor(this, { multi_line: true }),
+      debug: new Debug(this),
+      palette: new Palette(this, options),
+      alert: new Alert(this),
+      ask: new Ask(this),
+      save_as: new SaveAs(this),
+    };
   }
 
   async run(): Promise<void> {

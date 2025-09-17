@@ -1,14 +1,12 @@
 import { NEUTRAL } from "@lib/theme";
+import { Option } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class ThemeNeutralCommand extends Command {
   keys = [];
 
-  option = {
-    id: "Theme Neutral",
-    description: "Theme: Neutral",
-  };
+  option = new Option("Theme Neutral", "Theme: Neutral", []);
 
   async run(): Promise<void> {
     this.app.set_colors(NEUTRAL);

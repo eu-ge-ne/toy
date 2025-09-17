@@ -1,4 +1,5 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { Option } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -7,11 +8,7 @@ export class ExitCommand extends Command {
     Key.create({ name: "F10" }),
   ];
 
-  option = {
-    id: "Exit",
-    description: "Global: Exit",
-    shortcuts: display_keys(this.keys),
-  };
+  option = new Option("Exit", "Global: Exit", this.keys);
 
   async run(): Promise<void> {
     const { changes, ui } = this.app;

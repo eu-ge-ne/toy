@@ -1,4 +1,5 @@
-import { display_keys, Key } from "@lib/vt";
+import { Key } from "@lib/vt";
+import { Option } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -7,11 +8,7 @@ export class SaveCommand extends Command {
     Key.create({ name: "F2" }),
   ];
 
-  option = {
-    id: "Save",
-    description: "Global: Save",
-    shortcuts: display_keys(this.keys),
-  };
+  option = new Option("Save", "Global: Save", this.keys);
 
   async run(): Promise<void> {
     const { editor } = this.app.ui;
