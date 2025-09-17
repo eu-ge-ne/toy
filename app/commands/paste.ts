@@ -1,12 +1,12 @@
 import { Key } from "@lib/vt";
-import { Option } from "@ui/palette";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class PasteCommand extends Command {
   keys = [];
 
-  option = new Option(
+  option = new PaletteOption(
     "Paste",
     "Edit: Paste",
     [

@@ -4,24 +4,25 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 import * as colors from "./colors.ts";
-import { Option } from "./option.ts";
+import { PaletteOption } from "./option.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Modal<[Option[]], Option | undefined> {
+export class Palette
+  extends Modal<[PaletteOption[]], PaletteOption | undefined> {
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
-  #filtered_options: Option[] = [];
+  #filtered_options: PaletteOption[] = [];
   #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(parent: Control, private options: Option[]) {
+  constructor(parent: Control, private options: PaletteOption[]) {
     super(parent);
   }
 
-  async open(): Promise<Option | undefined> {
+  async open(): Promise<PaletteOption | undefined> {
     this.enabled = true;
     this.#editor.enabled = true;
 
@@ -70,7 +71,7 @@ export class Palette extends Modal<[Option[]], Option | undefined> {
     vt.esu();
   }
 
-  async #process_input(): Promise<Option | undefined> {
+  async #process_input(): Promise<PaletteOption | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {

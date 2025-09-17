@@ -1,5 +1,5 @@
 import { Key } from "@lib/vt";
-import { Option } from "@ui/palette";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -8,7 +8,7 @@ export class WhitespaceCommand extends Command {
     Key.create({ name: "F5" }),
   ];
 
-  option = new Option(
+  option = new PaletteOption(
     "Whitespace",
     "View: Toggle Render Whitespace",
     this.keys,

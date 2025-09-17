@@ -1,12 +1,12 @@
 import { Key } from "@lib/vt";
-import { Option } from "@ui/palette";
+import { PaletteOption } from "@ui/palette";
 
 import { App } from "../app.ts";
 
 export abstract class Command {
   abstract keys: Key[];
 
-  abstract option?: Option;
+  abstract option?: PaletteOption;
 
   constructor(protected app: App) {
   }

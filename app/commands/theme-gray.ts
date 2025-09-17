@@ -1,12 +1,12 @@
 import { GRAY } from "@lib/theme";
-import { Option } from "@ui/palette";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
 export class ThemeGrayCommand extends Command {
   keys = [];
 
-  option = new Option("Theme Gray", "Theme: Gray", []);
+  option = new PaletteOption("Theme Gray", "Theme: Gray", []);
 
   async run(): Promise<void> {
     this.app.set_colors(GRAY);

@@ -1,5 +1,5 @@
 import { Key } from "@lib/vt";
-import { Option } from "@ui/palette";
+import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
 
@@ -8,7 +8,7 @@ export class ExitCommand extends Command {
     Key.create({ name: "F10" }),
   ];
 
-  option = new Option("Exit", "Global: Exit", this.keys);
+  option = new PaletteOption("Exit", "Global: Exit", this.keys);
 
   async run(): Promise<void> {
     const { changes, ui } = this.app;

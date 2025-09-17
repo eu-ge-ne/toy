@@ -1,6 +1,6 @@
 import { Key } from "@lib/vt";
 
-export class Option {
+export class PaletteOption {
   id: string;
   description: string;
   shortcuts: string;
