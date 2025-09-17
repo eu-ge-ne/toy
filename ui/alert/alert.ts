@@ -1,5 +1,5 @@
 import { clamp } from "@lib/std";
-import { Area, clear, Modal, render } from "@lib/ui";
+import { Area, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
@@ -36,7 +36,7 @@ export class Alert extends Modal<[unknown], void> {
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...clear.area(this),
+      ...vt.clear_area(this),
     );
 
     let pos = 0;

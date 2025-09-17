@@ -1,5 +1,5 @@
 import { iter_to_str } from "@lib/std";
-import { Area, clear, Control, Modal, render } from "@lib/ui";
+import { Area, Control, Modal, render } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -57,7 +57,7 @@ export class Palette
     vt.write_buf(
       vt.cursor.hide,
       colors.BACKGROUND,
-      ...clear.area(this),
+      ...vt.clear_area(this),
     );
 
     if (this.#filtered_options.length === 0) {

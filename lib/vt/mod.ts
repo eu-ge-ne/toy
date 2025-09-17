@@ -1,5 +1,6 @@
 export * from "./buf.ts";
 export * from "./char.ts";
+export * from "./clear.ts";
 export * from "./clipboard.ts";
 export * as cursor from "./cursor.ts";
 export * from "./dummy.ts";
