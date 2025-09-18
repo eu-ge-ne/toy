@@ -17,5 +17,5 @@ export abstract class Command {
     );
   }
 
-  abstract run(key?: Key): Promise<void>;
+  abstract run(): Promise<void>;
 }
