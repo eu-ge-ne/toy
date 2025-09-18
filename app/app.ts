@@ -260,7 +260,7 @@ export class App extends Control {
           x.match(key as unknown as Record<string, unknown>)
         );
         if (cmd) {
-          await cmd.run(key);
+          await cmd.run();
           continue;
         }
 
