@@ -14,15 +14,13 @@ export class PaletteCommand extends Command {
   option = undefined;
 
   async run(): Promise<void> {
-    const { editor, palette } = this.app.ui;
+    this.app.editor.enabled = false;
 
-    editor.enabled = false;
+    const option = await this.app.palette.open();
 
-    const option = await palette.open();
+    this.app.editor.enabled = true;
 
-    editor.enabled = true;
-
-    editor.render();
+    this.app.editor.render();
 
     if (option) {
       await this.app.commands.find((x) => x.option?.id === option.id)?.run();

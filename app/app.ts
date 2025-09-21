@@ -41,20 +41,18 @@ export class App extends Control {
     new cmd.ZenCommand(this),
   ];
 
+  header: Header;
+  footer: Footer;
+  editor: Editor;
+  debug: Debug;
+  palette: Palette;
+  alert: Alert;
+  ask: Ask;
+  saveas: SaveAs;
+
   zen_enabled = true;
   file_path = "";
   changes = false;
-
-  ui: {
-    header: Header;
-    footer: Footer;
-    editor: Editor;
-    debug: Debug;
-    palette: Palette;
-    alert: Alert;
-    ask: Ask;
-    save_as: SaveAs;
-  };
 
   constructor() {
     super();
@@ -63,19 +61,16 @@ export class App extends Control {
       ...x.option!,
       shortcuts: x.option!.shortcuts ?? "",
     }));
-
     options.sort((a, b) => a.description.localeCompare(b.description));
 
-    this.ui = {
-      header: new Header(this),
-      footer: new Footer(this),
-      editor: new Editor(this, { multi_line: true }),
-      debug: new Debug(this),
-      palette: new Palette(this, options),
-      alert: new Alert(this),
-      ask: new Ask(this),
-      save_as: new SaveAs(this),
-    };
+    this.header = new Header(this);
+    this.footer = new Footer(this);
+    this.editor = new Editor(this, { multi_line: true });
+    this.debug = new Debug(this);
+    this.palette = new Palette(this, options);
+    this.alert = new Alert(this);
+    this.ask = new Ask(this);
+    this.saveas = new SaveAs(this);
   }
 
   async run(): Promise<void> {
@@ -84,32 +79,31 @@ export class App extends Control {
       Deno.exit();
     }
 
-    const { editor, debug, header, footer } = this.ui;
-
-    editor.enabled = true;
-    editor.on_input_handled = (x) => debug.set_input_time(x);
-    editor.on_render = (x) => debug.set_render_time(x);
-    editor.on_cursor = (x) => footer.set_cursor_status(x);
-    editor.history.on_changed = (x) => {
+    this.editor.enabled = true;
+    this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
+    this.editor.on_render = (x) => this.debug.set_render_time(x);
+    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
+    this.editor.history.on_changed = (x) => {
       this.changes = x > 0;
-      header.set_unsaved_flag(x > 0);
+      this.header.set_unsaved_flag(x > 0);
     };
 
     vt.init();
-    globalThis.addEventListener("unhandledrejection", this.stop);
+    globalThis.addEventListener("unhandledrejection", this.exit);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
     this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
     this.enable_zen(true);
 
     if (typeof args._[0] === "string") {
-      await this.#open_file(args._[0]);
+      this.#set_file_path(args._[0]);
+      await this.#try_open_file();
     }
 
     await this.#process_input();
   }
 
-  stop = (e?: PromiseRejectionEvent) => {
+  exit = (e?: PromiseRejectionEvent) => {
     vt.restore();
 
     if (e) {
@@ -125,20 +119,9 @@ export class App extends Control {
     this.w = w;
     this.h = h;
 
-    const {
-      header,
-      footer,
-      editor,
-      debug,
-      palette,
-      alert,
-      ask,
-      save_as,
-    } = this.ui;
-
-    header.layout(this);
-    footer.layout(this);
-    editor.layout(
+    this.header.layout(this);
+    this.footer.layout(this);
+    this.editor.layout(
       this.zen_enabled ? this : {
         y: this.y + 1,
         x: this.x,
@@ -146,26 +129,24 @@ export class App extends Control {
         h: this.h - 2,
       },
     );
-
-    debug.layout(editor);
-    palette.layout(editor);
-
-    alert.layout(editor);
-    ask.layout(editor);
-    save_as.layout(editor);
+    this.debug.layout(this.editor);
+    this.palette.layout(this.editor);
+    this.alert.layout(this.editor);
+    this.ask.layout(this.editor);
+    this.saveas.layout(this.editor);
   }
 
   render(): void {
     vt.bsu();
 
-    this.ui.header.render();
-    this.ui.editor.render();
-    this.ui.footer.render();
-    this.ui.debug.render();
-    this.ui.save_as.render();
-    this.ui.alert.render();
-    this.ui.ask.render();
-    this.ui.palette.render();
+    this.header.render();
+    this.editor.render();
+    this.footer.render();
+    this.debug.render();
+    this.saveas.render();
+    this.alert.render();
+    this.ask.render();
+    this.palette.render();
 
     vt.esu();
   }
@@ -182,13 +163,11 @@ export class App extends Control {
   }
 
   enable_zen(enable: boolean): void {
-    const { header, footer, editor } = this.ui;
-
     this.zen_enabled = enable;
 
-    header.enabled = !enable;
-    footer.enabled = !enable;
-    editor.index_enabled = !enable;
+    this.header.enabled = !enable;
+    this.footer.enabled = !enable;
+    this.editor.index_enabled = !enable;
 
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
@@ -206,7 +185,7 @@ export class App extends Control {
 
       return true;
     } catch (err) {
-      await this.ui.alert.open(err);
+      await this.alert.open(err);
 
       return await this.#save_as();
     }
@@ -219,36 +198,59 @@ export class App extends Control {
     vt.dummy_req();
   };
 
-  async #open_file(path: string): Promise<void> {
-    const { editor, alert } = this.ui;
+  #set_file_path(x: string): void {
+    this.file_path = x;
 
+    this.header.set_file_path(x);
+  }
+
+  async #try_open_file(): Promise<void> {
     try {
-      await this.#load(path);
+      await this.#load();
 
-      editor.reset(true);
-      editor.render();
-
-      this.#set_file_path(path);
+      this.editor.reset(true);
+      this.editor.render();
     } catch (err) {
-      if (err instanceof Deno.errors.NotFound) {
-        this.#set_file_path(path);
-      } else {
-        await alert.open(err);
+      const not_found = err instanceof Deno.errors.NotFound;
 
-        this.stop();
+      if (!not_found) {
+        await this.alert.open(err);
+
+        this.exit();
       }
     }
   }
 
-  #set_file_path(x: string): void {
-    this.file_path = x;
+  async #load(): Promise<void> {
+    using file = await Deno.open(this.file_path, { read: true });
 
-    this.ui.header.set_file_path(x);
+    const info = await file.stat();
+    if (!info.isFile) {
+      throw new Error(`${this.file_path} is not a file`);
+    }
+
+    const bytes = new Uint8Array(1024 ** 2 * 64);
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const n = await file.read(bytes);
+      if (typeof n !== "number") {
+        break;
+      }
+
+      if (n > 0) {
+        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
+        this.editor.buffer.append(text);
+      }
+    }
+
+    const text = decoder.decode();
+    if (text.length > 0) {
+      this.editor.buffer.append(text);
+    }
   }
 
   async #process_input(): Promise<void> {
-    const { editor } = this.ui;
-
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -264,49 +266,16 @@ export class App extends Control {
           continue;
         }
 
-        if (editor.enabled) {
-          if (editor.handle_key(key)) {
-            editor.render();
+        if (this.editor.enabled) {
+          if (this.editor.handle_key(key)) {
+            this.editor.render();
           }
         }
       }
     }
   }
 
-  async #load(path: string): Promise<void> {
-    const { buffer } = this.ui.editor;
-
-    using file = await Deno.open(path, { read: true });
-
-    const info = await file.stat();
-    if (!info.isFile) {
-      throw new Error(`${path} is not a file`);
-    }
-
-    const bytes = new Uint8Array(1024 ** 2 * 64);
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
-        break;
-      }
-
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-        buffer.append(text);
-      }
-    }
-
-    const text = decoder.decode();
-    if (text.length > 0) {
-      buffer.append(text);
-    }
-  }
-
   async #save(path: string): Promise<void> {
-    const { buffer } = this.ui.editor;
-
     using file = await Deno.open(path, {
       create: true,
       write: true,
@@ -318,14 +287,14 @@ export class App extends Control {
 
     encoder.readable.pipeTo(file.writable);
 
-    for (const text of buffer.read(0)) {
+    for (const text of this.editor.buffer.read(0)) {
       await writer.write(text);
     }
   }
 
   async #save_as(): Promise<boolean> {
     while (true) {
-      const path = await this.ui.save_as.open(this.file_path);
+      const path = await this.saveas.open(this.file_path);
       if (!path) {
         return false;
       }
@@ -337,7 +306,7 @@ export class App extends Control {
 
         return true;
       } catch (err) {
-        await this.ui.alert.open(err);
+        await this.alert.open(err);
       }
     }
   }
