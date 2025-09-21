@@ -1,0 +1,4 @@
+{
+  "name": "@lib/file",
+  "exports": "./mod.ts"
+}
