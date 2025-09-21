@@ -1,3 +1,4 @@
+import * as file from "@lib/file";
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -206,7 +207,7 @@ export class App extends Control {
 
   async #try_open_file(): Promise<void> {
     try {
-      await this.#load();
+      await file.load(this.file_path, this.editor.buffer);
 
       this.editor.reset(true);
       this.editor.render();
@@ -218,35 +219,6 @@ export class App extends Control {
 
         this.exit();
       }
-    }
-  }
-
-  async #load(): Promise<void> {
-    using file = await Deno.open(this.file_path, { read: true });
-
-    const info = await file.stat();
-    if (!info.isFile) {
-      throw new Error(`${this.file_path} is not a file`);
-    }
-
-    const bytes = new Uint8Array(1024 ** 2 * 64);
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const n = await file.read(bytes);
-      if (typeof n !== "number") {
-        break;
-      }
-
-      if (n > 0) {
-        const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-        this.editor.buffer.append(text);
-      }
-    }
-
-    const text = decoder.decode();
-    if (text.length > 0) {
-      this.editor.buffer.append(text);
     }
   }
 
