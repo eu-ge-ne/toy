@@ -16,12 +16,10 @@ export class CopyCommand extends Command {
   );
 
   async run(): Promise<void> {
-    const { editor } = this.app.ui;
+    if (this.app.editor.enabled) {
+      this.app.editor.handle_key(Key.create({ name: "c", ctrl: true }));
 
-    if (editor.enabled) {
-      editor.handle_key(Key.create({ name: "c", ctrl: true }));
-
-      editor.render();
+      this.app.editor.render();
     }
   }
 }

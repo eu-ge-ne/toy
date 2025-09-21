@@ -11,16 +11,14 @@ export class ExitCommand extends Command {
   option = new PaletteOption("Exit", "Global: Exit", this.keys);
 
   async run(): Promise<void> {
-    const { changes, ui } = this.app;
+    this.app.editor.enabled = false;
 
-    ui.editor.enabled = false;
-
-    if (changes) {
-      if (await ui.ask.open("Save changes?")) {
+    if (this.app.changes) {
+      if (await this.app.ask.open("Save changes?")) {
         await this.app.save();
       }
     }
 
-    this.app.stop();
+    this.app.exit();
   }
 }

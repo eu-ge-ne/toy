@@ -11,11 +11,9 @@ export class WrapCommand extends Command {
   option = new PaletteOption("Wrap", "View: Toggle Line Wrap", this.keys);
 
   async run(): Promise<void> {
-    const { editor } = this.app.ui;
+    this.app.editor.wrap_enabled = !this.app.editor.wrap_enabled;
+    this.app.editor.cursor.home(false);
 
-    editor.wrap_enabled = !editor.wrap_enabled;
-    editor.cursor.home(false);
-
-    editor.render();
+    this.app.editor.render();
   }
 }

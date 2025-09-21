@@ -16,12 +16,10 @@ export class PasteCommand extends Command {
   );
 
   async run(): Promise<void> {
-    const { editor } = this.app.ui;
+    if (this.app.editor.enabled) {
+      this.app.editor.handle_key(Key.create({ name: "v", ctrl: true }));
 
-    if (editor.enabled) {
-      editor.handle_key(Key.create({ name: "v", ctrl: true }));
-
-      editor.render();
+      this.app.editor.render();
     }
   }
 }

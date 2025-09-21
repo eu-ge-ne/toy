@@ -15,10 +15,8 @@ export class WhitespaceCommand extends Command {
   );
 
   async run(): Promise<void> {
-    const { editor } = this.app.ui;
+    this.app.editor.whitespace_enabled = !this.app.editor.whitespace_enabled;
 
-    editor.whitespace_enabled = !editor.whitespace_enabled;
-
-    editor.render();
+    this.app.editor.render();
   }
 }

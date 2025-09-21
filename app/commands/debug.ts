@@ -8,10 +8,8 @@ export class DebugCommand extends Command {
   option = new PaletteOption("Debug", "Global: Toggle Debug Panel", []);
 
   async run(): Promise<void> {
-    const { debug, editor } = this.app.ui;
+    this.app.debug.enabled = !this.app.debug.enabled;
 
-    debug.enabled = !debug.enabled;
-
-    editor.render();
+    this.app.editor.render();
   }
 }
