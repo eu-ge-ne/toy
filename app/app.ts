@@ -1,3 +1,4 @@
+import * as file from "@lib/file";
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -13,7 +14,6 @@ import { SaveAs, set_save_as_colors } from "@ui/save-as";
 import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
 import { args } from "./args.ts";
-import { File } from "./file.ts";
 
 export class App extends Control {
   commands: cmd.Command[] = [
@@ -51,10 +51,9 @@ export class App extends Control {
   ask: Ask;
   saveas: SaveAs;
 
-  file: File;
-
   zen_enabled = true;
   changes = false;
+  #file_path = "";
 
   constructor() {
     super();
@@ -73,8 +72,6 @@ export class App extends Control {
     this.alert = new Alert(this);
     this.ask = new Ask(this);
     this.saveas = new SaveAs(this);
-
-    this.file = new File(this);
   }
 
   async run(): Promise<void> {
@@ -100,7 +97,7 @@ export class App extends Control {
     this.enable_zen(true);
 
     if (typeof args._[0] === "string") {
-      await this.file.open(args._[0]);
+      await this.open(args._[0]);
     }
 
     this.editor.reset(true);
@@ -211,5 +208,66 @@ export class App extends Control {
         }
       }
     }
+  }
+
+  async open(file_path: string): Promise<void> {
+    try {
+      await file.load(file_path, this.editor.buffer);
+
+      this.#set_file_path(file_path);
+    } catch (err) {
+      const not_found = err instanceof Deno.errors.NotFound;
+
+      if (!not_found) {
+        await this.alert.open(err);
+
+        this.exit();
+      }
+    }
+  }
+
+  async save(): Promise<boolean> {
+    if (this.#file_path) {
+      return await this.#save_file();
+    } else {
+      return await this.#save_file_as();
+    }
+  }
+
+  async #save_file(): Promise<boolean> {
+    try {
+      await file.save(this.#file_path, this.editor.buffer);
+
+      return true;
+    } catch (err) {
+      await this.alert.open(err);
+
+      return await this.#save_file_as();
+    }
+  }
+
+  async #save_file_as(): Promise<boolean> {
+    while (true) {
+      const file_path = await this.saveas.open(this.#file_path);
+      if (!file_path) {
+        return false;
+      }
+
+      try {
+        await file.save(file_path, this.editor.buffer);
+
+        this.#set_file_path(file_path);
+
+        return true;
+      } catch (err) {
+        await this.alert.open(err);
+      }
+    }
+  }
+
+  #set_file_path(file_path: string): void {
+    this.#file_path = file_path;
+
+    this.header.set_file_path(file_path);
   }
 }
