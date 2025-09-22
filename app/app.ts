@@ -176,19 +176,38 @@ export class App extends Control {
     this.render();
   }
 
-  async save(): Promise<boolean> {
+  async trySaveFile(): Promise<boolean> {
     if (!this.file_path) {
-      return await this.#save_as();
+      return await this.#save_file_as();
     }
 
     try {
-      await this.#save(this.file_path);
+      await this.#save_file_as();
 
       return true;
     } catch (err) {
       await this.alert.open(err);
 
-      return await this.#save_as();
+      return await this.#save_file_as();
+    }
+  }
+
+  async #save_file_as(): Promise<boolean> {
+    while (true) {
+      const path = await this.saveas.open(this.file_path);
+      if (!path) {
+        return false;
+      }
+
+      try {
+        await file.save(path, this.editor.buffer);
+
+        this.#set_file_path(path);
+
+        return true;
+      } catch (err) {
+        await this.alert.open(err);
+      }
     }
   }
 
@@ -243,42 +262,6 @@ export class App extends Control {
             this.editor.render();
           }
         }
-      }
-    }
-  }
-
-  async #save(path: string): Promise<void> {
-    using file = await Deno.open(path, {
-      create: true,
-      write: true,
-      truncate: true,
-    });
-
-    const encoder = new TextEncoderStream();
-    const writer = encoder.writable.getWriter();
-
-    encoder.readable.pipeTo(file.writable);
-
-    for (const text of this.editor.buffer.read(0)) {
-      await writer.write(text);
-    }
-  }
-
-  async #save_as(): Promise<boolean> {
-    while (true) {
-      const path = await this.saveas.open(this.file_path);
-      if (!path) {
-        return false;
-      }
-
-      try {
-        await this.#save(path);
-
-        this.#set_file_path(path);
-
-        return true;
-      } catch (err) {
-        await this.alert.open(err);
       }
     }
   }

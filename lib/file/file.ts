@@ -31,3 +31,23 @@ export async function load(
     text_buf.append(text);
   }
 }
+
+export async function save(
+  file_path: string,
+  text_buf: TextBuf,
+): Promise<void> {
+  using file = await Deno.open(file_path, {
+    create: true,
+    write: true,
+    truncate: true,
+  });
+
+  const encoder = new TextEncoderStream();
+  const writer = encoder.writable.getWriter();
+
+  encoder.readable.pipeTo(file.writable);
+
+  for (const text of text_buf.read(0)) {
+    await writer.write(text);
+  }
+}
