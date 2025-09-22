@@ -13,7 +13,9 @@ export class SaveCommand extends Command {
   async run(): Promise<void> {
     this.app.editor.enabled = false;
 
-    await this.app.file.save();
+    if (await this.app.file.save()) {
+      this.app.editor.reset(false);
+    }
 
     this.app.editor.enabled = true;
 

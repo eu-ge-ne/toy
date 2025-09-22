@@ -24,39 +24,39 @@ export class File {
     }
   }
 
-  async save(): Promise<void> {
+  async save(): Promise<boolean> {
     if (this.#file_path) {
-      await this.#save_file();
+      return await this.#save_file();
     } else {
-      await this.#save_file_as();
+      return await this.#save_file_as();
     }
   }
 
-  async #save_file(): Promise<void> {
+  async #save_file(): Promise<boolean> {
     try {
       await file.save(this.#file_path, this.app.editor.buffer);
 
-      this.app.editor.reset(false);
+      return true;
     } catch (err) {
       await this.app.alert.open(err);
 
-      await this.#save_file_as();
+      return await this.#save_file_as();
     }
   }
 
-  async #save_file_as(): Promise<void> {
+  async #save_file_as(): Promise<boolean> {
     while (true) {
       const file_path = await this.app.saveas.open(this.#file_path);
       if (!file_path) {
-        return;
+        return false;
       }
 
       try {
         await file.save(file_path, this.app.editor.buffer);
 
-        this.app.editor.reset(false);
-
         this.#set_file_path(file_path);
+
+        return true;
       } catch (err) {
         await this.app.alert.open(err);
       }
