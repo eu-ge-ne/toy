@@ -15,7 +15,7 @@ export class ExitCommand extends Command {
 
     if (this.app.changes) {
       if (await this.app.ask.open("Save changes?")) {
-        await this.app.trySaveFile();
+        await this.app.file.save();
       }
     }
 
