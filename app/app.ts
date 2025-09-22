@@ -214,9 +214,9 @@ export class App extends Control {
       try {
         await file.save(file_path, this.editor.buffer);
 
-        this.#set_file_path(file_path);
-
         this.editor.reset(false);
+
+        this.#set_file_path(file_path);
       } catch (err) {
         await this.alert.open(err);
       }
