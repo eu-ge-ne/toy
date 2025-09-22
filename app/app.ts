@@ -183,7 +183,7 @@ export class App extends Control {
       if (this.file_path) {
         await this.#save_file();
       } else {
-        this.#save_file_as();
+        await this.#save_file_as();
       }
     } finally {
       this.editor.enabled = true;
