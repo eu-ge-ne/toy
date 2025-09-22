@@ -25,18 +25,10 @@ export class File {
   }
 
   async save(): Promise<void> {
-    try {
-      this.app.editor.enabled = false;
-
-      if (this.#file_path) {
-        await this.#save_file();
-      } else {
-        await this.#save_file_as();
-      }
-    } finally {
-      this.app.editor.enabled = true;
-
-      this.app.editor.render();
+    if (this.#file_path) {
+      await this.#save_file();
+    } else {
+      await this.#save_file_as();
     }
   }
 
