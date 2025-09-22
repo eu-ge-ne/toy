@@ -11,14 +11,6 @@ export class SaveCommand extends Command {
   option = new PaletteOption("Save", "Global: Save", this.keys);
 
   async run(): Promise<void> {
-    this.app.editor.enabled = false;
-
-    if (await this.app.trySaveFile()) {
-      this.app.editor.reset(false);
-    }
-
-    this.app.editor.enabled = true;
-
-    this.app.editor.render();
+    await this.app.trySaveFile();
   }
 }

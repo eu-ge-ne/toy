@@ -176,35 +176,47 @@ export class App extends Control {
     this.render();
   }
 
-  async trySaveFile(): Promise<boolean> {
-    if (!this.file_path) {
-      return await this.#save_file_as();
-    }
-
+  async trySaveFile(): Promise<void> {
     try {
-      await this.#save_file_as();
+      this.editor.enabled = false;
 
-      return true;
-    } catch (err) {
-      await this.alert.open(err);
+      if (this.file_path) {
+        await this.#save_file();
+      } else {
+        this.#save_file_as();
+      }
+    } finally {
+      this.editor.enabled = true;
 
-      return await this.#save_file_as();
+      this.editor.render();
     }
   }
 
-  async #save_file_as(): Promise<boolean> {
+  async #save_file(): Promise<void> {
+    try {
+      await file.save(this.file_path, this.editor.buffer);
+
+      this.editor.reset(false);
+    } catch (err) {
+      await this.alert.open(err);
+
+      await this.#save_file_as();
+    }
+  }
+
+  async #save_file_as(): Promise<void> {
     while (true) {
-      const path = await this.saveas.open(this.file_path);
-      if (!path) {
-        return false;
+      const file_path = await this.saveas.open(this.file_path);
+      if (!file_path) {
+        return;
       }
 
       try {
-        await file.save(path, this.editor.buffer);
+        await file.save(file_path, this.editor.buffer);
 
-        this.#set_file_path(path);
+        this.#set_file_path(file_path);
 
-        return true;
+        this.editor.reset(false);
       } catch (err) {
         await this.alert.open(err);
       }
