@@ -1,4 +1,3 @@
-import * as file from "@lib/file";
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -12,8 +11,9 @@ import { Palette, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
 import deno from "../deno.json" with { type: "json" };
-import { args } from "./args.ts";
 import * as cmd from "./commands/mod.ts";
+import { args } from "./args.ts";
+import { File } from "./file.ts";
 
 export class App extends Control {
   commands: cmd.Command[] = [
@@ -51,8 +51,9 @@ export class App extends Control {
   ask: Ask;
   saveas: SaveAs;
 
+  file: File;
+
   zen_enabled = true;
-  file_path = "";
   changes = false;
 
   constructor() {
@@ -72,6 +73,8 @@ export class App extends Control {
     this.alert = new Alert(this);
     this.ask = new Ask(this);
     this.saveas = new SaveAs(this);
+
+    this.file = new File(this);
   }
 
   async run(): Promise<void> {
@@ -97,9 +100,11 @@ export class App extends Control {
     this.enable_zen(true);
 
     if (typeof args._[0] === "string") {
-      this.#set_file_path(args._[0]);
-      await this.#try_open_file();
+      await this.file.open(args._[0]);
     }
+
+    this.editor.reset(true);
+    this.editor.render();
 
     await this.#process_input();
   }
@@ -176,51 +181,12 @@ export class App extends Control {
     this.render();
   }
 
-  async save(): Promise<boolean> {
-    if (!this.file_path) {
-      return await this.#save_as();
-    }
-
-    try {
-      await this.#save(this.file_path);
-
-      return true;
-    } catch (err) {
-      await this.alert.open(err);
-
-      return await this.#save_as();
-    }
-  }
-
   #on_sigwinch = () => {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
 
     vt.dummy_req();
   };
-
-  #set_file_path(x: string): void {
-    this.file_path = x;
-
-    this.header.set_file_path(x);
-  }
-
-  async #try_open_file(): Promise<void> {
-    try {
-      await file.load(this.file_path, this.editor.buffer);
-
-      this.editor.reset(true);
-      this.editor.render();
-    } catch (err) {
-      const not_found = err instanceof Deno.errors.NotFound;
-
-      if (!not_found) {
-        await this.alert.open(err);
-
-        this.exit();
-      }
-    }
-  }
 
   async #process_input(): Promise<void> {
     while (true) {
@@ -243,42 +209,6 @@ export class App extends Control {
             this.editor.render();
           }
         }
-      }
-    }
-  }
-
-  async #save(path: string): Promise<void> {
-    using file = await Deno.open(path, {
-      create: true,
-      write: true,
-      truncate: true,
-    });
-
-    const encoder = new TextEncoderStream();
-    const writer = encoder.writable.getWriter();
-
-    encoder.readable.pipeTo(file.writable);
-
-    for (const text of this.editor.buffer.read(0)) {
-      await writer.write(text);
-    }
-  }
-
-  async #save_as(): Promise<boolean> {
-    while (true) {
-      const path = await this.saveas.open(this.file_path);
-      if (!path) {
-        return false;
-      }
-
-      try {
-        await this.#save(path);
-
-        this.#set_file_path(path);
-
-        return true;
-      } catch (err) {
-        await this.alert.open(err);
       }
     }
   }
