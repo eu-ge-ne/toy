@@ -13,6 +13,7 @@ export class History {
   on_changed?: (_: number) => void;
 
   constructor(private buffer: Buffer, private cursor: Cursor) {
+    this.reset();
   }
 
   reset(): void {
@@ -37,16 +38,15 @@ export class History {
   }
 
   undo(): boolean {
-    if (this.#index > 0) {
-      this.#index -= 1;
-      this.#restore();
-
-      this.on_changed?.(this.#index);
-
-      return true;
+    if (this.#index < 1) {
+      return false;
     }
 
-    return false;
+    this.#index -= 1;
+    this.#restore();
+    this.on_changed?.(this.#index);
+
+    return true;
   }
 
   redo(): boolean {

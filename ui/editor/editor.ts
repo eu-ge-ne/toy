@@ -53,8 +53,6 @@ export class Editor extends Control {
 
   constructor(parent: Control, readonly opts: EditorOptions) {
     super(parent);
-
-    this.history.reset();
   }
 
   layout({ y, x, w, h }: Area): void {
