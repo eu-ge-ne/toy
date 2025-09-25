@@ -2,13 +2,8 @@ import { Buffer, Snapshot } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 
 export class History {
-  #entries: {
-    ln: number;
-    col: number;
-    snapshot: Snapshot;
-  }[] = [];
-
   #index = -1;
+  #entries: { ln: number; col: number; snapshot: Snapshot }[] = [];
 
   on_changed?: (_: number) => void;
 
@@ -17,8 +12,8 @@ export class History {
   }
 
   reset(): void {
-    const snapshot = this.buffer.save();
     const { ln, col } = this.cursor;
+    const snapshot = this.buffer.save();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
@@ -27,8 +22,8 @@ export class History {
   }
 
   push(): void {
-    const snapshot = this.buffer.save();
     const { ln, col } = this.cursor;
+    const snapshot = this.buffer.save();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
@@ -38,7 +33,7 @@ export class History {
   }
 
   undo(): boolean {
-    if (this.#index < 1) {
+    if (this.#index <= 0) {
       return false;
     }
 
@@ -50,16 +45,15 @@ export class History {
   }
 
   redo(): boolean {
-    if (this.#index < (this.#entries.length - 1)) {
-      this.#index += 1;
-      this.#restore();
-
-      this.on_changed?.(this.#index);
-
-      return true;
+    if (this.#index >= (this.#entries.length - 1)) {
+      return false;
     }
 
-    return false;
+    this.#index += 1;
+    this.#restore();
+    this.on_changed?.(this.#index);
+
+    return true;
   }
 
   #restore(): void {
