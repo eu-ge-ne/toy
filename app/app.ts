@@ -52,7 +52,6 @@ export class App extends Control {
   saveas: SaveAs;
 
   zen_enabled = true;
-  changes = false;
   #file_path = "";
 
   constructor() {
@@ -84,10 +83,8 @@ export class App extends Control {
     this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
     this.editor.on_render = (x) => this.debug.set_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
-    this.editor.history.on_changed = (x) => {
-      this.changes = x > 0;
-      this.header.set_unsaved_flag(x > 0);
-    };
+    this.editor.history.on_changed = () =>
+      this.header.set_unsaved_flag(!this.editor.history.is_empty);
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.exit);
