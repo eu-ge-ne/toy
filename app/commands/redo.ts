@@ -16,9 +16,11 @@ export class RedoCommand extends Command {
   );
 
   async run(): Promise<void> {
-    if (this.app.editor.enabled) {
-      this.app.editor.handle_key(Key.create({ name: "y", ctrl: true }));
+    if (!this.app.editor.enabled) {
+      return;
+    }
 
+    if (this.app.editor.history.redo()) {
       this.app.editor.render();
     }
   }
