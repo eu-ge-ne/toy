@@ -16,9 +16,11 @@ export class UndoCommand extends Command {
   );
 
   async run(): Promise<void> {
-    if (this.app.editor.enabled) {
-      this.app.editor.handle_key(Key.create({ name: "z", ctrl: true }));
+    if (!this.app.editor.enabled) {
+      return;
+    }
 
+    if (this.app.editor.history.undo()) {
       this.app.editor.render();
     }
   }
