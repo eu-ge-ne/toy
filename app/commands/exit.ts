@@ -13,7 +13,7 @@ export class ExitCommand extends Command {
   async run(): Promise<void> {
     this.app.editor.enabled = false;
 
-    if (this.app.changes) {
+    if (!this.app.editor.history.is_empty) {
       if (await this.app.ask.open("Save changes?")) {
         await this.app.save();
       }

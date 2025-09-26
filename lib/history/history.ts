@@ -5,7 +5,11 @@ export class History {
   #index = -1;
   #entries: { ln: number; col: number; snapshot: Snapshot }[] = [];
 
-  on_changed?: (_: number) => void;
+  on_changed?: () => void;
+
+  get is_empty(): boolean {
+    return this.#index === 0;
+  }
 
   constructor(private buffer: Buffer, private cursor: Cursor) {
     this.reset();
@@ -18,7 +22,7 @@ export class History {
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
 
-    this.on_changed?.(this.#index);
+    this.on_changed?.();
   }
 
   push(): void {
@@ -29,7 +33,7 @@ export class History {
     this.#entries[this.#index] = { ln, col, snapshot };
     this.#entries.length = this.#index + 1;
 
-    this.on_changed?.(this.#index);
+    this.on_changed?.();
   }
 
   undo(): boolean {
@@ -39,7 +43,7 @@ export class History {
 
     this.#index -= 1;
     this.#restore();
-    this.on_changed?.(this.#index);
+    this.on_changed?.();
 
     return true;
   }
@@ -51,7 +55,7 @@ export class History {
 
     this.#index += 1;
     this.#restore();
-    this.on_changed?.(this.#index);
+    this.on_changed?.();
 
     return true;
   }
