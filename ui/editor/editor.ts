@@ -98,7 +98,11 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.selecting) {
-      buffer.seg_delete(cursor.from, cursor.to);
+      buffer.seg_delete(cursor.from, {
+        ln: cursor.to.ln,
+        col: cursor.to.col + 1,
+      });
+
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
