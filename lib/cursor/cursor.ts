@@ -3,65 +3,67 @@ import { Buffer } from "@lib/buffer";
 import { clamp } from "@lib/std";
 
 export class Cursor {
+  #ln0 = 0;
+  #col0 = 0;
+
   ln = 0;
   col = 0;
+
   selecting = false;
+
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
-
-  #start_ln = 0;
-  #start_col = 0;
 
   constructor(private buffer: Buffer) {
   }
 
-  set(ln: number, col: number, sel: boolean): boolean {
-    return this.#set(ln, col, sel);
+  set(ln: number, col: number, select: boolean): boolean {
+    return this.#set(ln, col, select);
   }
 
-  top(sel: boolean): boolean {
-    return this.#set(0, 0, sel);
+  top(select: boolean): boolean {
+    return this.#set(0, 0, select);
   }
 
-  bottom(sel: boolean): boolean {
-    return this.#set(Number.MAX_SAFE_INTEGER, 0, sel);
+  bottom(select: boolean): boolean {
+    return this.#set(Number.MAX_SAFE_INTEGER, 0, select);
   }
 
-  home(sel: boolean): boolean {
-    return this.#set(this.ln, 0, sel);
+  home(select: boolean): boolean {
+    return this.#set(this.ln, 0, select);
   }
 
-  end(sel: boolean): boolean {
-    return this.#set(this.ln, Number.MAX_SAFE_INTEGER, sel);
+  end(select: boolean): boolean {
+    return this.#set(this.ln, Number.MAX_SAFE_INTEGER, select);
   }
 
-  up(n: number, sel: boolean): boolean {
-    return this.#set(this.ln - n, this.col, sel);
+  up(n: number, select: boolean): boolean {
+    return this.#set(this.ln - n, this.col, select);
   }
 
-  down(n: number, sel: boolean): boolean {
-    return this.#set(this.ln + n, this.col, sel);
+  down(n: number, select: boolean): boolean {
+    return this.#set(this.ln + n, this.col, select);
   }
 
-  left(sel: boolean): boolean {
-    if (this.#set(this.ln, this.col - 1, sel)) {
+  left(select: boolean): boolean {
+    if (this.#set(this.ln, this.col - 1, select)) {
       return true;
     }
 
     if (this.ln > 0) {
-      return this.#set(this.ln - 1, Number.MAX_SAFE_INTEGER, sel);
+      return this.#set(this.ln - 1, Number.MAX_SAFE_INTEGER, select);
     }
 
     return false;
   }
 
-  right(sel: boolean): boolean {
-    if (this.#set(this.ln, this.col + 1, sel)) {
+  right(select: boolean): boolean {
+    if (this.#set(this.ln, this.col + 1, select)) {
       return true;
     }
 
     if (this.ln < this.buffer.line_count - 1) {
-      return this.#set(this.ln + 1, 0, sel);
+      return this.#set(this.ln + 1, 0, select);
     }
 
     return false;
@@ -76,36 +78,30 @@ export class Cursor {
       return false;
     }
 
-    const { from, to } = this;
-
-    if (ln < from.ln || ln > to.ln) {
+    if (ln < this.from.ln || ln > this.to.ln) {
       return false;
     }
 
-    if (ln === from.ln && col < from.col) {
+    if (ln === this.from.ln && col < this.from.col) {
       return false;
     }
 
-    if (ln === to.ln && col > to.col) {
+    if (ln === this.to.ln && col > this.to.col) {
       return false;
     }
 
     return true;
   }
 
-  #set(ln: number, col: number, sel: boolean): boolean {
-    const {
-      ln: old_ln,
-      col: old_col,
-    } = this;
+  #set(ln: number, col: number, select: boolean): boolean {
+    const { ln: old_ln, col: old_col } = this;
 
     this.#set_ln(ln);
     this.#set_col(col);
+    this.#set_selection(old_ln, old_col, select);
+    this.#set_range();
 
-    this.#set_range(old_ln, old_col, this.ln, this.col, sel);
-
-    return this.ln !== old_ln ||
-      this.col !== old_col;
+    return this.ln !== old_ln || this.col !== old_col;
   }
 
   #set_ln(ln: number): void {
@@ -131,42 +127,34 @@ export class Cursor {
     this.col = clamp(col, 0, len);
   }
 
-  #set_range(
-    old_ln: number,
-    old_col: number,
-    new_ln: number,
-    new_col: number,
-    sel: boolean,
-  ): void {
-    if (!sel) {
+  #set_selection(ln: number, col: number, select: boolean): void {
+    if (!select) {
       this.selecting = false;
       return;
     }
 
     if (!this.selecting) {
-      this.#start_ln = old_ln;
-      this.#start_col = old_col;
+      this.#ln0 = ln;
+      this.#col0 = col;
     }
 
     this.selecting = true;
+  }
 
-    const { from, to } = this;
-
+  #set_range(): void {
     if (
-      (this.#start_ln > new_ln) ||
-      (this.#start_ln === new_ln && this.#start_col > new_col)
+      (this.#ln0 > this.ln) ||
+      (this.#ln0 === this.ln && this.#col0 > this.col)
     ) {
-      from.ln = new_ln;
-      from.col = new_col;
-
-      to.ln = this.#start_ln;
-      to.col = this.#start_col;
+      this.from.ln = this.ln;
+      this.from.col = this.col;
+      this.to.ln = this.#ln0;
+      this.to.col = this.#col0;
     } else {
-      from.ln = this.#start_ln;
-      from.col = this.#start_col;
-
-      to.ln = new_ln;
-      to.col = new_col;
+      this.from.ln = this.#ln0;
+      this.from.col = this.#col0;
+      this.to.ln = this.ln;
+      this.to.col = this.col;
     }
   }
 }
