@@ -112,7 +112,7 @@ export class Cursor {
   #set_col(col: number): void {
     let len = 0;
 
-    for (const seg of this.buffer.seg_line(this.ln)) {
+    for (const seg of this.buffer.line(this.ln)) {
       const grm = graphemes.get(seg);
       if (grm.is_eol) {
         break;

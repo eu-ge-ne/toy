@@ -109,7 +109,7 @@ export class Palette
   }
 
   #filter(): void {
-    const text = this.#editor.buffer.read().toUpperCase();
+    const text = this.#editor.buffer.text().toUpperCase();
 
     if (!text) {
       this.#filtered_options = this.options;

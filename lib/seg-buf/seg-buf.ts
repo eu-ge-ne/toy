@@ -14,10 +14,6 @@ export class SegBuf {
     return this.#buf.line_count;
   }
 
-  reset(text?: string): void {
-    this.#buf.reset(text);
-  }
-
   save(): Snapshot {
     return this.#buf.save();
   }
@@ -26,19 +22,23 @@ export class SegBuf {
     this.#buf.restore(s);
   }
 
-  append(text: string): void {
-    this.#buf.append(text);
+  reset(text?: string): void {
+    this.#buf.reset(text);
   }
 
-  read(): string {
-    return iter_to_str(this.#buf.read(0));
+  append(text: string): void {
+    this.#buf.append(text);
   }
 
   iter(): Generator<string> {
     return this.#buf.read(0);
   }
 
-  *seg_line(ln: number): Generator<string> {
+  text(): string {
+    return iter_to_str(this.#buf.read(0));
+  }
+
+  *line(ln: number): Generator<string> {
     for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
       for (const x of this.#sgr.segment(chunk)) {
         yield x.segment;
@@ -62,7 +62,7 @@ export class SegBuf {
     let unit_col = 0;
     let i = 0;
 
-    for (const seg of this.seg_line(ln)) {
+    for (const seg of this.line(ln)) {
       if (i === col) {
         break;
       }

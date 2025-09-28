@@ -41,7 +41,7 @@ export async function save(buffer: SegBuf, file_path: string): Promise<void> {
 
   encoder.readable.pipeTo(file.writable);
 
-  for (const text of buffer.read()) {
+  for (const text of buffer.iter()) {
     await writer.write(text);
   }
 }

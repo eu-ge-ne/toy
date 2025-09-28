@@ -77,7 +77,7 @@ export class SaveAs extends Modal<[string], string> {
           case "ESC":
             return "";
           case "ENTER": {
-            const path = this.#editor.buffer.read();
+            const path = this.#editor.buffer.text();
             if (path) {
               return path;
             }
