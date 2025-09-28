@@ -1,5 +1,5 @@
 import { Cursor } from "@lib/cursor";
-import { Grapheme, graphemes } from "@lib/grapheme";
+import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
@@ -167,11 +167,8 @@ export class Editor extends Control {
   private index_width = 0;
   private index_blank!: Uint8Array;
   private text_width = 0;
-  private wrap_width = 0;
   private cursor_y = 0;
   private cursor_x = 0;
-  private measure_y = 0;
-  private measure_x = 0;
   private scroll_ln = 0;
   private scroll_col = 0;
 
@@ -208,10 +205,12 @@ export class Editor extends Control {
     }
 
     this.text_width = w - this.index_width;
-    this.wrap_width = wrap_enabled ? this.text_width : Number.MAX_SAFE_INTEGER;
+    this.buffer.wrap_width = wrap_enabled
+      ? this.text_width
+      : Number.MAX_SAFE_INTEGER;
 
-    this.measure_y = this.cursor_y = y;
-    this.measure_x = this.cursor_x = x + this.index_width;
+    this.buffer.measure_y = this.cursor_y = y;
+    this.buffer.measure_x = this.cursor_x = x + this.index_width;
 
     if (w >= this.index_width) {
       this.#render_lines();
@@ -262,7 +261,7 @@ export class Editor extends Control {
     let available_w = 0;
     let current_color = colors.CharColor.Undefined;
 
-    const xs = this.#cells(ln, false);
+    const xs = this.buffer.line(ln);
 
     for (const { g: { width, is_visible, bytes }, i, col } of xs) {
       if (col === 0) {
@@ -338,7 +337,7 @@ export class Editor extends Control {
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
-      this.#cells(ln, false)
+      this.buffer.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -360,7 +359,8 @@ export class Editor extends Control {
   #scroll_h(): void {
     const { cursor } = this;
 
-    const cell = this.#cells(cursor.ln, true).drop(cursor.col).next().value;
+    const cell =
+      this.buffer.line(cursor.ln, true).drop(cursor.col).next().value;
     if (cell) {
       this.cursor_y += cell.ln;
     }
@@ -376,7 +376,7 @@ export class Editor extends Control {
 
     // After?
 
-    const xs = this.#cells(cursor.ln, true)
+    const xs = this.buffer.line(cursor.ln, true)
       .drop(cursor.col - delta_col)
       .take(delta_col)
       .map((x) => x.g.width)
@@ -394,54 +394,5 @@ export class Editor extends Control {
     }
 
     this.cursor_x += width;
-  }
-
-  *#cells(
-    ln: number,
-    with_tail: boolean,
-  ): Generator<{ i: number; g: Grapheme; ln: number; col: number }> {
-    const { measure_y, measure_x, wrap_width } = this;
-
-    const c = {
-      i: 0,
-      g: undefined as unknown as Grapheme,
-      ln: 0,
-      col: 0,
-    };
-
-    let w = 0;
-
-    for (const seg of this.buffer.line(ln)) {
-      c.g = graphemes.get(seg);
-
-      if (c.g.width < 0) {
-        c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
-      }
-
-      w += c.g.width;
-      if (w > wrap_width) {
-        w = c.g.width;
-        c.ln += 1;
-        c.col = 0;
-      }
-
-      yield c;
-
-      c.i += 1;
-      c.col += 1;
-    }
-
-    if (with_tail) {
-      c.g = graphemes.get(" ");
-
-      w += c.g.width;
-      if (w > wrap_width) {
-        w = c.g.width;
-        c.ln += 1;
-        c.col = 0;
-      }
-
-      yield c;
-    }
   }
 }

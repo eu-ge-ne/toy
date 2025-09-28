@@ -1,6 +1,8 @@
-import { iter_to_str } from "@lib/std";
-
 import { Node, TextBuf } from "@eu-ge-ne/text-buf";
+
+import { Grapheme, graphemes } from "@lib/grapheme";
+import { iter_to_str } from "@lib/std";
+import * as vt from "@lib/vt";
 
 export type Snapshot = Node;
 
@@ -9,6 +11,10 @@ type Pos = { ln: number; col: number };
 export class SegBuf {
   #buf = new TextBuf();
   #sgr = new Intl.Segmenter();
+
+  wrap_width = Number.MAX_SAFE_INTEGER;
+  measure_y = 0;
+  measure_x = 0;
 
   get line_count(): number {
     return this.#buf.line_count;
@@ -38,11 +44,52 @@ export class SegBuf {
     return iter_to_str(this.#buf.read(0));
   }
 
-  *line(ln: number): Generator<string> {
-    for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
-      for (const x of this.#sgr.segment(chunk)) {
-        yield x.segment;
+  *line(
+    ln: number,
+    extra = false,
+  ): Generator<{ i: number; g: Grapheme; ln: number; col: number }> {
+    const { measure_y, measure_x, wrap_width } = this;
+
+    const c = {
+      i: 0,
+      g: undefined as unknown as Grapheme,
+      ln: 0,
+      col: 0,
+    };
+
+    let w = 0;
+
+    for (const seg of this.#line(ln)) {
+      c.g = graphemes.get(seg);
+
+      if (c.g.width < 0) {
+        c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
       }
+
+      w += c.g.width;
+      if (w > wrap_width) {
+        w = c.g.width;
+        c.ln += 1;
+        c.col = 0;
+      }
+
+      yield c;
+
+      c.i += 1;
+      c.col += 1;
+    }
+
+    if (extra) {
+      c.g = graphemes.get(" ");
+
+      w += c.g.width;
+      if (w > wrap_width) {
+        w = c.g.width;
+        c.ln += 1;
+        c.col = 0;
+      }
+
+      yield c;
     }
   }
 
@@ -58,11 +105,19 @@ export class SegBuf {
     this.#buf.delete2(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
+  *#line(ln: number): Generator<string> {
+    for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
+      for (const x of this.#sgr.segment(chunk)) {
+        yield x.segment;
+      }
+    }
+  }
+
   #to_unit_pos({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 
-    for (const seg of this.line(ln)) {
+    for (const seg of this.#line(ln)) {
       if (i === col) {
         break;
       }
