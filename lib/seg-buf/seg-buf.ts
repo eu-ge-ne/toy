@@ -59,24 +59,26 @@ export class SegBuf {
 
     let w = 0;
 
-    for (const seg of this.#line(ln)) {
-      c.g = graphemes.get(seg);
+    for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
+      for (const { segment } of this.#sgr.segment(chunk)) {
+        c.g = graphemes.get(segment);
 
-      if (c.g.width < 0) {
-        c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
+        if (c.g.width < 0) {
+          c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
+        }
+
+        w += c.g.width;
+        if (w > wrap_width) {
+          w = c.g.width;
+          c.ln += 1;
+          c.col = 0;
+        }
+
+        yield c;
+
+        c.i += 1;
+        c.col += 1;
       }
-
-      w += c.g.width;
-      if (w > wrap_width) {
-        w = c.g.width;
-        c.ln += 1;
-        c.col = 0;
-      }
-
-      yield c;
-
-      c.i += 1;
-      c.col += 1;
     }
 
     if (extra) {
@@ -105,25 +107,17 @@ export class SegBuf {
     this.#buf.delete2(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 
-  *#line(ln: number): Generator<string> {
-    for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
-      for (const x of this.#sgr.segment(chunk)) {
-        yield x.segment;
-      }
-    }
-  }
-
   #to_unit_pos({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 
-    for (const seg of this.#line(ln)) {
+    for (const { g } of this.line(ln)) {
       if (i === col) {
         break;
       }
 
       if (i < col) {
-        unit_col += seg.length;
+        unit_col += g.seg.length;
       }
 
       i += 1;
