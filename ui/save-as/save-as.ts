@@ -1,4 +1,4 @@
-import { clamp, iter_to_str } from "@lib/std";
+import { clamp } from "@lib/std";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -77,7 +77,7 @@ export class SaveAs extends Modal<[string], string> {
           case "ESC":
             return "";
           case "ENTER": {
-            const path = iter_to_str(this.#editor.buffer.read(0));
+            const path = this.#editor.buffer.read();
             if (path) {
               return path;
             }
