@@ -4,7 +4,7 @@ export type Snapshot = Node;
 
 type Pos = { ln: number; col: number };
 
-export class Buffer extends TextBuf {
+export class SegBuf extends TextBuf {
   #sgr = new Intl.Segmenter();
 
   *seg_line(ln: number): Generator<string> {

@@ -1,5 +1,5 @@
-import { Buffer, Snapshot } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
+import { SegBuf, Snapshot } from "@lib/seg-buf";
 
 export class History {
   #index = -1;
@@ -11,7 +11,7 @@ export class History {
     return this.#index === 0;
   }
 
-  constructor(private buffer: Buffer, private cursor: Cursor) {
+  constructor(private buffer: SegBuf, private cursor: Cursor) {
     this.reset();
   }
 

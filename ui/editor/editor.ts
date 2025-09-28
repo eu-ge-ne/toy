@@ -1,7 +1,7 @@
-import { Buffer } from "@lib/buffer";
 import { Cursor } from "@lib/cursor";
 import { Grapheme, graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
+import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -42,7 +42,7 @@ export class Editor extends Control {
   on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
-  readonly buffer = new Buffer();
+  readonly buffer = new SegBuf();
   readonly cursor = new Cursor(this.buffer);
   readonly history = new History(this.buffer, this.cursor);
 
