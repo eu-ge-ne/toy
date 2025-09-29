@@ -1,5 +1,4 @@
-import { graphemes } from "@lib/grapheme";
-import { Buffer } from "@lib/buffer";
+import { SegBuf } from "@lib/seg-buf";
 import { clamp } from "@lib/std";
 
 export class Cursor {
@@ -14,7 +13,7 @@ export class Cursor {
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
 
-  constructor(private buffer: Buffer) {
+  constructor(private buffer: SegBuf) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
@@ -112,9 +111,8 @@ export class Cursor {
   #set_col(col: number): void {
     let len = 0;
 
-    for (const seg of this.buffer.seg_line(this.ln)) {
-      const grm = graphemes.get(seg);
-      if (grm.is_eol) {
+    for (const { g } of this.buffer.line(this.ln)) {
+      if (g.is_eol) {
         break;
       }
       len += 1;

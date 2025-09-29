@@ -209,7 +209,7 @@ export class App extends Control {
 
   async open(file_path: string): Promise<void> {
     try {
-      await file.load(file_path, this.editor.buffer);
+      await file.load(this.editor.buffer, file_path);
 
       this.#set_file_path(file_path);
     } catch (err) {
@@ -233,7 +233,7 @@ export class App extends Control {
 
   async #save_file(): Promise<boolean> {
     try {
-      await file.save(this.#file_path, this.editor.buffer);
+      await file.save(this.editor.buffer, this.#file_path);
 
       return true;
     } catch (err) {
@@ -251,7 +251,7 @@ export class App extends Control {
       }
 
       try {
-        await file.save(file_path, this.editor.buffer);
+        await file.save(this.editor.buffer, file_path);
 
         this.#set_file_path(file_path);
 

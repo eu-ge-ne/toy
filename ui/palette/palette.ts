@@ -1,4 +1,3 @@
-import { iter_to_str } from "@lib/std";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -110,7 +109,7 @@ export class Palette
   }
 
   #filter(): void {
-    const text = iter_to_str(this.#editor.buffer.read(0)).toUpperCase();
+    const text = this.#editor.buffer.text().toUpperCase();
 
     if (!text) {
       this.#filtered_options = this.options;

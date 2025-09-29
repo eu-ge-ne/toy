@@ -1,9 +1,6 @@
-import { TextBuf } from "@eu-ge-ne/text-buf";
+import { SegBuf } from "@lib/seg-buf";
 
-export async function load(
-  file_path: string,
-  text_buf: TextBuf,
-): Promise<void> {
+export async function load(buffer: SegBuf, file_path: string): Promise<void> {
   using file = await Deno.open(file_path, { read: true });
 
   const info = await file.stat();
@@ -22,20 +19,17 @@ export async function load(
 
     if (n > 0) {
       const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-      text_buf.append(text);
+      buffer.append(text);
     }
   }
 
   const text = decoder.decode();
   if (text.length > 0) {
-    text_buf.append(text);
+    buffer.append(text);
   }
 }
 
-export async function save(
-  file_path: string,
-  text_buf: TextBuf,
-): Promise<void> {
+export async function save(buffer: SegBuf, file_path: string): Promise<void> {
   using file = await Deno.open(file_path, {
     create: true,
     write: true,
@@ -47,7 +41,7 @@ export async function save(
 
   encoder.readable.pipeTo(file.writable);
 
-  for (const text of text_buf.read(0)) {
+  for (const text of buffer.iter()) {
     await writer.write(text);
   }
 }

@@ -1,4 +1,4 @@
 {
-  "name": "@lib/buffer",
+  "name": "@lib/seg-buf",
   "exports": "./mod.ts"
 }
