@@ -1,7 +1,6 @@
 import { Node, TextBuf } from "@eu-ge-ne/text-buf";
 
 import { Grapheme, graphemes } from "@lib/grapheme";
-import { iter_to_str } from "@lib/std";
 import * as vt from "@lib/vt";
 
 export type Snapshot = Node;
@@ -41,7 +40,7 @@ export class SegBuf {
   }
 
   text(): string {
-    return iter_to_str(this.#buf.read(0));
+    return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
   *line(
@@ -95,8 +94,9 @@ export class SegBuf {
     }
   }
 
-  *seg_read(start: Pos, end: Pos): Generator<string> {
-    yield* this.#buf.read2(this.#to_unit_pos(start), this.#to_unit_pos(end));
+  read(start: Pos, end: Pos): string {
+    return this.#buf.read2(this.#to_unit_pos(start), this.#to_unit_pos(end))
+      .reduce((a, x) => a + x, "");
   }
 
   seg_insert(pos: Pos, text: string): void {
