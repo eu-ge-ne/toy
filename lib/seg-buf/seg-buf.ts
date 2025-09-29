@@ -95,19 +95,19 @@ export class SegBuf {
   }
 
   read(start: Pos, end: Pos): string {
-    return this.#buf.read2(this.#to_unit_pos(start), this.#to_unit_pos(end))
+    return this.#buf.read2(this.#unit_pos(start), this.#unit_pos(end))
       .reduce((a, x) => a + x, "");
   }
 
   insert(pos: Pos, text: string): void {
-    this.#buf.insert2(this.#to_unit_pos(pos), text);
+    this.#buf.insert2(this.#unit_pos(pos), text);
   }
 
   delete(start: Pos, end: Pos): void {
-    this.#buf.delete2(this.#to_unit_pos(start), this.#to_unit_pos(end));
+    this.#buf.delete2(this.#unit_pos(start), this.#unit_pos(end));
   }
 
-  #to_unit_pos({ ln, col }: Pos): [number, number] {
+  #unit_pos({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 
