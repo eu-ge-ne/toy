@@ -99,11 +99,11 @@ export class SegBuf {
       .reduce((a, x) => a + x, "");
   }
 
-  seg_insert(pos: Pos, text: string): void {
+  insert(pos: Pos, text: string): void {
     this.#buf.insert2(this.#to_unit_pos(pos), text);
   }
 
-  seg_delete(start: Pos, end: Pos): void {
+  delete(start: Pos, end: Pos): void {
     this.#buf.delete2(this.#to_unit_pos(start), this.#to_unit_pos(end));
   }
 

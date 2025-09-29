@@ -98,7 +98,7 @@ export class Editor extends Control {
     const { cursor, buffer, history } = this;
 
     if (cursor.selecting) {
-      buffer.seg_delete(cursor.from, {
+      buffer.delete(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
@@ -106,7 +106,7 @@ export class Editor extends Control {
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
-    buffer.seg_insert(cursor, text);
+    buffer.insert(cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -129,14 +129,14 @@ export class Editor extends Control {
     if (cursor.ln > 0 && cursor.col === 0) {
       const len = buffer.line(cursor.ln).take(2).reduce((a) => a + 1, 0);
       if (len === 1) {
-        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
         cursor.left(false);
       } else {
         cursor.left(false);
-        buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
       }
     } else {
-      buffer.seg_delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
+      buffer.delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
       cursor.left(false);
     }
 
@@ -146,7 +146,7 @@ export class Editor extends Control {
   delete_char(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.seg_delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+    buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
 
     history.push();
   }
@@ -154,7 +154,7 @@ export class Editor extends Control {
   delete_selection(): void {
     const { cursor, buffer, history } = this;
 
-    buffer.seg_delete(cursor.from, {
+    buffer.delete(cursor.from, {
       ln: cursor.to.ln,
       col: cursor.to.col + 1,
     });
