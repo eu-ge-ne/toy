@@ -51,13 +51,11 @@ export class Palette
     this.#resize();
     this.#scroll();
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.write_buf(
-      vt.cursor.hide,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-    );
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
 
     if (this.#filtered_options.length === 0) {
       this.#render_empty();
@@ -67,7 +65,7 @@ export class Palette
 
     this.#editor.render();
 
-    vt.esu();
+    vt.sync.esu();
   }
 
   async #process_input(): Promise<PaletteOption | undefined> {
@@ -156,11 +154,9 @@ export class Palette
   }
 
   #render_empty(): void {
-    vt.write_buf(
-      vt.cursor.set(this.y + 2, this.x + 2),
-      colors.OPTION,
-      ...vt.write_text([this.w - 4], "No matching commands"),
-    );
+    vt.cursor.set(vt.buf, this.y + 2, this.x + 2);
+    vt.buf.write(colors.OPTION);
+    vt.write_text(vt.buf, [this.w - 4], "No matching commands");
   }
 
   #render_options(): void {
@@ -182,15 +178,12 @@ export class Palette
 
       const span: [number] = [this.w - 4];
 
-      vt.write_buf(
+      vt.buf.write(
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
-        vt.cursor.set(y, this.x + 2),
-        ...vt.write_text(span, option.description),
       );
-
-      vt.write_buf(
-        ...vt.write_text(span, option.shortcuts.padStart(span[0])),
-      );
+      vt.cursor.set(vt.buf, y, this.x + 2);
+      vt.write_text(vt.buf, span, option.description);
+      vt.write_text(vt.buf, span, option.shortcuts.padStart(span[0]));
 
       i += 1;
       y += 1;

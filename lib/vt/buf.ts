@@ -1,24 +1,26 @@
-import { write } from "./write.ts";
+import { sync } from "./sync.ts";
+import { Writer } from "./writer.ts";
 
-const buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
-const bytes = new Uint8Array(buf);
+class BufOut implements Writer {
+  #buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
+  #bytes = new Uint8Array(this.#buf);
+  #i = 0;
 
-let i = 0;
-
-export function write_buf(...chunks: Uint8Array[]): void {
-  for (const chunk of chunks) {
-    const j = i + chunk.byteLength;
-    if (j > buf.byteLength) {
-      buf.resize(j * 2);
+  write(chunk: Uint8Array): void {
+    const j = this.#i + chunk.byteLength;
+    if (j > this.#buf.byteLength) {
+      this.#buf.resize(j * 2);
     }
 
-    bytes.set(chunk, i);
-    i = j;
+    this.#bytes.set(chunk, this.#i);
+    this.#i = j;
+  }
+
+  flush(): void {
+    sync.write(this.#bytes.subarray(0, this.#i));
+
+    this.#i = 0;
   }
 }
 
-export function flush_buf(...chunks: Uint8Array[]): void {
-  write(bytes.subarray(0, i), ...chunks);
-
-  i = 0;
-}
+export const buf = new BufOut();

@@ -1,3 +1,5 @@
+import { sprintf } from "@std/fmt/printf";
+
 import { clamp } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -20,30 +22,23 @@ export class Footer extends Control {
       return;
     }
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.write_buf(
-      vt.cursor.hide,
-      vt.cursor.save,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(vt.cursor.save);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
+    vt.buf.write(colors.TEXT);
+    vt.write_text(
+      vt.buf,
+      [this.w],
+      sprintf("%*s", this.w, this.#cursor_status),
     );
+    vt.buf.write(vt.cursor.restore);
+    vt.buf.write(vt.cursor.show);
 
-    const span: [number] = [this.w];
-
-    const data = [
-      colors.TEXT,
-      ...vt.write_text(span, this.#cursor_status),
-    ];
-
-    vt.flush_buf(
-      vt.cursor.set(this.y, this.x + span[0]),
-      ...data,
-      vt.cursor.restore,
-      vt.cursor.show,
-    );
-
-    vt.esu();
+    vt.buf.flush();
+    vt.sync.esu();
   }
 
   set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {

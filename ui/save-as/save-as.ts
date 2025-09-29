@@ -47,22 +47,20 @@ export class SaveAs extends Modal<[string], string> {
       return;
     }
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.write_buf(
-      vt.cursor.hide,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-      vt.cursor.set(this.y + 1, this.x),
-      colors.TEXT,
-      ...vt.write_text_center([this.w], "Save As"),
-      vt.cursor.set(this.y + this.h - 2, this.x),
-      ...vt.write_text_center([this.w], "ESC‧cancel    ENTER‧ok"),
-    );
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
+    vt.cursor.set(vt.buf, this.y + 1, this.x);
+    vt.buf.write(colors.TEXT);
+    vt.write_text_center(vt.buf, [this.w], "Save As");
+    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
+    vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
 
     this.#editor.render();
 
-    vt.esu();
+    vt.sync.esu();
   }
 
   async #process_input(): Promise<string> {

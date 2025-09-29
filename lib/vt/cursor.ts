@@ -1,5 +1,6 @@
 import { CSI, ESC } from "./ansi.ts";
-import { write } from "./write.ts";
+import { sync } from "./sync.ts";
+import { Writer } from "./writer.ts";
 
 export const save = ESC("7");
 export const restore = ESC("8");
@@ -11,7 +12,7 @@ export const down = CSI("B");
 
 const set_cache: Record<number, Record<number, Uint8Array>> = {};
 
-export function set(y: number, x: number): Uint8Array {
+export function set(out: Writer, y: number, x: number): void {
   let bytes = set_cache[y]?.[x];
 
   if (!bytes) {
@@ -24,7 +25,7 @@ export function set(y: number, x: number): Uint8Array {
     }
   }
 
-  return bytes;
+  out.write(bytes);
 }
 
 export const cpr_req = CSI("6n");
@@ -33,11 +34,9 @@ const cpr_buf = new Uint8Array(1024);
 const decoder = new TextDecoder();
 
 export function measure(y: number, x: number, bytes: Uint8Array): number {
-  write(
-    set(y, x),
-    bytes,
-    cpr_req,
-  );
+  set(sync, y, x);
+  sync.write(bytes);
+  sync.write(cpr_req);
 
   for (let i = 0; i < 4; i += 1) {
     const len = Deno.stdin.readSync(cpr_buf);

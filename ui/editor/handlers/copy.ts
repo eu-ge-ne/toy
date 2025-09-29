@@ -1,11 +1,11 @@
-import { copy_to_clipboard, Key } from "@lib/vt";
+import * as vt from "@lib/vt";
 
 import { EditorHandler } from "./handler.ts";
 
 export class CopyHandler extends EditorHandler {
   keys = [
-    Key.create({ name: "c", ctrl: true }),
-    Key.create({ name: "c", super: true }),
+    vt.Key.create({ name: "c", ctrl: true }),
+    vt.Key.create({ name: "c", super: true }),
   ];
 
   handle(): boolean {
@@ -25,7 +25,7 @@ export class CopyHandler extends EditorHandler {
       });
     }
 
-    copy_to_clipboard(this.editor.clipboard);
+    vt.copy_to_clipboard(vt.sync, this.editor.clipboard);
 
     return false;
   }

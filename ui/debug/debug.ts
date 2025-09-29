@@ -29,56 +29,32 @@ export class Debug extends Control {
     const heap_used = (mem.heapUsed / MIB).toFixed();
     const external_mem = (mem.external / MIB).toFixed();
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.flush_buf(
-      vt.cursor.hide,
-      vt.cursor.save,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-      colors.TEXT,
-      vt.cursor.set(this.y + 1, this.x + 1),
-      ...vt.write_text(
-        [this.w - 1],
-        "Input    : ",
-        this.#input_time,
-        " ms",
-      ),
-      vt.cursor.set(this.y + 2, this.x + 1),
-      ...vt.write_text(
-        [this.w - 1],
-        "Render   : ",
-        this.#render_time,
-        " ms",
-      ),
-      vt.cursor.set(this.y + 3, this.x + 1),
-      ...vt.write_text(
-        [this.w - 1],
-        "RSS      : ",
-        rss,
-        " MiB",
-      ),
-      vt.cursor.set(this.y + 4, this.x + 1),
-      ...vt.write_text(
-        [this.w - 1],
-        "Heap     : ",
-        heap_used,
-        "/",
-        heap_total,
-        " MiB",
-      ),
-      vt.cursor.set(this.y + 5, this.x + 1),
-      ...vt.write_text(
-        [this.w - 1],
-        "External : ",
-        external_mem,
-        " MiB",
-      ),
-      vt.cursor.restore,
-      vt.cursor.show,
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(vt.cursor.save);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
+    vt.buf.write(colors.TEXT);
+    vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `Input    : ${this.#input_time} ms`);
+    vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `Render   : ${this.#render_time} ms`);
+    vt.cursor.set(vt.buf, this.y + 3, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `RSS      : ${rss} MiB`);
+    vt.cursor.set(vt.buf, this.y + 4, this.x + 1);
+    vt.write_text(
+      vt.buf,
+      [this.w - 1],
+      `Heap     : ${heap_used}/${heap_total} MiB`,
     );
+    vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
+    vt.buf.write(vt.cursor.restore);
+    vt.buf.write(vt.cursor.show);
 
-    vt.esu();
+    vt.buf.flush();
+    vt.sync.esu();
   }
 
   set_input_time(x: number): void {
