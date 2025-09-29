@@ -1,14 +1,15 @@
-import { CSI, ESC } from "./ansi.ts";
 import { sync } from "./sync.ts";
 import { Writer } from "./writer.ts";
 
-export const save = ESC("7");
-export const restore = ESC("8");
+const enc = new TextEncoder();
 
-export const hide = CSI("?25l");
-export const show = CSI("?25h");
+export const save = enc.encode("\x1b7");
+export const restore = enc.encode("\x1b8");
 
-export const down = CSI("B");
+export const hide = enc.encode("\x1b[?25l");
+export const show = enc.encode("\x1b[?25h");
+
+export const down = enc.encode("\x1b[B");
 
 const set_cache: Record<number, Record<number, Uint8Array>> = {};
 
@@ -16,7 +17,7 @@ export function set(out: Writer, y: number, x: number): void {
   let bytes = set_cache[y]?.[x];
 
   if (!bytes) {
-    bytes = CSI(`${y + 1};${x + 1}H`);
+    bytes = enc.encode(`\x1b[${y + 1};${x + 1}H`);
 
     if (!set_cache[y]) {
       set_cache[y] = { [x]: bytes };
@@ -28,7 +29,7 @@ export function set(out: Writer, y: number, x: number): void {
   out.write(bytes);
 }
 
-export const cpr_req = CSI("6n");
+export const cpr_req = enc.encode("\x1b[6n");
 
 const cpr_buf = new Uint8Array(1024);
 const decoder = new TextDecoder();
