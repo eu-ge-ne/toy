@@ -3,7 +3,8 @@
   "specifiers": {
     "jsr:@eu-ge-ne/kitty-keys@~0.11.1": "0.11.1",
     "jsr:@eu-ge-ne/text-buf@~0.14.2": "0.14.2",
-    "jsr:@std/cli@^1.0.22": "1.0.22"
+    "jsr:@std/cli@^1.0.22": "1.0.22",
+    "jsr:@std/fmt@^1.0.8": "1.0.8"
   },
   "jsr": {
     "@eu-ge-ne/kitty-keys@0.11.1": {
@@ -14,13 +15,17 @@
     },
     "@std/cli@1.0.22": {
       "integrity": "50d1e4f87887cb8a8afa29b88505ab5081188f5cad3985460c3b471fa49ff21a"
+    },
+    "@std/fmt@1.0.8": {
+      "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@eu-ge-ne/kitty-keys@~0.11.1",
       "jsr:@eu-ge-ne/text-buf@~0.14.2",
-      "jsr:@std/cli@^1.0.22"
+      "jsr:@std/cli@^1.0.22",
+      "jsr:@std/fmt@^1.0.8"
     ]
   }
 }

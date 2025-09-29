@@ -37,29 +37,19 @@ export class Debug extends Control {
     vt.clear_area(vt.buf, this);
     vt.buf.write(colors.TEXT);
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], "Input    : ", this.#input_time, " ms");
+    vt.write_text(vt.buf, [this.w - 1], `Input    : ${this.#input_time} ms`);
     vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
-    vt.write_text(
-      vt.buf,
-      [this.w - 1],
-      "Render   : ",
-      this.#render_time,
-      " ms",
-    );
+    vt.write_text(vt.buf, [this.w - 1], `Render   : ${this.#render_time} ms`);
     vt.cursor.set(vt.buf, this.y + 3, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], "RSS      : ", rss, " MiB");
+    vt.write_text(vt.buf, [this.w - 1], `RSS      : ${rss} MiB`);
     vt.cursor.set(vt.buf, this.y + 4, this.x + 1);
     vt.write_text(
       vt.buf,
       [this.w - 1],
-      "Heap     : ",
-      heap_used,
-      "/",
-      heap_total,
-      " MiB",
+      `Heap     : ${heap_used}/${heap_total} MiB`,
     );
     vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], "External : ", external_mem, " MiB");
+    vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 

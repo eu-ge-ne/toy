@@ -4,11 +4,9 @@ import * as vt from "@lib/vt";
 
 import * as colors from "./colors.ts";
 
-const FLAG = " +";
-
 export class Header extends Control {
   #file_path = "";
-  #unsaved_flag = false;
+  #flag = false;
 
   layout({ y, x, w, h }: Area): void {
     this.w = w;
@@ -25,18 +23,22 @@ export class Header extends Control {
 
     vt.sync.bsu();
 
+    const span: [number] = [this.w];
+
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(colors.BACKGROUND);
     vt.clear_area(vt.buf, this);
     vt.cursor.set(vt.buf, this.y, this.x);
-    vt.write_text_center(
-      vt.buf,
-      [this.w],
-      colors.FILE_PATH,
-      this.#file_path,
-      ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
-    ), vt.buf.write(vt.cursor.restore);
+    vt.buf.write(colors.FILE_PATH);
+    vt.write_text_center(vt.buf, span, this.#file_path);
+
+    if (this.#flag) {
+      vt.buf.write(colors.UNSAVED_FLAG);
+      vt.write_text(vt.buf, span, " +");
+    }
+
+    vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 
     vt.buf.flush();
@@ -50,7 +52,7 @@ export class Header extends Control {
   }
 
   set_unsaved_flag(x: boolean): void {
-    this.#unsaved_flag = x;
+    this.#flag = x;
 
     this.render();
   }

@@ -1,3 +1,5 @@
+import { sprintf } from "@std/fmt/printf";
+
 import { clamp } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -27,9 +29,11 @@ export class Footer extends Control {
     vt.buf.write(colors.BACKGROUND);
     vt.clear_area(vt.buf, this);
     vt.buf.write(colors.TEXT);
-    const span: [number] = [this.w];
-    vt.write_text(vt.buf, span, this.#cursor_status);
-    vt.cursor.set(vt.buf, this.y, this.x + span[0]);
+    vt.write_text(
+      vt.buf,
+      [this.w],
+      sprintf("%*s", this.w, this.#cursor_status),
+    );
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 

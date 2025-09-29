@@ -2,73 +2,42 @@ import { Writer } from "./writer.ts";
 
 const encoder = new TextEncoder();
 
+const cache: Record<number, Uint8Array> = {};
+
 export function write_spaces(out: Writer, n: number): void {
-  // TODO
-  out.write(encoder.encode(` \x1b[${n - 1}b`));
+  let bytes = cache[n];
+
+  if (!bytes) {
+    bytes = cache[n] = encoder.encode(` \x1b[${n - 1}b`);
+  }
+
+  out.write(bytes);
 }
 
-export function write_text(
-  out: Writer,
-  span: [number],
-  ...xs: (string | Uint8Array)[]
-): void {
-  for (let chunk of xs) {
-    if (typeof chunk !== "string") {
-      out.write(chunk);
-      continue;
-    }
-
-    if (span[0] === 0) {
-      break;
-    }
-
-    if (chunk.length > span[0]) {
-      chunk = chunk.slice(0, span[0]);
-    }
-
-    out.write(encoder.encode(chunk));
-
-    span[0] -= chunk.length;
+export function write_text(out: Writer, span: [number], text: string): void {
+  if (text.length > span[0]) {
+    text = text.slice(0, span[0]);
   }
+
+  out.write(encoder.encode(text));
+
+  span[0] -= text.length;
 }
 
 export function write_text_center(
   out: Writer,
   span: [number],
-  ...xs: (string | Uint8Array)[]
+  text: string,
 ): void {
-  const len = xs.filter((x) => typeof x === "string").reduce(
-    (a, x) => a + x.length,
-    0,
-  );
-  const w0 = Math.trunc((span[0] - len) / 2);
-  if (w0 > 0) {
-    span[0] -= w0;
-    write_spaces(out, w0);
+  if (text.length > span[0]) {
+    text = text.slice(0, span[0]);
   }
 
-  for (let chunk of xs) {
-    if (typeof chunk !== "string") {
-      out.write(chunk);
-      continue;
-    }
+  const ab = span[0] - text.length;
+  const a = Math.trunc(ab / 2);
 
-    if (span[0] === 0) {
-      break;
-    }
+  write_spaces(out, a);
+  out.write(encoder.encode(text));
 
-    if (chunk.length > span[0]) {
-      chunk = chunk.slice(0, span[0]);
-    }
-
-    out.write(encoder.encode(chunk));
-
-    span[0] -= chunk.length;
-  }
-
-  const w1 = span[0];
-  if (w1) {
-    span[0] = 0;
-    write_spaces(out, w1);
-  }
+  span[0] -= a + text.length;
 }
