@@ -183,14 +183,12 @@ export class Editor extends Control {
       buffer: { line_count },
     } = this;
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.write_buf(
-      vt.cursor.hide,
-      vt.cursor.save,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-    );
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(vt.cursor.save);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
 
     if (index_enabled && (line_count > 0)) {
       this.index_width = Math.trunc(Math.log10(line_count)) + 3;
@@ -210,12 +208,15 @@ export class Editor extends Control {
       this.#render_lines();
     }
 
-    vt.flush_buf(
-      enabled ? vt.cursor.set(this.cursor_y, this.cursor_x) : vt.cursor.restore,
-      vt.cursor.show,
-    );
+    if (enabled) {
+      vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
+    } else {
+      vt.buf.write(vt.cursor.restore);
+    }
+    vt.buf.write(vt.cursor.show);
 
-    vt.esu();
+    vt.buf.flush();
+    vt.sync.esu();
 
     this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
 
@@ -235,11 +236,9 @@ export class Editor extends Control {
       if (ln < line_count) {
         row = this.#render_line(ln, row);
       } else {
-        vt.write_buf(
-          vt.cursor.set(row, x),
-          colors.VOID,
-          vt.clear_line(w),
-        );
+        vt.cursor.set(vt.buf, row, x);
+        vt.buf.write(colors.VOID);
+        vt.clear_line(vt.buf, w);
       }
 
       row += 1;
@@ -266,24 +265,19 @@ export class Editor extends Control {
           }
         }
 
-        vt.write_buf(
-          vt.cursor.set(row, this.x),
-        );
+        vt.cursor.set(vt.buf, row, this.x);
 
         if (this.index_width > 0) {
           if (i === 0) {
-            vt.write_buf(
-              colors.INDEX,
-              ...vt.write_text(
-                [this.index_width],
-                `${ln + 1} `.padStart(this.index_width),
-              ),
+            vt.buf.write(colors.INDEX);
+            vt.write_text(
+              vt.buf,
+              [this.index_width],
+              `${ln + 1} `.padStart(this.index_width),
             );
           } else {
-            vt.write_buf(
-              colors.BACKGROUND,
-              vt.write_spaces(this.index_width),
-            );
+            vt.buf.write(colors.BACKGROUND);
+            vt.write_spaces(vt.buf, this.index_width);
           }
         }
 
@@ -302,10 +296,10 @@ export class Editor extends Control {
 
       if (color !== current_color) {
         current_color = color;
-        vt.write_buf(colors.CHAR[color]);
+        vt.buf.write(colors.CHAR[color]);
       }
 
-      vt.write_buf(bytes);
+      vt.buf.write(bytes);
 
       available_w -= width;
     }

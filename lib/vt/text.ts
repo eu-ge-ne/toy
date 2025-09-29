@@ -1,24 +1,20 @@
+import { Writer } from "./writer.ts";
+
 const encoder = new TextEncoder();
 
-export function write(...chunks: Uint8Array[]): void {
-  for (const chunk of chunks) {
-    for (let i = 0; i < chunk.length;) {
-      i += Deno.stdout.writeSync(chunk.subarray(i));
-    }
-  }
+export function write_spaces(out: Writer, n: number): void {
+  // TODO
+  out.write(encoder.encode(` \x1b[${n - 1}b`));
 }
 
-export function write_spaces(n: number): Uint8Array {
-  return encoder.encode(` \x1b[${n - 1}b`);
-}
-
-export function* write_text(
+export function write_text(
+  out: Writer,
   span: [number],
   ...xs: (string | Uint8Array)[]
-): Generator<Uint8Array> {
+): void {
   for (let chunk of xs) {
     if (typeof chunk !== "string") {
-      yield chunk;
+      out.write(chunk);
       continue;
     }
 
@@ -30,16 +26,17 @@ export function* write_text(
       chunk = chunk.slice(0, span[0]);
     }
 
-    yield encoder.encode(chunk);
+    out.write(encoder.encode(chunk));
 
     span[0] -= chunk.length;
   }
 }
 
-export function* write_text_center(
+export function write_text_center(
+  out: Writer,
   span: [number],
   ...xs: (string | Uint8Array)[]
-): Generator<Uint8Array> {
+): void {
   const len = xs.filter((x) => typeof x === "string").reduce(
     (a, x) => a + x.length,
     0,
@@ -47,12 +44,12 @@ export function* write_text_center(
   const w0 = Math.trunc((span[0] - len) / 2);
   if (w0 > 0) {
     span[0] -= w0;
-    yield write_spaces(w0);
+    write_spaces(out, w0);
   }
 
   for (let chunk of xs) {
     if (typeof chunk !== "string") {
-      yield chunk;
+      out.write(chunk);
       continue;
     }
 
@@ -64,7 +61,7 @@ export function* write_text_center(
       chunk = chunk.slice(0, span[0]);
     }
 
-    yield encoder.encode(chunk);
+    out.write(encoder.encode(chunk));
 
     span[0] -= chunk.length;
   }
@@ -72,6 +69,6 @@ export function* write_text_center(
   const w1 = span[0];
   if (w1) {
     span[0] = 0;
-    yield write_spaces(w1);
+    write_spaces(out, w1);
   }
 }

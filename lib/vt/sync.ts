@@ -1,24 +1,33 @@
 import { CSI } from "./ansi.ts";
-
-import { write } from "./write.ts";
+import { Writer } from "./writer.ts";
 
 const bsu_bytes = CSI("?2026h");
 const esu_bytes = CSI("?2026l");
 
-let c = 0;
+class SyncOut implements Writer {
+  #c = 0;
 
-export function bsu(): void {
-  if (c === 0) {
-    write(bsu_bytes);
+  write(chunk: Uint8Array): void {
+    for (let i = 0; i < chunk.length;) {
+      i += Deno.stdout.writeSync(chunk.subarray(i));
+    }
   }
 
-  c += 1;
-}
+  bsu(): void {
+    if (this.#c === 0) {
+      this.write(bsu_bytes);
+    }
 
-export function esu(): void {
-  c -= 1;
+    this.#c += 1;
+  }
 
-  if (c === 0) {
-    write(esu_bytes);
+  esu(): void {
+    this.#c -= 1;
+
+    if (this.#c === 0) {
+      this.write(esu_bytes);
+    }
   }
 }
+
+export const sync = new SyncOut();

@@ -9,5 +9,5 @@ export * from "./ech.ts";
 export * from "./init.ts";
 export * from "./key.ts";
 export * from "./sync.ts";
+export * from "./text.ts";
 export * from "./truecolor.ts";
-export { write_spaces, write_text, write_text_center } from "./write.ts";

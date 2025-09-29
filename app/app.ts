@@ -137,7 +137,7 @@ export class App extends Control {
   }
 
   render(): void {
-    vt.bsu();
+    vt.sync.bsu();
 
     this.header.render();
     this.editor.render();
@@ -148,7 +148,7 @@ export class App extends Control {
     this.ask.render();
     this.palette.render();
 
-    vt.esu();
+    vt.sync.esu();
   }
 
   set_colors(tokens: theme.Tokens): void {
@@ -179,7 +179,7 @@ export class App extends Control {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
 
-    vt.dummy_req();
+    vt.dummy_req(vt.sync);
   };
 
   async #process_input(): Promise<void> {

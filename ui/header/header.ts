@@ -23,25 +23,24 @@ export class Header extends Control {
       return;
     }
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.flush_buf(
-      vt.cursor.hide,
-      vt.cursor.save,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-      vt.cursor.set(this.y, this.x),
-      ...vt.write_text_center(
-        [this.w],
-        colors.FILE_PATH,
-        this.#file_path,
-        ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
-      ),
-      vt.cursor.restore,
-      vt.cursor.show,
-    );
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(vt.cursor.save);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
+    vt.cursor.set(vt.buf, this.y, this.x);
+    vt.write_text_center(
+      vt.buf,
+      [this.w],
+      colors.FILE_PATH,
+      this.#file_path,
+      ...(this.#unsaved_flag ? [colors.UNSAVED_FLAG, FLAG] : []),
+    ), vt.buf.write(vt.cursor.restore);
+    vt.buf.write(vt.cursor.show);
 
-    vt.esu();
+    vt.buf.flush();
+    vt.sync.esu();
   }
 
   set_file_path(x: string): void {

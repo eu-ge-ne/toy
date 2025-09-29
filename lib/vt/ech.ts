@@ -1,13 +1,14 @@
 import { CSI } from "./ansi.ts";
+import { Writer } from "./writer.ts";
 
-const ech_cache: Record<number, Uint8Array> = {};
+const cache: Record<number, Uint8Array> = {};
 
-export function ech(n: number): Uint8Array {
-  let bytes = ech_cache[n];
+export function ech(out: Writer, n: number): void {
+  let bytes = cache[n];
 
   if (!bytes) {
-    bytes = ech_cache[n] = CSI(`${n}X`);
+    bytes = cache[n] = CSI(`${n}X`);
   }
 
-  return bytes;
+  out.write(bytes);
 }

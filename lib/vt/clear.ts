@@ -1,17 +1,20 @@
-import { cursor, ech } from "@lib/vt";
+import * as cursor from "./cursor.ts";
+import { ech } from "./ech.ts";
+import { Writer } from "./writer.ts";
 
-export function* clear_area(
+export function clear_area(
+  out: Writer,
   { y, x, w, h }: { y: number; x: number; w: number; h: number },
-): Generator<Uint8Array> {
-  yield cursor.set(y, x);
+): void {
+  cursor.set(out, y, x);
 
   for (let i = h; i > 0; i -= 1) {
-    yield ech(w);
+    ech(out, w);
 
-    yield cursor.down;
+    out.write(cursor.down);
   }
 }
 
-export function clear_line(w: number): Uint8Array {
-  return ech(w);
+export function clear_line(out: Writer, w: number): void {
+  ech(out, w);
 }

@@ -2,25 +2,21 @@ import { set_flags } from "@eu-ge-ne/kitty-keys";
 
 import { CSI } from "./ansi.ts";
 import * as cursor from "./cursor.ts";
-import { write } from "./write.ts";
+import { sync } from "./sync.ts";
 
 export function init(): void {
   Deno.stdin.setRaw(true);
 
-  write(
-    CSI("?1049h"),
-    set_flags({
-      disambiguate: true,
-      alternates: true,
-      all_keys: true,
-      text: true,
-    }),
-  );
+  sync.write(CSI("?1049h"));
+  sync.write(set_flags({
+    disambiguate: true,
+    alternates: true,
+    all_keys: true,
+    text: true,
+  }));
 }
 
 export function restore(): void {
-  write(
-    CSI("?1049l"),
-    cursor.show,
-  );
+  sync.write(CSI("?1049l"));
+  sync.write(cursor.show);
 }

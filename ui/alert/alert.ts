@@ -31,13 +31,11 @@ export class Alert extends Modal<[unknown], void> {
       return;
     }
 
-    vt.bsu();
+    vt.sync.bsu();
 
-    vt.write_buf(
-      vt.cursor.hide,
-      colors.BACKGROUND,
-      ...vt.clear_area(this),
-    );
+    vt.buf.write(vt.cursor.hide);
+    vt.buf.write(colors.BACKGROUND);
+    vt.clear_area(vt.buf, this);
 
     let pos = 0;
 
@@ -51,19 +49,16 @@ export class Alert extends Modal<[unknown], void> {
 
       pos += line.length;
 
-      vt.write_buf(
-        vt.cursor.set(y, this.x + 2),
-        colors.TEXT,
-        ...vt.write_text(span, line),
-      );
+      vt.cursor.set(vt.buf, y, this.x + 2);
+      vt.buf.write(colors.TEXT);
+      vt.write_text(vt.buf, span, line);
     }
 
-    vt.flush_buf(
-      vt.cursor.set(this.y + this.h - 2, this.x),
-      ...vt.write_text_center([this.w], "ENTER‧ok"),
-    );
+    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
+    vt.write_text_center(vt.buf, [this.w], "ENTER‧ok");
 
-    vt.esu();
+    vt.buf.flush();
+    vt.sync.esu();
   }
 
   async #process_input(): Promise<void> {
