@@ -163,9 +163,7 @@ export class Editor extends Control {
     history.push();
   }
 
-  #ln_count = -1;
   private index_width = 0;
-  private index_blank!: Uint8Array;
   private text_width = 0;
   private cursor_y = 0;
   private cursor_x = 0;
@@ -194,12 +192,8 @@ export class Editor extends Control {
       ...vt.clear_area(this),
     );
 
-    if (index_enabled && line_count > 0) {
-      if (this.#ln_count !== line_count) {
-        this.#ln_count = line_count;
-        this.index_width = Math.trunc(Math.log10(line_count)) + 3;
-        this.index_blank = vt.write_spaces(this.index_width);
-      }
+    if (index_enabled && (line_count > 0)) {
+      this.index_width = Math.trunc(Math.log10(line_count)) + 3;
     } else {
       this.index_width = 0;
     }
@@ -288,7 +282,7 @@ export class Editor extends Control {
           } else {
             vt.write_buf(
               colors.BACKGROUND,
-              this.index_blank,
+              vt.write_spaces(this.index_width),
             );
           }
         }
