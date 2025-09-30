@@ -63,7 +63,7 @@ export class SegBuf {
         c.g = graphemes.get(segment);
 
         if (c.g.width < 0) {
-          c.g.width = vt.cursor.measure(measure_y, measure_x, c.g.bytes);
+          c.g.width = vt.wchar(measure_y, measure_x, c.g.bytes);
         }
 
         w += c.g.width;

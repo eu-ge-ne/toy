@@ -179,7 +179,7 @@ export class App extends Control {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
 
-    vt.dummy_req(vt.sync);
+    vt.dummy_req();
   };
 
   async #process_input(): Promise<void> {
