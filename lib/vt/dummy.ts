@@ -1,6 +1,6 @@
-import { cpr_req } from "./cursor.ts";
-import { Writer } from "./writer.ts";
+import { sync } from "./sync.ts";
+import { cpr_req } from "./wchar.ts";
 
-export function dummy_req(out: Writer): void {
-  out.write(cpr_req);
+export function dummy_req(): void {
+  sync.write(cpr_req);
 }
