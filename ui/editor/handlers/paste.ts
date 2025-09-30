@@ -9,12 +9,6 @@ export class PasteHandler extends EditorHandler {
   ];
 
   handle(): boolean {
-    if (this.editor.clipboard) {
-      this.editor.insert(this.editor.clipboard);
-
-      return true;
-    }
-
-    return false;
+    return this.editor.paste();
   }
 }

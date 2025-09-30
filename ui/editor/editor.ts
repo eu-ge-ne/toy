@@ -163,6 +163,62 @@ export class Editor extends Control {
     history.push();
   }
 
+  copy(): boolean {
+    const { cursor, buffer } = this;
+
+    if (cursor.selecting) {
+      this.clipboard = buffer.read(cursor.from, {
+        ln: cursor.to.ln,
+        col: cursor.to.col + 1,
+      });
+
+      cursor.set(cursor.ln, cursor.col, false);
+    } else {
+      this.clipboard = buffer.read(cursor, {
+        ln: cursor.ln,
+        col: cursor.col + 1,
+      });
+    }
+
+    vt.copy_to_clipboard(vt.sync, this.clipboard);
+
+    return false;
+  }
+
+  cut(): boolean {
+    const { cursor, buffer } = this;
+
+    if (cursor.selecting) {
+      this.clipboard = buffer.read(cursor.from, {
+        ln: cursor.to.ln,
+        col: cursor.to.col + 1,
+      });
+
+      this.delete_selection();
+    } else {
+      this.clipboard = buffer.read(cursor, {
+        ln: cursor.ln,
+        col: cursor.col + 1,
+      });
+
+      this.delete_char();
+    }
+
+    vt.copy_to_clipboard(vt.sync, this.clipboard);
+
+    return true;
+  }
+
+  paste(): boolean {
+    if (!this.clipboard) {
+      return false;
+    }
+
+    this.insert(this.clipboard);
+
+    return true;
+  }
+
   private index_width = 0;
   private text_width = 0;
   private cursor_y = 0;
