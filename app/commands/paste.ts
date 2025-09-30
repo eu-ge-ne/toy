@@ -17,9 +17,9 @@ export class PasteCommand extends Command {
 
   async run(): Promise<void> {
     if (this.app.editor.enabled) {
-      this.app.editor.handle_key(Key.create({ name: "v", ctrl: true }));
-
-      this.app.editor.render();
+      if (this.app.editor.paste()) {
+        this.app.editor.render();
+      }
     }
   }
 }
