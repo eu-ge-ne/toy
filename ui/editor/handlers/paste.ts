@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class PasteHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "v", ctrl: true }),
-    Key.create({ name: "v", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "v" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     return this.editor.paste();

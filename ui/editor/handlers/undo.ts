@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class UndoHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "z", ctrl: true }),
-    Key.create({ name: "z", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "z" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     return this.editor.history.undo();

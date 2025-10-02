@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { Command } from "./command.ts";
 
@@ -12,6 +12,10 @@ export class PaletteCommand extends Command {
   ];
 
   option = undefined;
+
+  match(key: Key): boolean {
+    return key.name === "F1";
+  }
 
   async run(): Promise<void> {
     this.app.editor.enabled = false;

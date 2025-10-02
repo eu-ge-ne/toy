@@ -1,11 +1,9 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class TextHandler extends EditorHandler {
-  keys = [];
-
-  override match(key: Record<string, unknown>): boolean {
+  match(key: Key): boolean {
     return typeof key.text === "string";
   }
 

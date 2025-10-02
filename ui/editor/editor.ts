@@ -1,6 +1,7 @@
 import { Cursor } from "@lib/cursor";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
+import { Key } from "@lib/key";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
 import { Area, Control } from "@lib/ui";
@@ -78,12 +79,10 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_key(key: vt.Key): boolean {
+  handle_key(key: Key): boolean {
     const t0 = performance.now();
 
-    const handler = this.#handlers.find((x) =>
-      x.match(key as unknown as Record<string, unknown>)
-    );
+    const handler = this.#handlers.find((x) => x.match(key));
     const r = handler?.handle(key) ?? false;
 
     const t1 = performance.now();

@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class RedoHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "y", ctrl: true }),
-    Key.create({ name: "y", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "y" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     return this.editor.history.redo();

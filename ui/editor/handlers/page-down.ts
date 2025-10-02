@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class PageDownHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "PAGE_DOWN" }),
-    Key.create({ name: "PAGE_DOWN", shift: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "PAGE_DOWN";
+  }
 
   handle(key: Key): boolean {
     if (!this.editor.opts.multi_line) {

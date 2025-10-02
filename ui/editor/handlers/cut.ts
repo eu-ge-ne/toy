@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class CutHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "x", ctrl: true }),
-    Key.create({ name: "x", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "x" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     return this.editor.cut();

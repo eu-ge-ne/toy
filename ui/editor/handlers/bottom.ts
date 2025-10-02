@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class BottomHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "DOWN", super: true }),
-    Key.create({ name: "DOWN", super: true, shift: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "DOWN" && key.super;
+  }
 
   handle(key: Key): boolean {
     if (!this.editor.opts.multi_line) {

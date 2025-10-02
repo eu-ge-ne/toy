@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
@@ -13,6 +13,10 @@ export class WhitespaceCommand extends Command {
     "View: Toggle Render Whitespace",
     this.keys,
   );
+
+  match(key: Key): boolean {
+    return key.name === "F5";
+  }
 
   async run(): Promise<void> {
     this.app.editor.whitespace_enabled = !this.app.editor.whitespace_enabled;
