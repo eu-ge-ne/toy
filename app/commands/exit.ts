@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
@@ -9,6 +9,10 @@ export class ExitCommand extends Command {
   ];
 
   option = new PaletteOption("Exit", "Global: Exit", this.keys);
+
+  match(key: Key): boolean {
+    return key.name === "F10";
+  }
 
   async run(): Promise<void> {
     this.app.editor.enabled = false;

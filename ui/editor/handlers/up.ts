@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class UpHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "UP" }),
-    Key.create({ name: "UP", shift: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "UP";
+  }
 
   handle(key: Key): boolean {
     if (!this.editor.opts.multi_line) {

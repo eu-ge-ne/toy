@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class CopyHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "c", ctrl: true }),
-    Key.create({ name: "c", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "c" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     return this.editor.copy();

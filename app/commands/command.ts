@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 import { PaletteOption } from "@ui/palette";
 
 import { App } from "../app.ts";
@@ -11,11 +11,7 @@ export abstract class Command {
   constructor(protected app: App) {
   }
 
-  match(key: Record<string, unknown>): boolean {
-    return this.keys.some((x) =>
-      Object.entries(x).every(([k, v]) => k === "code" || key[k] === v)
-    );
-  }
+  abstract match(key: Key): boolean;
 
   abstract run(): Promise<void>;
 }

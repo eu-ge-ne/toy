@@ -1,11 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class TabHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "TAB" }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "TAB";
+  }
 
   handle(): boolean {
     if (this.editor.opts.multi_line) {

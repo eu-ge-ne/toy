@@ -1,11 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class DeleteHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "DELETE" }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "DELETE";
+  }
 
   handle(): boolean {
     if (this.editor.cursor.selecting) {

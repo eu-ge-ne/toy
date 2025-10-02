@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class SelectAllHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "a", ctrl: true }),
-    Key.create({ name: "a", super: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "a" && (key.ctrl || key.super);
+  }
 
   handle(): boolean {
     const { cursor } = this.editor;

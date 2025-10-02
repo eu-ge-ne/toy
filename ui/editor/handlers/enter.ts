@@ -1,11 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class EnterHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "ENTER" }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "ENTER";
+  }
 
   handle(): boolean {
     if (!this.editor.opts.multi_line) {

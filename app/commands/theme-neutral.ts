@@ -1,3 +1,4 @@
+import { Key } from "@lib/key";
 import { NEUTRAL } from "@lib/theme";
 import { PaletteOption } from "@ui/palette";
 
@@ -7,6 +8,10 @@ export class ThemeNeutralCommand extends Command {
   keys = [];
 
   option = new PaletteOption("Theme Neutral", "Theme: Neutral", []);
+
+  match(_: Key): boolean {
+    return false;
+  }
 
   async run(): Promise<void> {
     this.app.set_colors(NEUTRAL);

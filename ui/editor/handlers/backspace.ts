@@ -1,11 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class BackspaceHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "BACKSPACE" }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "BACKSPACE";
+  }
 
   handle(): boolean {
     if (this.editor.cursor.selecting) {

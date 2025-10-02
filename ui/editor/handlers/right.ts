@@ -1,12 +1,11 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 
 import { EditorHandler } from "./handler.ts";
 
 export class RightHandler extends EditorHandler {
-  keys = [
-    Key.create({ name: "RIGHT" }),
-    Key.create({ name: "RIGHT", shift: true }),
-  ];
+  match(key: Key): boolean {
+    return key.name === "RIGHT";
+  }
 
   handle(key: Key): boolean {
     return this.editor.cursor.right(key.shift);

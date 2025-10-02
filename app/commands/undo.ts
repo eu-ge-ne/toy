@@ -1,4 +1,4 @@
-import { Key } from "@lib/vt";
+import { Key } from "@lib/key";
 import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";
@@ -14,6 +14,10 @@ export class UndoCommand extends Command {
       Key.create({ name: "z", super: true }),
     ],
   );
+
+  match(_: Key): boolean {
+    return false;
+  }
 
   async run(): Promise<void> {
     if (!this.app.editor.enabled) {
