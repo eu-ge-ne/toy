@@ -70,38 +70,38 @@ export class Palette
 
   async #process_input(): Promise<PaletteOption | undefined> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array) {
-          this.parent?.render();
+      const key = await vt.readKey();
+
+      if (key instanceof Uint8Array) {
+        this.parent?.render();
+        continue;
+      }
+
+      switch (key.name) {
+        case "ESC":
+          return;
+        case "ENTER":
+          return this.#filtered_options[this.#selected_index];
+        case "UP":
+          if (this.#filtered_options.length > 0) {
+            this.#selected_index = Math.max(this.#selected_index - 1, 0);
+            this.parent?.render();
+          }
           continue;
-        }
+        case "DOWN":
+          if (this.#filtered_options.length > 0) {
+            this.#selected_index = Math.min(
+              this.#selected_index + 1,
+              this.#filtered_options.length - 1,
+            );
+            this.parent?.render();
+          }
+          continue;
+      }
 
-        switch (key.name) {
-          case "ESC":
-            return;
-          case "ENTER":
-            return this.#filtered_options[this.#selected_index];
-          case "UP":
-            if (this.#filtered_options.length > 0) {
-              this.#selected_index = Math.max(this.#selected_index - 1, 0);
-              this.parent?.render();
-            }
-            continue;
-          case "DOWN":
-            if (this.#filtered_options.length > 0) {
-              this.#selected_index = Math.min(
-                this.#selected_index + 1,
-                this.#filtered_options.length - 1,
-              );
-              this.parent?.render();
-            }
-            continue;
-        }
-
-        if (this.#editor.handle_key(key)) {
-          this.#filter();
-          this.parent?.render();
-        }
+      if (this.#editor.handle_key(key)) {
+        this.#filter();
+        this.parent?.render();
       }
     }
   }

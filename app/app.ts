@@ -100,6 +100,8 @@ export class App extends Control {
     this.editor.reset(true);
     this.editor.render();
 
+    vt.listenStdin();
+
     await this.#process_input();
   }
 
@@ -184,22 +186,22 @@ export class App extends Control {
 
   async #process_input(): Promise<void> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array) {
-          this.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        const cmd = this.commands.find((x) => x.match(key));
-        if (cmd) {
-          await cmd.run();
-          continue;
-        }
+      if (key instanceof Uint8Array) {
+        this.render();
+        continue;
+      }
 
-        if (this.editor.enabled) {
-          if (this.editor.handle_key(key)) {
-            this.editor.render();
-          }
+      const cmd = this.commands.find((x) => x.match(key));
+      if (cmd) {
+        await cmd.run();
+        continue;
+      }
+
+      if (this.editor.enabled) {
+        if (this.editor.handle_key(key)) {
+          this.editor.render();
         }
       }
     }

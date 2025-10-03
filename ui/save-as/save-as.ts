@@ -65,26 +65,26 @@ export class SaveAs extends Modal<[string], string> {
 
   async #process_input(): Promise<string> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array) {
-          this.parent?.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-            return "";
-          case "ENTER": {
-            const path = this.#editor.buffer.text();
-            if (path) {
-              return path;
-            }
+      if (key instanceof Uint8Array) {
+        this.parent?.render();
+        continue;
+      }
+
+      switch (key.name) {
+        case "ESC":
+          return "";
+        case "ENTER": {
+          const path = this.#editor.buffer.text();
+          if (path) {
+            return path;
           }
         }
+      }
 
-        if (this.#editor.handle_key(key)) {
-          this.#editor.render();
-        }
+      if (this.#editor.handle_key(key)) {
+        this.#editor.render();
       }
     }
   }

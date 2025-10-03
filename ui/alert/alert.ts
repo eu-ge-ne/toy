@@ -63,17 +63,17 @@ export class Alert extends Modal<[unknown], void> {
 
   async #process_input(): Promise<void> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array || typeof key === "string") {
-          this.parent?.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-          case "ENTER":
-            return;
-        }
+      if (key instanceof Uint8Array || typeof key === "string") {
+        this.parent?.render();
+        continue;
+      }
+
+      switch (key.name) {
+        case "ESC":
+        case "ENTER":
+          return;
       }
     }
   }

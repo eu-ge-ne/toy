@@ -65,18 +65,18 @@ export class Ask extends Modal<[string], boolean> {
 
   async #process_input(): Promise<boolean> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array || typeof key === "string") {
-          this.parent?.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-            return false;
-          case "ENTER":
-            return true;
-        }
+      if (key instanceof Uint8Array || typeof key === "string") {
+        this.parent?.render();
+        continue;
+      }
+
+      switch (key.name) {
+        case "ESC":
+          return false;
+        case "ENTER":
+          return true;
       }
     }
   }
