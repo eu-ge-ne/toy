@@ -1,4 +1,4 @@
 {
-  "name": "@lib/key",
+  "name": "@lib/kitty",
   "exports": "./mod.ts"
 }

@@ -1,4 +1,4 @@
-import { Key } from "@eu-ge-ne/kitty-keys";
+import { Key } from "@lib/kitty";
 
 export async function* read(): AsyncGenerator<Key | Uint8Array> {
   const buf = new Uint8Array(1024);

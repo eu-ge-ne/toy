@@ -1,4 +1,4 @@
-import { set_flags } from "@eu-ge-ne/kitty-keys";
+import { set_flags } from "@lib/kitty";
 
 import { CSI } from "./ansi.ts";
 import * as cursor from "./cursor.ts";

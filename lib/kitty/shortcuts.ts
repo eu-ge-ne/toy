@@ -1,7 +1,5 @@
 import { Key } from "./key.ts";
 
-export * from "./key.ts";
-
 export function shortcut(key: Key): string {
   const chunks: string[] = [];
 

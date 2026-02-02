@@ -1,4 +1,4 @@
-import { Key } from "@lib/key";
+import { Key } from "@lib/kitty";
 import { PaletteOption } from "@ui/palette";
 
 import { Command } from "./command.ts";

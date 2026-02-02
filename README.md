@@ -3,6 +3,8 @@
 Minimalistic TUI text editor. Built with Deno and TypeScript with zero
 third-party dependencies.
 
+[![codecov](https://codecov.io/gh/eu-ge-ne/toy/graph/badge.svg?token=E7COZVK6DB)](https://codecov.io/gh/eu-ge-ne/toy)
+
 ![toy](etc/toy.png)
 
 - [Installation](#installation)

@@ -1,4 +1,4 @@
-import { Key, shortcut } from "@lib/key";
+import { Key, shortcut } from "@lib/kitty";
 
 export class PaletteOption {
   id: string;

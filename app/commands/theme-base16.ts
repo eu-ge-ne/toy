@@ -1,4 +1,4 @@
-import { Key } from "@lib/key";
+import { Key } from "@lib/kitty";
 import { BASE16 } from "@lib/theme";
 import { PaletteOption } from "@ui/palette";
 
