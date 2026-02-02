@@ -1,4 +1,4 @@
-name: deno
+name: Deno
 
 on:
   pull_request:

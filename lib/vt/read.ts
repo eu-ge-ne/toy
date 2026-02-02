@@ -1,4 +1,4 @@
-import { Key } from "@eu-ge-ne/kitty-keys";
+import { Key } from "@lib/kitty";
 
 export async function* read(): AsyncGenerator<Key | Uint8Array> {
   const buf = new Uint8Array(1024);
@@ -9,7 +9,7 @@ export async function* read(): AsyncGenerator<Key | Uint8Array> {
   }
   const bytes = buf.subarray(0, bytes_read);
 
-  for (let i = 0; i < bytes.length;) {
+  for (let i = 0; i < bytes.length; ) {
     const result = Key.parse(bytes.subarray(i));
 
     if (!result) {

@@ -1,8 +1,9 @@
 # Changelog
 
-## v0.0.28
+## latest
 
 - @eu-ge-ne/kitty-keys updated to 0.11.1
+- @eu-ge-ne/kitty-keys incorporated into @lib/kitty
 - Improved input handling
 
 ## v0.0.27

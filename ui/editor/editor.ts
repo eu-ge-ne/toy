@@ -1,7 +1,7 @@
 import { Cursor } from "@lib/cursor";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
-import { Key } from "@lib/key";
+import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
 import { Area, Control } from "@lib/ui";

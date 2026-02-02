@@ -1,0 +1,59 @@
+name: PR
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: ["opened", "synchronize", "reopened"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - run: deno fmt --check
+      - run: deno lint
+      - run: deno doc --lint ./src/mod.ts
+
+      - run: deno test --doc --coverage=tmp/cov/ --coverage-raw-data-only --junit-path=tmp/junit.xml
+      - run: deno coverage --lcov tmp/cov/ > tmp/lcov.info
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: tmp/junit.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          disable_search: true
+          files: tmp/lcov.info
+
+  check-publish:
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - run: deno publish --dry-run

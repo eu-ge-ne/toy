@@ -1,4 +1,4 @@
-import { Key } from "@lib/key";
+import { Key } from "@lib/kitty";
 
 import { EditorHandler } from "./handler.ts";
 
