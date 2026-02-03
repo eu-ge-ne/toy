@@ -21,7 +21,6 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.14",
     "@std/cli": "jsr:@std/cli@^1.0.22",
-    "@std/fmt": "jsr:@std/fmt@^1.0.8",
-    "@eu-ge-ne/text-buf": "jsr:@eu-ge-ne/text-buf@^0.14.2"
+    "@std/fmt": "jsr:@std/fmt@^1.0.8"
   }
 }
