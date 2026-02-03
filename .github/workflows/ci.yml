@@ -17,8 +17,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: deno fmt --check
-      - run: deno lint
+      - run: ./bin/lint.sh
 
   test:
     needs: lint
