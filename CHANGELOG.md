@@ -1,6 +1,6 @@
 # Changelog
 
-## latest
+## 0.0.28-rc
 
 - @eu-ge-ne/kitty-keys incorporated into @lib/kitty
 - Improved input handling
