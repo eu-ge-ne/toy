@@ -57,6 +57,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      - run: ./etc/test-build.sh
       - run: mkdir -p ./dist/
       - run: echo "APP_V=$(deno ./etc/version.ts)" >> $GITHUB_ENV
       - run: echo "DIST_MACOS=dist/toy-aarch64-apple-darwin-${{ env.APP_V }}" >> $GITHUB_ENV
