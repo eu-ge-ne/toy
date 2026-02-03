@@ -13,7 +13,7 @@ Deno.bench("Accessing a line in a TextBuf", {
   b.start();
 
   for (let i = 0; i < N; i += 1) {
-    const _ = buf.read([i, 0], [i + 1, 0]).toArray();
+    const _ = buf.read(i, i + 1).toArray();
   }
 
   b.end();
