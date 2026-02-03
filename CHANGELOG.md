@@ -2,9 +2,9 @@
 
 ## latest
 
-- @eu-ge-ne/kitty-keys updated to 0.11.1
 - @eu-ge-ne/kitty-keys incorporated into @lib/kitty
 - Improved input handling
+- @eu-ge-ne/text incorporated into @lib/text-buf
 
 ## v0.0.27
 

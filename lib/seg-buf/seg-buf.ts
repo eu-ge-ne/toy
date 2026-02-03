@@ -1,4 +1,4 @@
-import { Node, TextBuf } from "@eu-ge-ne/text-buf";
+import { Node, TextBuf } from "@lib/text-buf";
 
 import { Grapheme, graphemes } from "@lib/grapheme";
 import * as vt from "@lib/vt";
