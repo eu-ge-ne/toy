@@ -179,6 +179,12 @@ export class App extends Control {
       case commands.ThemeGray:
         this.#handleThemeGray();
         break;
+      case commands.ThemeNeutral:
+        this.#handleThemeNeutral();
+        break;
+      case commands.ThemeSlate:
+        this.#handleThemeSlate();
+        break;
     }
   }
 
@@ -281,6 +287,18 @@ export class App extends Control {
 
   #handleThemeGray(): void {
     this.set_colors(theme.GRAY);
+
+    this.render();
+  }
+
+  #handleThemeNeutral(): void {
+    this.set_colors(theme.NEUTRAL);
+
+    this.render();
+  }
+
+  #handleThemeSlate(): void {
+    this.set_colors(theme.SLATE);
 
     this.render();
   }
