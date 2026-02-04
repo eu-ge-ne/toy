@@ -54,7 +54,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: ./etc/test-build.sh
+      - run: ./bin/test-build.sh
 
   build:
     needs: test-build
