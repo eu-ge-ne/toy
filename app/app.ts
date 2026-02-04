@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import * as file from "@lib/file";
 import * as theme from "@lib/theme";
 import { Area, Control } from "@lib/ui";
@@ -11,35 +12,7 @@ import { Header, set_header_colors } from "@ui/header";
 import { Palette, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
-import * as cmd from "./commands/mod.ts";
-
 export class App extends Control {
-  commands: cmd.Command[] = [
-    new cmd.CopyCommand(this),
-    new cmd.CutCommand(this),
-    new cmd.DebugCommand(this),
-    new cmd.ExitCommand(this),
-    new cmd.PaletteCommand(this),
-    new cmd.PasteCommand(this),
-    new cmd.RedoCommand(this),
-    new cmd.SaveCommand(this),
-    new cmd.SelectAllCommand(this),
-    ...vt.TRUECOLOR
-      ? [
-        new cmd.ThemeBase16Command(this),
-        new cmd.ThemeGrayCommand(this),
-        new cmd.ThemeNeutralCommand(this),
-        new cmd.ThemeSlateCommand(this),
-        new cmd.ThemeStoneCommand(this),
-        new cmd.ThemeZincCommand(this),
-      ]
-      : [],
-    new cmd.UndoCommand(this),
-    new cmd.WhitespaceCommand(this),
-    new cmd.WrapCommand(this),
-    new cmd.ZenCommand(this),
-  ];
-
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -55,17 +28,11 @@ export class App extends Control {
   constructor() {
     super();
 
-    const options = this.commands.filter((x) => x.option).map((x) => ({
-      ...x.option!,
-      shortcuts: x.option!.shortcuts ?? "",
-    }));
-    options.sort((a, b) => a.description.localeCompare(b.description));
-
     this.header = new Header(this);
     this.footer = new Footer(this);
     this.editor = new Editor(this, { multi_line: true });
     this.debug = new Debug(this);
-    this.palette = new Palette(this, options);
+    this.palette = new Palette(this);
     this.alert = new Alert(this);
     this.ask = new Ask(this);
     this.saveas = new SaveAs(this);
@@ -95,16 +62,6 @@ export class App extends Control {
 
     await this.#process_input();
   }
-
-  exit = (e?: PromiseRejectionEvent) => {
-    vt.restore();
-
-    if (e) {
-      console.log(e.reason);
-    }
-
-    Deno.exit(0);
-  };
 
   override layout({ y, x, w, h }: Area): void {
     this.y = y;
@@ -183,9 +140,9 @@ export class App extends Control {
           continue;
         }
 
-        const cmd = this.commands.find((x) => x.match(key));
+        const cmd = commands.All.find((x) => x.keys.some((y) => y.equal(key)));
         if (cmd) {
-          await cmd.run();
+          await this.#handleCommand(cmd);
           continue;
         }
 
@@ -196,6 +153,113 @@ export class App extends Control {
         }
       }
     }
+  }
+
+  async #handleCommand(cmd: commands.Command): Promise<void> {
+    switch (cmd) {
+      case commands.Copy:
+        this.#handleCopy();
+        break;
+      case commands.Cut:
+        this.#handleCut();
+        break;
+      case commands.Debug:
+        this.#handleDebug();
+        break;
+      case commands.Exit:
+        await this.#handleExit();
+        break;
+      case commands.Palette:
+        await this.#handlePalette();
+        break;
+      case commands.Paste:
+        this.#handlePaste();
+        break;
+      case commands.Redo:
+        this.#handleRedo();
+        break;
+      case commands.Save:
+        await this.#handleSave();
+        break;
+    }
+  }
+
+  #handleCopy(): void {
+    if (this.editor.enabled) {
+      if (this.editor.copy()) {
+        this.editor.render();
+      }
+    }
+  }
+
+  #handleCut(): void {
+    if (this.editor.enabled) {
+      if (this.editor.cut()) {
+        this.editor.render();
+      }
+    }
+  }
+
+  #handleDebug(): void {
+    this.debug.enabled = !this.debug.enabled;
+
+    this.editor.render();
+  }
+
+  async #handleExit(): Promise<void> {
+    this.editor.enabled = false;
+
+    if (!this.editor.history.is_empty) {
+      if (await this.ask.open("Save changes?")) {
+        await this.save();
+      }
+    }
+
+    this.exit();
+  }
+
+  async #handlePalette(): Promise<void> {
+    this.editor.enabled = false;
+
+    const cmd = await this.palette.open();
+
+    this.editor.enabled = true;
+
+    this.editor.render();
+
+    if (cmd) {
+      await this.#handleCommand(cmd);
+    }
+  }
+
+  #handlePaste(): void {
+    if (this.editor.enabled) {
+      if (this.editor.paste()) {
+        this.editor.render();
+      }
+    }
+  }
+
+  #handleRedo(): void {
+    if (!this.editor.enabled) {
+      return;
+    }
+
+    if (this.editor.history.redo()) {
+      this.editor.render();
+    }
+  }
+
+  async #handleSave(): Promise<void> {
+    this.editor.enabled = false;
+
+    if (await this.save()) {
+      this.editor.reset(false);
+    }
+
+    this.editor.enabled = true;
+
+    this.editor.render();
   }
 
   async open(file_path: string): Promise<void> {
@@ -258,4 +322,14 @@ export class App extends Control {
 
     this.header.set_file_path(file_path);
   }
+
+  exit = (e?: PromiseRejectionEvent) => {
+    vt.restore();
+
+    if (e) {
+      console.log(e.reason);
+    }
+
+    Deno.exit(0);
+  };
 }

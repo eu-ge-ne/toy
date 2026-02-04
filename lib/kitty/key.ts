@@ -190,6 +190,14 @@ export class Key {
 
     return [key, match.index! + match[0].length];
   }
+
+  equal(key: Key): boolean {
+    if (this.name !== key.name) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 function int(text: string | undefined): number | undefined {

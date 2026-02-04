@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -8,7 +9,9 @@ import { PaletteOption } from "./option.ts";
 const MAX_LIST_SIZE = 10;
 
 export class Palette
-  extends Modal<[PaletteOption[]], PaletteOption | undefined> {
+  extends Modal<[PaletteOption[]], commands.Command | undefined> {
+  #options: PaletteOption[] = commands.All.map((x) => new PaletteOption(x));
+
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
@@ -17,11 +20,11 @@ export class Palette
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(parent: Control, private options: PaletteOption[]) {
+  constructor(parent: Control) {
     super(parent);
   }
 
-  async open(): Promise<PaletteOption | undefined> {
+  async open(): Promise<commands.Command | undefined> {
     this.enabled = true;
     this.#editor.enabled = true;
 
@@ -31,12 +34,12 @@ export class Palette
     this.#filter();
     this.parent?.render();
 
-    const result = await this.#process_input();
+    const command = await this.#process_input();
 
     this.enabled = false;
     this.#editor.enabled = false;
 
-    return result;
+    return command;
   }
 
   layout(area: Area): void {
@@ -68,7 +71,7 @@ export class Palette
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<PaletteOption | undefined> {
+  async #process_input(): Promise<commands.Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -80,7 +83,7 @@ export class Palette
           case "ESC":
             return;
           case "ENTER":
-            return this.#filtered_options[this.#selected_index];
+            return this.#filtered_options[this.#selected_index]?.command;
           case "UP":
             if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.max(this.#selected_index - 1, 0);
@@ -110,10 +113,10 @@ export class Palette
     const text = this.#editor.buffer.text().toUpperCase();
 
     if (!text) {
-      this.#filtered_options = this.options;
+      this.#filtered_options = this.#options;
     } else {
-      this.#filtered_options = this.options.filter((x) =>
-        x.description.toUpperCase().includes(text)
+      this.#filtered_options = this.#options.filter((x) =>
+        x.command.description.toUpperCase().includes(text)
       );
     }
 
@@ -182,7 +185,7 @@ export class Palette
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
       );
       vt.cursor.set(vt.buf, y, this.x + 2);
-      vt.write_text(vt.buf, span, option.description);
+      vt.write_text(vt.buf, span, option.command.description);
       vt.write_text(vt.buf, span, option.shortcuts.padStart(span[0]));
 
       i += 1;
