@@ -188,6 +188,9 @@ export class App extends Control {
       case commands.ThemeStone:
         this.#handleThemeStone();
         break;
+      case commands.ThemeZinc:
+        this.#handleThemeZinc();
+        break;
     }
   }
 
@@ -308,6 +311,12 @@ export class App extends Control {
 
   #handleThemeStone(): void {
     this.set_colors(theme.STONE);
+
+    this.render();
+  }
+
+  #handleThemeZinc(): void {
+    this.set_colors(theme.ZINC);
 
     this.render();
   }
