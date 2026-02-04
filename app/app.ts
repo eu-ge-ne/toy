@@ -47,14 +47,14 @@ export class App extends Control {
       this.header.set_unsaved_flag(!this.editor.history.is_empty);
 
     vt.init();
-    globalThis.addEventListener("unhandledrejection", this.exit);
+    globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
-    this.enable_zen(true);
+    this.#set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
+    this.#enable_zen(true);
 
     if (fileName) {
-      await this.open(fileName);
+      await this.#open(fileName);
     }
 
     this.editor.reset(true);
@@ -220,11 +220,11 @@ export class App extends Control {
 
     if (!this.editor.history.is_empty) {
       if (await this.ask.open("Save changes?")) {
-        await this.save();
+        await this.#save();
       }
     }
 
-    this.exit();
+    this.#exit();
   }
 
   async #handlePalette(): Promise<void> {
@@ -262,7 +262,7 @@ export class App extends Control {
   async #handleSave(): Promise<void> {
     this.editor.enabled = false;
 
-    if (await this.save()) {
+    if (await this.#save()) {
       this.editor.reset(false);
     }
 
@@ -285,38 +285,32 @@ export class App extends Control {
   }
 
   #handleThemeBase16(): void {
-    this.set_colors(theme.BASE16);
-
+    this.#set_colors(theme.BASE16);
     this.render();
   }
 
   #handleThemeGray(): void {
-    this.set_colors(theme.GRAY);
-
+    this.#set_colors(theme.GRAY);
     this.render();
   }
 
   #handleThemeNeutral(): void {
-    this.set_colors(theme.NEUTRAL);
-
+    this.#set_colors(theme.NEUTRAL);
     this.render();
   }
 
   #handleThemeSlate(): void {
-    this.set_colors(theme.SLATE);
-
+    this.#set_colors(theme.SLATE);
     this.render();
   }
 
   #handleThemeStone(): void {
-    this.set_colors(theme.STONE);
-
+    this.#set_colors(theme.STONE);
     this.render();
   }
 
   #handleThemeZinc(): void {
-    this.set_colors(theme.ZINC);
-
+    this.#set_colors(theme.ZINC);
     this.render();
   }
 
@@ -344,10 +338,10 @@ export class App extends Control {
   }
 
   #handleZen(): void {
-    this.enable_zen(!this.zen_enabled);
+    this.#enable_zen(!this.zen_enabled);
   }
 
-  async open(file_path: string): Promise<void> {
+  async #open(file_path: string): Promise<void> {
     try {
       await file.load(this.editor.buffer, file_path);
 
@@ -358,12 +352,12 @@ export class App extends Control {
       if (!not_found) {
         await this.alert.open(err);
 
-        this.exit();
+        this.#exit();
       }
     }
   }
 
-  async save(): Promise<boolean> {
+  async #save(): Promise<boolean> {
     if (this.#file_path) {
       return await this.#save_file();
     } else {
@@ -408,7 +402,7 @@ export class App extends Control {
     this.header.set_file_path(file_path);
   }
 
-  exit = (e?: PromiseRejectionEvent) => {
+  #exit = (e?: PromiseRejectionEvent) => {
     vt.restore();
 
     if (e) {
@@ -418,7 +412,7 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  set_colors(tokens: theme.Tokens): void {
+  #set_colors(tokens: theme.Tokens): void {
     set_alert_colors(tokens);
     set_ask_colors(tokens);
     set_editor_colors(tokens);
@@ -429,7 +423,7 @@ export class App extends Control {
     set_save_as_colors(tokens);
   }
 
-  enable_zen(enable: boolean): void {
+  #enable_zen(enable: boolean): void {
     this.zen_enabled = enable;
 
     this.header.enabled = !enable;
