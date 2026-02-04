@@ -185,6 +185,9 @@ export class App extends Control {
       case commands.ThemeSlate:
         this.#handleThemeSlate();
         break;
+      case commands.ThemeStone:
+        this.#handleThemeStone();
+        break;
     }
   }
 
@@ -299,6 +302,12 @@ export class App extends Control {
 
   #handleThemeSlate(): void {
     this.set_colors(theme.SLATE);
+
+    this.render();
+  }
+
+  #handleThemeStone(): void {
+    this.set_colors(theme.STONE);
 
     this.render();
   }
