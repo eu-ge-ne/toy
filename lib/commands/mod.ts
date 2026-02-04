@@ -2,3 +2,6 @@ export * from "./copy.ts";
 export * from "./cut.ts";
 export * from "./debug.ts";
 export * from "./exit.ts";
+export * from "./palette.ts";
+export * from "./paste.ts";
+export * from "./redo.ts";
