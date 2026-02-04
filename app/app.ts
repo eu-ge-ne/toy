@@ -11,9 +11,7 @@ import { Header, set_header_colors } from "@ui/header";
 import { Palette, set_palette_colors } from "@ui/palette";
 import { SaveAs, set_save_as_colors } from "@ui/save-as";
 
-import deno from "../deno.json" with { type: "json" };
 import * as cmd from "./commands/mod.ts";
-import { args } from "./args.ts";
 
 export class App extends Control {
   commands: cmd.Command[] = [
@@ -73,12 +71,7 @@ export class App extends Control {
     this.saveas = new SaveAs(this);
   }
 
-  async run(): Promise<void> {
-    if (args.version) {
-      console.log(`toy ${deno.version} (deno ${Deno.version.deno})`);
-      Deno.exit();
-    }
-
+  async run(fileName?: string): Promise<void> {
     this.editor.enabled = true;
     this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
     this.editor.on_render = (x) => this.debug.set_render_time(x);
@@ -93,8 +86,8 @@ export class App extends Control {
     this.set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
     this.enable_zen(true);
 
-    if (typeof args._[0] === "string") {
-      await this.open(args._[0]);
+    if (fileName) {
+      await this.open(fileName);
     }
 
     this.editor.reset(true);
