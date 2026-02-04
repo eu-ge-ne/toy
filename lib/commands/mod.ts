@@ -9,3 +9,4 @@ export * from "./save.ts";
 export * from "./select-all.ts";
 export * from "./theme-base16.ts";
 export * from "./theme-gray.ts";
+export * from "./theme-neutral.ts";
