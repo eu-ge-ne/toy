@@ -181,6 +181,9 @@ export class App extends Control {
       case commands.Save:
         await this.#handleSave();
         break;
+      case commands.SelectAll:
+        this.#handleSelectAll();
+        break;
     }
   }
 
@@ -260,6 +263,19 @@ export class App extends Control {
     this.editor.enabled = true;
 
     this.editor.render();
+  }
+
+  #handleSelectAll(): void {
+    if (this.editor.enabled) {
+      this.editor.cursor.set(0, 0, false);
+      this.editor.cursor.set(
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        true,
+      );
+
+      this.editor.render();
+    }
   }
 
   async open(file_path: string): Promise<void> {
