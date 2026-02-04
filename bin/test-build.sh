@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_V=$(deno ./etc/version.ts)
+APP_V=$(deno bin/version.ts)
 DENO_V=$(deno -v)
 EXPECTED="toy $APP_V ($DENO_V)"
 
