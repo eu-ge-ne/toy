@@ -14,3 +14,4 @@ export * from "./theme-slate.ts";
 export * from "./theme-stone.ts";
 export * from "./theme-zinc.ts";
 export * from "./undo.ts";
+export * from "./whitespace.ts";
