@@ -44,7 +44,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem ipsum");
    *
@@ -64,7 +64,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
    *
@@ -85,7 +85,7 @@ export class TextBuf {
    * @example
    *
    * ```ts
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem\nipsum");
    *
@@ -105,7 +105,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("0");
    *
@@ -131,7 +131,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem\nipsum");
    *
@@ -161,7 +161,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem\nipsum");
    *
@@ -188,7 +188,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf();
    *
@@ -272,7 +272,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf();
    *
@@ -300,7 +300,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf();
    *
@@ -323,7 +323,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf();
    *
@@ -351,7 +351,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem ipsum");
    *
@@ -422,7 +422,7 @@ export class TextBuf {
    *
    * ```ts
    * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@eu-ge-ne/text-buf";
+   * import { TextBuf } from "jsr:@lib/text-buf";
    *
    * const buf = new TextBuf("Lorem ipsum");
    *

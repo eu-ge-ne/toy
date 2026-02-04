@@ -29,9 +29,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: deno check --all --frozen --reload
-      - run: deno test --doc --coverage=tmp/cov/ --coverage-raw-data-only --junit-path=tmp/junit.xml
-      - run: deno coverage --lcov tmp/cov/ > tmp/lcov.info
+      - run: ./bin/test.sh
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
