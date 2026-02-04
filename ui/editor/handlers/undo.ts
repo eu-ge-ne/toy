@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { Key } from "@lib/kitty";
 
 import { EditorHandler } from "./handler.ts";
@@ -8,6 +9,6 @@ export class UndoHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    return this.editor.history.undo();
+    return this.editor.handleCommand(commands.Undo);
   }
 }
