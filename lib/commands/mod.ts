@@ -10,3 +10,6 @@ export * from "./select-all.ts";
 export * from "./theme-base16.ts";
 export * from "./theme-gray.ts";
 export * from "./theme-neutral.ts";
+export * from "./theme-slate.ts";
+export * from "./theme-stone.ts";
+export * from "./theme-zinc.ts";
