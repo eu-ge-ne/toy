@@ -5,3 +5,5 @@ export * from "./exit.ts";
 export * from "./palette.ts";
 export * from "./paste.ts";
 export * from "./redo.ts";
+export * from "./save.ts";
+export * from "./select-all.ts";
