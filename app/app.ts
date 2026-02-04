@@ -50,8 +50,8 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.#set_colors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
-    this.#enable_zen(true);
+    this.#setColors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
+    this.#enableZen(true);
 
     if (fileName) {
       await this.#open(fileName);
@@ -189,7 +189,6 @@ export class App extends Control {
 
   #handleDebug(): void {
     this.debug.enabled = !this.debug.enabled;
-
     this.editor.render();
   }
 
@@ -232,38 +231,37 @@ export class App extends Control {
   }
 
   #handleThemeBase16(): void {
-    this.#set_colors(theme.BASE16);
+    this.#setColors(theme.BASE16);
     this.render();
   }
 
   #handleThemeGray(): void {
-    this.#set_colors(theme.GRAY);
+    this.#setColors(theme.GRAY);
     this.render();
   }
 
   #handleThemeNeutral(): void {
-    this.#set_colors(theme.NEUTRAL);
+    this.#setColors(theme.NEUTRAL);
     this.render();
   }
 
   #handleThemeSlate(): void {
-    this.#set_colors(theme.SLATE);
+    this.#setColors(theme.SLATE);
     this.render();
   }
 
   #handleThemeStone(): void {
-    this.#set_colors(theme.STONE);
+    this.#setColors(theme.STONE);
     this.render();
   }
 
   #handleThemeZinc(): void {
-    this.#set_colors(theme.ZINC);
+    this.#setColors(theme.ZINC);
     this.render();
   }
 
   #handleWhitespace(): void {
     this.editor.whitespace_enabled = !this.editor.whitespace_enabled;
-
     this.editor.render();
   }
 
@@ -275,14 +273,14 @@ export class App extends Control {
   }
 
   #handleZen(): void {
-    this.#enable_zen(!this.zen_enabled);
+    this.#enableZen(!this.zen_enabled);
   }
 
   async #open(file_path: string): Promise<void> {
     try {
       await file.load(this.editor.buffer, file_path);
 
-      this.#set_file_path(file_path);
+      this.#setFilePath(file_path);
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
@@ -296,13 +294,13 @@ export class App extends Control {
 
   async #save(): Promise<boolean> {
     if (this.#file_path) {
-      return await this.#save_file();
+      return await this.#saveFile();
     } else {
-      return await this.#save_file_as();
+      return await this.#saveFileAs();
     }
   }
 
-  async #save_file(): Promise<boolean> {
+  async #saveFile(): Promise<boolean> {
     try {
       await file.save(this.editor.buffer, this.#file_path);
 
@@ -310,11 +308,11 @@ export class App extends Control {
     } catch (err) {
       await this.alert.open(err);
 
-      return await this.#save_file_as();
+      return await this.#saveFileAs();
     }
   }
 
-  async #save_file_as(): Promise<boolean> {
+  async #saveFileAs(): Promise<boolean> {
     while (true) {
       const file_path = await this.saveas.open(this.#file_path);
       if (!file_path) {
@@ -324,7 +322,7 @@ export class App extends Control {
       try {
         await file.save(this.editor.buffer, file_path);
 
-        this.#set_file_path(file_path);
+        this.#setFilePath(file_path);
 
         return true;
       } catch (err) {
@@ -333,7 +331,7 @@ export class App extends Control {
     }
   }
 
-  #set_file_path(file_path: string): void {
+  #setFilePath(file_path: string): void {
     this.#file_path = file_path;
 
     this.header.set_file_path(file_path);
@@ -349,7 +347,7 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  #set_colors(tokens: theme.Tokens): void {
+  #setColors(tokens: theme.Tokens): void {
     set_alert_colors(tokens);
     set_ask_colors(tokens);
     set_editor_colors(tokens);
@@ -360,7 +358,7 @@ export class App extends Control {
     set_save_as_colors(tokens);
   }
 
-  #enable_zen(enable: boolean): void {
+  #enableZen(enable: boolean): void {
     this.zen_enabled = enable;
 
     this.header.enabled = !enable;
