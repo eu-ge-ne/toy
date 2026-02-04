@@ -7,3 +7,4 @@ export * from "./paste.ts";
 export * from "./redo.ts";
 export * from "./save.ts";
 export * from "./select-all.ts";
+export * from "./theme-base16.ts";
