@@ -101,17 +101,6 @@ export class App extends Control {
     vt.sync.esu();
   }
 
-  set_colors(tokens: theme.Tokens): void {
-    set_alert_colors(tokens);
-    set_ask_colors(tokens);
-    set_editor_colors(tokens);
-    set_debug_colors(tokens);
-    set_footer_colors(tokens);
-    set_header_colors(tokens);
-    set_palette_colors(tokens);
-    set_save_as_colors(tokens);
-  }
-
   enable_zen(enable: boolean): void {
     this.zen_enabled = enable;
 
@@ -183,6 +172,12 @@ export class App extends Control {
         break;
       case commands.SelectAll:
         this.#handleSelectAll();
+        break;
+      case commands.ThemeBase16:
+        this.#handleThemeBase16();
+        break;
+      case commands.ThemeGray:
+        this.#handleThemeGray();
         break;
     }
   }
@@ -278,6 +273,18 @@ export class App extends Control {
     }
   }
 
+  #handleThemeBase16(): void {
+    this.set_colors(theme.BASE16);
+
+    this.render();
+  }
+
+  #handleThemeGray(): void {
+    this.set_colors(theme.GRAY);
+
+    this.render();
+  }
+
   async open(file_path: string): Promise<void> {
     try {
       await file.load(this.editor.buffer, file_path);
@@ -348,4 +355,15 @@ export class App extends Control {
 
     Deno.exit(0);
   };
+
+  set_colors(tokens: theme.Tokens): void {
+    set_alert_colors(tokens);
+    set_ask_colors(tokens);
+    set_editor_colors(tokens);
+    set_debug_colors(tokens);
+    set_footer_colors(tokens);
+    set_header_colors(tokens);
+    set_palette_colors(tokens);
+    set_save_as_colors(tokens);
+  }
 }
