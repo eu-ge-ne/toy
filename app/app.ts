@@ -60,7 +60,7 @@ export class App extends Control {
     this.editor.reset(true);
     this.editor.render();
 
-    await this.#process_input();
+    await this.#processInput();
   }
 
   override layout({ y, x, w, h }: Area): void {
@@ -108,7 +108,7 @@ export class App extends Control {
     vt.dummy_req();
   };
 
-  async #process_input(): Promise<void> {
+  async #processInput(): Promise<void> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
