@@ -101,19 +101,6 @@ export class App extends Control {
     vt.sync.esu();
   }
 
-  enable_zen(enable: boolean): void {
-    this.zen_enabled = enable;
-
-    this.header.enabled = !enable;
-    this.footer.enabled = !enable;
-    this.editor.index_enabled = !enable;
-
-    const { columns: w, rows: h } = Deno.consoleSize();
-    this.layout({ y: 0, x: 0, w, h });
-
-    this.render();
-  }
-
   #on_sigwinch = () => {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
@@ -193,6 +180,15 @@ export class App extends Control {
         break;
       case commands.Undo:
         this.#handleUndo();
+        break;
+      case commands.Whitespace:
+        this.#handleWhitespace();
+        break;
+      case commands.Wrap:
+        this.#handleWrap();
+        break;
+      case commands.Zen:
+        this.#handleZen();
         break;
     }
   }
@@ -334,6 +330,23 @@ export class App extends Control {
     }
   }
 
+  #handleWhitespace(): void {
+    this.editor.whitespace_enabled = !this.editor.whitespace_enabled;
+
+    this.editor.render();
+  }
+
+  #handleWrap(): void {
+    this.editor.wrap_enabled = !this.editor.wrap_enabled;
+    this.editor.cursor.home(false);
+
+    this.editor.render();
+  }
+
+  #handleZen(): void {
+    this.enable_zen(!this.zen_enabled);
+  }
+
   async open(file_path: string): Promise<void> {
     try {
       await file.load(this.editor.buffer, file_path);
@@ -414,5 +427,18 @@ export class App extends Control {
     set_header_colors(tokens);
     set_palette_colors(tokens);
     set_save_as_colors(tokens);
+  }
+
+  enable_zen(enable: boolean): void {
+    this.zen_enabled = enable;
+
+    this.header.enabled = !enable;
+    this.footer.enabled = !enable;
+    this.editor.index_enabled = !enable;
+
+    const { columns: w, rows: h } = Deno.consoleSize();
+    this.layout({ y: 0, x: 0, w, h });
+
+    this.render();
   }
 }
