@@ -191,6 +191,9 @@ export class App extends Control {
       case commands.ThemeZinc:
         this.#handleThemeZinc();
         break;
+      case commands.Undo:
+        this.#handleUndo();
+        break;
     }
   }
 
@@ -319,6 +322,16 @@ export class App extends Control {
     this.set_colors(theme.ZINC);
 
     this.render();
+  }
+
+  #handleUndo(): void {
+    if (!this.editor.enabled) {
+      return;
+    }
+
+    if (this.editor.history.undo()) {
+      this.editor.render();
+    }
   }
 
   async open(file_path: string): Promise<void> {
