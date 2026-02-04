@@ -101,7 +101,7 @@ export class Palette
             continue;
         }
 
-        if (this.#editor.handle_key(key)) {
+        if (this.#editor.handleKey(key)) {
           this.#filter();
           this.parent?.render();
         }

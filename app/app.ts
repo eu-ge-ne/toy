@@ -123,7 +123,7 @@ export class App extends Control {
         }
 
         if (this.editor.enabled) {
-          if (this.editor.handle_key(key)) {
+          if (this.editor.handleKey(key)) {
             this.editor.render();
           }
         }
@@ -134,10 +134,16 @@ export class App extends Control {
   async #handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd) {
       case commands.Copy:
-        this.#handleCopy();
-        break;
       case commands.Cut:
-        this.#handleCut();
+      case commands.Paste:
+      case commands.Undo:
+      case commands.Redo:
+      case commands.SelectAll:
+        if (this.editor.enabled) {
+          if (this.editor.handleCommand(cmd)) {
+            this.editor.render();
+          }
+        }
         break;
       case commands.Debug:
         this.#handleDebug();
@@ -148,17 +154,8 @@ export class App extends Control {
       case commands.Palette:
         await this.#handlePalette();
         break;
-      case commands.Paste:
-        this.#handlePaste();
-        break;
-      case commands.Redo:
-        this.#handleRedo();
-        break;
       case commands.Save:
         await this.#handleSave();
-        break;
-      case commands.SelectAll:
-        this.#handleSelectAll();
         break;
       case commands.ThemeBase16:
         this.#handleThemeBase16();
@@ -178,9 +175,6 @@ export class App extends Control {
       case commands.ThemeZinc:
         this.#handleThemeZinc();
         break;
-      case commands.Undo:
-        this.#handleUndo();
-        break;
       case commands.Whitespace:
         this.#handleWhitespace();
         break;
@@ -190,22 +184,6 @@ export class App extends Control {
       case commands.Zen:
         this.#handleZen();
         break;
-    }
-  }
-
-  #handleCopy(): void {
-    if (this.editor.enabled) {
-      if (this.editor.copy()) {
-        this.editor.render();
-      }
-    }
-  }
-
-  #handleCut(): void {
-    if (this.editor.enabled) {
-      if (this.editor.cut()) {
-        this.editor.render();
-      }
     }
   }
 
@@ -241,24 +219,6 @@ export class App extends Control {
     }
   }
 
-  #handlePaste(): void {
-    if (this.editor.enabled) {
-      if (this.editor.paste()) {
-        this.editor.render();
-      }
-    }
-  }
-
-  #handleRedo(): void {
-    if (!this.editor.enabled) {
-      return;
-    }
-
-    if (this.editor.history.redo()) {
-      this.editor.render();
-    }
-  }
-
   async #handleSave(): Promise<void> {
     this.editor.enabled = false;
 
@@ -269,19 +229,6 @@ export class App extends Control {
     this.editor.enabled = true;
 
     this.editor.render();
-  }
-
-  #handleSelectAll(): void {
-    if (this.editor.enabled) {
-      this.editor.cursor.set(0, 0, false);
-      this.editor.cursor.set(
-        Number.MAX_SAFE_INTEGER,
-        Number.MAX_SAFE_INTEGER,
-        true,
-      );
-
-      this.editor.render();
-    }
   }
 
   #handleThemeBase16(): void {
@@ -312,16 +259,6 @@ export class App extends Control {
   #handleThemeZinc(): void {
     this.#set_colors(theme.ZINC);
     this.render();
-  }
-
-  #handleUndo(): void {
-    if (!this.editor.enabled) {
-      return;
-    }
-
-    if (this.editor.history.undo()) {
-      this.editor.render();
-    }
   }
 
   #handleWhitespace(): void {

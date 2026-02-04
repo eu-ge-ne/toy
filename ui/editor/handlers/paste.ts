@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { Key } from "@lib/kitty";
 
 import { EditorHandler } from "./handler.ts";
@@ -8,6 +9,6 @@ export class PasteHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    return this.editor.paste();
+    return this.editor.handleCommand(commands.Paste);
   }
 }

@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { Cursor } from "@lib/cursor";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
@@ -7,8 +8,8 @@ import { range, sum } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as keys from "./handlers/mod.ts";
 import * as colors from "./colors.ts";
+import * as keys from "./handlers/mod.ts";
 
 interface EditorOptions {
   multi_line: boolean;
@@ -79,7 +80,7 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_key(key: Key): boolean {
+  handleKey(key: Key): boolean {
     const t0 = performance.now();
 
     const handler = this.#handlers.find((x) => x.match(key));
@@ -89,6 +90,26 @@ export class Editor extends Control {
     this.on_input_handled?.(t1 - t0);
 
     return r;
+  }
+
+  handleCommand(cmd: commands.Command): boolean {
+    switch (cmd) {
+      case commands.Copy:
+        return this.#handleCopy();
+      case commands.Cut:
+        return this.#handleCut();
+      case commands.Paste:
+        return this.#handlePaste();
+      case commands.Undo:
+        return this.#handleUndo();
+      case commands.Redo:
+        return this.#handleRedo();
+      case commands.SelectAll:
+        this.#handleSelectAll();
+        break;
+    }
+
+    return false;
   }
 
   #sgr = new Intl.Segmenter();
@@ -162,7 +183,7 @@ export class Editor extends Control {
     history.push();
   }
 
-  copy(): boolean {
+  #handleCopy(): boolean {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
@@ -184,7 +205,7 @@ export class Editor extends Control {
     return false;
   }
 
-  cut(): boolean {
+  #handleCut(): boolean {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
@@ -208,13 +229,31 @@ export class Editor extends Control {
     return true;
   }
 
-  paste(): boolean {
+  #handlePaste(): boolean {
     if (!this.clipboard) {
       return false;
     }
 
     this.insert(this.clipboard);
 
+    return true;
+  }
+
+  #handleUndo(): boolean {
+    return this.history.undo();
+  }
+
+  #handleRedo(): boolean {
+    return this.history.redo();
+  }
+
+  #handleSelectAll(): boolean {
+    this.cursor.set(0, 0, false);
+    this.cursor.set(
+      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER,
+      true,
+    );
     return true;
   }
 
