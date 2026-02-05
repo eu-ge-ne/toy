@@ -10,27 +10,26 @@ const MAX_LIST_SIZE = 10;
 
 export class Palette extends Modal<[], commands.Command | undefined> {
   #options: Option[] = [
-    new Option(commands.Copy),
-    new Option(commands.Cut),
-    new Option(commands.Debug),
-    new Option(commands.Exit),
-    new Option(commands.Palette),
-    new Option(commands.Paste),
-    new Option(commands.Paste),
-    new Option(commands.Redo),
-    new Option(commands.Save),
-    new Option(commands.SelectAll),
-    new Option(commands.ThemeBase16),
-    new Option(commands.ThemeGray),
-    new Option(commands.ThemeNeutral),
-    new Option(commands.ThemeSlate),
-    new Option(commands.ThemeStone),
-    new Option(commands.ThemeZinc),
-    new Option(commands.Undo),
-    new Option(commands.Whitespace),
-    new Option(commands.Wrap),
-    new Option(commands.Zen),
-  ].sort((a, b) => a.command.description.localeCompare(b.command.description));
+    new Option("Edit: Copy", commands.Copy),
+    new Option("Edit: Cut", commands.Cut),
+    new Option("Global: Toggle Debug Panel", commands.Debug),
+    new Option("Global: Exit", commands.Exit),
+    new Option("Global: Open Palette", commands.Palette),
+    new Option("Edit: Paste", commands.Paste),
+    new Option("Edit: Redo", commands.Redo),
+    new Option("Global: Save", commands.Save),
+    new Option("Edit: Select All", commands.SelectAll),
+    new Option("Theme: Base16", commands.ThemeBase16),
+    new Option("Theme: Gray", commands.ThemeGray),
+    new Option("Theme: Neutral", commands.ThemeNeutral),
+    new Option("Theme: Slate", commands.ThemeSlate),
+    new Option("Theme: Stone", commands.ThemeStone),
+    new Option("Theme: Zinc", commands.ThemeZinc),
+    new Option("Edit: Undo", commands.Undo),
+    new Option("View: Toggle Render Whitespace", commands.Whitespace),
+    new Option("View: Toggle Line Wrap", commands.Wrap),
+    new Option("Global: Toggle Zen Mode", commands.Zen),
+  ].sort((a, b) => a.name.localeCompare(b.name));
 
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
@@ -136,7 +135,7 @@ export class Palette extends Modal<[], commands.Command | undefined> {
       this.#filtered_options = this.#options;
     } else {
       this.#filtered_options = this.#options.filter((x) =>
-        x.command.description.toUpperCase().includes(text)
+        x.name.toUpperCase().includes(text)
       );
     }
 
@@ -205,7 +204,7 @@ export class Palette extends Modal<[], commands.Command | undefined> {
         index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
       );
       vt.cursor.set(vt.buf, y, this.x + 2);
-      vt.write_text(vt.buf, span, option.command.description);
+      vt.write_text(vt.buf, span, option.name);
       vt.write_text(vt.buf, span, option.shortcuts.padStart(span[0]));
 
       i += 1;
