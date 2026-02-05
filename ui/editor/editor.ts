@@ -81,6 +81,10 @@ export class Editor extends Control {
   }
 
   handleKey(key: Key): boolean {
+    if (!this.enabled) {
+      return false;
+    }
+
     const t0 = performance.now();
 
     const handler = this.#handlers.find((x) => x.match(key));
@@ -93,6 +97,10 @@ export class Editor extends Control {
   }
 
   handleCommand(cmd: commands.Command): boolean {
+    if (!this.enabled) {
+      return false;
+    }
+
     switch (cmd) {
       case commands.Copy:
         return this.#handleCopy();

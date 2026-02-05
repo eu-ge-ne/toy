@@ -122,10 +122,8 @@ export class App extends Control {
           continue;
         }
 
-        if (this.editor.enabled) {
-          if (this.editor.handleKey(key)) {
-            this.editor.render();
-          }
+        if (this.editor.handleKey(key)) {
+          this.editor.render();
         }
       }
     }
@@ -173,10 +171,8 @@ export class App extends Control {
         this.#handleZen();
         break;
       default:
-        if (this.editor.enabled) {
-          if (this.editor.handleCommand(cmd)) {
-            this.editor.render();
-          }
+        if (this.editor.handleCommand(cmd)) {
+          this.editor.render();
         }
     }
   }
