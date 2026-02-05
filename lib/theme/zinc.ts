@@ -1,6 +1,6 @@
 import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
-import { Tokens } from "./tokens.ts";
+import { Theme } from "./tokens.ts";
 
 const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
@@ -20,7 +20,7 @@ const zinc: Record<number, RGBColor> = {
   950: [0x09, 0x09, 0x0b],
 };
 
-export const ZINC: Tokens = {
+export const ZINC: Theme = {
   bg_danger: char_bg(red[900]!),
   bg_main: char_bg(zinc[900]!),
   fg_main: char_fg(zinc[900]!),

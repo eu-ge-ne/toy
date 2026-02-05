@@ -336,7 +336,7 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  #setColors(tokens: theme.Tokens): void {
+  #setColors(tokens: theme.Theme): void {
     set_alert_colors(tokens);
     set_ask_colors(tokens);
     set_editor_colors(tokens);

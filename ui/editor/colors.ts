@@ -1,4 +1,4 @@
-import { Tokens } from "@lib/theme";
+import { Theme } from "@lib/theme";
 
 export let BACKGROUND: Uint8Array;
 export let INDEX: Uint8Array;
@@ -15,7 +15,7 @@ export const enum CharColor {
   EmptySelected,
 }
 
-export function set_editor_colors(t: Tokens): void {
+export function set_editor_colors(t: Theme): void {
   BACKGROUND = t.bg_main;
   INDEX = new Uint8Array([...t.bg_light0, ...t.fg_dark0]);
   VOID = t.bg_dark0;
