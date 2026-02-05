@@ -4,18 +4,38 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 import * as colors from "./colors.ts";
-import { PaletteOption } from "./option.ts";
+import { Option } from "./option.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette
-  extends Modal<[PaletteOption[]], commands.Command | undefined> {
-  #options: PaletteOption[] = commands.All.map((x) => new PaletteOption(x));
+export class Palette extends Modal<[], commands.Command | undefined> {
+  #options: Option[] = [
+    new Option(commands.Copy),
+    new Option(commands.Cut),
+    new Option(commands.Debug),
+    new Option(commands.Exit),
+    new Option(commands.Palette),
+    new Option(commands.Paste),
+    new Option(commands.Paste),
+    new Option(commands.Redo),
+    new Option(commands.Save),
+    new Option(commands.SelectAll),
+    new Option(commands.ThemeBase16),
+    new Option(commands.ThemeGray),
+    new Option(commands.ThemeNeutral),
+    new Option(commands.ThemeSlate),
+    new Option(commands.ThemeStone),
+    new Option(commands.ThemeZinc),
+    new Option(commands.Undo),
+    new Option(commands.Whitespace),
+    new Option(commands.Wrap),
+    new Option(commands.Zen),
+  ].sort((a, b) => a.command.description.localeCompare(b.command.description));
 
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
-  #filtered_options: PaletteOption[] = [];
+  #filtered_options: Option[] = [];
   #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;

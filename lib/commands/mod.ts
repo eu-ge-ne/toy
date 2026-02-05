@@ -1,9 +1,10 @@
 import { Key } from "@lib/kitty";
 
-export interface Command {
+export interface Command<T = void> {
   id: string;
   description: string;
   keys: Key[];
+  data: T;
 }
 
 export const Copy: Command = {
@@ -13,6 +14,7 @@ export const Copy: Command = {
     Key.create({ name: "c", ctrl: true }),
     Key.create({ name: "c", super: true }),
   ],
+  data: undefined,
 };
 
 export const Cut: Command = {
@@ -22,12 +24,14 @@ export const Cut: Command = {
     Key.create({ name: "x", ctrl: true }),
     Key.create({ name: "x", super: true }),
   ],
+  data: undefined,
 };
 
 export const Debug: Command = {
   id: "Debug",
   description: "Global: Toggle Debug Panel",
   keys: [],
+  data: undefined,
 };
 
 export const Exit: Command = {
@@ -36,6 +40,7 @@ export const Exit: Command = {
   keys: [
     Key.create({ name: "F10" }),
   ],
+  data: undefined,
 };
 
 export const Palette: Command = {
@@ -48,6 +53,7 @@ export const Palette: Command = {
     Key.create({ name: "F1", alt: true }),
     Key.create({ name: "F1", super: true }),
   ],
+  data: undefined,
 };
 
 export const Paste: Command = {
@@ -57,6 +63,7 @@ export const Paste: Command = {
     Key.create({ name: "v", ctrl: true }),
     Key.create({ name: "v", super: true }),
   ],
+  data: undefined,
 };
 
 export const Redo: Command = {
@@ -66,6 +73,7 @@ export const Redo: Command = {
     Key.create({ name: "y", ctrl: true }),
     Key.create({ name: "y", super: true }),
   ],
+  data: undefined,
 };
 
 export const Save: Command = {
@@ -74,6 +82,7 @@ export const Save: Command = {
   keys: [
     Key.create({ name: "F2" }),
   ],
+  data: undefined,
 };
 
 export const SelectAll: Command = {
@@ -83,42 +92,49 @@ export const SelectAll: Command = {
     Key.create({ name: "a", ctrl: true }),
     Key.create({ name: "a", super: true }),
   ],
+  data: undefined,
 };
 
 export const ThemeBase16: Command = {
   id: "Theme Base16",
   description: "Theme: Base16",
   keys: [],
+  data: undefined,
 };
 
 export const ThemeGray: Command = {
   id: "Theme Gray",
   description: "Theme: Gray",
   keys: [],
+  data: undefined,
 };
 
 export const ThemeNeutral: Command = {
   id: "Theme Neutral",
   description: "Theme: Neutral",
   keys: [],
+  data: undefined,
 };
 
 export const ThemeSlate: Command = {
   id: "Theme Slate",
   description: "Theme: Slate",
   keys: [],
+  data: undefined,
 };
 
 export const ThemeStone: Command = {
   id: "Theme Stone",
   description: "Theme: Stone",
   keys: [],
+  data: undefined,
 };
 
 export const ThemeZinc: Command = {
   id: "Theme Zinc",
   description: "Theme: Zinc",
   keys: [],
+  data: undefined,
 };
 
 export const Undo: Command = {
@@ -128,6 +144,7 @@ export const Undo: Command = {
     Key.create({ name: "z", ctrl: true }),
     Key.create({ name: "z", super: true }),
   ],
+  data: undefined,
 };
 
 export const Whitespace: Command = {
@@ -136,6 +153,7 @@ export const Whitespace: Command = {
   keys: [
     Key.create({ name: "F5" }),
   ],
+  data: undefined,
 };
 
 export const Wrap: Command = {
@@ -144,6 +162,7 @@ export const Wrap: Command = {
   keys: [
     Key.create({ name: "F6" }),
   ],
+  data: undefined,
 };
 
 export const Zen: Command = {
@@ -152,6 +171,7 @@ export const Zen: Command = {
   keys: [
     Key.create({ name: "F11" }),
   ],
+  data: undefined,
 };
 
 export const All: Command[] = [

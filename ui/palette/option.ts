@@ -1,7 +1,7 @@
 import { Command } from "@lib/commands";
 import { shortcut } from "@lib/kitty";
 
-export class PaletteOption {
+export class Option {
   shortcuts: string;
 
   constructor(public command: Command) {
