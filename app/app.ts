@@ -133,18 +133,6 @@ export class App extends Control {
 
   async #handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd) {
-      case commands.Copy:
-      case commands.Cut:
-      case commands.Paste:
-      case commands.Undo:
-      case commands.Redo:
-      case commands.SelectAll:
-        if (this.editor.enabled) {
-          if (this.editor.handleCommand(cmd)) {
-            this.editor.render();
-          }
-        }
-        break;
       case commands.Debug:
         this.#handleDebug();
         break;
@@ -184,6 +172,12 @@ export class App extends Control {
       case commands.Zen:
         this.#handleZen();
         break;
+      default:
+        if (this.editor.enabled) {
+          if (this.editor.handleCommand(cmd)) {
+            this.editor.render();
+          }
+        }
     }
   }
 

@@ -105,8 +105,7 @@ export class Editor extends Control {
       case commands.Redo:
         return this.#handleRedo();
       case commands.SelectAll:
-        this.#handleSelectAll();
-        break;
+        return this.#handleSelectAll();
     }
 
     return false;
