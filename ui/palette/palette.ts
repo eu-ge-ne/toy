@@ -18,7 +18,6 @@ export class Palette extends Modal<[], commands.Command | undefined> {
     new Option("Edit: Paste", commands.Paste),
     new Option("Edit: Redo", commands.Redo),
     new Option("Global: Save", commands.Save),
-    new Option("Edit: Select All", commands.SelectAll),
     new Option("Theme: Base16", commands.ThemeBase16),
     new Option("Theme: Gray", commands.ThemeGray),
     new Option("Theme: Neutral", commands.ThemeNeutral),
