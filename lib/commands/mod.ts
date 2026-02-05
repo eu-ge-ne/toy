@@ -194,4 +194,4 @@ export const All: Command[] = [
   Whitespace,
   Wrap,
   Zen,
-].sort((a, b) => a.description.localeCompare(b.description));
+];
