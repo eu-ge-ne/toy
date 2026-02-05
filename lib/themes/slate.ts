@@ -1,6 +1,6 @@
 import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
-import { Theme } from "./tokens.ts";
+import { Theme } from "./theme.ts";
 
 const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
@@ -20,7 +20,7 @@ const slate: Record<number, RGBColor> = {
   950: [0x02, 0x06, 0x17],
 };
 
-export const SLATE: Theme = {
+export const SlateTheme: Theme = {
   bg_danger: char_bg(red[900]!),
   bg_main: char_bg(slate[900]!),
   fg_main: char_fg(slate[900]!),

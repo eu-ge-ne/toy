@@ -1,8 +1,8 @@
 import { char_attrs, CharAttr } from "@lib/vt";
 
-import { Theme } from "./tokens.ts";
+import { Theme } from "./theme.ts";
 
-export const BASE16: Theme = {
+export const Base16Theme: Theme = {
   bg_danger: char_attrs(CharAttr.BgRed),
   bg_main: char_attrs(CharAttr.BgBlack),
   fg_main: char_attrs(CharAttr.FgBlack),

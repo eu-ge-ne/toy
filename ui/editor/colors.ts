@@ -1,4 +1,4 @@
-import { Theme } from "@lib/theme";
+import { Theme } from "@lib/themes";
 
 export let BACKGROUND: Uint8Array;
 export let INDEX: Uint8Array;

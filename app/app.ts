@@ -1,6 +1,6 @@
 import * as commands from "@lib/commands";
 import * as file from "@lib/file";
-import * as theme from "@lib/theme";
+import { Theme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert, set_alert_colors } from "@ui/alert";
@@ -50,7 +50,7 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.#setColors(vt.TRUECOLOR ? theme.NEUTRAL : theme.BASE16);
+    this.#setColors(vt.TRUECOLOR ? Themes.Neutral : Themes.Base16);
     this.#enableZen(true);
 
     if (fileName) {
@@ -220,32 +220,32 @@ export class App extends Control {
   }
 
   #handleThemeBase16(): void {
-    this.#setColors(theme.BASE16);
+    this.#setColors(Themes.Base16);
     this.render();
   }
 
   #handleThemeGray(): void {
-    this.#setColors(theme.GRAY);
+    this.#setColors(Themes.Gray);
     this.render();
   }
 
   #handleThemeNeutral(): void {
-    this.#setColors(theme.NEUTRAL);
+    this.#setColors(Themes.Neutral);
     this.render();
   }
 
   #handleThemeSlate(): void {
-    this.#setColors(theme.SLATE);
+    this.#setColors(Themes.Slate);
     this.render();
   }
 
   #handleThemeStone(): void {
-    this.#setColors(theme.STONE);
+    this.#setColors(Themes.Stone);
     this.render();
   }
 
   #handleThemeZinc(): void {
-    this.#setColors(theme.ZINC);
+    this.#setColors(Themes.Zinc);
     this.render();
   }
 
@@ -336,7 +336,7 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  #setColors(tokens: theme.Theme): void {
+  #setColors(tokens: Theme): void {
     set_alert_colors(tokens);
     set_ask_colors(tokens);
     set_editor_colors(tokens);
