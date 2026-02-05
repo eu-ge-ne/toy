@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
@@ -55,5 +56,9 @@ export class Footer extends Control {
     this.#cursor_status = `${ln} ${col}  ${pct}% `;
 
     this.render();
+  }
+
+  async handleCommand(_: commands.Command): Promise<boolean> {
+    return false;
   }
 }

@@ -96,24 +96,24 @@ export class Editor extends Control {
     return r;
   }
 
-  handleCommand(cmd: commands.Command): boolean {
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
     if (!this.enabled) {
       return false;
     }
 
     switch (cmd) {
       case commands.Copy:
-        return this.#handleCopy();
+        return this.copy();
       case commands.Cut:
-        return this.#handleCut();
+        return this.cut();
       case commands.Paste:
-        return this.#handlePaste();
+        return this.paste();
       case commands.Undo:
-        return this.#handleUndo();
+        return this.undo();
       case commands.Redo:
-        return this.#handleRedo();
+        return this.redo();
       case commands.SelectAll:
-        return this.#handleSelectAll();
+        return this.selectAll();
     }
 
     return false;
@@ -190,7 +190,7 @@ export class Editor extends Control {
     history.push();
   }
 
-  #handleCopy(): boolean {
+  copy(): boolean {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
@@ -212,7 +212,7 @@ export class Editor extends Control {
     return false;
   }
 
-  #handleCut(): boolean {
+  cut(): boolean {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
@@ -236,7 +236,7 @@ export class Editor extends Control {
     return true;
   }
 
-  #handlePaste(): boolean {
+  paste(): boolean {
     if (!this.clipboard) {
       return false;
     }
@@ -246,15 +246,15 @@ export class Editor extends Control {
     return true;
   }
 
-  #handleUndo(): boolean {
+  undo(): boolean {
     return this.history.undo();
   }
 
-  #handleRedo(): boolean {
+  redo(): boolean {
     return this.history.redo();
   }
 
-  #handleSelectAll(): boolean {
+  selectAll(): boolean {
     this.cursor.set(0, 0, false);
     this.cursor.set(
       Number.MAX_SAFE_INTEGER,

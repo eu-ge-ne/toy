@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -71,5 +72,14 @@ export class Debug extends Control {
 
       this.render();
     }
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    if (cmd === commands.Debug) {
+      this.enabled = !this.enabled;
+      return true;
+    }
+
+    return false;
   }
 }

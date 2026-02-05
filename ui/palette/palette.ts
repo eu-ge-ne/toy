@@ -212,4 +212,8 @@ export class Palette extends Modal<[], commands.Command | undefined> {
       y += 1;
     }
   }
+
+  async handleCommand(_: commands.Command): Promise<boolean> {
+    return false;
+  }
 }

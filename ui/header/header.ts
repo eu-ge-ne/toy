@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -55,5 +56,9 @@ export class Header extends Control {
     this.#flag = x;
 
     this.render();
+  }
+
+  async handleCommand(_: commands.Command): Promise<boolean> {
+    return false;
   }
 }

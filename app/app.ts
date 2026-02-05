@@ -118,7 +118,7 @@ export class App extends Control {
 
         const cmd = commands.All.find((x) => x.keys.some((y) => y.equal(key)));
         if (cmd) {
-          await this.#handleCommand(cmd);
+          await this.handleCommand(cmd);
           continue;
         }
 
@@ -129,11 +129,8 @@ export class App extends Control {
     }
   }
 
-  async #handleCommand(cmd: commands.Command): Promise<void> {
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd) {
-      case commands.Debug:
-        this.#handleDebug();
-        break;
       case commands.Exit:
         await this.#handleExit();
         break;
@@ -171,15 +168,17 @@ export class App extends Control {
         this.#handleZen();
         break;
       default:
-        if (this.editor.handleCommand(cmd)) {
+        if (await this.debug.handleCommand(cmd)) {
           this.editor.render();
+          return true;
+        }
+        if (await this.editor.handleCommand(cmd)) {
+          this.editor.render();
+          return true;
         }
     }
-  }
 
-  #handleDebug(): void {
-    this.debug.enabled = !this.debug.enabled;
-    this.editor.render();
+    return false;
   }
 
   async #handleExit(): Promise<void> {
@@ -204,7 +203,7 @@ export class App extends Control {
     this.editor.render();
 
     if (cmd) {
-      await this.#handleCommand(cmd);
+      await this.handleCommand(cmd);
     }
   }
 

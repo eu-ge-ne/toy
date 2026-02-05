@@ -1,3 +1,4 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -79,5 +80,9 @@ export class Ask extends Modal<[string], boolean> {
         }
       }
     }
+  }
+
+  async handleCommand(_: commands.Command): Promise<boolean> {
+    return false;
   }
 }

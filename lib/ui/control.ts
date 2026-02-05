@@ -1,3 +1,5 @@
+import * as commands from "@lib/commands";
+
 import { Area } from "./area.ts";
 
 export abstract class Control {
@@ -14,4 +16,6 @@ export abstract class Control {
   abstract layout(_: Area): void;
 
   abstract render(): void;
+
+  abstract handleCommand(cmd: commands.Command): Promise<boolean>;
 }
