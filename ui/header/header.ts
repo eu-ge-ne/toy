@@ -7,6 +7,7 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Header extends Control {
+  #enabled = false;
   #zen = true;
   #file_path = "";
   #flag = false;
@@ -25,7 +26,7 @@ export class Header extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -84,6 +85,6 @@ export class Header extends Control {
       x = !this.#zen;
     }
     this.#zen = x;
-    this.enabled = !x;
+    this.#enabled = !x;
   }
 }

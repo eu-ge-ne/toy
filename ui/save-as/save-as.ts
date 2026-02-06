@@ -8,13 +8,14 @@ import { Editor } from "@ui/editor";
 import * as colors from "./colors.ts";
 
 export class SaveAs extends Modal<[string], string> {
+  #enabled = false;
   #editor = new Editor(this, { multi_line: false });
 
   async open(path: string): Promise<string> {
     const { buffer } = this.#editor;
 
-    this.enabled = true;
-    this.#editor.enabled = true;
+    this.#enabled = true;
+    this.#editor.enable(true);
 
     buffer.reset(path);
     this.#editor.reset(true);
@@ -23,8 +24,8 @@ export class SaveAs extends Modal<[string], string> {
 
     const result = await this.#process_input();
 
-    this.enabled = false;
-    this.#editor.enabled = false;
+    this.#enabled = false;
+    this.#editor.enable(false);
 
     return result;
   }
@@ -45,7 +46,7 @@ export class SaveAs extends Modal<[string], string> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 

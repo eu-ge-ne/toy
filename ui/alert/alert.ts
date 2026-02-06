@@ -7,17 +7,18 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Alert extends Modal<[unknown], void> {
+  #enabled = false;
   #text = "";
 
   async open(err: unknown): Promise<void> {
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
 
-    this.enabled = true;
+    this.#enabled = true;
 
     this.render();
     await this.#process_input();
 
-    this.enabled = false;
+    this.#enabled = false;
   }
 
   layout({ y, x, w, h }: Area): void {
@@ -29,7 +30,7 @@ export class Alert extends Modal<[unknown], void> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 

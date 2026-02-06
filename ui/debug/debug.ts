@@ -9,6 +9,7 @@ import * as colors from "./colors.ts";
 const MIB = Math.pow(1024, 2);
 
 export class Debug extends Control {
+  #enabled = false;
   #input_time = "0";
   #render_time = "0";
 
@@ -21,7 +22,7 @@ export class Debug extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -60,7 +61,7 @@ export class Debug extends Control {
   }
 
   set_input_time(x: number): void {
-    if (this.enabled) {
+    if (this.#enabled) {
       this.#input_time = x.toFixed(1);
 
       this.render();
@@ -68,7 +69,7 @@ export class Debug extends Control {
   }
 
   set_render_time(x: number): void {
-    if (this.enabled) {
+    if (this.#enabled) {
       this.#render_time = x.toFixed(1);
 
       this.render();
@@ -80,10 +81,12 @@ export class Debug extends Control {
       case "Theme":
         colors.setDebugColors(Themes[command.data]);
         return true;
+
       case "Debug":
-        this.enabled = !this.enabled;
+        this.#enabled = !this.#enabled;
         return true;
     }
+
     return false;
   }
 }

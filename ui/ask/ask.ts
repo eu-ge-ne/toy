@@ -7,17 +7,18 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Ask extends Modal<[string], boolean> {
+  #enabled = false;
   #text = "";
 
   async open(text: string): Promise<boolean> {
     this.#text = text;
 
-    this.enabled = true;
+    this.#enabled = true;
 
     this.render();
     const result = await this.#process_input();
 
-    this.enabled = false;
+    this.#enabled = false;
 
     return result;
   }
@@ -31,7 +32,7 @@ export class Ask extends Modal<[string], boolean> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 

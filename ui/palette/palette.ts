@@ -10,6 +10,7 @@ import { Option, options } from "./options.ts";
 const MAX_LIST_SIZE = 10;
 
 export class Palette extends Modal<[], Command | undefined> {
+  #enabled = false;
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
@@ -23,8 +24,8 @@ export class Palette extends Modal<[], Command | undefined> {
   }
 
   async open(): Promise<Command | undefined> {
-    this.enabled = true;
-    this.#editor.enabled = true;
+    this.#enabled = true;
+    this.#editor.enable(true);
 
     this.#editor.buffer.reset();
     this.#editor.reset(false);
@@ -34,8 +35,8 @@ export class Palette extends Modal<[], Command | undefined> {
 
     const command = await this.#process_input();
 
-    this.enabled = false;
-    this.#editor.enabled = false;
+    this.#enabled = false;
+    this.#editor.enable(false);
 
     return command;
   }
@@ -45,7 +46,7 @@ export class Palette extends Modal<[], Command | undefined> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 

@@ -9,6 +9,7 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Footer extends Control {
+  #enabled = false;
   #zen = true;
   #cursor_status = "";
 
@@ -26,7 +27,7 @@ export class Footer extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -50,7 +51,7 @@ export class Footer extends Control {
   }
 
   set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -84,6 +85,6 @@ export class Footer extends Control {
       x = !this.#zen;
     }
     this.#zen = x;
-    this.enabled = !x;
+    this.#enabled = !x;
   }
 }

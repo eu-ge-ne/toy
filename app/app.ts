@@ -37,7 +37,7 @@ export class App extends Control {
   }
 
   async run(fileName?: string): Promise<void> {
-    this.editor.enabled = true;
+    this.editor.enable(true);
     this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
     this.editor.on_render = (x) => this.debug.set_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
@@ -158,7 +158,7 @@ export class App extends Control {
   }
 
   async #handleExit(): Promise<void> {
-    this.editor.enabled = false;
+    this.editor.enable(false);
 
     if (!this.editor.history.is_empty) {
       if (await this.ask.open("Save changes?")) {
@@ -170,11 +170,11 @@ export class App extends Control {
   }
 
   async #handlePalette(): Promise<void> {
-    this.editor.enabled = false;
+    this.editor.enable(false);
 
     const command = await this.palette.open();
 
-    this.editor.enabled = true;
+    this.editor.enable(true);
 
     this.editor.render();
 
@@ -184,13 +184,13 @@ export class App extends Control {
   }
 
   async #handleSave(): Promise<void> {
-    this.editor.enabled = false;
+    this.editor.enable(false);
 
     if (await this.#save()) {
       this.editor.reset(false);
     }
 
-    this.editor.enabled = true;
+    this.editor.enable(true);
 
     this.editor.render();
   }

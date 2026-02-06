@@ -3,8 +3,6 @@ import * as commands from "@lib/commands";
 import { Area } from "./area.ts";
 
 export abstract class Control {
-  enabled = false;
-
   y = 0;
   x = 0;
   w = 0;

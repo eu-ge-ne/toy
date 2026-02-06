@@ -17,6 +17,7 @@ interface EditorOptions {
 }
 
 export class Editor extends Control {
+  #enabled = false;
   #zen = true;
 
   #handlers: keys.EditorHandler[] = [
@@ -91,7 +92,7 @@ export class Editor extends Control {
   }
 
   handleKey(key: Key): boolean {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return false;
     }
 
@@ -107,7 +108,7 @@ export class Editor extends Control {
   }
 
   async handleCommand(command: Command): Promise<boolean> {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return false;
     }
 
@@ -304,7 +305,6 @@ export class Editor extends Control {
       y,
       x,
       w,
-      enabled,
       wrap_enabled,
       index_enabled,
       buffer: { line_count },
@@ -335,7 +335,7 @@ export class Editor extends Control {
       this.#render_lines();
     }
 
-    if (enabled) {
+    if (this.#enabled) {
       vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
     } else {
       vt.buf.write(vt.cursor.restore);
@@ -517,5 +517,9 @@ export class Editor extends Control {
     }
     this.#zen = x;
     this.index_enabled = !x;
+  }
+
+  enable(x: boolean): void {
+    this.#enabled = x;
   }
 }
