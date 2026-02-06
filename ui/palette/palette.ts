@@ -4,32 +4,11 @@ import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 import * as colors from "./colors.ts";
-import { Option } from "./option.ts";
+import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
 export class Palette extends Modal<[], commands.Command | undefined> {
-  #options: Option[] = [
-    new Option("Edit: Copy", commands.Copy),
-    new Option("Edit: Cut", commands.Cut),
-    new Option("Global: Toggle Debug Panel", commands.Debug),
-    new Option("Global: Exit", commands.Exit),
-    new Option("Global: Open Palette", commands.Palette),
-    new Option("Edit: Paste", commands.Paste),
-    new Option("Edit: Redo", commands.Redo),
-    new Option("Global: Save", commands.Save),
-    new Option("Theme: Base16", commands.ThemeBase16),
-    new Option("Theme: Gray", commands.ThemeGray),
-    new Option("Theme: Neutral", commands.ThemeNeutral),
-    new Option("Theme: Slate", commands.ThemeSlate),
-    new Option("Theme: Stone", commands.ThemeStone),
-    new Option("Theme: Zinc", commands.ThemeZinc),
-    new Option("Edit: Undo", commands.Undo),
-    new Option("View: Toggle Render Whitespace", commands.Whitespace),
-    new Option("View: Toggle Line Wrap", commands.Wrap),
-    new Option("Global: Toggle Zen Mode", commands.Zen),
-  ].sort((a, b) => a.name.localeCompare(b.name));
-
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
@@ -131,9 +110,9 @@ export class Palette extends Modal<[], commands.Command | undefined> {
     const text = this.#editor.buffer.text().toUpperCase();
 
     if (!text) {
-      this.#filtered_options = this.#options;
+      this.#filtered_options = options;
     } else {
-      this.#filtered_options = this.#options.filter((x) =>
+      this.#filtered_options = options.filter((x) =>
         x.name.toUpperCase().includes(text)
       );
     }
@@ -204,7 +183,11 @@ export class Palette extends Modal<[], commands.Command | undefined> {
       );
       vt.cursor.set(vt.buf, y, this.x + 2);
       vt.write_text(vt.buf, span, option.name);
-      vt.write_text(vt.buf, span, option.shortcuts.padStart(span[0]));
+      vt.write_text(
+        vt.buf,
+        span,
+        (option.shortcuts ?? []).join(" ").padStart(span[0]),
+      );
 
       i += 1;
       y += 1;
