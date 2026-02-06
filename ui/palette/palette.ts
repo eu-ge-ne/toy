@@ -1,4 +1,4 @@
-import * as commands from "@lib/commands";
+import { Command } from "@lib/commands";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -8,7 +8,7 @@ import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Modal<[], commands.Command | undefined> {
+export class Palette extends Modal<[], Command | undefined> {
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
@@ -21,7 +21,7 @@ export class Palette extends Modal<[], commands.Command | undefined> {
     super(parent);
   }
 
-  async open(): Promise<commands.Command | undefined> {
+  async open(): Promise<Command | undefined> {
     this.enabled = true;
     this.#editor.enabled = true;
 
@@ -68,7 +68,7 @@ export class Palette extends Modal<[], commands.Command | undefined> {
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<commands.Command | undefined> {
+  async #process_input(): Promise<Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -194,7 +194,7 @@ export class Palette extends Modal<[], commands.Command | undefined> {
     }
   }
 
-  async handleCommand(_: commands.Command): Promise<boolean> {
+  async handleCommand(_: Command): Promise<boolean> {
     return false;
   }
 }
