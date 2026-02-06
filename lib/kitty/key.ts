@@ -191,12 +191,28 @@ export class Key {
     return [key, match.index! + match[0].length];
   }
 
-  equal(key: Key): boolean {
-    if (this.name !== key.name) {
-      return false;
+  toString(): string {
+    const chunks: string[] = [];
+
+    if (this.shift) {
+      chunks.push("⇧");
     }
 
-    return true;
+    if (this.ctrl) {
+      chunks.push("⌃");
+    }
+
+    if (this.alt) {
+      chunks.push("⌥");
+    }
+
+    if (this.super) {
+      chunks.push("⌘");
+    }
+
+    chunks.push(this.name.toUpperCase());
+
+    return chunks.join("");
   }
 }
 
