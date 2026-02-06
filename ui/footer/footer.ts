@@ -2,6 +2,7 @@ import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
+import { Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -58,7 +59,12 @@ export class Footer extends Control {
     this.render();
   }
 
-  async handleCommand(_: commands.Command): Promise<boolean> {
+  async handleCommand(command: commands.Command): Promise<boolean> {
+    switch (command.name) {
+      case "Theme":
+        colors.setFooterColors(Themes[command.data]);
+        return true;
+    }
     return false;
   }
 }

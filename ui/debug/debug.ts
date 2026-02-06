@@ -1,5 +1,6 @@
 import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
+import { Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -75,11 +76,14 @@ export class Debug extends Control {
   }
 
   async handleCommand(command: Command): Promise<boolean> {
-    if (command.name === "Debug") {
-      this.enabled = !this.enabled;
-      return true;
+    switch (command.name) {
+      case "Theme":
+        colors.setDebugColors(Themes[command.data]);
+        return true;
+      case "Debug":
+        this.enabled = !this.enabled;
+        return true;
     }
-
     return false;
   }
 }

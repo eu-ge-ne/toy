@@ -1,16 +1,15 @@
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
-import { Theme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Alert, setAlertColors } from "@ui/alert";
-import { Ask, setAskColors } from "@ui/ask";
-import { Debug, setDebugColors } from "@ui/debug";
-import { Editor, setEditorColors } from "@ui/editor";
-import { Footer, setFooterColors } from "@ui/footer";
-import { Header, setHeaderColors } from "@ui/header";
-import { Palette, setPaletteColors } from "@ui/palette";
-import { SaveAs, setSaveAsColors } from "@ui/save-as";
+import { Alert } from "@ui/alert";
+import { Ask } from "@ui/ask";
+import { Debug } from "@ui/debug";
+import { Editor } from "@ui/editor";
+import { Footer } from "@ui/footer";
+import { Header } from "@ui/header";
+import { Palette } from "@ui/palette";
+import { SaveAs } from "@ui/save-as";
 
 export class App extends Control {
   header: Header;
@@ -146,14 +145,16 @@ export class App extends Control {
         this.#handleZen();
         break;
 
-      case "Theme":
-        this.#handleTheme(Themes[command.data]);
-        break;
-
       default:
         if (
+          await this.alert.handleCommand(command) ||
+          await this.ask.handleCommand(command) ||
+          await this.editor.handleCommand(command) ||
           await this.debug.handleCommand(command) ||
-          await this.editor.handleCommand(command)
+          await this.footer.handleCommand(command) ||
+          await this.header.handleCommand(command) ||
+          await this.palette.handleCommand(command) ||
+          await this.saveas.handleCommand(command)
         ) {
           this.editor.render();
           return true;
@@ -199,11 +200,6 @@ export class App extends Control {
     this.editor.enabled = true;
 
     this.editor.render();
-  }
-
-  #handleTheme(t: Theme): void {
-    this.#setColors(t);
-    this.render();
   }
 
   #handleZen(): void {
@@ -280,17 +276,6 @@ export class App extends Control {
 
     Deno.exit(0);
   };
-
-  #setColors(tokens: Theme): void {
-    setAlertColors(tokens);
-    setAskColors(tokens);
-    setEditorColors(tokens);
-    setDebugColors(tokens);
-    setFooterColors(tokens);
-    setHeaderColors(tokens);
-    setPaletteColors(tokens);
-    setSaveAsColors(tokens);
-  }
 
   #enableZen(enable: boolean): void {
     this.zen_enabled = enable;

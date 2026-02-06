@@ -1,5 +1,6 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
+import { Themes } from "@lib/themes";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -90,7 +91,12 @@ export class SaveAs extends Modal<[string], string> {
     }
   }
 
-  async handleCommand(_: commands.Command): Promise<boolean> {
+  async handleCommand(command: commands.Command): Promise<boolean> {
+    switch (command.name) {
+      case "Theme":
+        colors.setSaveAsColors(Themes[command.data]);
+        return true;
+    }
     return false;
   }
 }

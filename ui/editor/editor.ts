@@ -5,6 +5,7 @@ import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
+import { Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -102,6 +103,9 @@ export class Editor extends Control {
     }
 
     switch (command.name) {
+      case "Theme":
+        colors.setEditorColors(Themes[command.data]);
+        return true;
       case "Whitespace":
         this.whitespace_enabled = !this.whitespace_enabled;
         return true;

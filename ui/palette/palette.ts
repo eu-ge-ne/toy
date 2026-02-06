@@ -1,4 +1,5 @@
 import { Command } from "@lib/commands";
+import { Themes } from "@lib/themes";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
@@ -194,7 +195,12 @@ export class Palette extends Modal<[], Command | undefined> {
     }
   }
 
-  async handleCommand(_: Command): Promise<boolean> {
+  async handleCommand(command: Command): Promise<boolean> {
+    switch (command.name) {
+      case "Theme":
+        colors.setPaletteColors(Themes[command.data]);
+        return true;
+    }
     return false;
   }
 }
