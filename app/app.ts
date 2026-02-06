@@ -1,4 +1,4 @@
-import * as commands from "@lib/commands";
+import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import { Theme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
@@ -116,9 +116,9 @@ export class App extends Control {
           continue;
         }
 
-        const command = commands.ShortcutToCommand.get(key.toString());
-        if (command) {
-          await this.handleCommand(command);
+        const cmdName = ShortcutToCommand[key.toString()];
+        if (typeof cmdName !== "undefined") {
+          await this.handleCommand({ name: cmdName } as Command);
           continue;
         }
 
@@ -129,42 +129,28 @@ export class App extends Control {
     }
   }
 
-  async handleCommand(command: commands.Command): Promise<boolean> {
-    switch (command) {
-      case commands.Exit:
+  async handleCommand(command: Command): Promise<boolean> {
+    if (command.name === "Theme") {
+      this.#handleTheme(Themes[command.data]);
+    }
+
+    switch (command.name) {
+      case "Exit":
         await this.#handleExit();
         break;
-      case commands.Palette:
+      case "Palette":
         await this.#handlePalette();
         break;
-      case commands.Save:
+      case "Save":
         await this.#handleSave();
         break;
-      case commands.ThemeBase16:
-        this.#handleThemeBase16();
-        break;
-      case commands.ThemeGray:
-        this.#handleThemeGray();
-        break;
-      case commands.ThemeNeutral:
-        this.#handleThemeNeutral();
-        break;
-      case commands.ThemeSlate:
-        this.#handleThemeSlate();
-        break;
-      case commands.ThemeStone:
-        this.#handleThemeStone();
-        break;
-      case commands.ThemeZinc:
-        this.#handleThemeZinc();
-        break;
-      case commands.Whitespace:
+      case "Whitespace":
         this.#handleWhitespace();
         break;
-      case commands.Wrap:
+      case "Wrap":
         this.#handleWrap();
         break;
-      case commands.Zen:
+      case "Zen":
         this.#handleZen();
         break;
       default:
@@ -196,14 +182,14 @@ export class App extends Control {
   async #handlePalette(): Promise<void> {
     this.editor.enabled = false;
 
-    const cmd = await this.palette.open();
+    const command = await this.palette.open();
 
     this.editor.enabled = true;
 
     this.editor.render();
 
-    if (cmd) {
-      await this.handleCommand(cmd);
+    if (command) {
+      await this.handleCommand(command);
     }
   }
 
@@ -219,33 +205,8 @@ export class App extends Control {
     this.editor.render();
   }
 
-  #handleThemeBase16(): void {
-    this.#setColors(Themes.Base16);
-    this.render();
-  }
-
-  #handleThemeGray(): void {
-    this.#setColors(Themes.Gray);
-    this.render();
-  }
-
-  #handleThemeNeutral(): void {
-    this.#setColors(Themes.Neutral);
-    this.render();
-  }
-
-  #handleThemeSlate(): void {
-    this.#setColors(Themes.Slate);
-    this.render();
-  }
-
-  #handleThemeStone(): void {
-    this.#setColors(Themes.Stone);
-    this.render();
-  }
-
-  #handleThemeZinc(): void {
-    this.#setColors(Themes.Zinc);
+  #handleTheme(t: Theme): void {
+    this.#setColors(t);
     this.render();
   }
 
