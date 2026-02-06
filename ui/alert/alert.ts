@@ -1,12 +1,13 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
-import { Themes } from "@lib/themes";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class Alert extends Modal<[unknown], void> {
+  #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";
 
@@ -37,7 +38,7 @@ export class Alert extends Modal<[unknown], void> {
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     let pos = 0;
@@ -53,7 +54,7 @@ export class Alert extends Modal<[unknown], void> {
       pos += line.length;
 
       vt.cursor.set(vt.buf, y, this.x + 2);
-      vt.buf.write(colors.TEXT);
+      vt.buf.write(this.#colors.text);
       vt.write_text(vt.buf, span, line);
     }
 
@@ -84,9 +85,10 @@ export class Alert extends Modal<[unknown], void> {
   async handleCommand(command: commands.Command): Promise<boolean> {
     switch (command.name) {
       case "Theme":
-        colors.setAlertColors(Themes[command.data]);
+        this.#colors = colors(Themes[command.data]);
         return true;
     }
+
     return false;
   }
 }
