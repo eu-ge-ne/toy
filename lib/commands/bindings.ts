@@ -1,46 +1,41 @@
-import * as commands from "./commands.ts";
+import { Command } from "./commands.ts";
 
-export const ShortcutToCommand = new Map<string, commands.Command>([
-  ["F1", commands.Palette],
-  ["⇧F1", commands.Palette],
-  ["⌃F1", commands.Palette],
-  ["⌥F1", commands.Palette],
-  ["⌘F1", commands.Palette],
+export const ShortcutToCommand: Record<string, Command["name"]> = {
+  "F1": "Palette",
+  "⇧F1": "Palette",
+  "⌃F1": "Palette",
+  "⌥F1": "Palette",
+  "⌘F1": "Palette",
 
-  ["F2", commands.Save],
-  ["F5", commands.Whitespace],
-  ["F6", commands.Wrap],
-  ["F10", commands.Exit],
-  ["F11", commands.Zen],
+  "F2": "Save",
+  "F5": "Whitespace",
+  "F6": "Wrap",
+  "F10": "Exit",
+  "F11": "Zen",
 
-  ["⌃A", commands.SelectAll],
-  ["⌘A", commands.SelectAll],
+  "⌃A": "SelectAll",
+  "⌘A": "SelectAll",
 
-  ["⌃C", commands.Copy],
-  ["⌘C", commands.Copy],
+  "⌃C": "Copy",
+  "⌘C": "Copy",
 
-  ["⌃X", commands.Cut],
-  ["⌘X", commands.Cut],
+  "⌃X": "Cut",
+  "⌘X": "Cut",
 
-  ["⌃V", commands.Paste],
-  ["⌘V", commands.Paste],
+  "⌃V": "Paste",
+  "⌘V": "Paste",
 
-  ["⌃Z", commands.Undo],
-  ["⌘Z", commands.Undo],
+  "⌃Z": "Undo",
+  "⌘Z": "Undo",
 
-  ["⌃Y", commands.Redo],
-  ["⌘Y", commands.Redo],
-]);
+  "⌃Y": "Redo",
+  "⌘Y": "Redo",
+};
 
-export const CommandToShortcuts = new Map<commands.Command, string[]>();
+export const CommandToShortcuts = Object.fromEntries(
+  Object.values(ShortcutToCommand).map((x) => [x, []]),
+) as unknown as Record<Command["name"], string[]>;
 
-for (const [shortcut, command] of ShortcutToCommand) {
-  let shortcuts = CommandToShortcuts.get(command);
-
-  if (typeof shortcuts === "undefined") {
-    shortcuts = [];
-    CommandToShortcuts.set(command, shortcuts);
-  }
-
-  shortcuts.push(shortcut);
+for (const [shortcut, command] of Object.entries(ShortcutToCommand)) {
+  CommandToShortcuts[command].push(shortcut);
 }
