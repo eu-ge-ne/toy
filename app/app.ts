@@ -146,16 +146,17 @@ export class App extends Control {
         break;
 
       default: {
-        let r = false;
-        r ||= await this.alert.handleCommand(command);
-        r ||= await this.ask.handleCommand(command);
-        r ||= await this.editor.handleCommand(command);
-        r ||= await this.debug.handleCommand(command);
-        r ||= await this.footer.handleCommand(command);
-        r ||= await this.header.handleCommand(command);
-        r ||= await this.palette.handleCommand(command);
-        r ||= await this.saveas.handleCommand(command);
-        if (r) {
+        const r = await Promise.all([
+          this.alert.handleCommand(command),
+          this.ask.handleCommand(command),
+          this.editor.handleCommand(command),
+          this.debug.handleCommand(command),
+          this.footer.handleCommand(command),
+          this.header.handleCommand(command),
+          this.palette.handleCommand(command),
+          this.saveas.handleCommand(command),
+        ]);
+        if (r.some((x) => x)) {
           this.editor.render();
           return true;
         }
