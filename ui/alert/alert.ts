@@ -82,10 +82,10 @@ export class Alert extends Modal<[unknown], void> {
     }
   }
 
-  async handleCommand(command: commands.Command): Promise<boolean> {
-    switch (command.name) {
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
       case "Theme":
-        this.#colors = colors(Themes[command.data]);
+        this.#colors = colors(Themes[cmd.data]);
         return true;
     }
 

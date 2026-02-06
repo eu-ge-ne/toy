@@ -77,10 +77,10 @@ export class Debug extends Control {
     }
   }
 
-  async handleCommand(command: Command): Promise<boolean> {
-    switch (command.name) {
+  async handleCommand(cmd: Command): Promise<boolean> {
+    switch (cmd.name) {
       case "Theme":
-        this.#colors = colors(Themes[command.data]);
+        this.#colors = colors(Themes[cmd.data]);
         return true;
 
       case "Debug":
