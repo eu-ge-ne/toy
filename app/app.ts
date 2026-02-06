@@ -145,20 +145,21 @@ export class App extends Control {
         this.#handleZen();
         break;
 
-      default:
-        if (
-          await this.alert.handleCommand(command) ||
-          await this.ask.handleCommand(command) ||
-          await this.editor.handleCommand(command) ||
-          await this.debug.handleCommand(command) ||
-          await this.footer.handleCommand(command) ||
-          await this.header.handleCommand(command) ||
-          await this.palette.handleCommand(command) ||
-          await this.saveas.handleCommand(command)
-        ) {
+      default: {
+        let r = false;
+        r ||= await this.alert.handleCommand(command);
+        r ||= await this.ask.handleCommand(command);
+        r ||= await this.editor.handleCommand(command);
+        r ||= await this.debug.handleCommand(command);
+        r ||= await this.footer.handleCommand(command);
+        r ||= await this.header.handleCommand(command);
+        r ||= await this.palette.handleCommand(command);
+        r ||= await this.saveas.handleCommand(command);
+        if (r) {
           this.editor.render();
           return true;
         }
+      }
     }
 
     return false;
