@@ -116,9 +116,9 @@ export class App extends Control {
           continue;
         }
 
-        const cmd = commands.All.find((x) => x.keys.some((y) => y.equal(key)));
-        if (cmd) {
-          await this.handleCommand(cmd);
+        const command = commands.ShortcutToCommand.get(key.toString());
+        if (command) {
+          await this.handleCommand(command);
           continue;
         }
 
@@ -129,8 +129,8 @@ export class App extends Control {
     }
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
-    switch (cmd) {
+  async handleCommand(command: commands.Command): Promise<boolean> {
+    switch (command) {
       case commands.Exit:
         await this.#handleExit();
         break;
@@ -168,11 +168,11 @@ export class App extends Control {
         this.#handleZen();
         break;
       default:
-        if (await this.debug.handleCommand(cmd)) {
+        if (await this.debug.handleCommand(command)) {
           this.editor.render();
           return true;
         }
-        if (await this.editor.handleCommand(cmd)) {
+        if (await this.editor.handleCommand(command)) {
           this.editor.render();
           return true;
         }
