@@ -21,7 +21,6 @@ export class App extends Control {
   ask: Ask;
   saveas: SaveAs;
 
-  zen_enabled = true;
   #file_path = "";
 
   constructor() {
@@ -47,16 +46,14 @@ export class App extends Control {
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
-
-    this.#enableZen(true);
+    Deno.addSignalListener("SIGWINCH", this.#refresh);
 
     if (fileName) {
       await this.#open(fileName);
     }
 
     this.editor.reset(true);
-    this.editor.render();
+    this.#refresh();
 
     await this.#processInput();
   }
@@ -69,14 +66,7 @@ export class App extends Control {
 
     this.header.layout(this);
     this.footer.layout(this);
-    this.editor.layout(
-      this.zen_enabled ? this : {
-        y: this.y + 1,
-        x: this.x,
-        w: this.w,
-        h: this.h - 2,
-      },
-    );
+    this.editor.layout(this);
     this.debug.layout(this.editor);
     this.palette.layout(this.editor);
     this.alert.layout(this.editor);
@@ -98,13 +88,6 @@ export class App extends Control {
 
     vt.sync.esu();
   }
-
-  #on_sigwinch = () => {
-    const { columns: w, rows: h } = Deno.consoleSize();
-    this.layout({ y: 0, x: 0, w, h });
-
-    vt.dummy_req();
-  };
 
   async #processInput(): Promise<void> {
     while (true) {
@@ -128,6 +111,14 @@ export class App extends Control {
   }
 
   async handleCommand(command: Command): Promise<boolean> {
+    let layoutChanged = false;
+
+    switch (command.name) {
+      case "Zen":
+        layoutChanged = true;
+        break;
+    }
+
     switch (command.name) {
       case "Exit":
         await this.#handleExit();
@@ -139,10 +130,6 @@ export class App extends Control {
 
       case "Save":
         await this.#handleSave();
-        break;
-
-      case "Zen":
-        this.#handleZen();
         break;
 
       default: {
@@ -157,7 +144,11 @@ export class App extends Control {
           this.saveas.handleCommand(command),
         ]);
         if (r.some((x) => x)) {
-          this.editor.render();
+          if (layoutChanged) {
+            this.#refresh();
+          } else {
+            this.editor.render();
+          }
           return true;
         }
       }
@@ -202,10 +193,6 @@ export class App extends Control {
     this.editor.enabled = true;
 
     this.editor.render();
-  }
-
-  #handleZen(): void {
-    this.#enableZen(!this.zen_enabled);
   }
 
   async #open(file_path: string): Promise<void> {
@@ -279,16 +266,9 @@ export class App extends Control {
     Deno.exit(0);
   };
 
-  #enableZen(enable: boolean): void {
-    this.zen_enabled = enable;
-
-    this.header.enabled = !enable;
-    this.footer.enabled = !enable;
-    this.editor.index_enabled = !enable;
-
+  #refresh(): void {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.layout({ y: 0, x: 0, w, h });
-
-    this.render();
+    vt.dummy_req();
   }
 }

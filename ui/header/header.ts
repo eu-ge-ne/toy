@@ -7,8 +7,14 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Header extends Control {
+  #zen = true;
   #file_path = "";
   #flag = false;
+
+  constructor(parent?: Control) {
+    super(parent);
+    this.#setZen(true);
+  }
 
   layout({ y, x, w, h }: Area): void {
     this.w = w;
@@ -64,7 +70,20 @@ export class Header extends Control {
       case "Theme":
         colors.setHeaderColors(Themes[command.data]);
         return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
     }
+
     return false;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.enabled = !x;
   }
 }

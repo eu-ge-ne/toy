@@ -17,6 +17,8 @@ interface EditorOptions {
 }
 
 export class Editor extends Control {
+  #zen = true;
+
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
     new keys.BackspaceHandler(this),
@@ -59,10 +61,17 @@ export class Editor extends Control {
   }
 
   layout({ y, x, w, h }: Area): void {
-    this.y = y;
-    this.x = x;
-    this.w = w;
-    this.h = h;
+    if (this.#zen) {
+      this.y = y;
+      this.x = x;
+      this.w = w;
+      this.h = h;
+    } else {
+      this.y = y + 1;
+      this.x = x;
+      this.w = w;
+      this.h = h - 2;
+    }
   }
 
   reset(reset_cursor: boolean): void {
@@ -106,9 +115,15 @@ export class Editor extends Control {
       case "Theme":
         colors.setEditorColors(Themes[command.data]);
         return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
+
       case "Whitespace":
         this.whitespace_enabled = !this.whitespace_enabled;
         return true;
+
       case "Wrap":
         this.wrap_enabled = !this.wrap_enabled;
         this.cursor.home(false);
@@ -494,5 +509,13 @@ export class Editor extends Control {
     }
 
     this.cursor_x += width;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.index_enabled = !x;
   }
 }

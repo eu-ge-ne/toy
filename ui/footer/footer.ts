@@ -9,7 +9,13 @@ import * as vt from "@lib/vt";
 import * as colors from "./colors.ts";
 
 export class Footer extends Control {
+  #zen = true;
   #cursor_status = "";
+
+  constructor(parent?: Control) {
+    super(parent);
+    this.#setZen(true);
+  }
 
   layout({ y, x, w, h }: Area): void {
     this.w = w;
@@ -64,7 +70,20 @@ export class Footer extends Control {
       case "Theme":
         colors.setFooterColors(Themes[command.data]);
         return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
     }
+
     return false;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.enabled = !x;
   }
 }
