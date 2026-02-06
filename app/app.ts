@@ -130,23 +130,27 @@ export class App extends Control {
   }
 
   async handleCommand(command: Command): Promise<boolean> {
-    if (command.name === "Theme") {
-      this.#handleTheme(Themes[command.data]);
-    }
-
     switch (command.name) {
       case "Exit":
         await this.#handleExit();
         break;
+
       case "Palette":
         await this.#handlePalette();
         break;
+
       case "Save":
         await this.#handleSave();
         break;
+
       case "Zen":
         this.#handleZen();
         break;
+
+      case "Theme":
+        this.#handleTheme(Themes[command.data]);
+        break;
+
       default:
         if (
           await this.debug.handleCommand(command) ||
