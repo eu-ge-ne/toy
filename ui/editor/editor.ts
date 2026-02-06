@@ -5,11 +5,11 @@ import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
-import { Themes } from "@lib/themes";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { CharColor, charColor, colors } from "./colors.ts";
 import * as keys from "./handlers/mod.ts";
 
 interface EditorOptions {
@@ -17,6 +17,7 @@ interface EditorOptions {
 }
 
 export class Editor extends Control {
+  #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
 
@@ -114,7 +115,7 @@ export class Editor extends Control {
 
     switch (cmd.name) {
       case "Theme":
-        colors.setEditorColors(Themes[cmd.data]);
+        this.#colors = colors(Themes[cmd.data]);
         return true;
 
       case "Zen":
@@ -320,7 +321,7 @@ export class Editor extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     if (index_enabled && (line_count > 0)) {
@@ -370,7 +371,7 @@ export class Editor extends Control {
         row = this.#render_line(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, x);
-        vt.buf.write(colors.VOID);
+        vt.buf.write(this.#colors.void);
         vt.clear_line(vt.buf, w);
       }
 
@@ -385,7 +386,7 @@ export class Editor extends Control {
     const { y, h, cursor, whitespace_enabled } = this;
 
     let available_w = 0;
-    let current_color = colors.CharColor.Undefined;
+    let current_color = CharColor.Undefined;
 
     const xs = this.buffer.line(ln);
 
@@ -402,14 +403,14 @@ export class Editor extends Control {
 
         if (this.index_width > 0) {
           if (i === 0) {
-            vt.buf.write(colors.INDEX);
+            vt.buf.write(this.#colors.index);
             vt.write_text(
               vt.buf,
               [this.index_width],
               `${ln + 1} `.padStart(this.index_width),
             );
           } else {
-            vt.buf.write(colors.BACKGROUND);
+            vt.buf.write(this.#colors.background);
             vt.write_spaces(vt.buf, this.index_width);
           }
         }
@@ -421,7 +422,7 @@ export class Editor extends Control {
         continue;
       }
 
-      const color = colors.create_char_color(
+      const color = charColor(
         cursor.is_selected(ln, i),
         is_visible,
         whitespace_enabled,
@@ -429,7 +430,7 @@ export class Editor extends Control {
 
       if (color !== current_color) {
         current_color = color;
-        vt.buf.write(colors.CHAR[color]);
+        vt.buf.write(this.#colors.char[color]);
       }
 
       vt.buf.write(bytes);

@@ -2,13 +2,14 @@ import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
-import { Themes } from "@lib/themes";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class Footer extends Control {
+  #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
   #cursor_status = "";
@@ -35,9 +36,9 @@ export class Footer extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
-    vt.buf.write(colors.TEXT);
+    vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
       [this.w],
@@ -69,7 +70,7 @@ export class Footer extends Control {
   async handleCommand(command: commands.Command): Promise<boolean> {
     switch (command.name) {
       case "Theme":
-        colors.setFooterColors(Themes[command.data]);
+        this.#colors = colors(Themes[command.data]);
         return true;
 
       case "Zen":

@@ -1,15 +1,16 @@
 import { Command } from "@lib/commands";
-import { Themes } from "@lib/themes";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
 export class Palette extends Modal<[], Command | undefined> {
+  #colors = colors(DefaultTheme);
   #enabled = false;
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
@@ -56,7 +57,7 @@ export class Palette extends Modal<[], Command | undefined> {
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     if (this.#filtered_options.length === 0) {
@@ -157,7 +158,7 @@ export class Palette extends Modal<[], Command | undefined> {
 
   #render_empty(): void {
     vt.cursor.set(vt.buf, this.y + 2, this.x + 2);
-    vt.buf.write(colors.OPTION);
+    vt.buf.write(this.#colors.option);
     vt.write_text(vt.buf, [this.w - 4], "No matching commands");
   }
 
@@ -181,7 +182,9 @@ export class Palette extends Modal<[], Command | undefined> {
       const span: [number] = [this.w - 4];
 
       vt.buf.write(
-        index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
+        index === this.#selected_index
+          ? this.#colors.selectedOption
+          : this.#colors.option,
       );
       vt.cursor.set(vt.buf, y, this.x + 2);
       vt.write_text(vt.buf, span, option.name);
@@ -199,9 +202,10 @@ export class Palette extends Modal<[], Command | undefined> {
   async handleCommand(command: Command): Promise<boolean> {
     switch (command.name) {
       case "Theme":
-        colors.setPaletteColors(Themes[command.data]);
+        this.#colors = colors(Themes[command.data]);
         return true;
     }
+
     return false;
   }
 }

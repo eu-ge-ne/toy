@@ -1,13 +1,14 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
-import { Themes } from "@lib/themes";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class SaveAs extends Modal<[string], string> {
+  #colors = colors(DefaultTheme);
   #enabled = false;
   #editor = new Editor(this, { multi_line: false });
 
@@ -53,10 +54,10 @@ export class SaveAs extends Modal<[string], string> {
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
     vt.cursor.set(vt.buf, this.y + 1, this.x);
-    vt.buf.write(colors.TEXT);
+    vt.buf.write(this.#colors.text);
     vt.write_text_center(vt.buf, [this.w], "Save As");
     vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
     vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
@@ -95,9 +96,10 @@ export class SaveAs extends Modal<[string], string> {
   async handleCommand(command: commands.Command): Promise<boolean> {
     switch (command.name) {
       case "Theme":
-        colors.setSaveAsColors(Themes[command.data]);
+        this.#colors = colors(Themes[command.data]);
         return true;
     }
+
     return false;
   }
 }
