@@ -1,100 +1,94 @@
-import * as commands from "@lib/commands";
+import { Command, CommandToShortcuts } from "@lib/commands";
 
 export interface Option {
   name: string;
   shortcuts?: string[];
-  command: commands.Command;
+  command: Command;
 }
 
 export const options: Option[] = [
   {
     name: "Edit: Copy",
-    shortcuts: commands.CommandToShortcuts.get(commands.Copy),
-    command: commands.Copy,
+    shortcuts: CommandToShortcuts["Copy"],
+    command: { name: "Copy" } as const,
   },
   {
     name: "Edit: Cut",
-    shortcuts: commands.CommandToShortcuts.get(commands.Cut),
-    command: commands.Cut,
+    shortcuts: CommandToShortcuts["Cut"],
+    command: { name: "Cut" } as const,
   },
   {
     name: "Global: Toggle Debug Panel",
-    shortcuts: commands.CommandToShortcuts.get(commands.Debug),
-    command: commands.Debug,
+    shortcuts: CommandToShortcuts["Debug"],
+    command: { name: "Debug" } as const,
   },
   {
     name: "Global: Exit",
-    shortcuts: commands.CommandToShortcuts.get(commands.Exit),
-    command: commands.Exit,
+    shortcuts: CommandToShortcuts["Exit"],
+    command: { name: "Exit" } as const,
   },
   {
     name: "Edit: Select All",
-    shortcuts: commands.CommandToShortcuts.get(commands.SelectAll),
-    command: commands.SelectAll,
+    shortcuts: CommandToShortcuts["SelectAll"],
+    command: { name: "SelectAll" } as const,
   },
   {
     name: "Edit: Paste",
-    shortcuts: commands.CommandToShortcuts.get(commands.Paste),
-    command: commands.Paste,
+    shortcuts: CommandToShortcuts["Paste"],
+    command: { name: "Paste" } as const,
   },
   {
     name: "Edit: Redo",
-    shortcuts: commands.CommandToShortcuts.get(commands.Redo),
-    command: commands.Redo,
+    shortcuts: CommandToShortcuts["Redo"],
+    command: { name: "Redo" } as const,
   },
   {
     name: "Global: Save",
-    shortcuts: commands.CommandToShortcuts.get(commands.Save),
-    command: commands.Save,
+    shortcuts: CommandToShortcuts["Save"],
+    command: { name: "Save" } as const,
   },
   {
     name: "Theme: Base16",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeBase16),
-    command: commands.ThemeBase16,
+    command: { name: "Theme", data: "Base16" } as const,
   },
   {
     name: "Theme: Gray",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeGray),
-    command: commands.ThemeGray,
+    command: { name: "Theme", data: "Gray" } as const,
   },
   {
     name: "Theme: Neutral",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeNeutral),
-    command: commands.ThemeNeutral,
+    command: { name: "Theme", data: "Neutral" } as const,
   },
   {
     name: "Theme: Slate",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeSlate),
-    command: commands.ThemeSlate,
+    command: { name: "Theme", data: "Slate" } as const,
   },
   {
     name: "Theme: Stone",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeStone),
-    command: commands.ThemeStone,
+    command: { name: "Theme", data: "Stone" } as const,
   },
   {
     name: "Theme: Zinc",
-    shortcuts: commands.CommandToShortcuts.get(commands.ThemeZinc),
-    command: commands.ThemeZinc,
+    command: { name: "Theme", data: "Zinc" } as const,
   },
   {
     name: "Edit: Undo",
-    shortcuts: commands.CommandToShortcuts.get(commands.Undo),
-    command: commands.Undo,
+    shortcuts: CommandToShortcuts["Undo"],
+    command: { name: "Undo" } as const,
   },
   {
     name: "View: Toggle Render Whitespace",
-    shortcuts: commands.CommandToShortcuts.get(commands.Whitespace),
-    command: commands.Whitespace,
+    shortcuts: CommandToShortcuts["Whitespace"],
+    command: { name: "Whitespace" } as const,
   },
   {
     name: "View: Toggle Line Wrap",
-    shortcuts: commands.CommandToShortcuts.get(commands.Wrap),
-    command: commands.Wrap,
+    shortcuts: CommandToShortcuts["Wrap"],
+    command: { name: "Wrap" } as const,
   },
   {
     name: "Global: Toggle Zen Mode",
-    shortcuts: commands.CommandToShortcuts.get(commands.Zen),
-    command: commands.Zen,
+    shortcuts: CommandToShortcuts["Zen"],
+    command: { name: "Zen" } as const,
   },
 ].sort((a, b) => a.name.localeCompare(b.name));
