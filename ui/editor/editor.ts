@@ -102,6 +102,13 @@ export class Editor extends Control {
     }
 
     switch (command.name) {
+      case "Whitespace":
+        this.whitespace_enabled = !this.whitespace_enabled;
+        return true;
+      case "Wrap":
+        this.wrap_enabled = !this.wrap_enabled;
+        this.cursor.home(false);
+        return true;
       case "Copy":
         return this.copy();
       case "Cut":

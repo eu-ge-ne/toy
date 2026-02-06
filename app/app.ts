@@ -144,12 +144,6 @@ export class App extends Control {
       case "Save":
         await this.#handleSave();
         break;
-      case "Whitespace":
-        this.#handleWhitespace();
-        break;
-      case "Wrap":
-        this.#handleWrap();
-        break;
       case "Zen":
         this.#handleZen();
         break;
@@ -207,18 +201,6 @@ export class App extends Control {
   #handleTheme(t: Theme): void {
     this.#setColors(t);
     this.render();
-  }
-
-  #handleWhitespace(): void {
-    this.editor.whitespace_enabled = !this.editor.whitespace_enabled;
-    this.editor.render();
-  }
-
-  #handleWrap(): void {
-    this.editor.wrap_enabled = !this.editor.wrap_enabled;
-    this.editor.cursor.home(false);
-
-    this.editor.render();
   }
 
   #handleZen(): void {
