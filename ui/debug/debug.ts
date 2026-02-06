@@ -1,4 +1,4 @@
-import * as commands from "@lib/commands";
+import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -74,8 +74,8 @@ export class Debug extends Control {
     }
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
-    if (cmd === commands.Debug) {
+  async handleCommand(command: Command): Promise<boolean> {
+    if (command.name === "Debug") {
       this.enabled = !this.enabled;
       return true;
     }
