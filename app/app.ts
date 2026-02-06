@@ -110,16 +110,16 @@ export class App extends Control {
     }
   }
 
-  async handleCommand(command: Command): Promise<boolean> {
+  async handleCommand(cmd: Command): Promise<boolean> {
     let layoutChanged = false;
 
-    switch (command.name) {
+    switch (cmd.name) {
       case "Zen":
         layoutChanged = true;
         break;
     }
 
-    switch (command.name) {
+    switch (cmd.name) {
       case "Exit":
         await this.#handleExit();
         break;
@@ -134,14 +134,14 @@ export class App extends Control {
 
       default: {
         const r = await Promise.all([
-          this.alert.handleCommand(command),
-          this.ask.handleCommand(command),
-          this.editor.handleCommand(command),
-          this.debug.handleCommand(command),
-          this.footer.handleCommand(command),
-          this.header.handleCommand(command),
-          this.palette.handleCommand(command),
-          this.saveas.handleCommand(command),
+          this.alert.handleCommand(cmd),
+          this.ask.handleCommand(cmd),
+          this.editor.handleCommand(cmd),
+          this.debug.handleCommand(cmd),
+          this.footer.handleCommand(cmd),
+          this.header.handleCommand(cmd),
+          this.palette.handleCommand(cmd),
+          this.saveas.handleCommand(cmd),
         ]);
         if (r.some((x) => x)) {
           if (layoutChanged) {

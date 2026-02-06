@@ -107,14 +107,14 @@ export class Editor extends Control {
     return r;
   }
 
-  async handleCommand(command: Command): Promise<boolean> {
+  async handleCommand(cmd: Command): Promise<boolean> {
     if (!this.#enabled) {
       return false;
     }
 
-    switch (command.name) {
+    switch (cmd.name) {
       case "Theme":
-        colors.setEditorColors(Themes[command.data]);
+        colors.setEditorColors(Themes[cmd.data]);
         return true;
 
       case "Zen":
@@ -129,16 +129,22 @@ export class Editor extends Control {
         this.wrap_enabled = !this.wrap_enabled;
         this.cursor.home(false);
         return true;
+
       case "Copy":
         return this.copy();
+
       case "Cut":
         return this.cut();
+
       case "Paste":
         return this.paste();
+
       case "Undo":
         return this.undo();
+
       case "Redo":
         return this.redo();
+
       case "SelectAll":
         return this.selectAll();
     }
