@@ -1,11 +1,15 @@
-import { Tokens } from "@lib/theme";
+import { Theme } from "@lib/themes";
 
-export let BACKGROUND: Uint8Array;
-export let OPTION: Uint8Array;
-export let SELECTED_OPTION: Uint8Array;
+interface Colors {
+  background: Uint8Array;
+  option: Uint8Array;
+  selectedOption: Uint8Array;
+}
 
-export function set_palette_colors(t: Tokens): void {
-  BACKGROUND = t.bg_light1;
-  OPTION = new Uint8Array([...t.bg_light1, ...t.fg_light1]);
-  SELECTED_OPTION = new Uint8Array([...t.bg_light2, ...t.fg_light1]);
+export function colors(t: Theme): Colors {
+  return {
+    background: t.bg_light1,
+    option: new Uint8Array([...t.bg_light1, ...t.fg_light1]),
+    selectedOption: new Uint8Array([...t.bg_light2, ...t.fg_light1]),
+  };
 }

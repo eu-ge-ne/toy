@@ -1,0 +1,4 @@
+{
+  "name": "@lib/themes",
+  "exports": "./mod.ts"
+}

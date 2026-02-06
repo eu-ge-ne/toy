@@ -1,12 +1,22 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class Header extends Control {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
+  #zen = true;
   #file_path = "";
   #flag = false;
+
+  constructor(parent?: Control) {
+    super(parent);
+    this.#setZen(true);
+  }
 
   layout({ y, x, w, h }: Area): void {
     this.w = w;
@@ -17,7 +27,7 @@ export class Header extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -27,14 +37,14 @@ export class Header extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
     vt.cursor.set(vt.buf, this.y, this.x);
-    vt.buf.write(colors.FILE_PATH);
+    vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.#file_path);
 
     if (this.#flag) {
-      vt.buf.write(colors.UNSAVED_FLAG);
+      vt.buf.write(this.#colors.unsavedFlag);
       vt.write_text(vt.buf, span, " +");
     }
 
@@ -55,5 +65,27 @@ export class Header extends Control {
     this.#flag = x;
 
     this.render();
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
+    }
+
+    return false;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.#enabled = !x;
   }
 }

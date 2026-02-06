@@ -1,20 +1,26 @@
+import { Command } from "@lib/commands";
 import { Cursor } from "@lib/cursor";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
+import { CharColor, charColor, colors } from "./colors.ts";
 import * as keys from "./handlers/mod.ts";
-import * as colors from "./colors.ts";
 
 interface EditorOptions {
   multi_line: boolean;
 }
 
 export class Editor extends Control {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
+  #zen = true;
+
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
     new keys.BackspaceHandler(this),
@@ -57,10 +63,17 @@ export class Editor extends Control {
   }
 
   layout({ y, x, w, h }: Area): void {
-    this.y = y;
-    this.x = x;
-    this.w = w;
-    this.h = h;
+    if (this.#zen) {
+      this.y = y;
+      this.x = x;
+      this.w = w;
+      this.h = h;
+    } else {
+      this.y = y + 1;
+      this.x = x;
+      this.w = w;
+      this.h = h - 2;
+    }
   }
 
   reset(reset_cursor: boolean): void {
@@ -79,7 +92,11 @@ export class Editor extends Control {
     this.history.reset();
   }
 
-  handle_key(key: Key): boolean {
+  handleKey(key: Key): boolean {
+    if (!this.#enabled) {
+      return false;
+    }
+
     const t0 = performance.now();
 
     const handler = this.#handlers.find((x) => x.match(key));
@@ -89,6 +106,51 @@ export class Editor extends Control {
     this.on_input_handled?.(t1 - t0);
 
     return r;
+  }
+
+  async handleCommand(cmd: Command): Promise<boolean> {
+    if (!this.#enabled) {
+      return false;
+    }
+
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
+
+      case "Whitespace":
+        this.whitespace_enabled = !this.whitespace_enabled;
+        return true;
+
+      case "Wrap":
+        this.wrap_enabled = !this.wrap_enabled;
+        this.cursor.home(false);
+        return true;
+
+      case "Copy":
+        return this.copy();
+
+      case "Cut":
+        return this.cut();
+
+      case "Paste":
+        return this.paste();
+
+      case "Undo":
+        return this.undo();
+
+      case "Redo":
+        return this.redo();
+
+      case "SelectAll":
+        return this.selectAll();
+    }
+
+    return false;
   }
 
   #sgr = new Intl.Segmenter();
@@ -218,6 +280,24 @@ export class Editor extends Control {
     return true;
   }
 
+  undo(): boolean {
+    return this.history.undo();
+  }
+
+  redo(): boolean {
+    return this.history.redo();
+  }
+
+  selectAll(): boolean {
+    this.cursor.set(0, 0, false);
+    this.cursor.set(
+      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER,
+      true,
+    );
+    return true;
+  }
+
   private index_width = 0;
   private text_width = 0;
   private cursor_y = 0;
@@ -232,7 +312,6 @@ export class Editor extends Control {
       y,
       x,
       w,
-      enabled,
       wrap_enabled,
       index_enabled,
       buffer: { line_count },
@@ -242,7 +321,7 @@ export class Editor extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     if (index_enabled && (line_count > 0)) {
@@ -263,7 +342,7 @@ export class Editor extends Control {
       this.#render_lines();
     }
 
-    if (enabled) {
+    if (this.#enabled) {
       vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
     } else {
       vt.buf.write(vt.cursor.restore);
@@ -292,7 +371,7 @@ export class Editor extends Control {
         row = this.#render_line(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, x);
-        vt.buf.write(colors.VOID);
+        vt.buf.write(this.#colors.void);
         vt.clear_line(vt.buf, w);
       }
 
@@ -307,7 +386,7 @@ export class Editor extends Control {
     const { y, h, cursor, whitespace_enabled } = this;
 
     let available_w = 0;
-    let current_color = colors.CharColor.Undefined;
+    let current_color = CharColor.Undefined;
 
     const xs = this.buffer.line(ln);
 
@@ -324,14 +403,14 @@ export class Editor extends Control {
 
         if (this.index_width > 0) {
           if (i === 0) {
-            vt.buf.write(colors.INDEX);
+            vt.buf.write(this.#colors.index);
             vt.write_text(
               vt.buf,
               [this.index_width],
               `${ln + 1} `.padStart(this.index_width),
             );
           } else {
-            vt.buf.write(colors.BACKGROUND);
+            vt.buf.write(this.#colors.background);
             vt.write_spaces(vt.buf, this.index_width);
           }
         }
@@ -343,7 +422,7 @@ export class Editor extends Control {
         continue;
       }
 
-      const color = colors.create_char_color(
+      const color = charColor(
         cursor.is_selected(ln, i),
         is_visible,
         whitespace_enabled,
@@ -351,7 +430,7 @@ export class Editor extends Control {
 
       if (color !== current_color) {
         current_color = color;
-        vt.buf.write(colors.CHAR[color]);
+        vt.buf.write(this.#colors.char[color]);
       }
 
       vt.buf.write(bytes);
@@ -437,5 +516,17 @@ export class Editor extends Control {
     }
 
     this.cursor_x += width;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.index_enabled = !x;
+  }
+
+  enable(x: boolean): void {
+    this.#enabled = x;
   }
 }

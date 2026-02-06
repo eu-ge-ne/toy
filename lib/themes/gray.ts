@@ -1,6 +1,6 @@
 import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
-import { Tokens } from "./tokens.ts";
+import { Theme } from "./theme.ts";
 
 const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
@@ -20,7 +20,7 @@ const gray: Record<number, RGBColor> = {
   950: [0x03, 0x07, 0x12],
 };
 
-export const GRAY: Tokens = {
+export const GrayTheme: Theme = {
   bg_danger: char_bg(red[900]!),
   bg_main: char_bg(gray[900]!),
   fg_main: char_fg(gray[900]!),

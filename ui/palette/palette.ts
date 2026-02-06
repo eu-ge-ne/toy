@@ -1,29 +1,32 @@
+import { Command } from "@lib/commands";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
-import * as colors from "./colors.ts";
-import { PaletteOption } from "./option.ts";
+import { colors } from "./colors.ts";
+import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette
-  extends Modal<[PaletteOption[]], PaletteOption | undefined> {
+export class Palette extends Modal<[], Command | undefined> {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
   #editor = new Editor(this, { multi_line: false });
   #area!: Area;
 
-  #filtered_options: PaletteOption[] = [];
+  #filtered_options: Option[] = [];
   #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(parent: Control, private options: PaletteOption[]) {
+  constructor(parent: Control) {
     super(parent);
   }
 
-  async open(): Promise<PaletteOption | undefined> {
-    this.enabled = true;
-    this.#editor.enabled = true;
+  async open(): Promise<Command | undefined> {
+    this.#enabled = true;
+    this.#editor.enable(true);
 
     this.#editor.buffer.reset();
     this.#editor.reset(false);
@@ -31,12 +34,12 @@ export class Palette
     this.#filter();
     this.parent?.render();
 
-    const result = await this.#process_input();
+    const command = await this.#process_input();
 
-    this.enabled = false;
-    this.#editor.enabled = false;
+    this.#enabled = false;
+    this.#editor.enable(false);
 
-    return result;
+    return command;
   }
 
   layout(area: Area): void {
@@ -44,7 +47,7 @@ export class Palette
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -54,7 +57,7 @@ export class Palette
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     if (this.#filtered_options.length === 0) {
@@ -68,7 +71,7 @@ export class Palette
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<PaletteOption | undefined> {
+  async #process_input(): Promise<Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
@@ -80,7 +83,7 @@ export class Palette
           case "ESC":
             return;
           case "ENTER":
-            return this.#filtered_options[this.#selected_index];
+            return this.#filtered_options[this.#selected_index]?.command;
           case "UP":
             if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.max(this.#selected_index - 1, 0);
@@ -98,7 +101,7 @@ export class Palette
             continue;
         }
 
-        if (this.#editor.handle_key(key)) {
+        if (this.#editor.handleKey(key)) {
           this.#filter();
           this.parent?.render();
         }
@@ -110,10 +113,10 @@ export class Palette
     const text = this.#editor.buffer.text().toUpperCase();
 
     if (!text) {
-      this.#filtered_options = this.options;
+      this.#filtered_options = options;
     } else {
-      this.#filtered_options = this.options.filter((x) =>
-        x.description.toUpperCase().includes(text)
+      this.#filtered_options = options.filter((x) =>
+        x.name.toUpperCase().includes(text)
       );
     }
 
@@ -155,7 +158,7 @@ export class Palette
 
   #render_empty(): void {
     vt.cursor.set(vt.buf, this.y + 2, this.x + 2);
-    vt.buf.write(colors.OPTION);
+    vt.buf.write(this.#colors.option);
     vt.write_text(vt.buf, [this.w - 4], "No matching commands");
   }
 
@@ -179,14 +182,30 @@ export class Palette
       const span: [number] = [this.w - 4];
 
       vt.buf.write(
-        index === this.#selected_index ? colors.SELECTED_OPTION : colors.OPTION,
+        index === this.#selected_index
+          ? this.#colors.selectedOption
+          : this.#colors.option,
       );
       vt.cursor.set(vt.buf, y, this.x + 2);
-      vt.write_text(vt.buf, span, option.description);
-      vt.write_text(vt.buf, span, option.shortcuts.padStart(span[0]));
+      vt.write_text(vt.buf, span, option.name);
+      vt.write_text(
+        vt.buf,
+        span,
+        (option.shortcuts ?? []).join(" ").padStart(span[0]),
+      );
 
       i += 1;
       y += 1;
     }
+  }
+
+  async handleCommand(cmd: Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+    }
+
+    return false;
   }
 }

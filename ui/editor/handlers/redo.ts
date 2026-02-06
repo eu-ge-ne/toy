@@ -8,6 +8,6 @@ export class RedoHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    return this.editor.history.redo();
+    return this.editor.redo();
   }
 }

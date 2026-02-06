@@ -1,13 +1,23 @@
+import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class Footer extends Control {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
+  #zen = true;
   #cursor_status = "";
+
+  constructor(parent?: Control) {
+    super(parent);
+    this.#setZen(true);
+  }
 
   layout({ y, x, w, h }: Area): void {
     this.w = w;
@@ -18,7 +28,7 @@ export class Footer extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -26,9 +36,9 @@ export class Footer extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
-    vt.buf.write(colors.TEXT);
+    vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
       [this.w],
@@ -42,7 +52,7 @@ export class Footer extends Control {
   }
 
   set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -55,5 +65,27 @@ export class Footer extends Control {
     this.#cursor_status = `${ln} ${col}  ${pct}% `;
 
     this.render();
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+
+      case "Zen":
+        this.#setZen();
+        return true;
+    }
+
+    return false;
+  }
+
+  #setZen(x?: boolean): void {
+    if (typeof x === "undefined") {
+      x = !this.#zen;
+    }
+    this.#zen = x;
+    this.#enabled = !x;
   }
 }

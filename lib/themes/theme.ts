@@ -1,4 +1,4 @@
-export interface Tokens {
+export interface Theme {
   bg_danger: Uint8Array;
   bg_main: Uint8Array;
   fg_main: Uint8Array;

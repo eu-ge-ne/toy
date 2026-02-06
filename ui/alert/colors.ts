@@ -1,9 +1,13 @@
-import { Tokens } from "@lib/theme";
+import { Theme } from "@lib/themes";
 
-export let BACKGROUND: Uint8Array;
-export let TEXT: Uint8Array;
+interface Colors {
+  background: Uint8Array;
+  text: Uint8Array;
+}
 
-export function set_alert_colors(t: Tokens): void {
-  BACKGROUND = t.bg_danger;
-  TEXT = new Uint8Array([...t.bg_danger, ...t.fg_light1]);
+export function colors(t: Theme): Colors {
+  return {
+    background: t.bg_danger,
+    text: new Uint8Array([...t.bg_danger, ...t.fg_light1]),
+  };
 }

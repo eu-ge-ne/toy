@@ -1,18 +1,22 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class SaveAs extends Modal<[string], string> {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
   #editor = new Editor(this, { multi_line: false });
 
   async open(path: string): Promise<string> {
     const { buffer } = this.#editor;
 
-    this.enabled = true;
-    this.#editor.enabled = true;
+    this.#enabled = true;
+    this.#editor.enable(true);
 
     buffer.reset(path);
     this.#editor.reset(true);
@@ -21,8 +25,8 @@ export class SaveAs extends Modal<[string], string> {
 
     const result = await this.#process_input();
 
-    this.enabled = false;
-    this.#editor.enabled = false;
+    this.#enabled = false;
+    this.#editor.enable(false);
 
     return result;
   }
@@ -43,17 +47,17 @@ export class SaveAs extends Modal<[string], string> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
     vt.cursor.set(vt.buf, this.y + 1, this.x);
-    vt.buf.write(colors.TEXT);
+    vt.buf.write(this.#colors.text);
     vt.write_text_center(vt.buf, [this.w], "Save As");
     vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
     vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
@@ -82,10 +86,20 @@ export class SaveAs extends Modal<[string], string> {
           }
         }
 
-        if (this.#editor.handle_key(key)) {
+        if (this.#editor.handleKey(key)) {
           this.#editor.render();
         }
       }
     }
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+    }
+
+    return false;
   }
 }

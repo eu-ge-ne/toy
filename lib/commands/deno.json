@@ -1,4 +1,4 @@
 {
-  "name": "@lib/theme",
+  "name": "@lib/commands",
   "exports": "./mod.ts"
 }

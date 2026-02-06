@@ -8,6 +8,6 @@ export class UndoHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    return this.editor.history.undo();
+    return this.editor.undo();
   }
 }

@@ -1,21 +1,25 @@
+import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 export class Ask extends Modal<[string], boolean> {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
   #text = "";
 
   async open(text: string): Promise<boolean> {
     this.#text = text;
 
-    this.enabled = true;
+    this.#enabled = true;
 
     this.render();
     const result = await this.#process_input();
 
-    this.enabled = false;
+    this.#enabled = false;
 
     return result;
   }
@@ -29,14 +33,14 @@ export class Ask extends Modal<[string], boolean> {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
     let pos = 0;
@@ -52,7 +56,7 @@ export class Ask extends Modal<[string], boolean> {
       pos += line.length;
 
       vt.cursor.set(vt.buf, y, this.x + 1);
-      vt.sync.write(colors.TEXT);
+      vt.sync.write(this.#colors.text);
       vt.write_text_center(vt.buf, span, line);
     }
 
@@ -79,5 +83,15 @@ export class Ask extends Modal<[string], boolean> {
         }
       }
     }
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+    }
+
+    return false;
   }
 }

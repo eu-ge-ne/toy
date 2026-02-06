@@ -1,6 +1,6 @@
 import { char_bg, char_fg, RGBColor } from "@lib/vt";
 
-import { Tokens } from "./tokens.ts";
+import { Theme } from "./theme.ts";
 
 const red: Record<number, RGBColor> = {
   900: [0x7f, 0x1d, 0x1d],
@@ -20,7 +20,7 @@ const neutral: Record<number, RGBColor> = {
   950: [0x0a, 0x0a, 0x0a],
 };
 
-export const NEUTRAL: Tokens = {
+export const NeutralTheme: Theme = {
   bg_danger: char_bg(red[900]!),
   bg_main: char_bg(neutral[900]!),
   fg_main: char_fg(neutral[900]!),

@@ -1,12 +1,16 @@
+import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
+import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import * as colors from "./colors.ts";
+import { colors } from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
 export class Debug extends Control {
+  #colors = colors(DefaultTheme);
+  #enabled = false;
   #input_time = "0";
   #render_time = "0";
 
@@ -19,7 +23,7 @@ export class Debug extends Control {
   }
 
   render(): void {
-    if (!this.enabled) {
+    if (!this.#enabled) {
       return;
     }
 
@@ -33,9 +37,9 @@ export class Debug extends Control {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(colors.BACKGROUND);
+    vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
-    vt.buf.write(colors.TEXT);
+    vt.buf.write(this.#colors.text);
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(vt.buf, [this.w - 1], `Input    : ${this.#input_time} ms`);
     vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
@@ -58,7 +62,7 @@ export class Debug extends Control {
   }
 
   set_input_time(x: number): void {
-    if (this.enabled) {
+    if (this.#enabled) {
       this.#input_time = x.toFixed(1);
 
       this.render();
@@ -66,10 +70,24 @@ export class Debug extends Control {
   }
 
   set_render_time(x: number): void {
-    if (this.enabled) {
+    if (this.#enabled) {
       this.#render_time = x.toFixed(1);
 
       this.render();
     }
+  }
+
+  async handleCommand(cmd: Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+
+      case "Debug":
+        this.#enabled = !this.#enabled;
+        return true;
+    }
+
+    return false;
   }
 }
