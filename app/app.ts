@@ -154,11 +154,10 @@ export class App extends Control {
         this.#handleZen();
         break;
       default:
-        if (await this.debug.handleCommand(command)) {
-          this.editor.render();
-          return true;
-        }
-        if (await this.editor.handleCommand(command)) {
+        if (
+          await this.debug.handleCommand(command) ||
+          await this.editor.handleCommand(command)
+        ) {
           this.editor.render();
           return true;
         }
