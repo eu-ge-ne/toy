@@ -3,14 +3,14 @@ import * as file from "@lib/file";
 import { Theme, Themes } from "@lib/themes";
 import { Area, Control } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Alert, set_alert_colors } from "@ui/alert";
-import { Ask, set_ask_colors } from "@ui/ask";
-import { Debug, set_debug_colors } from "@ui/debug";
-import { Editor, set_editor_colors } from "@ui/editor";
-import { Footer, set_footer_colors } from "@ui/footer";
-import { Header, set_header_colors } from "@ui/header";
-import { Palette, set_palette_colors } from "@ui/palette";
-import { SaveAs, set_save_as_colors } from "@ui/save-as";
+import { Alert, setAlertColors } from "@ui/alert";
+import { Ask, setAskColors } from "@ui/ask";
+import { Debug, setDebugColors } from "@ui/debug";
+import { Editor, setEditorColors } from "@ui/editor";
+import { Footer, setFooterColors } from "@ui/footer";
+import { Header, setHeaderColors } from "@ui/header";
+import { Palette, setPaletteColors } from "@ui/palette";
+import { SaveAs, setSaveAsColors } from "@ui/save-as";
 
 export class App extends Control {
   header: Header;
@@ -50,7 +50,6 @@ export class App extends Control {
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#on_sigwinch);
 
-    this.#setColors(vt.TRUECOLOR ? Themes.Neutral : Themes.Base16);
     this.#enableZen(true);
 
     if (fileName) {
@@ -283,14 +282,14 @@ export class App extends Control {
   };
 
   #setColors(tokens: Theme): void {
-    set_alert_colors(tokens);
-    set_ask_colors(tokens);
-    set_editor_colors(tokens);
-    set_debug_colors(tokens);
-    set_footer_colors(tokens);
-    set_header_colors(tokens);
-    set_palette_colors(tokens);
-    set_save_as_colors(tokens);
+    setAlertColors(tokens);
+    setAskColors(tokens);
+    setEditorColors(tokens);
+    setDebugColors(tokens);
+    setFooterColors(tokens);
+    setHeaderColors(tokens);
+    setPaletteColors(tokens);
+    setSaveAsColors(tokens);
   }
 
   #enableZen(enable: boolean): void {

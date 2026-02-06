@@ -1,4 +1,4 @@
-import { Theme } from "@lib/themes";
+import { DefaultTheme, Theme } from "@lib/themes";
 
 export let BACKGROUND: Uint8Array;
 export let INDEX: Uint8Array;
@@ -15,7 +15,7 @@ export const enum CharColor {
   EmptySelected,
 }
 
-export function set_editor_colors(t: Theme): void {
+export function setEditorColors(t: Theme): void {
   BACKGROUND = t.bg_main;
   INDEX = new Uint8Array([...t.bg_light0, ...t.fg_dark0]);
   VOID = t.bg_dark0;
@@ -36,6 +36,8 @@ export function set_editor_colors(t: Theme): void {
     [CharColor.EmptySelected]: new Uint8Array([...t.bg_light2, ...t.fg_dark1]),
   };
 }
+
+setEditorColors(DefaultTheme);
 
 export function create_char_color(
   is_selected: boolean,
