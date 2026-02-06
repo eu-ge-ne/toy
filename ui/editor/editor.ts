@@ -1,4 +1,4 @@
-import * as commands from "@lib/commands";
+import { Command } from "@lib/commands";
 import { Cursor } from "@lib/cursor";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
@@ -96,23 +96,23 @@ export class Editor extends Control {
     return r;
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
+  async handleCommand(command: Command): Promise<boolean> {
     if (!this.enabled) {
       return false;
     }
 
-    switch (cmd) {
-      case commands.Copy:
+    switch (command.name) {
+      case "Copy":
         return this.copy();
-      case commands.Cut:
+      case "Cut":
         return this.cut();
-      case commands.Paste:
+      case "Paste":
         return this.paste();
-      case commands.Undo:
+      case "Undo":
         return this.undo();
-      case commands.Redo:
+      case "Redo":
         return this.redo();
-      case commands.SelectAll:
+      case "SelectAll":
         return this.selectAll();
     }
 
