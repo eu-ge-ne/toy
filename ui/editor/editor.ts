@@ -14,7 +14,7 @@ import { CharColor, charColor, colors } from "./colors.ts";
 import * as keys from "./handlers/mod.ts";
 
 interface EditorOptions {
-  multi_line: boolean;
+  multiLine: boolean;
 }
 
 export class Editor extends Component<Globals> {
@@ -80,7 +80,7 @@ export class Editor extends Component<Globals> {
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.opts.multi_line) {
+      if (this.opts.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -345,9 +345,11 @@ export class Editor extends Component<Globals> {
     vt.buf.flush();
     vt.sync.esu();
 
-    this.globals.ln = this.cursor.ln;
-    this.globals.col = this.cursor.col;
-    this.globals.lnCount = this.buffer.line_count;
+    if (this.opts.multiLine) {
+      this.globals.ln = this.cursor.ln;
+      this.globals.col = this.cursor.col;
+      this.globals.lnCount = this.buffer.line_count;
+    }
   }
 
   #render_lines(): void {

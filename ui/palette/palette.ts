@@ -24,7 +24,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
   constructor(globals: Globals) {
     super(globals);
 
-    this.#editor = new Editor(globals, { multi_line: false });
+    this.#editor = new Editor(globals, { multiLine: false });
   }
 
   async run(): Promise<Command | undefined> {

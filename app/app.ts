@@ -37,7 +37,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     this.header = new Header(this);
     this.footer = new Footer(this);
-    this.editor = new Editor(this, { multi_line: true });
+    this.editor = new Editor(this, { multiLine: true });
     this.debug = new Debug(this);
     this.palette = new Palette(this);
     this.alert = new Alert(this);

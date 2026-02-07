@@ -16,7 +16,7 @@ export class SaveAs extends Component<Globals, [string], string> {
   constructor(globals: Globals) {
     super(globals);
 
-    this.#editor = new Editor(globals, { multi_line: false });
+    this.#editor = new Editor(globals, { multiLine: false });
   }
 
   async run(path: string): Promise<string> {
