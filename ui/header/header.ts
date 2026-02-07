@@ -1,45 +1,49 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Header extends Control {
+export class Header extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
   #file_path = "";
   #flag = false;
 
-  constructor(parent?: Control) {
-    super(parent);
+  constructor(renderTree: () => void) {
+    super(renderTree);
+
     this.#setZen(true);
   }
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = w;
-    this.h = clamp(1, 0, h);
-
-    this.y = y;
-    this.x = x;
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
   }
 
-  render(): void {
+  resize(p: Area): void {
+    this.area.w = p.w;
+    this.area.h = clamp(1, 0, p.h);
+    this.area.y = p.y;
+    this.area.x = p.x;
+  }
+
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }
 
     vt.sync.bsu();
 
-    const span: [number] = [this.w];
+    const span: [number] = [this.area.w];
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
-    vt.cursor.set(vt.buf, this.y, this.x);
+    vt.clear_area(vt.buf, this.area);
+    vt.cursor.set(vt.buf, this.area.y, this.area.x);
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.#file_path);
 
@@ -57,14 +61,10 @@ export class Header extends Control {
 
   set_file_path(x: string): void {
     this.#file_path = x;
-
-    this.render();
   }
 
   set_unsaved_flag(x: boolean): void {
     this.#flag = x;
-
-    this.render();
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

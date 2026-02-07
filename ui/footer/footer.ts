@@ -3,31 +3,35 @@ import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Footer extends Control {
+export class Footer extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
   #cursor_status = "";
 
-  constructor(parent?: Control) {
-    super(parent);
+  constructor(renderTree: () => void) {
+    super(renderTree);
+
     this.#setZen(true);
   }
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = w;
-    this.h = clamp(1, 0, h);
-
-    this.y = y + h - 1;
-    this.x = x;
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
   }
 
-  render(): void {
+  resize(p: Area): void {
+    this.area.w = p.w;
+    this.area.h = clamp(1, 0, p.h);
+    this.area.y = p.y + p.h - 1;
+    this.area.x = p.x;
+  }
+
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }
@@ -37,12 +41,12 @@ export class Footer extends Control {
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    vt.clear_area(vt.buf, this.area);
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
-      [this.w],
-      sprintf("%*s", this.w, this.#cursor_status),
+      [this.area.w],
+      sprintf("%*s", this.area.w, this.#cursor_status),
     );
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
@@ -63,8 +67,6 @@ export class Footer extends Control {
       : ((ln / data.ln_count) * 100).toFixed(0);
 
     this.#cursor_status = `${ln} ${col}  ${pct}% `;
-
-    this.render();
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

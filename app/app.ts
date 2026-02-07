@@ -1,6 +1,6 @@
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
 import { Ask } from "@ui/ask";
@@ -11,7 +11,7 @@ import { Header } from "@ui/header";
 import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
-export class App extends Control {
+export class App extends Component<[string], void> {
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -24,16 +24,18 @@ export class App extends Control {
   #file_path = "";
 
   constructor() {
-    super();
+    super(() => {});
 
-    this.header = new Header(this);
-    this.footer = new Footer(this);
-    this.editor = new Editor(this, { multi_line: true });
-    this.debug = new Debug(this);
-    this.palette = new Palette(this);
-    this.alert = new Alert(this);
-    this.ask = new Ask(this);
-    this.saveas = new SaveAs(this);
+    const renderTree = this.renderComponent.bind(this);
+
+    this.header = new Header(renderTree);
+    this.footer = new Footer(renderTree);
+    this.editor = new Editor({ multi_line: true }, renderTree);
+    this.debug = new Debug(renderTree);
+    this.palette = new Palette(renderTree);
+    this.alert = new Alert(renderTree);
+    this.ask = new Ask(renderTree);
+    this.saveas = new SaveAs(renderTree);
   }
 
   async run(fileName?: string): Promise<void> {
@@ -58,33 +60,33 @@ export class App extends Control {
     await this.#processInput();
   }
 
-  override layout({ y, x, w, h }: Area): void {
-    this.y = y;
-    this.x = x;
-    this.w = w;
-    this.h = h;
+  resize({ y, x, w, h }: Area): void {
+    this.area.y = y;
+    this.area.x = x;
+    this.area.w = w;
+    this.area.h = h;
 
-    this.header.layout(this);
-    this.footer.layout(this);
-    this.editor.layout(this);
-    this.debug.layout(this.editor);
-    this.palette.layout(this.editor);
-    this.alert.layout(this.editor);
-    this.ask.layout(this.editor);
-    this.saveas.layout(this.editor);
+    this.header.resize(this.area);
+    this.footer.resize(this.area);
+    this.editor.resize(this.area);
+    this.debug.resize(this.editor.area);
+    this.palette.resize(this.editor.area);
+    this.alert.resize(this.editor.area);
+    this.ask.resize(this.editor.area);
+    this.saveas.resize(this.editor.area);
   }
 
-  render(): void {
+  renderComponent(): void {
     vt.sync.bsu();
 
-    this.header.render();
-    this.editor.render();
-    this.footer.render();
-    this.debug.render();
-    this.saveas.render();
-    this.alert.render();
-    this.ask.render();
-    this.palette.render();
+    this.header.renderComponent();
+    this.editor.renderComponent();
+    this.footer.renderComponent();
+    this.debug.renderComponent();
+    this.saveas.renderComponent();
+    this.alert.renderComponent();
+    this.ask.renderComponent();
+    this.palette.renderComponent();
 
     vt.sync.esu();
   }
@@ -93,7 +95,7 @@ export class App extends Control {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.render();
+          this.renderComponent();
           continue;
         }
 
@@ -104,7 +106,7 @@ export class App extends Control {
         }
 
         if (this.editor.handleKey(key)) {
-          this.editor.render();
+          this.renderComponent();
         }
       }
     }
@@ -147,7 +149,7 @@ export class App extends Control {
           if (layoutChanged) {
             this.#refresh();
           } else {
-            this.editor.render();
+            this.renderComponent();
           }
           return true;
         }
@@ -161,7 +163,7 @@ export class App extends Control {
     this.editor.enable(false);
 
     if (!this.editor.history.is_empty) {
-      if (await this.ask.open("Save changes?")) {
+      if (await this.ask.run("Save changes?")) {
         await this.#save();
       }
     }
@@ -172,11 +174,11 @@ export class App extends Control {
   async #handlePalette(): Promise<void> {
     this.editor.enable(false);
 
-    const command = await this.palette.open();
+    const command = await this.palette.run();
 
     this.editor.enable(true);
 
-    this.editor.render();
+    this.renderComponent();
 
     if (command) {
       await this.handleCommand(command);
@@ -192,7 +194,7 @@ export class App extends Control {
 
     this.editor.enable(true);
 
-    this.editor.render();
+    this.renderComponent();
   }
 
   async #open(file_path: string): Promise<void> {
@@ -204,7 +206,7 @@ export class App extends Control {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.alert.open(err);
+        await this.alert.run(err);
 
         this.#exit();
       }
@@ -225,7 +227,7 @@ export class App extends Control {
 
       return true;
     } catch (err) {
-      await this.alert.open(err);
+      await this.alert.run(err);
 
       return await this.#saveFileAs();
     }
@@ -233,7 +235,7 @@ export class App extends Control {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.saveas.open(this.#file_path);
+      const file_path = await this.saveas.run(this.#file_path);
       if (!file_path) {
         return false;
       }
@@ -245,7 +247,7 @@ export class App extends Control {
 
         return true;
       } catch (err) {
-        await this.alert.open(err);
+        await this.alert.run(err);
       }
     }
   }
@@ -268,7 +270,8 @@ export class App extends Control {
 
   #refresh(): void {
     const { columns: w, rows: h } = Deno.consoleSize();
-    this.layout({ y: 0, x: 0, w, h });
+    this.resize({ y: 0, x: 0, w, h });
+
     vt.dummy_req();
   }
 }
