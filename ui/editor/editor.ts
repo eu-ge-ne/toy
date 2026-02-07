@@ -45,8 +45,6 @@ export class Editor extends Component<Globals> {
     new keys.UpHandler(this),
   ];
 
-  on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
-
   readonly buffer = new SegBuf();
   readonly cursor = new Cursor(this.buffer);
   readonly history = new History(this.buffer, this.cursor);
@@ -349,7 +347,9 @@ export class Editor extends Component<Globals> {
     vt.buf.flush();
     vt.sync.esu();
 
-    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
+    this.globals.ln = this.cursor.ln;
+    this.globals.col = this.cursor.col;
+    this.globals.lnCount = this.buffer.line_count;
 
     const t1 = performance.now();
     this.globals.renderTime = t1 - t0;

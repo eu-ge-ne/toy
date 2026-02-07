@@ -12,7 +12,6 @@ import { colors } from "./colors.ts";
 export class Footer extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #cursor_status = "";
 
   constructor(globals: Globals) {
     super(globals);
@@ -36,6 +35,13 @@ export class Footer extends Component<Globals> {
       return;
     }
 
+    const ln = this.globals.ln + 1;
+    const col = this.globals.col + 1;
+    const pct = this.globals.lnCount === 0
+      ? 0
+      : ((ln / this.globals.lnCount) * 100).toFixed(0);
+    const cursorStatus = `${ln} ${col}  ${pct}% `;
+
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
@@ -46,27 +52,13 @@ export class Footer extends Component<Globals> {
     vt.write_text(
       vt.buf,
       [this.area.w],
-      sprintf("%*s", this.area.w, this.#cursor_status),
+      sprintf("%*s", this.area.w, cursorStatus),
     );
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {
-    if (!this.#enabled) {
-      return;
-    }
-
-    const ln = data.ln + 1;
-    const col = data.col + 1;
-    const pct = data.ln_count === 0
-      ? 0
-      : ((ln / data.ln_count) * 100).toFixed(0);
-
-    this.#cursor_status = `${ln} ${col}  ${pct}% `;
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

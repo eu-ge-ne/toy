@@ -19,6 +19,9 @@ export class App extends Component<Globals, [string], void> implements Globals {
   renderTree = this.renderComponent.bind(this);
   inputTime = 0;
   renderTime = 0;
+  ln = 0;
+  col = 0;
+  lnCount = 0;
 
   header: Header;
   footer: Footer;
@@ -44,7 +47,6 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async run(fileName?: string): Promise<void> {
     this.editor.enable(true);
-    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
     this.editor.history.on_changed = () =>
       this.isDirty = !this.editor.history.is_empty;
 

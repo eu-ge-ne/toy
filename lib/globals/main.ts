@@ -5,4 +5,7 @@ export interface Globals {
   renderTree: () => void;
   inputTime: number;
   renderTime: number;
+  ln: number;
+  col: number;
+  lnCount: number;
 }
