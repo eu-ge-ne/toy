@@ -62,17 +62,17 @@ export class Editor extends Control {
     super(parent);
   }
 
-  layout({ y, x, w, h }: Area): void {
+  layout(parentArea: Area): void {
     if (this.#zen) {
-      this.y = y;
-      this.x = x;
-      this.w = w;
-      this.h = h;
+      this.area.y = parentArea.y;
+      this.area.x = parentArea.x;
+      this.area.w = parentArea.w;
+      this.area.h = parentArea.h;
     } else {
-      this.y = y + 1;
-      this.x = x;
-      this.w = w;
-      this.h = h - 2;
+      this.area.y = parentArea.y + 1;
+      this.area.x = parentArea.x;
+      this.area.w = parentArea.w;
+      this.area.h = parentArea.h - 2;
     }
   }
 
@@ -308,21 +308,14 @@ export class Editor extends Control {
   render(): void {
     const t0 = performance.now();
 
-    const {
-      y,
-      x,
-      w,
-      wrap_enabled,
-      index_enabled,
-      buffer: { line_count },
-    } = this;
+    const { wrap_enabled, index_enabled, buffer: { line_count } } = this;
 
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    vt.clear_area(vt.buf, this.area);
 
     if (index_enabled && (line_count > 0)) {
       this.index_width = Math.trunc(Math.log10(line_count)) + 3;
@@ -330,15 +323,15 @@ export class Editor extends Control {
       this.index_width = 0;
     }
 
-    this.text_width = w - this.index_width;
+    this.text_width = this.area.w - this.index_width;
     this.buffer.wrap_width = wrap_enabled
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
-    this.buffer.measure_y = this.cursor_y = y;
-    this.buffer.measure_x = this.cursor_x = x + this.index_width;
+    this.buffer.measure_y = this.cursor_y = this.area.y;
+    this.buffer.measure_x = this.cursor_x = this.area.x + this.index_width;
 
-    if (w >= this.index_width) {
+    if (this.area.w >= this.index_width) {
       this.#render_lines();
     }
 
@@ -359,31 +352,31 @@ export class Editor extends Control {
   }
 
   #render_lines(): void {
-    const { y, x, w, h, buffer: { line_count } } = this;
+    const { buffer: { line_count } } = this;
 
     this.#scroll_v();
     this.#scroll_h();
 
-    let row = y;
+    let row = this.area.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < line_count) {
         row = this.#render_line(ln, row);
       } else {
-        vt.cursor.set(vt.buf, row, x);
+        vt.cursor.set(vt.buf, row, this.area.x);
         vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, w);
+        vt.clear_line(vt.buf, this.area.w);
       }
 
       row += 1;
-      if (row >= y + h) {
+      if (row >= this.area.y + this.area.h) {
         break;
       }
     }
   }
 
   #render_line(ln: number, row: number): number {
-    const { y, h, cursor, whitespace_enabled } = this;
+    const { cursor, whitespace_enabled } = this;
 
     let available_w = 0;
     let current_color = CharColor.Undefined;
@@ -394,12 +387,12 @@ export class Editor extends Control {
       if (col === 0) {
         if (i > 0) {
           row += 1;
-          if (row >= y + h) {
+          if (row >= this.area.y + this.area.h) {
             return row;
           }
         }
 
-        vt.cursor.set(vt.buf, row, this.x);
+        vt.cursor.set(vt.buf, row, this.area.x);
 
         if (this.index_width > 0) {
           if (i === 0) {
@@ -415,7 +408,7 @@ export class Editor extends Control {
           }
         }
 
-        available_w = this.w - this.index_width;
+        available_w = this.area.w - this.index_width;
       }
 
       if ((col < this.scroll_col) || (width > available_w)) {
@@ -442,7 +435,7 @@ export class Editor extends Control {
   }
 
   #scroll_v(): void {
-    const { cursor, h } = this;
+    const { cursor } = this;
 
     const delta_ln = cursor.ln - this.scroll_ln;
 
@@ -454,8 +447,8 @@ export class Editor extends Control {
 
     // Below?
 
-    if (delta_ln > h) {
-      this.scroll_ln = cursor.ln - h;
+    if (delta_ln > this.area.h) {
+      this.scroll_ln = cursor.ln - this.area.h;
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
@@ -466,7 +459,7 @@ export class Editor extends Control {
     let i = 0;
     let height = sum(xs);
 
-    while (height > h) {
+    while (height > this.area.h) {
       height -= xs[i]!;
       this.scroll_ln += 1;
       i += 1;

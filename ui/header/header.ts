@@ -18,12 +18,11 @@ export class Header extends Control {
     this.#setZen(true);
   }
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = w;
-    this.h = clamp(1, 0, h);
-
-    this.y = y;
-    this.x = x;
+  layout(parentArea: Area): void {
+    this.area.w = parentArea.w;
+    this.area.h = clamp(1, 0, parentArea.h);
+    this.area.y = parentArea.y;
+    this.area.x = parentArea.x;
   }
 
   render(): void {
@@ -33,13 +32,13 @@ export class Header extends Control {
 
     vt.sync.bsu();
 
-    const span: [number] = [this.w];
+    const span: [number] = [this.area.w];
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
-    vt.cursor.set(vt.buf, this.y, this.x);
+    vt.clear_area(vt.buf, this.area);
+    vt.cursor.set(vt.buf, this.area.y, this.area.x);
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.#file_path);
 

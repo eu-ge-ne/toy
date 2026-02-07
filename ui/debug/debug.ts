@@ -14,12 +14,11 @@ export class Debug extends Control {
   #input_time = "0";
   #render_time = "0";
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = clamp(30, 0, w);
-    this.h = clamp(7, 0, h);
-
-    this.y = y + h - this.h;
-    this.x = x + w - this.w;
+  layout(parentArea: Area): void {
+    this.area.w = clamp(30, 0, parentArea.w);
+    this.area.h = clamp(7, 0, parentArea.h);
+    this.area.y = parentArea.y + parentArea.h - this.area.h;
+    this.area.x = parentArea.x + parentArea.w - this.area.w;
   }
 
   render(): void {
@@ -38,22 +37,30 @@ export class Debug extends Control {
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    vt.clear_area(vt.buf, this.area);
     vt.buf.write(this.#colors.text);
-    vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `Input    : ${this.#input_time} ms`);
-    vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `Render   : ${this.#render_time} ms`);
-    vt.cursor.set(vt.buf, this.y + 3, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `RSS      : ${rss} MiB`);
-    vt.cursor.set(vt.buf, this.y + 4, this.x + 1);
+    vt.cursor.set(vt.buf, this.area.y + 1, this.area.x + 1);
     vt.write_text(
       vt.buf,
-      [this.w - 1],
+      [this.area.w - 1],
+      `Input    : ${this.#input_time} ms`,
+    );
+    vt.cursor.set(vt.buf, this.area.y + 2, this.area.x + 1);
+    vt.write_text(
+      vt.buf,
+      [this.area.w - 1],
+      `Render   : ${this.#render_time} ms`,
+    );
+    vt.cursor.set(vt.buf, this.area.y + 3, this.area.x + 1);
+    vt.write_text(vt.buf, [this.area.w - 1], `RSS      : ${rss} MiB`);
+    vt.cursor.set(vt.buf, this.area.y + 4, this.area.x + 1);
+    vt.write_text(
+      vt.buf,
+      [this.area.w - 1],
       `Heap     : ${heap_used}/${heap_total} MiB`,
     );
-    vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
+    vt.cursor.set(vt.buf, this.area.y + 5, this.area.x + 1);
+    vt.write_text(vt.buf, [this.area.w - 1], `External : ${external_mem} MiB`);
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 

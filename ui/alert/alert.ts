@@ -22,12 +22,11 @@ export class Alert extends Modal<[unknown], void> {
     this.#enabled = false;
   }
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = clamp(60, 0, w);
-    this.h = clamp(10, 0, h);
-
-    this.y = y + Math.trunc((h - this.h) / 2);
-    this.x = x + Math.trunc((w - this.w) / 2);
+  layout(parentArea: Area): void {
+    this.area.w = clamp(60, 0, parentArea.w);
+    this.area.h = clamp(10, 0, parentArea.h);
+    this.area.y = parentArea.y + Math.trunc((parentArea.h - this.area.h) / 2);
+    this.area.x = parentArea.x + Math.trunc((parentArea.w - this.area.w) / 2);
   }
 
   render(): void {
@@ -39,27 +38,27 @@ export class Alert extends Modal<[unknown], void> {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    vt.clear_area(vt.buf, this.area);
 
     let pos = 0;
 
-    for (let y = this.y + 1; y < this.y + this.h - 3; y += 1) {
+    for (let y = this.area.y + 1; y < this.area.y + this.area.h - 3; y += 1) {
       if (pos === this.#text.length) {
         break;
       }
 
-      const span: [number] = [this.w - 4];
+      const span: [number] = [this.area.w - 4];
       const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
 
-      vt.cursor.set(vt.buf, y, this.x + 2);
+      vt.cursor.set(vt.buf, y, this.area.x + 2);
       vt.buf.write(this.#colors.text);
       vt.write_text(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
-    vt.write_text_center(vt.buf, [this.w], "ENTER‧ok");
+    vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
+    vt.write_text_center(vt.buf, [this.area.w], "ENTER‧ok");
 
     vt.buf.flush();
     vt.sync.esu();

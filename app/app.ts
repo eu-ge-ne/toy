@@ -59,19 +59,19 @@ export class App extends Control {
   }
 
   override layout({ y, x, w, h }: Area): void {
-    this.y = y;
-    this.x = x;
-    this.w = w;
-    this.h = h;
+    this.area.y = y;
+    this.area.x = x;
+    this.area.w = w;
+    this.area.h = h;
 
-    this.header.layout(this);
-    this.footer.layout(this);
-    this.editor.layout(this);
-    this.debug.layout(this.editor);
-    this.palette.layout(this.editor);
-    this.alert.layout(this.editor);
-    this.ask.layout(this.editor);
-    this.saveas.layout(this.editor);
+    this.header.layout(this.area);
+    this.footer.layout(this.area);
+    this.editor.layout(this.area);
+    this.debug.layout(this.editor.area);
+    this.palette.layout(this.editor.area);
+    this.alert.layout(this.editor.area);
+    this.ask.layout(this.editor.area);
+    this.saveas.layout(this.editor.area);
   }
 
   render(): void {

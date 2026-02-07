@@ -31,17 +31,16 @@ export class SaveAs extends Modal<[string], string> {
     return result;
   }
 
-  layout({ y, x, w, h }: Area): void {
-    this.w = clamp(60, 0, w);
-    this.h = clamp(10, 0, h);
-
-    this.y = y + Math.trunc((h - this.h) / 2);
-    this.x = x + Math.trunc((w - this.w) / 2);
+  layout(parentArea: Area): void {
+    this.area.w = clamp(60, 0, parentArea.w);
+    this.area.h = clamp(10, 0, parentArea.h);
+    this.area.y = parentArea.y + Math.trunc((parentArea.h - this.area.h) / 2);
+    this.area.x = parentArea.x + Math.trunc((parentArea.w - this.area.w) / 2);
 
     this.#editor.layout({
-      y: this.y + 4,
-      x: this.x + 2,
-      w: this.w - 4,
+      y: this.area.y + 4,
+      x: this.area.x + 2,
+      w: this.area.w - 4,
       h: 1,
     });
   }
@@ -55,12 +54,12 @@ export class SaveAs extends Modal<[string], string> {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
-    vt.cursor.set(vt.buf, this.y + 1, this.x);
+    vt.clear_area(vt.buf, this.area);
+    vt.cursor.set(vt.buf, this.area.y + 1, this.area.x);
     vt.buf.write(this.#colors.text);
-    vt.write_text_center(vt.buf, [this.w], "Save As");
-    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
-    vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
+    vt.write_text_center(vt.buf, [this.area.w], "Save As");
+    vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
+    vt.write_text_center(vt.buf, [this.area.w], "ESC‧cancel    ENTER‧ok");
 
     this.#editor.render();
 
