@@ -17,6 +17,8 @@ export class App extends Component<Globals, [string], void> implements Globals {
   isDirty = false;
   zen = true;
   renderTree = this.renderComponent.bind(this);
+  inputTime = 0;
+  renderTime = 0;
 
   header: Header;
   footer: Footer;
@@ -42,8 +44,6 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async run(fileName?: string): Promise<void> {
     this.editor.enable(true);
-    this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
-    this.editor.on_render = (x) => this.debug.set_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
     this.editor.history.on_changed = () =>
       this.isDirty = !this.editor.history.is_empty;

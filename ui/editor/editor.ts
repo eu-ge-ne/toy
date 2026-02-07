@@ -45,8 +45,6 @@ export class Editor extends Component<Globals> {
     new keys.UpHandler(this),
   ];
 
-  on_input_handled?: (_: number) => void;
-  on_render?: (_: number) => void;
   on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
 
   readonly buffer = new SegBuf();
@@ -109,7 +107,7 @@ export class Editor extends Component<Globals> {
     const r = handler?.handle(key) ?? false;
 
     const t1 = performance.now();
-    this.on_input_handled?.(t1 - t0);
+    this.globals.inputTime = t1 - t0;
 
     return r;
   }
@@ -354,7 +352,7 @@ export class Editor extends Component<Globals> {
     this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
 
     const t1 = performance.now();
-    this.on_render?.(t1 - t0);
+    this.globals.renderTime = t1 - t0;
   }
 
   #render_lines(): void {

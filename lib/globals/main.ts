@@ -3,4 +3,6 @@ export interface Globals {
   isDirty: boolean;
   zen: boolean;
   renderTree: () => void;
+  inputTime: number;
+  renderTime: number;
 }
