@@ -24,16 +24,18 @@ export class App extends Control {
   #file_path = "";
 
   constructor() {
-    super(undefined as unknown as Control);
+    super(() => {});
 
-    this.header = new Header(this);
-    this.footer = new Footer(this);
-    this.editor = new Editor(this, { multi_line: true });
-    this.debug = new Debug(this);
-    this.palette = new Palette(this);
-    this.alert = new Alert(this);
-    this.ask = new Ask(this);
-    this.saveas = new SaveAs(this);
+    const renderTree = this.render.bind(this);
+
+    this.header = new Header(renderTree);
+    this.footer = new Footer(renderTree);
+    this.editor = new Editor({ multi_line: true }, renderTree);
+    this.debug = new Debug(renderTree);
+    this.palette = new Palette(renderTree);
+    this.alert = new Alert(renderTree);
+    this.ask = new Ask(renderTree);
+    this.saveas = new SaveAs(renderTree);
   }
 
   async run(fileName?: string): Promise<void> {

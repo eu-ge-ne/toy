@@ -17,18 +17,18 @@ export class Ask extends Modal<[string], boolean> {
     this.#enabled = true;
 
     this.render();
-    const result = await this.#process_input();
+    const result = await this.#processInput();
 
     this.#enabled = false;
 
     return result;
   }
 
-  layout(parentArea: Area): void {
-    this.area.w = clamp(60, 0, parentArea.w);
-    this.area.h = clamp(7, 0, parentArea.h);
-    this.area.y = parentArea.y + Math.trunc((parentArea.h - this.area.h) / 2);
-    this.area.x = parentArea.x + Math.trunc((parentArea.w - this.area.w) / 2);
+  layout(p: Area): void {
+    this.area.w = clamp(60, 0, p.w);
+    this.area.h = clamp(7, 0, p.h);
+    this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
+    this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
   render(): void {
@@ -66,11 +66,11 @@ export class Ask extends Modal<[string], boolean> {
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<boolean> {
+  async #processInput(): Promise<boolean> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array || typeof key === "string") {
-          this.parent?.render();
+          this.renderTree();
           continue;
         }
 

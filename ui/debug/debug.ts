@@ -14,11 +14,11 @@ export class Debug extends Control {
   #input_time = "0";
   #render_time = "0";
 
-  layout(parentArea: Area): void {
-    this.area.w = clamp(30, 0, parentArea.w);
-    this.area.h = clamp(7, 0, parentArea.h);
-    this.area.y = parentArea.y + parentArea.h - this.area.h;
-    this.area.x = parentArea.x + parentArea.w - this.area.w;
+  layout(p: Area): void {
+    this.area.w = clamp(30, 0, p.w);
+    this.area.h = clamp(7, 0, p.h);
+    this.area.y = p.y + p.h - this.area.h;
+    this.area.x = p.x + p.w - this.area.w;
   }
 
   render(): void {

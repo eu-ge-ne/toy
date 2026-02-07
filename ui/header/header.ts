@@ -13,16 +13,17 @@ export class Header extends Control {
   #file_path = "";
   #flag = false;
 
-  constructor(parent: Control) {
-    super(parent);
+  constructor(renderTree: () => void) {
+    super(renderTree);
+
     this.#setZen(true);
   }
 
-  layout(parentArea: Area): void {
-    this.area.w = parentArea.w;
-    this.area.h = clamp(1, 0, parentArea.h);
-    this.area.y = parentArea.y;
-    this.area.x = parentArea.x;
+  layout(p: Area): void {
+    this.area.w = p.w;
+    this.area.h = clamp(1, 0, p.h);
+    this.area.y = p.y;
+    this.area.x = p.x;
   }
 
   render(): void {

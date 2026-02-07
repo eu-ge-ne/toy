@@ -58,21 +58,21 @@ export class Editor extends Control {
   wrap_enabled = false;
   clipboard = "";
 
-  constructor(parent: Control, readonly opts: EditorOptions) {
-    super(parent);
+  constructor(readonly opts: EditorOptions, renderTree: () => void) {
+    super(renderTree);
   }
 
-  layout(parentArea: Area): void {
+  layout(p: Area): void {
     if (this.#zen) {
-      this.area.y = parentArea.y;
-      this.area.x = parentArea.x;
-      this.area.w = parentArea.w;
-      this.area.h = parentArea.h;
+      this.area.y = p.y;
+      this.area.x = p.x;
+      this.area.w = p.w;
+      this.area.h = p.h;
     } else {
-      this.area.y = parentArea.y + 1;
-      this.area.x = parentArea.x;
-      this.area.w = parentArea.w;
-      this.area.h = parentArea.h - 2;
+      this.area.y = p.y + 1;
+      this.area.x = p.x;
+      this.area.w = p.w;
+      this.area.h = p.h - 2;
     }
   }
 

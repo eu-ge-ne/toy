@@ -1,6 +1,6 @@
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control, Modal } from "@lib/ui";
+import { Area, Modal } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -12,16 +12,18 @@ const MAX_LIST_SIZE = 10;
 export class Palette extends Modal<[], Command | undefined> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #editor = new Editor(this, { multi_line: false });
   #parentArea: Area = { y: 0, x: 0, w: 0, h: 0 };
+  #editor: Editor;
 
   #filtered_options: Option[] = [];
   #list_size = 0;
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(parent: Control) {
-    super(parent);
+  constructor(renderTree: () => void) {
+    super(renderTree);
+
+    this.#editor = new Editor({ multi_line: false }, renderTree);
   }
 
   async open(): Promise<Command | undefined> {
@@ -32,9 +34,9 @@ export class Palette extends Modal<[], Command | undefined> {
     this.#editor.reset(false);
 
     this.#filter();
-    this.parent?.render();
+    this.renderTree();
 
-    const command = await this.#process_input();
+    const command = await this.#processInput();
 
     this.#enabled = false;
     this.#editor.enable(false);
@@ -42,11 +44,11 @@ export class Palette extends Modal<[], Command | undefined> {
     return command;
   }
 
-  layout(parentArea: Area): void {
-    this.#parentArea.y = parentArea.y;
-    this.#parentArea.x = parentArea.x;
-    this.#parentArea.w = parentArea.w;
-    this.#parentArea.h = parentArea.h;
+  layout(p: Area): void {
+    this.#parentArea.y = p.y;
+    this.#parentArea.x = p.x;
+    this.#parentArea.w = p.w;
+    this.#parentArea.h = p.h;
   }
 
   render(): void {
@@ -74,11 +76,11 @@ export class Palette extends Modal<[], Command | undefined> {
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<Command | undefined> {
+  async #processInput(): Promise<Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.parent?.render();
+          this.renderTree();
           continue;
         }
 
@@ -90,7 +92,7 @@ export class Palette extends Modal<[], Command | undefined> {
           case "UP":
             if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.max(this.#selected_index - 1, 0);
-              this.parent?.render();
+              this.renderTree();
             }
             continue;
           case "DOWN":
@@ -99,14 +101,14 @@ export class Palette extends Modal<[], Command | undefined> {
                 this.#selected_index + 1,
                 this.#filtered_options.length - 1,
               );
-              this.parent?.render();
+              this.renderTree();
             }
             continue;
         }
 
         if (this.#editor.handleKey(key)) {
           this.#filter();
-          this.parent?.render();
+          this.renderTree();
         }
       }
     }

@@ -10,7 +10,13 @@ import { colors } from "./colors.ts";
 export class SaveAs extends Modal<[string], string> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #editor = new Editor(this, { multi_line: false });
+  #editor: Editor;
+
+  constructor(renderTree: () => void) {
+    super(renderTree);
+
+    this.#editor = new Editor({ multi_line: false }, renderTree);
+  }
 
   async open(path: string): Promise<string> {
     const { buffer } = this.#editor;
@@ -23,7 +29,7 @@ export class SaveAs extends Modal<[string], string> {
 
     this.render();
 
-    const result = await this.#process_input();
+    const result = await this.#processInput();
 
     this.#enabled = false;
     this.#editor.enable(false);
@@ -31,11 +37,11 @@ export class SaveAs extends Modal<[string], string> {
     return result;
   }
 
-  layout(parentArea: Area): void {
-    this.area.w = clamp(60, 0, parentArea.w);
-    this.area.h = clamp(10, 0, parentArea.h);
-    this.area.y = parentArea.y + Math.trunc((parentArea.h - this.area.h) / 2);
-    this.area.x = parentArea.x + Math.trunc((parentArea.w - this.area.w) / 2);
+  layout(p: Area): void {
+    this.area.w = clamp(60, 0, p.w);
+    this.area.h = clamp(10, 0, p.h);
+    this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
+    this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
 
     this.#editor.layout({
       y: this.area.y + 4,
@@ -66,11 +72,11 @@ export class SaveAs extends Modal<[string], string> {
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<string> {
+  async #processInput(): Promise<string> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.parent?.render();
+          this.renderTree();
           continue;
         }
 

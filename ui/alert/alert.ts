@@ -17,16 +17,16 @@ export class Alert extends Modal<[unknown], void> {
     this.#enabled = true;
 
     this.render();
-    await this.#process_input();
+    await this.#processInput();
 
     this.#enabled = false;
   }
 
-  layout(parentArea: Area): void {
-    this.area.w = clamp(60, 0, parentArea.w);
-    this.area.h = clamp(10, 0, parentArea.h);
-    this.area.y = parentArea.y + Math.trunc((parentArea.h - this.area.h) / 2);
-    this.area.x = parentArea.x + Math.trunc((parentArea.w - this.area.w) / 2);
+  layout(p: Area): void {
+    this.area.w = clamp(60, 0, p.w);
+    this.area.h = clamp(10, 0, p.h);
+    this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
+    this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
   render(): void {
@@ -64,11 +64,11 @@ export class Alert extends Modal<[unknown], void> {
     vt.sync.esu();
   }
 
-  async #process_input(): Promise<void> {
+  async #processInput(): Promise<void> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array || typeof key === "string") {
-          this.parent?.render();
+          this.renderTree();
           continue;
         }
 
