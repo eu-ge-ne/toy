@@ -14,7 +14,7 @@ export class Footer extends Control {
   #zen = true;
   #cursor_status = "";
 
-  constructor(parent?: Control) {
+  constructor(parent: Control) {
     super(parent);
     this.#setZen(true);
   }

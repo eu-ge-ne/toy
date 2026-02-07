@@ -13,7 +13,7 @@ export class Header extends Control {
   #file_path = "";
   #flag = false;
 
-  constructor(parent?: Control) {
+  constructor(parent: Control) {
     super(parent);
     this.#setZen(true);
   }

@@ -24,7 +24,7 @@ export class App extends Control {
   #file_path = "";
 
   constructor() {
-    super();
+    super(undefined as unknown as Control);
 
     this.header = new Header(this);
     this.footer = new Footer(this);
