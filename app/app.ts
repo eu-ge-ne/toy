@@ -118,6 +118,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     switch (cmd.name) {
       case "Zen":
+        this.zen = !this.zen;
         layoutChanged = true;
         break;
     }

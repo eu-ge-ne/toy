@@ -12,13 +12,12 @@ import { colors } from "./colors.ts";
 export class Footer extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #zen = true;
   #cursor_status = "";
 
   constructor(globals: Globals) {
     super(globals);
 
-    this.#setZen(true);
+    this.#onZen();
   }
 
   async run(): Promise<void> {
@@ -77,18 +76,14 @@ export class Footer extends Component<Globals> {
         return true;
 
       case "Zen":
-        this.#setZen();
+        this.#onZen();
         return true;
     }
 
     return false;
   }
 
-  #setZen(x?: boolean): void {
-    if (typeof x === "undefined") {
-      x = !this.#zen;
-    }
-    this.#zen = x;
-    this.#enabled = !x;
+  #onZen(): void {
+    this.#enabled = !this.globals.zen;
   }
 }

@@ -20,7 +20,6 @@ interface EditorOptions {
 export class Editor extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #zen = true;
 
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -61,6 +60,8 @@ export class Editor extends Component<Globals> {
 
   constructor(globals: Globals, readonly opts: EditorOptions) {
     super(globals);
+
+    this.#onZen();
   }
 
   async run(): Promise<void> {
@@ -68,7 +69,7 @@ export class Editor extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    if (this.#zen) {
+    if (this.globals.zen) {
       this.area.y = p.y;
       this.area.x = p.x;
       this.area.w = p.w;
@@ -124,7 +125,7 @@ export class Editor extends Component<Globals> {
         return true;
 
       case "Zen":
-        this.#setZen();
+        this.#onZen();
         return true;
 
       case "Whitespace":
@@ -516,15 +517,11 @@ export class Editor extends Component<Globals> {
     this.cursor_x += width;
   }
 
-  #setZen(x?: boolean): void {
-    if (typeof x === "undefined") {
-      x = !this.#zen;
-    }
-    this.#zen = x;
-    this.index_enabled = !x;
-  }
-
   enable(x: boolean): void {
     this.#enabled = x;
+  }
+
+  #onZen(): void {
+    this.index_enabled = !this.globals.zen;
   }
 }
