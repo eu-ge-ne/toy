@@ -1,4 +1,5 @@
 import * as commands from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -6,17 +7,14 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Header extends Component {
+export class Header extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #zen = true;
-  #file_path = "";
-  #flag = false;
 
-  constructor(renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals) {
+    super(globals);
 
-    this.#setZen(true);
+    this.#onZen();
   }
 
   async run(): Promise<void> {
@@ -45,10 +43,10 @@ export class Header extends Component {
     vt.clear_area(vt.buf, this.area);
     vt.cursor.set(vt.buf, this.area.y, this.area.x);
     vt.buf.write(this.#colors.filePath);
-    vt.write_text_center(vt.buf, span, this.#file_path);
+    vt.write_text_center(vt.buf, span, this.globals.filePath);
 
-    if (this.#flag) {
-      vt.buf.write(this.#colors.unsavedFlag);
+    if (this.globals.isDirty) {
+      vt.buf.write(this.#colors.isDirty);
       vt.write_text(vt.buf, span, " +");
     }
 
@@ -59,14 +57,6 @@ export class Header extends Component {
     vt.sync.esu();
   }
 
-  set_file_path(x: string): void {
-    this.#file_path = x;
-  }
-
-  set_unsaved_flag(x: boolean): void {
-    this.#flag = x;
-  }
-
   async handleCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Theme":
@@ -74,18 +64,14 @@ export class Header extends Component {
         return true;
 
       case "Zen":
-        this.#setZen();
+        this.#onZen();
         return true;
     }
 
     return false;
   }
 
-  #setZen(x?: boolean): void {
-    if (typeof x === "undefined") {
-      x = !this.#zen;
-    }
-    this.#zen = x;
-    this.#enabled = !x;
+  #onZen(): void {
+    this.#enabled = !this.globals.zen;
   }
 }

@@ -1,6 +1,7 @@
 import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -8,16 +9,14 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Footer extends Component {
+export class Footer extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #zen = true;
-  #cursor_status = "";
 
-  constructor(renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals) {
+    super(globals);
 
-    this.#setZen(true);
+    this.#onZen();
   }
 
   async run(): Promise<void> {
@@ -36,6 +35,13 @@ export class Footer extends Component {
       return;
     }
 
+    const ln = this.globals.ln + 1;
+    const col = this.globals.col + 1;
+    const pct = this.globals.lnCount === 0
+      ? 0
+      : ((ln / this.globals.lnCount) * 100).toFixed(0);
+    const cursorStatus = `${ln} ${col}  ${pct}% `;
+
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
@@ -46,27 +52,13 @@ export class Footer extends Component {
     vt.write_text(
       vt.buf,
       [this.area.w],
-      sprintf("%*s", this.area.w, this.#cursor_status),
+      sprintf("%*s", this.area.w, cursorStatus),
     );
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  set_cursor_status(data: { ln: number; col: number; ln_count: number }): void {
-    if (!this.#enabled) {
-      return;
-    }
-
-    const ln = data.ln + 1;
-    const col = data.col + 1;
-    const pct = data.ln_count === 0
-      ? 0
-      : ((ln / data.ln_count) * 100).toFixed(0);
-
-    this.#cursor_status = `${ln} ${col}  ${pct}% `;
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {
@@ -76,18 +68,14 @@ export class Footer extends Component {
         return true;
 
       case "Zen":
-        this.#setZen();
+        this.#onZen();
         return true;
     }
 
     return false;
   }
 
-  #setZen(x?: boolean): void {
-    if (typeof x === "undefined") {
-      x = !this.#zen;
-    }
-    this.#zen = x;
-    this.#enabled = !x;
+  #onZen(): void {
+    this.#enabled = !this.globals.zen;
   }
 }

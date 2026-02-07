@@ -1,5 +1,6 @@
 import { Command } from "@lib/commands";
 import { Cursor } from "@lib/cursor";
+import { Globals } from "@lib/globals";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
@@ -13,13 +14,12 @@ import { CharColor, charColor, colors } from "./colors.ts";
 import * as keys from "./handlers/mod.ts";
 
 interface EditorOptions {
-  multi_line: boolean;
+  multiLine: boolean;
 }
 
-export class Editor extends Component {
+export class Editor extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #zen = true;
 
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -45,10 +45,6 @@ export class Editor extends Component {
     new keys.UpHandler(this),
   ];
 
-  on_input_handled?: (_: number) => void;
-  on_render?: (_: number) => void;
-  on_cursor?: (_: { ln: number; col: number; ln_count: number }) => void;
-
   readonly buffer = new SegBuf();
   readonly cursor = new Cursor(this.buffer);
   readonly history = new History(this.buffer, this.cursor);
@@ -58,8 +54,10 @@ export class Editor extends Component {
   wrap_enabled = false;
   clipboard = "";
 
-  constructor(readonly opts: EditorOptions, renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals, readonly opts: EditorOptions) {
+    super(globals);
+
+    this.#onZen();
   }
 
   async run(): Promise<void> {
@@ -67,7 +65,7 @@ export class Editor extends Component {
   }
 
   resize(p: Area): void {
-    if (this.#zen) {
+    if (this.globals.zen) {
       this.area.y = p.y;
       this.area.x = p.x;
       this.area.w = p.w;
@@ -82,7 +80,7 @@ export class Editor extends Component {
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.opts.multi_line) {
+      if (this.opts.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -107,7 +105,7 @@ export class Editor extends Component {
     const r = handler?.handle(key) ?? false;
 
     const t1 = performance.now();
-    this.on_input_handled?.(t1 - t0);
+    this.globals.inputTime = t1 - t0;
 
     return r;
   }
@@ -123,7 +121,7 @@ export class Editor extends Component {
         return true;
 
       case "Zen":
-        this.#setZen();
+        this.#onZen();
         return true;
 
       case "Whitespace":
@@ -310,8 +308,6 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   renderComponent(): void {
-    const t0 = performance.now();
-
     const { wrap_enabled, index_enabled, buffer: { line_count } } = this;
 
     vt.sync.bsu();
@@ -349,10 +345,11 @@ export class Editor extends Component {
     vt.buf.flush();
     vt.sync.esu();
 
-    this.on_cursor?.({ ...this.cursor, ln_count: this.buffer.line_count });
-
-    const t1 = performance.now();
-    this.on_render?.(t1 - t0);
+    if (this.opts.multiLine) {
+      this.globals.ln = this.cursor.ln;
+      this.globals.col = this.cursor.col;
+      this.globals.lnCount = this.buffer.line_count;
+    }
   }
 
   #render_lines(): void {
@@ -515,15 +512,11 @@ export class Editor extends Component {
     this.cursor_x += width;
   }
 
-  #setZen(x?: boolean): void {
-    if (typeof x === "undefined") {
-      x = !this.#zen;
-    }
-    this.#zen = x;
-    this.index_enabled = !x;
-  }
-
   enable(x: boolean): void {
     this.#enabled = x;
+  }
+
+  #onZen(): void {
+    this.index_enabled = !this.globals.zen;
   }
 }

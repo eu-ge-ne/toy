@@ -1,4 +1,5 @@
 import { Command } from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -8,11 +9,9 @@ import { colors } from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export class Debug extends Component {
+export class Debug extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #input_time = "0";
-  #render_time = "0";
 
   async run(): Promise<void> {
     throw new Error("Not implemented");
@@ -47,13 +46,13 @@ export class Debug extends Component {
     vt.write_text(
       vt.buf,
       [this.area.w - 1],
-      `Input    : ${this.#input_time} ms`,
+      `Input    : ${this.globals.inputTime.toFixed(1)} ms`,
     );
     vt.cursor.set(vt.buf, this.area.y + 2, this.area.x + 1);
     vt.write_text(
       vt.buf,
       [this.area.w - 1],
-      `Render   : ${this.#render_time} ms`,
+      `Render   : ${this.globals.renderTime.toFixed(1)} ms`,
     );
     vt.cursor.set(vt.buf, this.area.y + 3, this.area.x + 1);
     vt.write_text(vt.buf, [this.area.w - 1], `RSS      : ${rss} MiB`);
@@ -70,18 +69,6 @@ export class Debug extends Component {
 
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  set_input_time(x: number): void {
-    if (this.#enabled) {
-      this.#input_time = x.toFixed(1);
-    }
-  }
-
-  set_render_time(x: number): void {
-    if (this.#enabled) {
-      this.#render_time = x.toFixed(1);
-    }
   }
 
   async handleCommand(cmd: Command): Promise<boolean> {

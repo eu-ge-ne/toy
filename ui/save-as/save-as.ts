@@ -1,4 +1,5 @@
 import * as commands from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -7,15 +8,15 @@ import { Editor } from "@ui/editor";
 
 import { colors } from "./colors.ts";
 
-export class SaveAs extends Component<[string], string> {
+export class SaveAs extends Component<Globals, [string], string> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #editor: Editor;
 
-  constructor(renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals) {
+    super(globals);
 
-    this.#editor = new Editor({ multi_line: false }, renderTree);
+    this.#editor = new Editor(globals, { multiLine: false });
   }
 
   async run(path: string): Promise<string> {
@@ -27,7 +28,7 @@ export class SaveAs extends Component<[string], string> {
     buffer.reset(path);
     this.#editor.reset(true);
 
-    this.renderTree();
+    this.globals.renderTree();
 
     const result = await this.#processInput();
 
@@ -76,7 +77,7 @@ export class SaveAs extends Component<[string], string> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.renderTree();
+          this.globals.renderTree();
           continue;
         }
 
@@ -92,7 +93,7 @@ export class SaveAs extends Component<[string], string> {
         }
 
         if (this.#editor.handleKey(key)) {
-          this.renderTree();
+          this.globals.renderTree();
         }
       }
     }

@@ -1,4 +1,4 @@
 {
-  "name": "@toy/app",
+  "name": "@lib/globals",
   "exports": "./main.ts"
 }

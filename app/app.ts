@@ -1,5 +1,6 @@
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
+import { Globals } from "@lib/globals";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -11,7 +12,17 @@ import { Header } from "@ui/header";
 import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
-export class App extends Component<[string], void> {
+export class App extends Component<Globals, [string], void> implements Globals {
+  filePath = "";
+  isDirty = false;
+  zen = true;
+  renderTree = this.renderComponent.bind(this);
+  inputTime = 0;
+  renderTime = 0;
+  ln = 0;
+  col = 0;
+  lnCount = 0;
+
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -21,30 +32,23 @@ export class App extends Component<[string], void> {
   ask: Ask;
   saveas: SaveAs;
 
-  #file_path = "";
-
   constructor() {
-    super(() => {});
+    super(undefined as unknown as Globals);
 
-    const renderTree = this.renderComponent.bind(this);
-
-    this.header = new Header(renderTree);
-    this.footer = new Footer(renderTree);
-    this.editor = new Editor({ multi_line: true }, renderTree);
-    this.debug = new Debug(renderTree);
-    this.palette = new Palette(renderTree);
-    this.alert = new Alert(renderTree);
-    this.ask = new Ask(renderTree);
-    this.saveas = new SaveAs(renderTree);
+    this.header = new Header(this);
+    this.footer = new Footer(this);
+    this.editor = new Editor(this, { multiLine: true });
+    this.debug = new Debug(this);
+    this.palette = new Palette(this);
+    this.alert = new Alert(this);
+    this.ask = new Ask(this);
+    this.saveas = new SaveAs(this);
   }
 
   async run(fileName?: string): Promise<void> {
     this.editor.enable(true);
-    this.editor.on_input_handled = (x) => this.debug.set_input_time(x);
-    this.editor.on_render = (x) => this.debug.set_render_time(x);
-    this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
     this.editor.history.on_changed = () =>
-      this.header.set_unsaved_flag(!this.editor.history.is_empty);
+      this.isDirty = !this.editor.history.is_empty;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
@@ -77,6 +81,8 @@ export class App extends Component<[string], void> {
   }
 
   renderComponent(): void {
+    const t0 = performance.now();
+
     vt.sync.bsu();
 
     this.header.renderComponent();
@@ -89,6 +95,8 @@ export class App extends Component<[string], void> {
     this.palette.renderComponent();
 
     vt.sync.esu();
+
+    this.renderTime = performance.now() - t0;
   }
 
   async #processInput(): Promise<void> {
@@ -117,6 +125,7 @@ export class App extends Component<[string], void> {
 
     switch (cmd.name) {
       case "Zen":
+        this.zen = !this.zen;
         layoutChanged = true;
         break;
     }
@@ -201,7 +210,7 @@ export class App extends Component<[string], void> {
     try {
       await file.load(this.editor.buffer, file_path);
 
-      this.#setFilePath(file_path);
+      this.filePath = file_path;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
@@ -214,7 +223,7 @@ export class App extends Component<[string], void> {
   }
 
   async #save(): Promise<boolean> {
-    if (this.#file_path) {
+    if (this.filePath) {
       return await this.#saveFile();
     } else {
       return await this.#saveFileAs();
@@ -223,7 +232,7 @@ export class App extends Component<[string], void> {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.editor.buffer, this.#file_path);
+      await file.save(this.editor.buffer, this.filePath);
 
       return true;
     } catch (err) {
@@ -235,7 +244,7 @@ export class App extends Component<[string], void> {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.saveas.run(this.#file_path);
+      const file_path = await this.saveas.run(this.filePath);
       if (!file_path) {
         return false;
       }
@@ -243,19 +252,13 @@ export class App extends Component<[string], void> {
       try {
         await file.save(this.editor.buffer, file_path);
 
-        this.#setFilePath(file_path);
+        this.filePath = file_path;
 
         return true;
       } catch (err) {
         await this.alert.run(err);
       }
     }
-  }
-
-  #setFilePath(file_path: string): void {
-    this.#file_path = file_path;
-
-    this.header.set_file_path(file_path);
   }
 
   #exit = (e?: PromiseRejectionEvent) => {
