@@ -10,7 +10,6 @@ import { colors } from "./colors.ts";
 export class Header extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #flag = false;
 
   constructor(globals: Globals) {
     super(globals);
@@ -46,8 +45,8 @@ export class Header extends Component<Globals> {
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.globals.filePath);
 
-    if (this.#flag) {
-      vt.buf.write(this.#colors.unsavedFlag);
+    if (this.globals.isDirty) {
+      vt.buf.write(this.#colors.isDirty);
       vt.write_text(vt.buf, span, " +");
     }
 
@@ -56,10 +55,6 @@ export class Header extends Component<Globals> {
 
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  set_unsaved_flag(x: boolean): void {
-    this.#flag = x;
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

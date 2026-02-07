@@ -14,6 +14,7 @@ import { SaveAs } from "@ui/save-as";
 
 export class App extends Component<Globals, [string], void> implements Globals {
   filePath = "";
+  isDirty = false;
   zen = true;
   renderTree = this.renderComponent.bind(this);
 
@@ -45,7 +46,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.editor.on_render = (x) => this.debug.set_render_time(x);
     this.editor.on_cursor = (x) => this.footer.set_cursor_status(x);
     this.editor.history.on_changed = () =>
-      this.header.set_unsaved_flag(!this.editor.history.is_empty);
+      this.isDirty = !this.editor.history.is_empty;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
