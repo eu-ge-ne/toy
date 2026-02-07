@@ -2,10 +2,10 @@ import { Command } from "@lib/commands";
 
 import { Area } from "./area.ts";
 
-export abstract class Component<P extends unknown[] = [], R = void> {
+export abstract class Component<G, P extends unknown[] = [], R = void> {
   area: Area = { y: 0, x: 0, w: 0, h: 0 };
 
-  constructor(protected renderTree: () => void) {}
+  constructor(protected globals: G) {}
 
   abstract run(...params: P): Promise<R>;
   abstract resize(_: Area): void;

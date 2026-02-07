@@ -1,4 +1,4 @@
 {
-  "name": "@lib/ui",
+  "name": "@lib/globals",
   "exports": "./main.ts"
 }

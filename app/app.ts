@@ -1,5 +1,6 @@
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
+import { Globals } from "@lib/globals";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
@@ -11,7 +12,7 @@ import { Header } from "@ui/header";
 import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
-export class App extends Component<[string], void> {
+export class App extends Component<Globals, [string], void> implements Globals {
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -23,19 +24,20 @@ export class App extends Component<[string], void> {
 
   #file_path = "";
 
+  zen = true;
+  renderTree = this.renderComponent.bind(this);
+
   constructor() {
-    super(() => {});
+    super(undefined as unknown as Globals);
 
-    const renderTree = this.renderComponent.bind(this);
-
-    this.header = new Header(renderTree);
-    this.footer = new Footer(renderTree);
-    this.editor = new Editor({ multi_line: true }, renderTree);
-    this.debug = new Debug(renderTree);
-    this.palette = new Palette(renderTree);
-    this.alert = new Alert(renderTree);
-    this.ask = new Ask(renderTree);
-    this.saveas = new SaveAs(renderTree);
+    this.header = new Header(this);
+    this.footer = new Footer(this);
+    this.editor = new Editor(this, { multi_line: true });
+    this.debug = new Debug(this);
+    this.palette = new Palette(this);
+    this.alert = new Alert(this);
+    this.ask = new Ask(this);
+    this.saveas = new SaveAs(this);
   }
 
   async run(fileName?: string): Promise<void> {

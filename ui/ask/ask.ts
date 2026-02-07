@@ -1,4 +1,5 @@
 import * as commands from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -6,7 +7,7 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Ask extends Component<[string], boolean> {
+export class Ask extends Component<Globals, [string], boolean> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";
@@ -16,7 +17,7 @@ export class Ask extends Component<[string], boolean> {
 
     this.#enabled = true;
 
-    this.renderTree();
+    this.globals.renderTree();
     const result = await this.#processInput();
 
     this.#enabled = false;
@@ -70,7 +71,7 @@ export class Ask extends Component<[string], boolean> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array || typeof key === "string") {
-          this.renderTree();
+          this.globals.renderTree();
           continue;
         }
 

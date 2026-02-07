@@ -1,6 +1,7 @@
 import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -8,14 +9,14 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Footer extends Component {
+export class Footer extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
   #cursor_status = "";
 
-  constructor(renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals) {
+    super(globals);
 
     this.#setZen(true);
   }

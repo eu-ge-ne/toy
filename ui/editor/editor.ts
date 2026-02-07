@@ -1,5 +1,6 @@
 import { Command } from "@lib/commands";
 import { Cursor } from "@lib/cursor";
+import { Globals } from "@lib/globals";
 import { graphemes } from "@lib/grapheme";
 import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
@@ -16,7 +17,7 @@ interface EditorOptions {
   multi_line: boolean;
 }
 
-export class Editor extends Component {
+export class Editor extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
@@ -58,8 +59,8 @@ export class Editor extends Component {
   wrap_enabled = false;
   clipboard = "";
 
-  constructor(readonly opts: EditorOptions, renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals, readonly opts: EditorOptions) {
+    super(globals);
   }
 
   async run(): Promise<void> {

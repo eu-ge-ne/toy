@@ -1,4 +1,5 @@
 import { Command } from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
@@ -8,7 +9,7 @@ import { colors } from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export class Debug extends Component {
+export class Debug extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #input_time = "0";

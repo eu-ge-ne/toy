@@ -1,4 +1,5 @@
 import { Command } from "@lib/commands";
+import { Globals } from "@lib/globals";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -9,7 +10,7 @@ import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Component<[], Command | undefined> {
+export class Palette extends Component<Globals, [], Command | undefined> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #parentArea: Area = { y: 0, x: 0, w: 0, h: 0 };
@@ -20,10 +21,10 @@ export class Palette extends Component<[], Command | undefined> {
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(renderTree: () => void) {
-    super(renderTree);
+  constructor(globals: Globals) {
+    super(globals);
 
-    this.#editor = new Editor({ multi_line: false }, renderTree);
+    this.#editor = new Editor(globals, { multi_line: false });
   }
 
   async run(): Promise<Command | undefined> {
@@ -34,7 +35,7 @@ export class Palette extends Component<[], Command | undefined> {
     this.#editor.reset(false);
 
     this.#filter();
-    this.renderTree();
+    this.globals.renderTree();
 
     const command = await this.#processInput();
 
@@ -80,7 +81,7 @@ export class Palette extends Component<[], Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.renderTree();
+          this.globals.renderTree();
           continue;
         }
 
@@ -92,7 +93,7 @@ export class Palette extends Component<[], Command | undefined> {
           case "UP":
             if (this.#filtered_options.length > 0) {
               this.#selected_index = Math.max(this.#selected_index - 1, 0);
-              this.renderTree();
+              this.globals.renderTree();
             }
             continue;
           case "DOWN":
@@ -101,14 +102,14 @@ export class Palette extends Component<[], Command | undefined> {
                 this.#selected_index + 1,
                 this.#filtered_options.length - 1,
               );
-              this.renderTree();
+              this.globals.renderTree();
             }
             continue;
         }
 
         if (this.#editor.handleKey(key)) {
           this.#filter();
-          this.renderTree();
+          this.globals.renderTree();
         }
       }
     }
