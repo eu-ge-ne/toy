@@ -1,13 +1,13 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Modal } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
 import { colors } from "./colors.ts";
 
-export class SaveAs extends Modal<[string], string> {
+export class SaveAs extends Component<[string], string> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #editor: Editor;
@@ -18,7 +18,7 @@ export class SaveAs extends Modal<[string], string> {
     this.#editor = new Editor({ multi_line: false }, renderTree);
   }
 
-  async open(path: string): Promise<string> {
+  async run(path: string): Promise<string> {
     const { buffer } = this.#editor;
 
     this.#enabled = true;

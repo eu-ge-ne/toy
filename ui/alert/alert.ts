@@ -1,17 +1,17 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Modal } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Alert extends Modal<[unknown], void> {
+export class Alert extends Component<[unknown], void> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";
 
-  async open(err: unknown): Promise<void> {
+  async run(err: unknown): Promise<void> {
     this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
 
     this.#enabled = true;

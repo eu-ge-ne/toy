@@ -6,7 +6,7 @@ import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -16,7 +16,7 @@ interface EditorOptions {
   multi_line: boolean;
 }
 
-export class Editor extends Control {
+export class Editor extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
@@ -60,6 +60,10 @@ export class Editor extends Control {
 
   constructor(readonly opts: EditorOptions, renderTree: () => void) {
     super(renderTree);
+  }
+
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
   }
 
   resize(p: Area): void {

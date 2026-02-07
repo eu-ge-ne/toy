@@ -1,6 +1,6 @@
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Alert } from "@ui/alert";
 import { Ask } from "@ui/ask";
@@ -11,7 +11,7 @@ import { Header } from "@ui/header";
 import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
-export class App extends Control {
+export class App extends Component<[string], void> {
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -163,7 +163,7 @@ export class App extends Control {
     this.editor.enable(false);
 
     if (!this.editor.history.is_empty) {
-      if (await this.ask.open("Save changes?")) {
+      if (await this.ask.run("Save changes?")) {
         await this.#save();
       }
     }
@@ -174,7 +174,7 @@ export class App extends Control {
   async #handlePalette(): Promise<void> {
     this.editor.enable(false);
 
-    const command = await this.palette.open();
+    const command = await this.palette.run();
 
     this.editor.enable(true);
 
@@ -206,7 +206,7 @@ export class App extends Control {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.alert.open(err);
+        await this.alert.run(err);
 
         this.#exit();
       }
@@ -227,7 +227,7 @@ export class App extends Control {
 
       return true;
     } catch (err) {
-      await this.alert.open(err);
+      await this.alert.run(err);
 
       return await this.#saveFileAs();
     }
@@ -235,7 +235,7 @@ export class App extends Control {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.saveas.open(this.#file_path);
+      const file_path = await this.saveas.run(this.#file_path);
       if (!file_path) {
         return false;
       }
@@ -247,7 +247,7 @@ export class App extends Control {
 
         return true;
       } catch (err) {
-        await this.alert.open(err);
+        await this.alert.run(err);
       }
     }
   }

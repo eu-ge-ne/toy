@@ -1,18 +1,22 @@
 import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export class Debug extends Control {
+export class Debug extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #input_time = "0";
   #render_time = "0";
+
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
+  }
 
   resize(p: Area): void {
     this.area.w = clamp(30, 0, p.w);

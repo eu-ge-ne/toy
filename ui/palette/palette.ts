@@ -1,6 +1,6 @@
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Modal } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import { Editor } from "@ui/editor";
 
@@ -9,7 +9,7 @@ import { Option, options } from "./options.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Modal<[], Command | undefined> {
+export class Palette extends Component<[], Command | undefined> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #parentArea: Area = { y: 0, x: 0, w: 0, h: 0 };
@@ -26,7 +26,7 @@ export class Palette extends Modal<[], Command | undefined> {
     this.#editor = new Editor({ multi_line: false }, renderTree);
   }
 
-  async open(): Promise<Command | undefined> {
+  async run(): Promise<Command | undefined> {
     this.#enabled = true;
     this.#editor.enable(true);
 

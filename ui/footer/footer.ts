@@ -3,12 +3,12 @@ import { sprintf } from "@std/fmt/printf";
 
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Footer extends Control {
+export class Footer extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
@@ -18,6 +18,10 @@ export class Footer extends Control {
     super(renderTree);
 
     this.#setZen(true);
+  }
+
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
   }
 
   resize(p: Area): void {

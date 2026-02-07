@@ -1,12 +1,12 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Control } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Header extends Control {
+export class Header extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
@@ -17,6 +17,10 @@ export class Header extends Control {
     super(renderTree);
 
     this.#setZen(true);
+  }
+
+  async run(): Promise<void> {
+    throw new Error("Not implemented");
   }
 
   resize(p: Area): void {

@@ -1,17 +1,17 @@
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Modal } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export class Ask extends Modal<[string], boolean> {
+export class Ask extends Component<[string], boolean> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";
 
-  async open(text: string): Promise<boolean> {
+  async run(text: string): Promise<boolean> {
     this.#text = text;
 
     this.#enabled = true;
