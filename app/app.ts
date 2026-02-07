@@ -81,6 +81,8 @@ export class App extends Component<Globals, [string], void> implements Globals {
   }
 
   renderComponent(): void {
+    const t0 = performance.now();
+
     vt.sync.bsu();
 
     this.header.renderComponent();
@@ -93,6 +95,8 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.palette.renderComponent();
 
     vt.sync.esu();
+
+    this.renderTime = performance.now() - t0;
   }
 
   async #processInput(): Promise<void> {

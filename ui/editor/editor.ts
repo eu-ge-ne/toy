@@ -308,8 +308,6 @@ export class Editor extends Component<Globals> {
   private scroll_col = 0;
 
   renderComponent(): void {
-    const t0 = performance.now();
-
     const { wrap_enabled, index_enabled, buffer: { line_count } } = this;
 
     vt.sync.bsu();
@@ -350,9 +348,6 @@ export class Editor extends Component<Globals> {
     this.globals.ln = this.cursor.ln;
     this.globals.col = this.cursor.col;
     this.globals.lnCount = this.buffer.line_count;
-
-    const t1 = performance.now();
-    this.globals.renderTime = t1 - t0;
   }
 
   #render_lines(): void {
