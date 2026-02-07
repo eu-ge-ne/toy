@@ -16,7 +16,7 @@ export class Ask extends Modal<[string], boolean> {
 
     this.#enabled = true;
 
-    this.render();
+    this.renderTree();
     const result = await this.#processInput();
 
     this.#enabled = false;

@@ -27,7 +27,7 @@ export class SaveAs extends Modal<[string], string> {
     buffer.reset(path);
     this.#editor.reset(true);
 
-    this.render();
+    this.renderTree();
 
     const result = await this.#processInput();
 

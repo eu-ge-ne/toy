@@ -16,7 +16,7 @@ export class Alert extends Modal<[unknown], void> {
 
     this.#enabled = true;
 
-    this.render();
+    this.renderTree();
     await this.#processInput();
 
     this.#enabled = false;

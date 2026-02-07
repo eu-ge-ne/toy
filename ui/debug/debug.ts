@@ -71,16 +71,12 @@ export class Debug extends Control {
   set_input_time(x: number): void {
     if (this.#enabled) {
       this.#input_time = x.toFixed(1);
-
-      this.render();
     }
   }
 
   set_render_time(x: number): void {
     if (this.#enabled) {
       this.#render_time = x.toFixed(1);
-
-      this.render();
     }
   }
 

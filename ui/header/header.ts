@@ -57,14 +57,10 @@ export class Header extends Control {
 
   set_file_path(x: string): void {
     this.#file_path = x;
-
-    this.render();
   }
 
   set_unsaved_flag(x: boolean): void {
     this.#flag = x;
-
-    this.render();
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

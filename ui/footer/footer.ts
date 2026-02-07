@@ -63,8 +63,6 @@ export class Footer extends Control {
       : ((ln / data.ln_count) * 100).toFixed(0);
 
     this.#cursor_status = `${ln} ${col}  ${pct}% `;
-
-    this.render();
   }
 
   async handleCommand(cmd: commands.Command): Promise<boolean> {

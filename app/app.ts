@@ -106,7 +106,7 @@ export class App extends Control {
         }
 
         if (this.editor.handleKey(key)) {
-          this.editor.render();
+          this.render();
         }
       }
     }
@@ -149,7 +149,7 @@ export class App extends Control {
           if (layoutChanged) {
             this.#refresh();
           } else {
-            this.editor.render();
+            this.render();
           }
           return true;
         }
@@ -178,7 +178,7 @@ export class App extends Control {
 
     this.editor.enable(true);
 
-    this.editor.render();
+    this.render();
 
     if (command) {
       await this.handleCommand(command);
@@ -194,7 +194,7 @@ export class App extends Control {
 
     this.editor.enable(true);
 
-    this.editor.render();
+    this.render();
   }
 
   async #open(file_path: string): Promise<void> {
