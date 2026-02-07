@@ -7,7 +7,7 @@ export abstract class Control {
 
   constructor(protected renderTree: () => void) {}
 
-  abstract layout(_: Area): void;
+  abstract resize(_: Area): void;
   abstract renderComponent(): void;
   abstract handleCommand(_: Command): Promise<boolean>;
 }

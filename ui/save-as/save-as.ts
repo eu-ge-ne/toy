@@ -37,13 +37,13 @@ export class SaveAs extends Modal<[string], string> {
     return result;
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.area.w = clamp(60, 0, p.w);
     this.area.h = clamp(10, 0, p.h);
     this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
     this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
 
-    this.#editor.layout({
+    this.#editor.resize({
       y: this.area.y + 4,
       x: this.area.x + 2,
       w: this.area.w - 4,

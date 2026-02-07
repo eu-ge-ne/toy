@@ -60,20 +60,20 @@ export class App extends Control {
     await this.#processInput();
   }
 
-  override layout({ y, x, w, h }: Area): void {
+  resize({ y, x, w, h }: Area): void {
     this.area.y = y;
     this.area.x = x;
     this.area.w = w;
     this.area.h = h;
 
-    this.header.layout(this.area);
-    this.footer.layout(this.area);
-    this.editor.layout(this.area);
-    this.debug.layout(this.editor.area);
-    this.palette.layout(this.editor.area);
-    this.alert.layout(this.editor.area);
-    this.ask.layout(this.editor.area);
-    this.saveas.layout(this.editor.area);
+    this.header.resize(this.area);
+    this.footer.resize(this.area);
+    this.editor.resize(this.area);
+    this.debug.resize(this.editor.area);
+    this.palette.resize(this.editor.area);
+    this.alert.resize(this.editor.area);
+    this.ask.resize(this.editor.area);
+    this.saveas.resize(this.editor.area);
   }
 
   renderComponent(): void {
@@ -270,7 +270,8 @@ export class App extends Control {
 
   #refresh(): void {
     const { columns: w, rows: h } = Deno.consoleSize();
-    this.layout({ y: 0, x: 0, w, h });
+    this.resize({ y: 0, x: 0, w, h });
+
     vt.dummy_req();
   }
 }

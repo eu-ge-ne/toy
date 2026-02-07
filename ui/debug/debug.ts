@@ -14,7 +14,7 @@ export class Debug extends Control {
   #input_time = "0";
   #render_time = "0";
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.area.w = clamp(30, 0, p.w);
     this.area.h = clamp(7, 0, p.h);
     this.area.y = p.y + p.h - this.area.h;

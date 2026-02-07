@@ -44,7 +44,7 @@ export class Palette extends Modal<[], Command | undefined> {
     return command;
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.#parentArea.y = p.y;
     this.#parentArea.x = p.x;
     this.#parentArea.w = p.w;
@@ -146,7 +146,7 @@ export class Palette extends Modal<[], Command | undefined> {
     this.area.x = this.#parentArea.x +
       Math.trunc((this.#parentArea.w - this.area.w) / 2);
 
-    this.#editor.layout({
+    this.#editor.resize({
       y: this.area.y + 1,
       x: this.area.x + 2,
       w: this.area.w - 4,

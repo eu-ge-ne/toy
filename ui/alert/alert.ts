@@ -22,7 +22,7 @@ export class Alert extends Modal<[unknown], void> {
     this.#enabled = false;
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.area.w = clamp(60, 0, p.w);
     this.area.h = clamp(10, 0, p.h);
     this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);

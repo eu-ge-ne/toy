@@ -24,7 +24,7 @@ export class Ask extends Modal<[string], boolean> {
     return result;
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.area.w = clamp(60, 0, p.w);
     this.area.h = clamp(7, 0, p.h);
     this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);

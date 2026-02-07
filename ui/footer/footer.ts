@@ -20,7 +20,7 @@ export class Footer extends Control {
     this.#setZen(true);
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     this.area.w = p.w;
     this.area.h = clamp(1, 0, p.h);
     this.area.y = p.y + p.h - 1;

@@ -62,7 +62,7 @@ export class Editor extends Control {
     super(renderTree);
   }
 
-  layout(p: Area): void {
+  resize(p: Area): void {
     if (this.#zen) {
       this.area.y = p.y;
       this.area.x = p.x;
