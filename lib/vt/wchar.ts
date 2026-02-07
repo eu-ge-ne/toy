@@ -1,6 +1,6 @@
 import { CSI } from "./ansi.ts";
 import { set } from "./cursor.ts";
-import { sync } from "./sync.ts";
+import { sync } from "./writer.ts";
 
 export const cpr_req = CSI("6n");
 

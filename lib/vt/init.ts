@@ -2,7 +2,7 @@ import { set_flags } from "@lib/kitty";
 
 import { CSI } from "./ansi.ts";
 import * as cursor from "./cursor.ts";
-import { sync } from "./sync.ts";
+import { sync } from "./writer.ts";
 
 export function init(): void {
   Deno.stdin.setRaw(true);

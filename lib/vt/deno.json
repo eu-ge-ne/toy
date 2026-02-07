@@ -1,4 +1,4 @@
 {
   "name": "@lib/vt",
-  "exports": "./mod.ts"
+  "exports": "./main.ts"
 }
