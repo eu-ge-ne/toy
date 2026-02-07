@@ -13,6 +13,10 @@ import { Palette } from "@ui/palette";
 import { SaveAs } from "@ui/save-as";
 
 export class App extends Component<Globals, [string], void> implements Globals {
+  filePath = "";
+  zen = true;
+  renderTree = this.renderComponent.bind(this);
+
   header: Header;
   footer: Footer;
   editor: Editor;
@@ -21,11 +25,6 @@ export class App extends Component<Globals, [string], void> implements Globals {
   alert: Alert;
   ask: Ask;
   saveas: SaveAs;
-
-  #file_path = "";
-
-  zen = true;
-  renderTree = this.renderComponent.bind(this);
 
   constructor() {
     super(undefined as unknown as Globals);
@@ -203,7 +202,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     try {
       await file.load(this.editor.buffer, file_path);
 
-      this.#setFilePath(file_path);
+      this.filePath = file_path;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
@@ -216,7 +215,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
   }
 
   async #save(): Promise<boolean> {
-    if (this.#file_path) {
+    if (this.filePath) {
       return await this.#saveFile();
     } else {
       return await this.#saveFileAs();
@@ -225,7 +224,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.editor.buffer, this.#file_path);
+      await file.save(this.editor.buffer, this.filePath);
 
       return true;
     } catch (err) {
@@ -237,7 +236,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.saveas.run(this.#file_path);
+      const file_path = await this.saveas.run(this.filePath);
       if (!file_path) {
         return false;
       }
@@ -245,19 +244,13 @@ export class App extends Component<Globals, [string], void> implements Globals {
       try {
         await file.save(this.editor.buffer, file_path);
 
-        this.#setFilePath(file_path);
+        this.filePath = file_path;
 
         return true;
       } catch (err) {
         await this.alert.run(err);
       }
     }
-  }
-
-  #setFilePath(file_path: string): void {
-    this.#file_path = file_path;
-
-    this.header.set_file_path(file_path);
   }
 
   #exit = (e?: PromiseRejectionEvent) => {

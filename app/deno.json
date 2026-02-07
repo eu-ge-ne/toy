@@ -1,4 +1,4 @@
 {
   "name": "@toy/app",
-  "exports": "./mod.ts"
+  "exports": "./main.ts"
 }

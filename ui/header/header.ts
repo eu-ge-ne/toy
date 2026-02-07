@@ -11,7 +11,6 @@ export class Header extends Component<Globals> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #zen = true;
-  #file_path = "";
   #flag = false;
 
   constructor(globals: Globals) {
@@ -46,7 +45,7 @@ export class Header extends Component<Globals> {
     vt.clear_area(vt.buf, this.area);
     vt.cursor.set(vt.buf, this.area.y, this.area.x);
     vt.buf.write(this.#colors.filePath);
-    vt.write_text_center(vt.buf, span, this.#file_path);
+    vt.write_text_center(vt.buf, span, this.globals.filePath);
 
     if (this.#flag) {
       vt.buf.write(this.#colors.unsavedFlag);
@@ -58,10 +57,6 @@ export class Header extends Component<Globals> {
 
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  set_file_path(x: string): void {
-    this.#file_path = x;
   }
 
   set_unsaved_flag(x: boolean): void {
