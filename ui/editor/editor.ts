@@ -305,7 +305,7 @@ export class Editor extends Control {
   private scroll_ln = 0;
   private scroll_col = 0;
 
-  render(): void {
+  renderComponent(): void {
     const t0 = performance.now();
 
     const { wrap_enabled, index_enabled, buffer: { line_count } } = this;

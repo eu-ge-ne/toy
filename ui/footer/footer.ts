@@ -27,7 +27,7 @@ export class Footer extends Control {
     this.area.x = p.x;
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }

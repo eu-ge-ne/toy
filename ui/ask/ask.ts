@@ -31,7 +31,7 @@ export class Ask extends Modal<[string], boolean> {
     this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }

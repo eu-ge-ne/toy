@@ -29,7 +29,7 @@ export class Alert extends Modal<[unknown], void> {
     this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }
@@ -64,6 +64,16 @@ export class Alert extends Modal<[unknown], void> {
     vt.sync.esu();
   }
 
+  async handleCommand(cmd: commands.Command): Promise<boolean> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        return true;
+    }
+
+    return false;
+  }
+
   async #processInput(): Promise<void> {
     while (true) {
       for await (const key of vt.read()) {
@@ -79,15 +89,5 @@ export class Alert extends Modal<[unknown], void> {
         }
       }
     }
-  }
-
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        return true;
-    }
-
-    return false;
   }
 }

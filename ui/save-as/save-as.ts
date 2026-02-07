@@ -51,7 +51,7 @@ export class SaveAs extends Modal<[string], string> {
     });
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }
@@ -67,7 +67,7 @@ export class SaveAs extends Modal<[string], string> {
     vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
     vt.write_text_center(vt.buf, [this.area.w], "ESC‧cancel    ENTER‧ok");
 
-    this.#editor.render();
+    this.#editor.renderComponent();
 
     vt.sync.esu();
   }
@@ -92,7 +92,7 @@ export class SaveAs extends Modal<[string], string> {
         }
 
         if (this.#editor.handleKey(key)) {
-          this.#editor.render();
+          this.renderTree();
         }
       }
     }

@@ -26,7 +26,7 @@ export class App extends Control {
   constructor() {
     super(() => {});
 
-    const renderTree = this.render.bind(this);
+    const renderTree = this.renderComponent.bind(this);
 
     this.header = new Header(renderTree);
     this.footer = new Footer(renderTree);
@@ -76,17 +76,17 @@ export class App extends Control {
     this.saveas.layout(this.editor.area);
   }
 
-  render(): void {
+  renderComponent(): void {
     vt.sync.bsu();
 
-    this.header.render();
-    this.editor.render();
-    this.footer.render();
-    this.debug.render();
-    this.saveas.render();
-    this.alert.render();
-    this.ask.render();
-    this.palette.render();
+    this.header.renderComponent();
+    this.editor.renderComponent();
+    this.footer.renderComponent();
+    this.debug.renderComponent();
+    this.saveas.renderComponent();
+    this.alert.renderComponent();
+    this.ask.renderComponent();
+    this.palette.renderComponent();
 
     vt.sync.esu();
   }
@@ -95,7 +95,7 @@ export class App extends Control {
     while (true) {
       for await (const key of vt.read()) {
         if (key instanceof Uint8Array) {
-          this.render();
+          this.renderComponent();
           continue;
         }
 
@@ -106,7 +106,7 @@ export class App extends Control {
         }
 
         if (this.editor.handleKey(key)) {
-          this.render();
+          this.renderComponent();
         }
       }
     }
@@ -149,7 +149,7 @@ export class App extends Control {
           if (layoutChanged) {
             this.#refresh();
           } else {
-            this.render();
+            this.renderComponent();
           }
           return true;
         }
@@ -178,7 +178,7 @@ export class App extends Control {
 
     this.editor.enable(true);
 
-    this.render();
+    this.renderComponent();
 
     if (command) {
       await this.handleCommand(command);
@@ -194,7 +194,7 @@ export class App extends Control {
 
     this.editor.enable(true);
 
-    this.render();
+    this.renderComponent();
   }
 
   async #open(file_path: string): Promise<void> {

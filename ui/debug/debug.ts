@@ -21,7 +21,7 @@ export class Debug extends Control {
     this.area.x = p.x + p.w - this.area.w;
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }

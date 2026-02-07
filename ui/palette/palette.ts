@@ -51,7 +51,7 @@ export class Palette extends Modal<[], Command | undefined> {
     this.#parentArea.h = p.h;
   }
 
-  render(): void {
+  renderComponent(): void {
     if (!this.#enabled) {
       return;
     }
@@ -71,7 +71,7 @@ export class Palette extends Modal<[], Command | undefined> {
       this.#render_options();
     }
 
-    this.#editor.render();
+    this.#editor.renderComponent();
 
     vt.sync.esu();
   }
