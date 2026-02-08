@@ -65,7 +65,7 @@ export class Editor extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    if (this.globals.zen) {
+    if (!this.opts.multiLine || this.globals.zen) {
       this.area.y = p.y;
       this.area.x = p.x;
       this.area.w = p.w;
