@@ -71,7 +71,7 @@ export class Debug extends Component<Globals> {
     vt.sync.esu();
   }
 
-  async handleCommand(cmd: Command): Promise<void> {
+  async handle(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

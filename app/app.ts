@@ -130,22 +130,22 @@ export class App extends Component<Globals, [string], void> implements Globals {
     const cmdName = ShortcutToCommand[key.toString()];
     if (typeof cmdName !== "undefined") {
       const cmd = { name: cmdName } as Command;
-      await this.handleCommand(cmd);
-      await this.#children.header.handleCommand(cmd);
-      await this.#children.footer.handleCommand(cmd);
-      await this.#children.editor.handleCommand(cmd);
-      await this.#children.debug.handleCommand(cmd);
-      await this.#children.palette.handleCommand(cmd);
-      await this.#children.alert.handleCommand(cmd);
-      await this.#children.ask.handleCommand(cmd);
-      await this.#children.saveAs.handleCommand(cmd);
+      await this.handle(cmd);
+      await this.#children.header.handle(cmd);
+      await this.#children.footer.handle(cmd);
+      await this.#children.editor.handle(cmd);
+      await this.#children.debug.handle(cmd);
+      await this.#children.palette.handle(cmd);
+      await this.#children.alert.handle(cmd);
+      await this.#children.ask.handle(cmd);
+      await this.#children.saveAs.handle(cmd);
       return;
     }
 
     this.#children.editor.handleKey(key);
   }
 
-  async handleCommand(cmd: Command): Promise<void> {
+  async handle(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.zen = !this.zen;
@@ -187,7 +187,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.renderTree();
 
     if (cmd) {
-      await this.handleCommand(cmd);
+      await this.handle(cmd);
     }
   }
 

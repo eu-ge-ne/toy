@@ -77,6 +77,14 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     vt.sync.esu();
   }
 
+  async handle(cmd: Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        break;
+    }
+  }
+
   async #processInput(): Promise<Command | undefined> {
     while (true) {
       for await (const key of vt.read()) {
@@ -203,14 +211,6 @@ export class Palette extends Component<Globals, [], Command | undefined> {
 
       i += 1;
       y += 1;
-    }
-  }
-
-  async handleCommand(cmd: Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        break;
     }
   }
 }

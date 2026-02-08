@@ -65,7 +65,7 @@ export class Alert extends Component<Globals, [unknown], void> {
     vt.sync.esu();
   }
 
-  async handleCommand(cmd: commands.Command): Promise<void> {
+  async handle(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

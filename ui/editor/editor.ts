@@ -106,7 +106,7 @@ export class Editor extends Component<Globals> {
     this.globals.inputTime = performance.now() - t0;
   }
 
-  async handleCommand(cmd: Command): Promise<void> {
+  async handle(cmd: Command): Promise<void> {
     if (!this.#enabled) {
       return;
     }

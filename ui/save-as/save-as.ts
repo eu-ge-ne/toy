@@ -73,6 +73,14 @@ export class SaveAs extends Component<Globals, [string], string> {
     vt.sync.esu();
   }
 
+  async handle(cmd: commands.Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        break;
+    }
+  }
+
   async #processInput(): Promise<string> {
     while (true) {
       for await (const key of vt.read()) {
@@ -95,14 +103,6 @@ export class SaveAs extends Component<Globals, [string], string> {
         this.#editor.handleKey(key);
         this.globals.renderTree();
       }
-    }
-  }
-
-  async handleCommand(cmd: commands.Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        break;
     }
   }
 }

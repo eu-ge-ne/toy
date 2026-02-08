@@ -10,5 +10,5 @@ export abstract class Component<G, P extends unknown[] = [], R = unknown> {
   abstract run(...params: P): Promise<R>;
   abstract resize(_: Area): void;
   abstract render(): void;
-  abstract handleCommand(_: Command): Promise<void>;
+  abstract handle(_: Command): Promise<void>;
 }
