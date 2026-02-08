@@ -1,8 +1,7 @@
-export interface Globals {
-  renderTree: () => void;
+export interface IRoot {
+  render: () => void;
   isLayoutDirty: boolean;
   zen: boolean;
-
   filePath: string;
   isDirty: boolean;
   inputTime: number;

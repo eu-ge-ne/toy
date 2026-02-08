@@ -8,13 +8,15 @@ import { Palette } from "@components/palette";
 import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
-import { Globals } from "@lib/globals";
 import { Key } from "@lib/kitty";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class App extends Component<Globals, [string], void> implements Globals {
-  renderTree = this.render.bind(this);
+import { IRoot } from "./root.ts";
+
+export * from "./root.ts";
+
+export class Root extends Component<[string], void> implements IRoot {
   isLayoutDirty = false;
   zen = true;
 
@@ -38,7 +40,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
   };
 
   constructor() {
-    super(undefined as unknown as Globals);
+    super();
 
     this.#children = {
       header: new Header(this),
@@ -119,7 +121,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
         if (this.isLayoutDirty) {
           this.layout(this);
         } else {
-          this.renderTree();
+          this.render();
         }
       }
     }
@@ -191,7 +193,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     this.#children.editor.enable(true);
 
-    this.renderTree();
+    this.render();
 
     if (cmd) {
       await this.handleTree(cmd);
@@ -207,7 +209,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     this.#children.editor.enable(true);
 
-    this.renderTree();
+    this.render();
   }
 
   async #open(filePath: string): Promise<void> {

@@ -1,6 +1,6 @@
 import { Key } from "@lib/kitty";
 
-import { Editor } from "../editor.ts";
+import { Editor } from "../main.ts";
 
 export abstract class EditorHandler {
   constructor(protected editor: Editor) {
