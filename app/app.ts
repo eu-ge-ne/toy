@@ -203,11 +203,11 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.renderTree();
   }
 
-  async #open(file_path: string): Promise<void> {
+  async #open(filePath: string): Promise<void> {
     try {
-      await file.load(this.#children.editor.buffer, file_path);
+      await file.load(this.#children.editor.buffer, filePath);
 
-      this.filePath = file_path;
+      this.filePath = filePath;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
@@ -241,15 +241,15 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.#children.saveAs.run(this.filePath);
-      if (!file_path) {
+      const filePath = await this.#children.saveAs.run(this.filePath);
+      if (!filePath) {
         return false;
       }
 
       try {
-        await file.save(this.#children.editor.buffer, file_path);
+        await file.save(this.#children.editor.buffer, filePath);
 
-        this.filePath = file_path;
+        this.filePath = filePath;
 
         return true;
       } catch (err) {
@@ -268,10 +268,10 @@ export class App extends Component<Globals, [string], void> implements Globals {
     Deno.exit(0);
   };
 
-  #refresh(): void {
+  #refresh = () => {
     const { columns: w, rows: h } = Deno.consoleSize();
     this.resize({ y: 0, x: 0, w, h });
 
     vt.dummy_req();
-  }
+  };
 }
