@@ -1,0 +1,4 @@
+{
+  "name": "@components/header",
+  "exports": "./main.ts"
+}

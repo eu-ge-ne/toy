@@ -1,4 +1,4 @@
 {
-  "name": "@ui/save",
+  "name": "@components/ask",
   "exports": "./main.ts"
 }

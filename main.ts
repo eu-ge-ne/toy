@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { App } from "@toy/app";
+import { App } from "@components/app";
 
 import deno from "./deno.json" with { type: "json" };
 
