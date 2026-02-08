@@ -1,4 +1,4 @@
 {
   "name": "@ui/editor",
-  "exports": "./mod.ts"
+  "exports": "./main.ts"
 }

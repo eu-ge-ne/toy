@@ -49,10 +49,10 @@ export class Editor extends Component<Globals> {
   readonly cursor = new Cursor(this.buffer);
   readonly history = new History(this.buffer, this.cursor);
 
-  index_enabled = false;
-  whitespace_enabled = false;
-  wrap_enabled = false;
-  clipboard = "";
+  #indexEnabled = false;
+  #whitespaceEnabled = false;
+  #wrapEnabled = false;
+  #clipboard = "";
 
   constructor(globals: Globals, readonly opts: EditorOptions) {
     super(globals);
@@ -65,7 +65,7 @@ export class Editor extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    if (this.globals.zen) {
+    if (!this.opts.multiLine || this.globals.zen) {
       this.area.y = p.y;
       this.area.x = p.x;
       this.area.w = p.w;
@@ -122,11 +122,11 @@ export class Editor extends Component<Globals> {
         break;
 
       case "Whitespace":
-        this.whitespace_enabled = !this.whitespace_enabled;
+        this.#whitespaceEnabled = !this.#whitespaceEnabled;
         break;
 
       case "Wrap":
-        this.wrap_enabled = !this.wrap_enabled;
+        this.#wrapEnabled = !this.#wrapEnabled;
         this.cursor.home(false);
         break;
 
@@ -231,20 +231,20 @@ export class Editor extends Component<Globals> {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
-      this.clipboard = buffer.read(cursor.from, {
+      this.#clipboard = buffer.read(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.clipboard = buffer.read(cursor, {
+      this.#clipboard = buffer.read(cursor, {
         ln: cursor.ln,
         col: cursor.col + 1,
       });
     }
 
-    vt.copy_to_clipboard(vt.sync, this.clipboard);
+    vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
     return false;
   }
@@ -253,14 +253,14 @@ export class Editor extends Component<Globals> {
     const { cursor, buffer } = this;
 
     if (cursor.selecting) {
-      this.clipboard = buffer.read(cursor.from, {
+      this.#clipboard = buffer.read(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
 
       this.delete_selection();
     } else {
-      this.clipboard = buffer.read(cursor, {
+      this.#clipboard = buffer.read(cursor, {
         ln: cursor.ln,
         col: cursor.col + 1,
       });
@@ -268,17 +268,17 @@ export class Editor extends Component<Globals> {
       this.delete_char();
     }
 
-    vt.copy_to_clipboard(vt.sync, this.clipboard);
+    vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
     return true;
   }
 
   paste(): boolean {
-    if (!this.clipboard) {
+    if (!this.#clipboard) {
       return false;
     }
 
-    this.insert(this.clipboard);
+    this.insert(this.#clipboard);
 
     return true;
   }
@@ -309,7 +309,7 @@ export class Editor extends Component<Globals> {
   private scroll_col = 0;
 
   render(): void {
-    const { wrap_enabled, index_enabled, buffer: { line_count } } = this;
+    const { buffer: { line_count } } = this;
 
     vt.sync.bsu();
 
@@ -318,14 +318,14 @@ export class Editor extends Component<Globals> {
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this.area);
 
-    if (index_enabled && (line_count > 0)) {
+    if (this.#indexEnabled && (line_count > 0)) {
       this.index_width = Math.trunc(Math.log10(line_count)) + 3;
     } else {
       this.index_width = 0;
     }
 
     this.text_width = this.area.w - this.index_width;
-    this.buffer.wrap_width = wrap_enabled
+    this.buffer.wrap_width = this.#wrapEnabled
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
@@ -378,7 +378,7 @@ export class Editor extends Component<Globals> {
   }
 
   #render_line(ln: number, row: number): number {
-    const { cursor, whitespace_enabled } = this;
+    const { cursor } = this;
 
     let available_w = 0;
     let current_color = CharColor.Undefined;
@@ -420,7 +420,7 @@ export class Editor extends Component<Globals> {
       const color = charColor(
         cursor.is_selected(ln, i),
         is_visible,
-        whitespace_enabled,
+        this.#whitespaceEnabled,
       );
 
       if (color !== current_color) {
@@ -518,6 +518,6 @@ export class Editor extends Component<Globals> {
   }
 
   #onZen(): void {
-    this.index_enabled = !this.globals.zen;
+    this.#indexEnabled = !this.globals.zen;
   }
 }
