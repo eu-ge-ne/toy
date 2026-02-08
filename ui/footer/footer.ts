@@ -30,7 +30,7 @@ export class Footer extends Component<Globals> {
     this.area.x = p.x;
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -61,18 +61,17 @@ export class Footer extends Component<Globals> {
     vt.sync.esu();
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
+  async handle(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        return true;
+        break;
 
       case "Zen":
         this.#onZen();
-        return true;
+        this.globals.isLayoutDirty = true;
+        break;
     }
-
-    return false;
   }
 
   #onZen(): void {

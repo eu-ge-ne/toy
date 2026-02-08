@@ -94,65 +94,66 @@ export class Editor extends Component<Globals> {
     this.history.reset();
   }
 
-  handleKey(key: Key): boolean {
+  handleKey(key: Key): void {
     if (!this.#enabled) {
-      return false;
+      return;
     }
 
     const t0 = performance.now();
 
-    const handler = this.#handlers.find((x) => x.match(key));
-    const r = handler?.handle(key) ?? false;
+    this.#handlers.find((x) => x.match(key))?.handle(key);
 
-    const t1 = performance.now();
-    this.globals.inputTime = t1 - t0;
-
-    return r;
+    this.globals.inputTime = performance.now() - t0;
   }
 
-  async handleCommand(cmd: Command): Promise<boolean> {
+  async handle(cmd: Command): Promise<void> {
     if (!this.#enabled) {
-      return false;
+      return;
     }
 
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        return true;
+        break;
 
       case "Zen":
         this.#onZen();
-        return true;
+        this.globals.isLayoutDirty = true;
+        break;
 
       case "Whitespace":
         this.whitespace_enabled = !this.whitespace_enabled;
-        return true;
+        break;
 
       case "Wrap":
         this.wrap_enabled = !this.wrap_enabled;
         this.cursor.home(false);
-        return true;
+        break;
 
       case "Copy":
-        return this.copy();
+        this.copy();
+        break;
 
       case "Cut":
-        return this.cut();
+        this.cut();
+        break;
 
       case "Paste":
-        return this.paste();
+        this.paste();
+        break;
 
       case "Undo":
-        return this.undo();
+        this.undo();
+        break;
 
       case "Redo":
-        return this.redo();
+        this.redo();
+        break;
 
       case "SelectAll":
-        return this.selectAll();
+        this.selectAll();
+        break;
     }
-
-    return false;
   }
 
   #sgr = new Intl.Segmenter();
@@ -307,7 +308,7 @@ export class Editor extends Component<Globals> {
   private scroll_ln = 0;
   private scroll_col = 0;
 
-  renderComponent(): void {
+  render(): void {
     const { wrap_enabled, index_enabled, buffer: { line_count } } = this;
 
     vt.sync.bsu();

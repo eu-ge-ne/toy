@@ -52,7 +52,7 @@ export class SaveAs extends Component<Globals, [string], string> {
     });
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -68,9 +68,17 @@ export class SaveAs extends Component<Globals, [string], string> {
     vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
     vt.write_text_center(vt.buf, [this.area.w], "ESC‧cancel    ENTER‧ok");
 
-    this.#editor.renderComponent();
+    this.#editor.render();
 
     vt.sync.esu();
+  }
+
+  async handle(cmd: commands.Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        break;
+    }
   }
 
   async #processInput(): Promise<string> {
@@ -92,20 +100,9 @@ export class SaveAs extends Component<Globals, [string], string> {
           }
         }
 
-        if (this.#editor.handleKey(key)) {
-          this.globals.renderTree();
-        }
+        this.#editor.handleKey(key);
+        this.globals.renderTree();
       }
     }
-  }
-
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        return true;
-    }
-
-    return false;
   }
 }

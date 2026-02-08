@@ -1,8 +1,10 @@
 export interface Globals {
+  renderTree: () => void;
+  isLayoutDirty: boolean;
+  zen: boolean;
+
   filePath: string;
   isDirty: boolean;
-  zen: boolean;
-  renderTree: () => void;
   inputTime: number;
   renderTime: number;
   ln: number;

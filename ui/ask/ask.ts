@@ -32,7 +32,7 @@ export class Ask extends Component<Globals, [string], boolean> {
     this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -67,6 +67,14 @@ export class Ask extends Component<Globals, [string], boolean> {
     vt.sync.esu();
   }
 
+  async handle(cmd: commands.Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        break;
+    }
+  }
+
   async #processInput(): Promise<boolean> {
     while (true) {
       for await (const key of vt.read()) {
@@ -83,15 +91,5 @@ export class Ask extends Component<Globals, [string], boolean> {
         }
       }
     }
-  }
-
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        return true;
-    }
-
-    return false;
   }
 }

@@ -37,12 +37,12 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     this.#filter();
     this.globals.renderTree();
 
-    const command = await this.#processInput();
+    const cmd = await this.#processInput();
 
     this.#enabled = false;
     this.#editor.enable(false);
 
-    return command;
+    return cmd;
   }
 
   resize(p: Area): void {
@@ -52,7 +52,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     this.#parentArea.h = p.h;
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -72,9 +72,17 @@ export class Palette extends Component<Globals, [], Command | undefined> {
       this.#render_options();
     }
 
-    this.#editor.renderComponent();
+    this.#editor.render();
 
     vt.sync.esu();
+  }
+
+  async handle(cmd: Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme":
+        this.#colors = colors(Themes[cmd.data]);
+        break;
+    }
   }
 
   async #processInput(): Promise<Command | undefined> {
@@ -107,10 +115,9 @@ export class Palette extends Component<Globals, [], Command | undefined> {
             continue;
         }
 
-        if (this.#editor.handleKey(key)) {
-          this.#filter();
-          this.globals.renderTree();
-        }
+        this.#editor.handleKey(key);
+        this.#filter();
+        this.globals.renderTree();
       }
     }
   }
@@ -205,15 +212,5 @@ export class Palette extends Component<Globals, [], Command | undefined> {
       i += 1;
       y += 1;
     }
-  }
-
-  async handleCommand(cmd: Command): Promise<boolean> {
-    switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        return true;
-    }
-
-    return false;
   }
 }
