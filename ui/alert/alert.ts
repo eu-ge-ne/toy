@@ -30,7 +30,7 @@ export class Alert extends Component<Globals, [unknown], void> {
     this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -65,14 +65,12 @@ export class Alert extends Component<Globals, [unknown], void> {
     vt.sync.esu();
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
+  async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        return true;
+        break;
     }
-
-    return false;
   }
 
   async #processInput(): Promise<void> {

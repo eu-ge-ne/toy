@@ -24,7 +24,7 @@ export class Debug extends Component<Globals> {
     this.area.x = p.x + p.w - this.area.w;
   }
 
-  renderComponent(): void {
+  render(): void {
     if (!this.#enabled) {
       return;
     }
@@ -71,17 +71,15 @@ export class Debug extends Component<Globals> {
     vt.sync.esu();
   }
 
-  async handleCommand(cmd: Command): Promise<boolean> {
+  async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        return true;
+        break;
 
       case "Debug":
         this.#enabled = !this.#enabled;
-        return true;
+        break;
     }
-
-    return false;
   }
 }
