@@ -11,7 +11,7 @@ import { Editor } from "@ui/editor";
 import { Footer } from "@ui/footer";
 import { Header } from "@ui/header";
 import { Palette } from "@ui/palette";
-import { SaveAs } from "@ui/save-as";
+import { Save } from "@ui/save";
 
 export class App extends Component<Globals, [string], void> implements Globals {
   renderTree = this.render.bind(this);
@@ -34,7 +34,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     palette: Palette;
     alert: Alert;
     ask: Ask;
-    saveAs: SaveAs;
+    save: Save;
   };
 
   constructor() {
@@ -48,7 +48,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
-      saveAs: new SaveAs(this),
+      save: new Save(this),
     };
   }
 
@@ -80,11 +80,13 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.#children.header.resize(this.area);
     this.#children.footer.resize(this.area);
     this.#children.editor.resize(this.area);
-    this.#children.debug.resize(this.#children.editor.area);
-    this.#children.palette.resize(this.#children.editor.area);
-    this.#children.alert.resize(this.#children.editor.area);
-    this.#children.ask.resize(this.#children.editor.area);
-    this.#children.saveAs.resize(this.#children.editor.area);
+
+    const p = this.#children.editor.area;
+    this.#children.debug.resize(p);
+    this.#children.palette.resize(p);
+    this.#children.alert.resize(p);
+    this.#children.ask.resize(p);
+    this.#children.save.resize(p);
   }
 
   render(): void {
@@ -99,7 +101,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.#children.palette.render();
     this.#children.alert.render();
     this.#children.ask.render();
-    this.#children.saveAs.render();
+    this.#children.save.render();
 
     vt.sync.esu();
 
@@ -166,7 +168,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     await this.#children.palette.handle(cmd);
     await this.#children.alert.handle(cmd);
     await this.#children.ask.handle(cmd);
-    await this.#children.saveAs.handle(cmd);
+    await this.#children.save.handle(cmd);
   }
 
   async #handleExit(): Promise<void> {
@@ -245,7 +247,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const filePath = await this.#children.saveAs.run(this.filePath);
+      const filePath = await this.#children.save.run(this.filePath);
       if (!filePath) {
         return false;
       }
