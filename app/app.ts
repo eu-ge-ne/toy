@@ -59,19 +59,23 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.#refresh);
+    Deno.addSignalListener("SIGWINCH", this.resize.bind(this, this));
 
     if (fileName) {
       await this.#open(fileName);
     }
 
     this.#children.editor.reset(true);
-    this.#refresh();
+    this.resize(this);
 
     await this.#processInput();
   }
 
   resize(_: Area): void {
+    const { columns, rows } = Deno.consoleSize();
+    this.w = columns;
+    this.h = rows;
+
     this.#children.header.resize(this);
     this.#children.footer.resize(this);
     this.#children.editor.resize(this);
@@ -82,6 +86,8 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.#children.alert.resize(p);
     this.#children.ask.resize(p);
     this.#children.save.resize(p);
+
+    vt.dummy_req();
   }
 
   render(): void {
@@ -111,7 +117,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
         await this.#iterInput(key);
 
         if (this.isLayoutDirty) {
-          this.#refresh();
+          this.resize(this);
         } else {
           this.renderTree();
         }
@@ -267,16 +273,5 @@ export class App extends Component<Globals, [string], void> implements Globals {
     }
 
     Deno.exit(0);
-  };
-
-  #refresh = () => {
-    const { columns, rows } = Deno.consoleSize();
-
-    this.w = columns;
-    this.h = rows;
-
-    this.resize(this);
-
-    vt.dummy_req();
   };
 }
