@@ -16,42 +16,46 @@ import { SaveAs } from "@ui/save-as";
 export class App extends Component<Globals, [string], void> implements Globals {
   renderTree = this.render.bind(this);
   isLayoutDirty = false;
+  zen = true;
 
   filePath = "";
   isDirty = false;
-  zen = true;
   inputTime = 0;
   renderTime = 0;
   ln = 0;
   col = 0;
   lnCount = 0;
 
-  #header: Header;
-  #editor: Editor;
-  #footer: Footer;
-  #debug: Debug;
-  #palette: Palette;
-  #alert: Alert;
-  #ask: Ask;
-  #saveAs: SaveAs;
+  #children: {
+    header: Header;
+    editor: Editor;
+    footer: Footer;
+    debug: Debug;
+    palette: Palette;
+    alert: Alert;
+    ask: Ask;
+    saveAs: SaveAs;
+  };
 
   constructor() {
     super(undefined as unknown as Globals);
 
-    this.#header = new Header(this);
-    this.#editor = new Editor(this, { multiLine: true });
-    this.#footer = new Footer(this);
-    this.#debug = new Debug(this);
-    this.#palette = new Palette(this);
-    this.#alert = new Alert(this);
-    this.#ask = new Ask(this);
-    this.#saveAs = new SaveAs(this);
+    this.#children = {
+      header: new Header(this),
+      editor: new Editor(this, { multiLine: true }),
+      footer: new Footer(this),
+      debug: new Debug(this),
+      palette: new Palette(this),
+      alert: new Alert(this),
+      ask: new Ask(this),
+      saveAs: new SaveAs(this),
+    };
   }
 
   async run(fileName?: string): Promise<void> {
-    this.#editor.enable(true);
-    this.#editor.history.on_changed = () =>
-      this.isDirty = !this.#editor.history.is_empty;
+    this.#children.editor.enable(true);
+    this.#children.editor.history.on_changed = () =>
+      this.isDirty = !this.#children.editor.history.is_empty;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
@@ -61,7 +65,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
       await this.#open(fileName);
     }
 
-    this.#editor.reset(true);
+    this.#children.editor.reset(true);
     this.#refresh();
 
     await this.#processInput();
@@ -73,14 +77,14 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.area.w = w;
     this.area.h = h;
 
-    this.#header.resize(this.area);
-    this.#footer.resize(this.area);
-    this.#editor.resize(this.area);
-    this.#debug.resize(this.#editor.area);
-    this.#palette.resize(this.#editor.area);
-    this.#alert.resize(this.#editor.area);
-    this.#ask.resize(this.#editor.area);
-    this.#saveAs.resize(this.#editor.area);
+    this.#children.header.resize(this.area);
+    this.#children.footer.resize(this.area);
+    this.#children.editor.resize(this.area);
+    this.#children.debug.resize(this.#children.editor.area);
+    this.#children.palette.resize(this.#children.editor.area);
+    this.#children.alert.resize(this.#children.editor.area);
+    this.#children.ask.resize(this.#children.editor.area);
+    this.#children.saveAs.resize(this.#children.editor.area);
   }
 
   render(): void {
@@ -88,14 +92,14 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     vt.sync.bsu();
 
-    this.#header.render();
-    this.#footer.render();
-    this.#editor.render();
-    this.#debug.render();
-    this.#palette.render();
-    this.#alert.render();
-    this.#ask.render();
-    this.#saveAs.render();
+    this.#children.header.render();
+    this.#children.footer.render();
+    this.#children.editor.render();
+    this.#children.debug.render();
+    this.#children.palette.render();
+    this.#children.alert.render();
+    this.#children.ask.render();
+    this.#children.saveAs.render();
 
     vt.sync.esu();
 
@@ -127,18 +131,18 @@ export class App extends Component<Globals, [string], void> implements Globals {
     if (typeof cmdName !== "undefined") {
       const cmd = { name: cmdName } as Command;
       await this.handleCommand(cmd);
-      await this.#header.handleCommand(cmd);
-      await this.#footer.handleCommand(cmd);
-      await this.#editor.handleCommand(cmd);
-      await this.#debug.handleCommand(cmd);
-      await this.#palette.handleCommand(cmd);
-      await this.#alert.handleCommand(cmd);
-      await this.#ask.handleCommand(cmd);
-      await this.#saveAs.handleCommand(cmd);
+      await this.#children.header.handleCommand(cmd);
+      await this.#children.footer.handleCommand(cmd);
+      await this.#children.editor.handleCommand(cmd);
+      await this.#children.debug.handleCommand(cmd);
+      await this.#children.palette.handleCommand(cmd);
+      await this.#children.alert.handleCommand(cmd);
+      await this.#children.ask.handleCommand(cmd);
+      await this.#children.saveAs.handleCommand(cmd);
       return;
     }
 
-    this.#editor.handleKey(key);
+    this.#children.editor.handleKey(key);
   }
 
   async handleCommand(cmd: Command): Promise<void> {
@@ -162,10 +166,10 @@ export class App extends Component<Globals, [string], void> implements Globals {
   }
 
   async #handleExit(): Promise<void> {
-    this.#editor.enable(false);
+    this.#children.editor.enable(false);
 
-    if (!this.#editor.history.is_empty) {
-      if (await this.#ask.run("Save changes?")) {
+    if (!this.#children.editor.history.is_empty) {
+      if (await this.#children.ask.run("Save changes?")) {
         await this.#save();
       }
     }
@@ -174,11 +178,11 @@ export class App extends Component<Globals, [string], void> implements Globals {
   }
 
   async #handlePalette(): Promise<void> {
-    this.#editor.enable(false);
+    this.#children.editor.enable(false);
 
-    const cmd = await this.#palette.run();
+    const cmd = await this.#children.palette.run();
 
-    this.#editor.enable(true);
+    this.#children.editor.enable(true);
 
     this.renderTree();
 
@@ -188,27 +192,27 @@ export class App extends Component<Globals, [string], void> implements Globals {
   }
 
   async #handleSave(): Promise<void> {
-    this.#editor.enable(false);
+    this.#children.editor.enable(false);
 
     if (await this.#save()) {
-      this.#editor.reset(false);
+      this.#children.editor.reset(false);
     }
 
-    this.#editor.enable(true);
+    this.#children.editor.enable(true);
 
     this.renderTree();
   }
 
   async #open(file_path: string): Promise<void> {
     try {
-      await file.load(this.#editor.buffer, file_path);
+      await file.load(this.#children.editor.buffer, file_path);
 
       this.filePath = file_path;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.#alert.run(err);
+        await this.#children.alert.run(err);
 
         this.#exit();
       }
@@ -225,11 +229,11 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.#editor.buffer, this.filePath);
+      await file.save(this.#children.editor.buffer, this.filePath);
 
       return true;
     } catch (err) {
-      await this.#alert.run(err);
+      await this.#children.alert.run(err);
 
       return await this.#saveFileAs();
     }
@@ -237,19 +241,19 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const file_path = await this.#saveAs.run(this.filePath);
+      const file_path = await this.#children.saveAs.run(this.filePath);
       if (!file_path) {
         return false;
       }
 
       try {
-        await file.save(this.#editor.buffer, file_path);
+        await file.save(this.#children.editor.buffer, file_path);
 
         this.filePath = file_path;
 
         return true;
       } catch (err) {
-        await this.#alert.run(err);
+        await this.#children.alert.run(err);
       }
     }
   }
