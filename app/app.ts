@@ -130,15 +130,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     const cmdName = ShortcutToCommand[key.toString()];
     if (typeof cmdName !== "undefined") {
       const cmd = { name: cmdName } as Command;
-      await this.handle(cmd);
-      await this.#children.header.handle(cmd);
-      await this.#children.footer.handle(cmd);
-      await this.#children.editor.handle(cmd);
-      await this.#children.debug.handle(cmd);
-      await this.#children.palette.handle(cmd);
-      await this.#children.alert.handle(cmd);
-      await this.#children.ask.handle(cmd);
-      await this.#children.saveAs.handle(cmd);
+      await this.handleTree(cmd);
       return;
     }
 
@@ -165,6 +157,18 @@ export class App extends Component<Globals, [string], void> implements Globals {
     }
   }
 
+  async handleTree(cmd: Command): Promise<void> {
+    await this.handle(cmd);
+    await this.#children.header.handle(cmd);
+    await this.#children.footer.handle(cmd);
+    await this.#children.editor.handle(cmd);
+    await this.#children.debug.handle(cmd);
+    await this.#children.palette.handle(cmd);
+    await this.#children.alert.handle(cmd);
+    await this.#children.ask.handle(cmd);
+    await this.#children.saveAs.handle(cmd);
+  }
+
   async #handleExit(): Promise<void> {
     this.#children.editor.enable(false);
 
@@ -187,7 +191,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
     this.renderTree();
 
     if (cmd) {
-      await this.handle(cmd);
+      await this.handleTree(cmd);
     }
   }
 

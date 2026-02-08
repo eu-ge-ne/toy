@@ -37,12 +37,12 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     this.#filter();
     this.globals.renderTree();
 
-    const command = await this.#processInput();
+    const cmd = await this.#processInput();
 
     this.#enabled = false;
     this.#editor.enable(false);
 
-    return command;
+    return cmd;
   }
 
   resize(p: Area): void {
