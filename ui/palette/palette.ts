@@ -13,7 +13,7 @@ const MAX_LIST_SIZE = 10;
 export class Palette extends Component<Globals, [], Command | undefined> {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #parentArea: Area = { y: 0, x: 0, w: 0, h: 0 };
+  #pa: Area = { y: 0, x: 0, w: 0, h: 0 };
   #editor: Editor;
 
   #filtered_options: Option[] = [];
@@ -46,10 +46,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
   }
 
   resize(p: Area): void {
-    this.#parentArea.y = p.y;
-    this.#parentArea.x = p.x;
-    this.#parentArea.w = p.w;
-    this.#parentArea.h = p.h;
+    this.#pa = p;
   }
 
   render(): void {
@@ -64,7 +61,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
+    vt.clear_area(vt.buf, this);
 
     if (this.#filtered_options.length === 0) {
       this.#render_empty();
@@ -139,25 +136,23 @@ export class Palette extends Component<Globals, [], Command | undefined> {
   #resize(): void {
     this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
-    this.area.w = Math.min(60, this.#parentArea.w);
+    this.w = Math.min(60, this.#pa.w);
 
-    this.area.h = 3 + Math.max(this.#list_size, 1);
-    if (this.area.h > this.#parentArea.h) {
-      this.area.h = this.#parentArea.h;
+    this.h = 3 + Math.max(this.#list_size, 1);
+    if (this.h > this.#pa.h) {
+      this.h = this.#pa.h;
       if (this.#list_size > 0) {
-        this.#list_size = this.area.h - 3;
+        this.#list_size = this.h - 3;
       }
     }
 
-    this.area.y = this.#parentArea.y +
-      Math.trunc((this.#parentArea.h - this.area.h) / 2);
-    this.area.x = this.#parentArea.x +
-      Math.trunc((this.#parentArea.w - this.area.w) / 2);
+    this.y = this.#pa.y + Math.trunc((this.#pa.h - this.h) / 2);
+    this.x = this.#pa.x + Math.trunc((this.#pa.w - this.w) / 2);
 
     this.#editor.resize({
-      y: this.area.y + 1,
-      x: this.area.x + 2,
-      w: this.area.w - 4,
+      y: this.y + 1,
+      x: this.x + 2,
+      w: this.w - 4,
       h: 1,
     });
   }
@@ -172,14 +167,14 @@ export class Palette extends Component<Globals, [], Command | undefined> {
   }
 
   #render_empty(): void {
-    vt.cursor.set(vt.buf, this.area.y + 2, this.area.x + 2);
+    vt.cursor.set(vt.buf, this.y + 2, this.x + 2);
     vt.buf.write(this.#colors.option);
-    vt.write_text(vt.buf, [this.area.w - 4], "No matching commands");
+    vt.write_text(vt.buf, [this.w - 4], "No matching commands");
   }
 
   #render_options(): void {
     let i = 0;
-    let y = this.area.y + 2;
+    let y = this.y + 2;
 
     while (true) {
       if (i === this.#list_size) {
@@ -190,18 +185,18 @@ export class Palette extends Component<Globals, [], Command | undefined> {
       if (!option) {
         break;
       }
-      if (y === this.area.y + this.area.h) {
+      if (y === this.y + this.h) {
         break;
       }
 
-      const span: [number] = [this.area.w - 4];
+      const span: [number] = [this.w - 4];
 
       vt.buf.write(
         index === this.#selected_index
           ? this.#colors.selectedOption
           : this.#colors.option,
       );
-      vt.cursor.set(vt.buf, y, this.area.x + 2);
+      vt.cursor.set(vt.buf, y, this.x + 2);
       vt.write_text(vt.buf, span, option.name);
       vt.write_text(
         vt.buf,

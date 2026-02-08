@@ -71,17 +71,12 @@ export class App extends Component<Globals, [string], void> implements Globals {
     await this.#processInput();
   }
 
-  resize({ y, x, w, h }: Area): void {
-    this.area.y = y;
-    this.area.x = x;
-    this.area.w = w;
-    this.area.h = h;
+  resize(_: Area): void {
+    this.#children.header.resize(this);
+    this.#children.footer.resize(this);
+    this.#children.editor.resize(this);
 
-    this.#children.header.resize(this.area);
-    this.#children.footer.resize(this.area);
-    this.#children.editor.resize(this.area);
-
-    const p = this.#children.editor.area;
+    const p = this.#children.editor;
     this.#children.debug.resize(p);
     this.#children.palette.resize(p);
     this.#children.alert.resize(p);
@@ -275,8 +270,12 @@ export class App extends Component<Globals, [string], void> implements Globals {
   };
 
   #refresh = () => {
-    const { columns: w, rows: h } = Deno.consoleSize();
-    this.resize({ y: 0, x: 0, w, h });
+    const { columns, rows } = Deno.consoleSize();
+
+    this.w = columns;
+    this.h = rows;
+
+    this.resize(this);
 
     vt.dummy_req();
   };

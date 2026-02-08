@@ -26,10 +26,10 @@ export class Ask extends Component<Globals, [string], boolean> {
   }
 
   resize(p: Area): void {
-    this.area.w = clamp(60, 0, p.w);
-    this.area.h = clamp(7, 0, p.h);
-    this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
-    this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
+    this.w = clamp(60, 0, p.w);
+    this.h = clamp(7, 0, p.h);
+    this.y = p.y + Math.trunc((p.h - this.h) / 2);
+    this.x = p.x + Math.trunc((p.w - this.w) / 2);
   }
 
   render(): void {
@@ -41,27 +41,27 @@ export class Ask extends Component<Globals, [string], boolean> {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
+    vt.clear_area(vt.buf, this);
 
     let pos = 0;
 
-    for (let y = this.area.y + 1; y < this.area.y + this.area.h - 3; y += 1) {
+    for (let y = this.y + 1; y < this.y + this.h - 3; y += 1) {
       if (pos === this.#text.length) {
         break;
       }
 
-      const span: [number] = [this.area.w - 2];
+      const span: [number] = [this.w - 2];
       const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
 
-      vt.cursor.set(vt.buf, y, this.area.x + 1);
+      vt.cursor.set(vt.buf, y, this.x + 1);
       vt.sync.write(this.#colors.text);
       vt.write_text_center(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
-    vt.write_text_center(vt.buf, [this.area.w], "ESC‧no    ENTER‧yes");
+    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
+    vt.write_text_center(vt.buf, [this.w], "ESC‧no    ENTER‧yes");
 
     vt.buf.flush();
     vt.sync.esu();

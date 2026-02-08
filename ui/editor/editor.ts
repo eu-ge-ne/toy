@@ -66,15 +66,15 @@ export class Editor extends Component<Globals> {
 
   resize(p: Area): void {
     if (!this.opts.multiLine || this.globals.zen) {
-      this.area.y = p.y;
-      this.area.x = p.x;
-      this.area.w = p.w;
-      this.area.h = p.h;
+      this.y = p.y;
+      this.x = p.x;
+      this.w = p.w;
+      this.h = p.h;
     } else {
-      this.area.y = p.y + 1;
-      this.area.x = p.x;
-      this.area.w = p.w;
-      this.area.h = p.h - 2;
+      this.y = p.y + 1;
+      this.x = p.x;
+      this.w = p.w;
+      this.h = p.h - 2;
     }
   }
 
@@ -316,7 +316,7 @@ export class Editor extends Component<Globals> {
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
+    vt.clear_area(vt.buf, this);
 
     if (this.#indexEnabled && (line_count > 0)) {
       this.index_width = Math.trunc(Math.log10(line_count)) + 3;
@@ -324,15 +324,15 @@ export class Editor extends Component<Globals> {
       this.index_width = 0;
     }
 
-    this.text_width = this.area.w - this.index_width;
+    this.text_width = this.w - this.index_width;
     this.buffer.wrap_width = this.#wrapEnabled
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
-    this.buffer.measure_y = this.cursor_y = this.area.y;
-    this.buffer.measure_x = this.cursor_x = this.area.x + this.index_width;
+    this.buffer.measure_y = this.cursor_y = this.y;
+    this.buffer.measure_x = this.cursor_x = this.x + this.index_width;
 
-    if (this.area.w >= this.index_width) {
+    if (this.w >= this.index_width) {
       this.#render_lines();
     }
 
@@ -359,19 +359,19 @@ export class Editor extends Component<Globals> {
     this.#scroll_v();
     this.#scroll_h();
 
-    let row = this.area.y;
+    let row = this.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < line_count) {
         row = this.#render_line(ln, row);
       } else {
-        vt.cursor.set(vt.buf, row, this.area.x);
+        vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, this.area.w);
+        vt.clear_line(vt.buf, this.w);
       }
 
       row += 1;
-      if (row >= this.area.y + this.area.h) {
+      if (row >= this.y + this.h) {
         break;
       }
     }
@@ -389,12 +389,12 @@ export class Editor extends Component<Globals> {
       if (col === 0) {
         if (i > 0) {
           row += 1;
-          if (row >= this.area.y + this.area.h) {
+          if (row >= this.y + this.h) {
             return row;
           }
         }
 
-        vt.cursor.set(vt.buf, row, this.area.x);
+        vt.cursor.set(vt.buf, row, this.x);
 
         if (this.index_width > 0) {
           if (i === 0) {
@@ -410,7 +410,7 @@ export class Editor extends Component<Globals> {
           }
         }
 
-        available_w = this.area.w - this.index_width;
+        available_w = this.w - this.index_width;
       }
 
       if ((col < this.scroll_col) || (width > available_w)) {
@@ -449,8 +449,8 @@ export class Editor extends Component<Globals> {
 
     // Below?
 
-    if (delta_ln > this.area.h) {
-      this.scroll_ln = cursor.ln - this.area.h;
+    if (delta_ln > this.h) {
+      this.scroll_ln = cursor.ln - this.h;
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
@@ -461,7 +461,7 @@ export class Editor extends Component<Globals> {
     let i = 0;
     let height = sum(xs);
 
-    while (height > this.area.h) {
+    while (height > this.h) {
       height -= xs[i]!;
       this.scroll_ln += 1;
       i += 1;

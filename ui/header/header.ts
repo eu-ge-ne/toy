@@ -22,10 +22,10 @@ export class Header extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    this.area.w = p.w;
-    this.area.h = clamp(1, 0, p.h);
-    this.area.y = p.y;
-    this.area.x = p.x;
+    this.w = p.w;
+    this.h = clamp(1, 0, p.h);
+    this.y = p.y;
+    this.x = p.x;
   }
 
   render(): void {
@@ -35,13 +35,13 @@ export class Header extends Component<Globals> {
 
     vt.sync.bsu();
 
-    const span: [number] = [this.area.w];
+    const span: [number] = [this.w];
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
-    vt.cursor.set(vt.buf, this.area.y, this.area.x);
+    vt.clear_area(vt.buf, this);
+    vt.cursor.set(vt.buf, this.y, this.x);
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.globals.filePath);
 

@@ -18,10 +18,10 @@ export class Debug extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    this.area.w = clamp(30, 0, p.w);
-    this.area.h = clamp(7, 0, p.h);
-    this.area.y = p.y + p.h - this.area.h;
-    this.area.x = p.x + p.w - this.area.w;
+    this.w = clamp(30, 0, p.w);
+    this.h = clamp(7, 0, p.h);
+    this.y = p.y + p.h - this.h;
+    this.x = p.x + p.w - this.w;
   }
 
   render(): void {
@@ -40,30 +40,30 @@ export class Debug extends Component<Globals> {
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
+    vt.clear_area(vt.buf, this);
     vt.buf.write(this.#colors.text);
-    vt.cursor.set(vt.buf, this.area.y + 1, this.area.x + 1);
+    vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.area.w - 1],
+      [this.w - 1],
       `Input    : ${this.globals.inputTime.toFixed(1)} ms`,
     );
-    vt.cursor.set(vt.buf, this.area.y + 2, this.area.x + 1);
+    vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.area.w - 1],
+      [this.w - 1],
       `Render   : ${this.globals.renderTime.toFixed(1)} ms`,
     );
-    vt.cursor.set(vt.buf, this.area.y + 3, this.area.x + 1);
-    vt.write_text(vt.buf, [this.area.w - 1], `RSS      : ${rss} MiB`);
-    vt.cursor.set(vt.buf, this.area.y + 4, this.area.x + 1);
+    vt.cursor.set(vt.buf, this.y + 3, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `RSS      : ${rss} MiB`);
+    vt.cursor.set(vt.buf, this.y + 4, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.area.w - 1],
+      [this.w - 1],
       `Heap     : ${heap_used}/${heap_total} MiB`,
     );
-    vt.cursor.set(vt.buf, this.area.y + 5, this.area.x + 1);
-    vt.write_text(vt.buf, [this.area.w - 1], `External : ${external_mem} MiB`);
+    vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
+    vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
 

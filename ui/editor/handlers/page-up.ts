@@ -12,6 +12,6 @@ export class PageUpHandler extends EditorHandler {
       return false;
     }
 
-    return this.editor.cursor.up(this.editor.area.h, key.shift);
+    return this.editor.cursor.up(this.editor.h, key.shift);
   }
 }

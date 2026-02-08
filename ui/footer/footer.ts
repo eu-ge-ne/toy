@@ -24,10 +24,10 @@ export class Footer extends Component<Globals> {
   }
 
   resize(p: Area): void {
-    this.area.w = p.w;
-    this.area.h = clamp(1, 0, p.h);
-    this.area.y = p.y + p.h - 1;
-    this.area.x = p.x;
+    this.w = p.w;
+    this.h = clamp(1, 0, p.h);
+    this.y = p.y + p.h - 1;
+    this.x = p.x;
   }
 
   render(): void {
@@ -47,12 +47,12 @@ export class Footer extends Component<Globals> {
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
+    vt.clear_area(vt.buf, this);
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
-      [this.area.w],
-      sprintf("%*s", this.area.w, cursorStatus),
+      [this.w],
+      sprintf("%*s", this.w, cursorStatus),
     );
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);

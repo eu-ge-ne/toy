@@ -12,6 +12,6 @@ export class PageDownHandler extends EditorHandler {
       return false;
     }
 
-    return this.editor.cursor.down(this.editor.area.h, key.shift);
+    return this.editor.cursor.down(this.editor.h, key.shift);
   }
 }
