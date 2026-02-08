@@ -36,16 +36,16 @@ export class Save extends Component<Globals, [string], string> {
     return result;
   }
 
-  resize(p: Area): void {
-    this.area.w = clamp(60, 0, p.w);
-    this.area.h = clamp(10, 0, p.h);
-    this.area.y = p.y + Math.trunc((p.h - this.area.h) / 2);
-    this.area.x = p.x + Math.trunc((p.w - this.area.w) / 2);
+  layout(p: Area): void {
+    this.w = clamp(60, 0, p.w);
+    this.h = clamp(10, 0, p.h);
+    this.y = p.y + Math.trunc((p.h - this.h) / 2);
+    this.x = p.x + Math.trunc((p.w - this.w) / 2);
 
-    this.#editor.resize({
-      y: this.area.y + 4,
-      x: this.area.x + 2,
-      w: this.area.w - 4,
+    this.#editor.layout({
+      y: this.y + 4,
+      x: this.x + 2,
+      w: this.w - 4,
       h: 1,
     });
   }
@@ -59,12 +59,12 @@ export class Save extends Component<Globals, [string], string> {
 
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this.area);
-    vt.cursor.set(vt.buf, this.area.y + 1, this.area.x);
+    vt.clear_area(vt.buf, this);
+    vt.cursor.set(vt.buf, this.y + 1, this.x);
     vt.buf.write(this.#colors.text);
-    vt.write_text_center(vt.buf, [this.area.w], "Save As");
-    vt.cursor.set(vt.buf, this.area.y + this.area.h - 2, this.area.x);
-    vt.write_text_center(vt.buf, [this.area.w], "ESC‧cancel    ENTER‧ok");
+    vt.write_text_center(vt.buf, [this.w], "Save As");
+    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
+    vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
 
     this.#editor.render();
 

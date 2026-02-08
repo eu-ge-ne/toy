@@ -59,34 +59,35 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.#refresh);
+    Deno.addSignalListener("SIGWINCH", this.layout.bind(this, this));
 
     if (fileName) {
       await this.#open(fileName);
     }
 
     this.#children.editor.reset(true);
-    this.#refresh();
+    this.layout(this);
 
     await this.#processInput();
   }
 
-  resize({ y, x, w, h }: Area): void {
-    this.area.y = y;
-    this.area.x = x;
-    this.area.w = w;
-    this.area.h = h;
+  layout(_: Area): void {
+    const { columns, rows } = Deno.consoleSize();
+    this.w = columns;
+    this.h = rows;
 
-    this.#children.header.resize(this.area);
-    this.#children.footer.resize(this.area);
-    this.#children.editor.resize(this.area);
+    this.#children.header.layout(this);
+    this.#children.footer.layout(this);
+    this.#children.editor.layout(this);
 
-    const p = this.#children.editor.area;
-    this.#children.debug.resize(p);
-    this.#children.palette.resize(p);
-    this.#children.alert.resize(p);
-    this.#children.ask.resize(p);
-    this.#children.save.resize(p);
+    const p = this.#children.editor;
+    this.#children.debug.layout(p);
+    this.#children.palette.layout(p);
+    this.#children.alert.layout(p);
+    this.#children.ask.layout(p);
+    this.#children.save.layout(p);
+
+    vt.dummy_req();
   }
 
   render(): void {
@@ -116,7 +117,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
         await this.#iterInput(key);
 
         if (this.isLayoutDirty) {
-          this.#refresh();
+          this.layout(this);
         } else {
           this.renderTree();
         }
@@ -272,12 +273,5 @@ export class App extends Component<Globals, [string], void> implements Globals {
     }
 
     Deno.exit(0);
-  };
-
-  #refresh = () => {
-    const { columns: w, rows: h } = Deno.consoleSize();
-    this.resize({ y: 0, x: 0, w, h });
-
-    vt.dummy_req();
   };
 }
