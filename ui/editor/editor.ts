@@ -64,7 +64,7 @@ export class Editor extends Component<Globals> {
     throw new Error("Not implemented");
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     if (!this.opts.multiLine || this.globals.zen) {
       this.y = p.y;
       this.x = p.x;

@@ -12,7 +12,7 @@ export abstract class Component<G, P extends unknown[] = [], R = unknown>
   constructor(protected globals: G) {}
 
   abstract run(...params: P): Promise<R>;
-  abstract resize(_: Area): void;
+  abstract layout(_: Area): void;
   abstract render(): void;
   abstract handle(_: Command): Promise<void>;
 }

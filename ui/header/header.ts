@@ -21,7 +21,7 @@ export class Header extends Component<Globals> {
     throw new Error("Not implemented");
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     this.w = p.w;
     this.h = clamp(1, 0, p.h);
     this.y = p.y;

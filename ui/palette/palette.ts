@@ -45,7 +45,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     return cmd;
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     this.#pa = p;
   }
 
@@ -149,7 +149,7 @@ export class Palette extends Component<Globals, [], Command | undefined> {
     this.y = this.#pa.y + Math.trunc((this.#pa.h - this.h) / 2);
     this.x = this.#pa.x + Math.trunc((this.#pa.w - this.w) / 2);
 
-    this.#editor.resize({
+    this.#editor.layout({
       y: this.y + 1,
       x: this.x + 2,
       w: this.w - 4,

@@ -17,7 +17,7 @@ export class Debug extends Component<Globals> {
     throw new Error("Not implemented");
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     this.w = clamp(30, 0, p.w);
     this.h = clamp(7, 0, p.h);
     this.y = p.y + p.h - this.h;

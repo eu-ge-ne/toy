@@ -36,13 +36,13 @@ export class Save extends Component<Globals, [string], string> {
     return result;
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     this.w = clamp(60, 0, p.w);
     this.h = clamp(10, 0, p.h);
     this.y = p.y + Math.trunc((p.h - this.h) / 2);
     this.x = p.x + Math.trunc((p.w - this.w) / 2);
 
-    this.#editor.resize({
+    this.#editor.layout({
       y: this.y + 4,
       x: this.x + 2,
       w: this.w - 4,

@@ -23,7 +23,7 @@ export class Alert extends Component<Globals, [unknown], void> {
     this.#enabled = false;
   }
 
-  resize(p: Area): void {
+  layout(p: Area): void {
     this.w = clamp(60, 0, p.w);
     this.h = clamp(10, 0, p.h);
     this.y = p.y + Math.trunc((p.h - this.h) / 2);

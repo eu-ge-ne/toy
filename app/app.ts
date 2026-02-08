@@ -59,33 +59,33 @@ export class App extends Component<Globals, [string], void> implements Globals {
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.resize.bind(this, this));
+    Deno.addSignalListener("SIGWINCH", this.layout.bind(this, this));
 
     if (fileName) {
       await this.#open(fileName);
     }
 
     this.#children.editor.reset(true);
-    this.resize(this);
+    this.layout(this);
 
     await this.#processInput();
   }
 
-  resize(_: Area): void {
+  layout(_: Area): void {
     const { columns, rows } = Deno.consoleSize();
     this.w = columns;
     this.h = rows;
 
-    this.#children.header.resize(this);
-    this.#children.footer.resize(this);
-    this.#children.editor.resize(this);
+    this.#children.header.layout(this);
+    this.#children.footer.layout(this);
+    this.#children.editor.layout(this);
 
     const p = this.#children.editor;
-    this.#children.debug.resize(p);
-    this.#children.palette.resize(p);
-    this.#children.alert.resize(p);
-    this.#children.ask.resize(p);
-    this.#children.save.resize(p);
+    this.#children.debug.layout(p);
+    this.#children.palette.layout(p);
+    this.#children.alert.layout(p);
+    this.#children.ask.layout(p);
+    this.#children.save.layout(p);
 
     vt.dummy_req();
   }
@@ -117,7 +117,7 @@ export class App extends Component<Globals, [string], void> implements Globals {
         await this.#iterInput(key);
 
         if (this.isLayoutDirty) {
-          this.resize(this);
+          this.layout(this);
         } else {
           this.renderTree();
         }
