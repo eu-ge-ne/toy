@@ -8,7 +8,7 @@ import { Editor } from "@ui/editor";
 
 import { colors } from "./colors.ts";
 
-export class SaveAs extends Component<Globals, [string], string> {
+export class Save extends Component<Globals, [string], string> {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #editor: Editor;
@@ -20,12 +20,10 @@ export class SaveAs extends Component<Globals, [string], string> {
   }
 
   async run(path: string): Promise<string> {
-    const { buffer } = this.#editor;
-
     this.#enabled = true;
     this.#editor.enable(true);
 
-    buffer.reset(path);
+    this.#editor.buffer.reset(path);
     this.#editor.reset(true);
 
     this.globals.renderTree();
