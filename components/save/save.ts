@@ -1,10 +1,10 @@
+import { Editor } from "@components/editor";
 import * as commands from "@lib/commands";
 import { Globals } from "@lib/globals";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Editor } from "@ui/editor";
 
 import { colors } from "./colors.ts";
 

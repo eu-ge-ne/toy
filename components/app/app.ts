@@ -1,17 +1,17 @@
+import { Alert } from "@components/alert";
+import { Ask } from "@components/ask";
+import { Debug } from "@components/debug";
+import { Editor } from "@components/editor";
+import { Footer } from "@components/footer";
+import { Header } from "@components/header";
+import { Palette } from "@components/palette";
+import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import { Globals } from "@lib/globals";
 import { Key } from "@lib/kitty";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Alert } from "@ui/alert";
-import { Ask } from "@ui/ask";
-import { Debug } from "@ui/debug";
-import { Editor } from "@ui/editor";
-import { Footer } from "@ui/footer";
-import { Header } from "@ui/header";
-import { Palette } from "@ui/palette";
-import { Save } from "@ui/save";
 
 export class App extends Component<Globals, [string], void> implements Globals {
   renderTree = this.render.bind(this);

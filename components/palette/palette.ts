@@ -1,9 +1,9 @@
+import { Editor } from "@components/editor";
 import { Command } from "@lib/commands";
 import { Globals } from "@lib/globals";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
-import { Editor } from "@ui/editor";
 
 import { colors } from "./colors.ts";
 import { Option, options } from "./options.ts";

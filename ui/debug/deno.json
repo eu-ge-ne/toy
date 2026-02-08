@@ -1,4 +1,0 @@
-{
-  "name": "@ui/debug",
-  "exports": "./mod.ts"
-}
