@@ -3,12 +3,12 @@ import { set } from "./cursor.ts";
 import { readRegExp } from "./read.ts";
 import { sync } from "./writer.ts";
 
-export const cpr_req = CSI("6n");
+export const cprReq = CSI("6n");
 
 export function wchar(y: number, x: number, bytes: Uint8Array): number {
   set(sync, y, x);
   sync.write(bytes);
-  sync.write(cpr_req);
+  sync.write(cprReq);
 
   const match = readRegExp(/\x1b\[\d+;(\d+)R/);
 
