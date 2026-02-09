@@ -71,8 +71,6 @@ export class Root extends Component<[string], void> implements IRoot {
     this.layout(this);
     this.render();
 
-    vt.listen();
-
     await this.#processInput();
   }
 

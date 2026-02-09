@@ -1,4 +1,4 @@
-import { range } from "@lib/std";
+//import { range } from "@lib/std";
 
 import { GraphemePool } from "./pool.ts";
 
@@ -36,11 +36,13 @@ export const graphemes = new GraphemePool({
   "\u001e": ["␞", 1],
   "\u001f": ["␟", 1],
   "\u0020": ["\u2027", 1], // "␠"
+  /*
   ...Object.fromEntries(
     range(0x21, 0x7f).map(
       (i) => [String.fromCharCode(i), [String.fromCharCode(i), 1]],
     ),
   ),
+  */
   "\u007f": ["␡", 1],
   "\r\n": ["␍␊", 2],
 });
