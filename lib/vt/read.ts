@@ -23,19 +23,19 @@ export async function readKey(): Promise<Key> {
   }
 }
 
-const dec = new TextDecoder();
-
-export function readRegExp(re: RegExp): RegExpMatchArray {
+export function readSync<T>(
+  parser: (_: Uint8Array) => [T, number] | undefined,
+): T {
   for (let i = 0; i < 100; i += 1) {
     const data = buf.subarray(0, i);
-    const match = dec.decode(data).match(re);
+    const parsed = parser(data);
 
-    if (match) {
-      const chunk = data.subarray(match.index! + match[0].length);
+    if (parsed) {
+      const chunk = data.subarray(parsed[1]);
       buf.set(chunk);
       i = chunk.byteLength;
 
-      return match;
+      return parsed[0];
     }
 
     const n = Deno.stdin.readSync(buf.subarray(i));
@@ -44,5 +44,5 @@ export function readRegExp(re: RegExp): RegExpMatchArray {
     }
   }
 
-  throw new Error(`readRegExp error: [${buf.subarray(0, i)}]`);
+  throw new Error(`parse error: [${buf.subarray(0, i)}]`);
 }
