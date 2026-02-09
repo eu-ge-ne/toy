@@ -83,26 +83,21 @@ export class Save extends Component<[string], string> {
 
   async #processInput(): Promise<string> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array) {
-          this.root.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-            return "";
-          case "ENTER": {
-            const path = this.#editor.buffer.text();
-            if (path) {
-              return path;
-            }
+      switch (key.name) {
+        case "ESC":
+          return "";
+        case "ENTER": {
+          const path = this.#editor.buffer.text();
+          if (path) {
+            return path;
           }
         }
-
-        this.#editor.handleKey(key);
-        this.root.render();
       }
+
+      this.#editor.handleKey(key);
+      this.root.render();
     }
   }
 }

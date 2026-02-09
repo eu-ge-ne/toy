@@ -83,18 +83,13 @@ export class Ask extends Component<[string], boolean> {
 
   async #processInput(): Promise<boolean> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array || typeof key === "string") {
-          this.root.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-            return false;
-          case "ENTER":
-            return true;
-        }
+      switch (key.name) {
+        case "ESC":
+          return false;
+        case "ENTER":
+          return true;
       }
     }
   }

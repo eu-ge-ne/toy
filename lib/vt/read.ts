@@ -1,8 +1,44 @@
 import { Key } from "@lib/kitty";
 
-export async function* read(): AsyncGenerator<Key | Uint8Array> {
-  const buf = new Uint8Array(1024);
+const buf = new Uint8Array(1024);
+let i = 0;
+const waiters: PromiseWithResolvers<void>[] = [];
 
+export async function listen(): Promise<void> {
+  for await (const chunk of Deno.stdin.readable) {
+    buf.set(chunk, i);
+    i += chunk.byteLength;
+
+    if (waiters.length !== 0) {
+      for (const waiter of waiters) {
+        waiter.resolve();
+      }
+      waiters.length = 0;
+    }
+  }
+}
+
+export async function readKey(): Promise<Key> {
+  while (true) {
+    const data = buf.subarray(0, i);
+
+    const parsed = Key.parse(data);
+    if (parsed) {
+      const chunk = data.subarray(parsed[1]);
+
+      buf.set(chunk);
+      i = chunk.byteLength;
+
+      return parsed[0];
+    }
+
+    const waiter = Promise.withResolvers<void>();
+    waiters.push(waiter);
+    await waiter.promise;
+  }
+}
+
+export async function* __read(): AsyncGenerator<Key | Uint8Array> {
   const bytes_read = await Deno.stdin.read(buf);
   if (bytes_read === null) {
     return;

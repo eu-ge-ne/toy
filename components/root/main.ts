@@ -8,7 +8,6 @@ import { Palette } from "@components/palette";
 import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
-import { Key } from "@lib/kitty";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -68,7 +67,11 @@ export class Root extends Component<[string], void> implements IRoot {
     }
 
     this.#children.editor.reset(true);
+
     this.layout(this);
+    this.render();
+
+    vt.listen();
 
     await this.#processInput();
   }
@@ -89,7 +92,7 @@ export class Root extends Component<[string], void> implements IRoot {
     this.#children.ask.layout(p);
     this.#children.save.layout(p);
 
-    vt.dummy_req();
+    //vt.dummy_req();
   }
 
   render(): void {
@@ -113,33 +116,23 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async #processInput(): Promise<void> {
     while (true) {
-      for await (const key of vt.read()) {
-        this.isLayoutDirty = false;
+      const key = await vt.readKey();
 
-        await this.#iterInput(key);
+      this.isLayoutDirty = false;
 
-        if (this.isLayoutDirty) {
-          this.layout(this);
-        } else {
-          this.render();
-        }
+      const cmdName = ShortcutToCommand[key.toString()];
+      if (typeof cmdName !== "undefined") {
+        const cmd = { name: cmdName } as Command;
+        await this.handleTree(cmd);
+      } else {
+        this.#children.editor.handleKey(key);
       }
-    }
-  }
 
-  async #iterInput(key: Uint8Array | Key): Promise<void> {
-    if (key instanceof Uint8Array) {
-      return;
+      if (this.isLayoutDirty) {
+        this.layout(this);
+      }
+      this.render();
     }
-
-    const cmdName = ShortcutToCommand[key.toString()];
-    if (typeof cmdName !== "undefined") {
-      const cmd = { name: cmdName } as Command;
-      await this.handleTree(cmd);
-      return;
-    }
-
-    this.#children.editor.handleKey(key);
   }
 
   async handle(cmd: Command): Promise<void> {
