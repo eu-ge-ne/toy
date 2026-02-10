@@ -8,7 +8,7 @@ const RE = new RegExp(
   PREFIX_RE + CODES_RE + PARAMS_RE + CODEPOINTS_RE + SCHEME_RE,
 );
 
-const decoder: TextDecoder = new TextDecoder();
+const dec = new TextDecoder();
 
 /**
  * Represents key
@@ -28,15 +28,10 @@ export class Key {
   text?: string;
 
   shift = false;
-
   alt = false;
-
   ctrl = false;
-
   super = false;
-
   caps_lock = false;
-
   num_lock = false;
 
   static create(from: Partial<Key>): Key {
@@ -80,18 +75,18 @@ export class Key {
         next_esc_i = bytes.length;
       }
       const key = new Key();
-      key.name = key.text = decoder.decode(bytes.subarray(0, next_esc_i));
+      key.name = key.text = dec.decode(bytes.subarray(0, next_esc_i));
       return [key, next_esc_i];
     }
 
-    const match = decoder.decode(bytes).match(RE);
+    const match = dec.decode(bytes).match(RE);
     if (!match) {
       return;
     }
 
     const key = new Key();
 
-    const func_name = func_names[match[1]! + (match[2] ?? "") + match[8]!];
+    const func_name = funcNames[match[1]! + (match[2] ?? "") + match[8]!];
     if (typeof func_name === "string") {
       key.name = func_name;
     } else {
@@ -176,7 +171,7 @@ function int(text: string | undefined): number | undefined {
   }
 }
 
-const func_names: Record<string, string> = {
+const funcNames: Record<string, string> = {
   "\x1b[27u": "ESC",
   "\x1b[13u": "ENTER",
   "\x1b[9u": "TAB",
