@@ -81,17 +81,12 @@ export class Alert extends Component<[unknown], void> {
 
   async #processInput(): Promise<void> {
     while (true) {
-      for await (const key of vt.read()) {
-        if (key instanceof Uint8Array || typeof key === "string") {
-          this.root.render();
-          continue;
-        }
+      const key = await vt.readKey();
 
-        switch (key.name) {
-          case "ESC":
-          case "ENTER":
-            return;
-        }
+      switch (key.name) {
+        case "ESC":
+        case "ENTER":
+          return;
       }
     }
   }

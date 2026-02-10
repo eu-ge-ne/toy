@@ -1,32 +1,60 @@
 import { Key } from "@lib/kitty";
 
-export async function* read(): AsyncGenerator<Key | Uint8Array> {
-  const buf = new Uint8Array(1024);
+const buf = new Uint8Array(1024);
+let bufLen = 0;
 
-  const bytes_read = await Deno.stdin.read(buf);
-  if (bytes_read === null) {
-    return;
+function setBuf(chunk: Uint8Array): void {
+  buf.set(chunk);
+  bufLen = chunk.byteLength;
+}
+
+function appendToBuf(chunk: Uint8Array): void {
+  buf.subarray(bufLen).set(chunk);
+  bufLen += chunk.byteLength;
+}
+
+export async function readKey(): Promise<Key> {
+  while (true) {
+    const data = buf.subarray(0, bufLen);
+    const parsed = Key.parse(data);
+
+    if (parsed) {
+      const tail = data.subarray(parsed[1]);
+      setBuf(tail);
+
+      return parsed[0];
+    }
+
+    const n = await Deno.stdin.read(buf.subarray(bufLen));
+    if (typeof n === "number") {
+      bufLen += n;
+    }
   }
-  const bytes = buf.subarray(0, bytes_read);
+}
 
-  for (let i = 0; i < bytes.length;) {
-    const result = Key.parse(bytes.subarray(i));
+const rawBuf = new Uint8Array(1024);
 
-    if (!result) {
-      let next_esc_i = bytes.indexOf(0x1b, i + 1);
-      if (next_esc_i < 0) {
-        next_esc_i = bytes.length;
-      }
-
-      yield bytes.subarray(i, next_esc_i);
-
-      i = next_esc_i;
-
+export function readRaw<T>(
+  parser: (_: Uint8Array) => [T, number] | undefined,
+): T {
+  for (let a = 0; a < 50; a += 1) {
+    const n = Deno.stdin.readSync(rawBuf);
+    if (typeof n !== "number") {
       continue;
     }
 
-    yield result[0];
+    const data = rawBuf.subarray(0, n);
 
-    i += result[1];
+    const parsed = parser(data);
+    if (parsed) {
+      const tail = data.subarray(parsed[1]);
+      appendToBuf(tail);
+
+      return parsed[0];
+    }
+
+    appendToBuf(data);
   }
+
+  throw new Error(`parse error: [${buf.subarray(0, bufLen)}]`);
 }
