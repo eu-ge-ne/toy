@@ -1,9 +1,10 @@
 import { CSI } from "./ansi.ts";
 import { set } from "./cursor.ts";
-import { readSync } from "./read.ts";
+import { readRaw } from "./read.ts";
 import { sync } from "./writer.ts";
 
-export const cprReq = CSI("6n"); // Reply: CSI 1 ; 6 R
+// Reply: CSI 1 ; 6 R
+export const cprReq = CSI("6n");
 
 const dec = new TextDecoder();
 
@@ -12,7 +13,7 @@ export function wchar(y: number, x: number, bytes: Uint8Array): number {
   sync.write(bytes);
   sync.write(cprReq);
 
-  const x1 = readSync((data) => {
+  const x1 = readRaw((data) => {
     let i = 0;
 
     // CSI

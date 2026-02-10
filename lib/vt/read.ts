@@ -32,18 +32,18 @@ export async function readKey(): Promise<Key> {
   }
 }
 
-const syncBuf = new Uint8Array(1024);
+const rawBuf = new Uint8Array(1024);
 
-export function readSync<T>(
+export function readRaw<T>(
   parser: (_: Uint8Array) => [T, number] | undefined,
 ): T {
   for (let a = 0; a < 50; a += 1) {
-    const n = Deno.stdin.readSync(syncBuf);
+    const n = Deno.stdin.readSync(rawBuf);
     if (typeof n !== "number") {
       continue;
     }
 
-    const data = syncBuf.subarray(0, n);
+    const data = rawBuf.subarray(0, n);
 
     const parsed = parser(data);
     if (parsed) {

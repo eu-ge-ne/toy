@@ -5,7 +5,7 @@ export * as cursor from "./cursor.ts";
 export * from "./dummy.ts";
 export * from "./ech.ts";
 export * from "./init.ts";
-export * from "./read.ts";
+export { readKey } from "./read.ts";
 export * from "./text.ts";
 export * from "./truecolor.ts";
 export * from "./wchar.ts";
