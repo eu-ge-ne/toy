@@ -3,12 +3,12 @@ import { assertEquals } from "@std/assert";
 import {
   type Flags,
   type FlagsMode,
-  Key,
   parse_flags,
   pop_flags,
   push_flags,
   set_flags,
-} from "../mod.ts";
+} from "../flags.ts";
+import { Key } from "../key.ts";
 
 const encoder = new TextEncoder();
 

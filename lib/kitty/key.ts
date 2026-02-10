@@ -15,83 +15,34 @@ const decoder: TextDecoder = new TextDecoder();
  * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol}
  */
 export class Key {
-  /**
-   * Name of the key
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#functional-key-definitions}
-   */
   name = "";
 
-  /**
-   * Key codes
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#key-codes}
-   */
   code?: {
     key?: number;
     shift?: number;
     base?: number;
   };
 
-  /**
-   * Text representation of the `event-type` sub-field
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#event-types}
-   */
   event: "press" | "repeat" | "release" = "press";
 
-  /**
-   * Text representation of the `text-as-codepoints` field
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#text-as-code-points}
-   */
   text?: string;
 
-  /**
-   * SHIFT
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   shift = false;
 
-  /**
-   * ALT/OPTION
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   alt = false;
 
-  /**
-   * CONTROL
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   ctrl = false;
 
-  /**
-   * SUPER/COMMAND
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   super = false;
 
-  /**
-   * CAPS LOCK
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   caps_lock = false;
 
-  /**
-   * NUM LOCK
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#modifiers}
-   */
   num_lock = false;
 
-  /**
-   * Create key instance
-   * @returns Key instance
-   */
   static create(from: Partial<Key>): Key {
     return Object.assign(new Key(), from);
   }
 
-  /**
-   * Parse key from bytes
-   * @param bytes
-   * @returns the Key and the number of bytes parsed
-   */
   static parse(bytes: Uint8Array): [Key, number] | undefined {
     if (bytes.length === 0) {
       return;

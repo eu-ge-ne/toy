@@ -5,7 +5,7 @@ import {
   assert_set_flags,
 } from "./assert.ts";
 
-import { FlagsMode } from "../mod.ts";
+import { FlagsMode } from "../flags.ts";
 
 Deno.test("set disambiguate", () => {
   assert_set_flags({ disambiguate: true }, FlagsMode.Set, "\x1b[=1;1u");
