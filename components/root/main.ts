@@ -13,7 +13,7 @@ import * as vt from "@lib/vt";
 
 import { IRoot } from "./root.ts";
 
-export * from "./root.ts";
+export type { IRoot } from "./root.ts";
 
 export class Root extends Component<[string], void> implements IRoot {
   isLayoutDirty = false;
@@ -60,7 +60,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.layout.bind(this, this));
+    Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
 
     if (fileName) {
       await this.#open(fileName);
@@ -89,8 +89,6 @@ export class Root extends Component<[string], void> implements IRoot {
     this.#children.alert.layout(p);
     this.#children.ask.layout(p);
     this.#children.save.layout(p);
-
-    //vt.dummy_req();
   }
 
   render(): void {
@@ -257,6 +255,11 @@ export class Root extends Component<[string], void> implements IRoot {
       }
     }
   }
+
+  #onSigwinch = () => {
+    this.layout(this);
+    this.render();
+  };
 
   #exit = (e?: PromiseRejectionEvent) => {
     vt.restore();
