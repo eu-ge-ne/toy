@@ -1,21 +1,21 @@
-import { Key, query_flags, set_flags } from "../main.ts";
+import { Key, queryFlags, setFlags } from "../main.ts";
 
 Deno.stdin.setRaw(true);
 
 write(
-  set_flags({
+  setFlags({
     disambiguate: true,
     events: true,
     alternates: true,
-    all_keys: true,
+    allKeys: true,
     text: true,
   }),
 );
 
-write(query_flags);
+write(queryFlags);
 
 self.onunload = () => {
-  write(set_flags({}));
+  write(setFlags({}));
   console.log("\nExit.");
 };
 

@@ -1,4 +1,4 @@
-import { set_flags } from "@lib/kitty";
+import { setFlags } from "@lib/kitty";
 
 import { CSI } from "./ansi.ts";
 import * as cursor from "./cursor.ts";
@@ -8,10 +8,10 @@ export function init(): void {
   Deno.stdin.setRaw(true);
 
   sync.write(CSI("?1049h"));
-  sync.write(set_flags({
+  sync.write(setFlags({
     disambiguate: true,
     alternates: true,
-    all_keys: true,
+    allKeys: true,
     text: true,
   }));
 }
