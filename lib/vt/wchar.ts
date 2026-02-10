@@ -13,49 +13,53 @@ export function wchar(y: number, x: number, bytes: Uint8Array): number {
   sync.write(cprReq);
 
   const x1 = readSync((data) => {
+    let i = 0;
+
     // CSI
-    let iStart = -1;
-    for (let i = 0; i < data.byteLength; i += 1) {
+    let j0 = -1;
+    for (; i < data.byteLength; i += 1) {
       if (data[i] === 0x1b) {
-        iStart = i;
+        j0 = i;
         break;
       }
     }
-    if (iStart === -1) {
+    if (j0 === -1) {
       return undefined;
     }
-    iStart += 1;
-    if (data[iStart] !== 0x5b) {
+    i += 1;
+    if (data[i] !== 0x5b) {
       return undefined;
     }
 
     // ;
-    let iSemicolon = -1;
-    for (let i = iStart + 1; i < data.byteLength; i += 1) {
+    i += 1;
+    let j1 = -1;
+    for (; i < data.byteLength; i += 1) {
       if (data[i] === 0x3b) {
-        iSemicolon = i;
+        j1 = i;
         break;
       }
     }
-    if (iSemicolon === -1) {
+    if (j1 === -1) {
       return undefined;
     }
 
     // R
-    let iR = -1;
-    for (let i = iSemicolon + 1; i < data.byteLength; i += 1) {
+    i += 1;
+    let j2 = -1;
+    for (; i < data.byteLength; i += 1) {
       if (data[i] === 0x52) {
-        iR = i;
+        j2 = i;
         break;
       }
     }
-    if (iR === -1) {
+    if (j2 === -1) {
       return undefined;
     }
 
-    const x = Number.parseInt(dec.decode(data.subarray(iSemicolon + 1, iR)));
+    const col = dec.decode(data.subarray(j1 + 1, j2));
 
-    return [x, iR + 1];
+    return [Number.parseInt(col), j2 + 1];
   });
 
   return x1 - 1 - x;
