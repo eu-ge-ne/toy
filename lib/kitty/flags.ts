@@ -1,5 +1,5 @@
-const encoder: TextEncoder = new TextEncoder();
-const decoder: TextDecoder = new TextDecoder();
+const enc = new TextEncoder();
+const dec = new TextDecoder();
 
 /**
  * The progressive enhancement flags.
@@ -7,13 +7,9 @@ const decoder: TextDecoder = new TextDecoder();
  */
 export interface Flags {
   disambiguate?: boolean;
-
   events?: boolean;
-
   alternates?: boolean;
-
-  all_keys?: boolean;
-
+  allKeys?: boolean;
   text?: boolean;
 }
 
@@ -23,29 +19,29 @@ export const enum FlagsMode {
   Reset = 3,
 }
 
-export function set_flags(
+export function setFlags(
   flags: Flags,
   mode: FlagsMode = FlagsMode.Set,
 ): Uint8Array {
-  const f = stringify_flags(flags);
+  const f = stringifyFlags(flags);
 
-  return encoder.encode(`\x1b[=${f};${mode}u`);
+  return enc.encode(`\x1b[=${f};${mode}u`);
 }
 
-export function push_flags(flags: Flags): Uint8Array {
-  const f = stringify_flags(flags);
+export function pushFlags(flags: Flags): Uint8Array {
+  const f = stringifyFlags(flags);
 
-  return encoder.encode(`\x1b[>${f}u`);
+  return enc.encode(`\x1b[>${f}u`);
 }
 
-export function pop_flags(number: number): Uint8Array {
-  return encoder.encode(`\x1b[<${number}u`);
+export function popFlags(number: number): Uint8Array {
+  return enc.encode(`\x1b[<${number}u`);
 }
 
-export const query_flags: Uint8Array = encoder.encode("\x1b[?u");
+export const queryFlags = enc.encode("\x1b[?u");
 
-export function parse_flags(bytes: Uint8Array): Flags | undefined {
-  const text = decoder.decode(bytes);
+export function parseFlags(bytes: Uint8Array): Flags | undefined {
+  const text = dec.decode(bytes);
   if (!text.startsWith("\x1b[?") || text.at(-1) !== "u") {
     return;
   }
@@ -70,7 +66,7 @@ export function parse_flags(bytes: Uint8Array): Flags | undefined {
   }
 
   if (f & 8) {
-    flags.all_keys = true;
+    flags.allKeys = true;
   }
 
   if (f & 16) {
@@ -80,7 +76,7 @@ export function parse_flags(bytes: Uint8Array): Flags | undefined {
   return flags;
 }
 
-function stringify_flags(flags: Flags): string {
+function stringifyFlags(flags: Flags): string {
   let result = 0;
 
   if (flags.disambiguate) {
@@ -95,7 +91,7 @@ function stringify_flags(flags: Flags): string {
     result += 4;
   }
 
-  if (flags.all_keys) {
+  if (flags.allKeys) {
     result += 8;
   }
 

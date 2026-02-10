@@ -20,7 +20,7 @@ Deno.test("set alternates", () => {
 });
 
 Deno.test("set all_keys", () => {
-  assert_set_flags({ all_keys: true }, FlagsMode.Set, "\x1b[=8;1u");
+  assert_set_flags({ allKeys: true }, FlagsMode.Set, "\x1b[=8;1u");
 });
 
 Deno.test("set text", () => {
@@ -52,7 +52,7 @@ Deno.test("push alternates", () => {
 });
 
 Deno.test("push all_keys", () => {
-  assert_push_flags({ all_keys: true }, "\x1b[>8u");
+  assert_push_flags({ allKeys: true }, "\x1b[>8u");
 });
 
 Deno.test("push text", () => {
@@ -76,7 +76,7 @@ Deno.test("parse alternates", () => {
 });
 
 Deno.test("parse all_keys", () => {
-  assert_parse_flags("\x1b[?8u", { all_keys: true });
+  assert_parse_flags("\x1b[?8u", { allKeys: true });
 });
 
 Deno.test("parse text", () => {
