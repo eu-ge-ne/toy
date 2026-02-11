@@ -16,23 +16,17 @@ const dec = new TextDecoder();
  */
 export class Key {
   name = "";
-
-  code?: {
-    key?: number;
-    shift?: number;
-    base?: number;
-  };
-
+  keyCode?: number;
+  shiftCode?: number;
+  baseCode?: number;
   event: "press" | "repeat" | "release" = "press";
-
   text?: string;
-
   shift = false;
   alt = false;
   ctrl = false;
   super = false;
-  caps_lock = false;
-  num_lock = false;
+  capsLock = false;
+  numLock = false;
 
   static create(from: Partial<Key>): Key {
     return Object.assign(new Key(), from);
@@ -98,11 +92,9 @@ export class Key {
       }
     }
 
-    key.code = {
-      key: int(match[2])!,
-      shift: int(match[3]),
-      base: int(match[4]),
-    };
+    key.keyCode = int(match[2])!;
+    key.shiftCode = int(match[3]);
+    key.baseCode = int(match[4]);
 
     const modifiers = (int(match[5]) ?? 1) - 1;
 
@@ -110,8 +102,8 @@ export class Key {
     key.alt = Boolean(modifiers & 2);
     key.ctrl = Boolean(modifiers & 4);
     key.super = Boolean(modifiers & 8);
-    key.caps_lock = Boolean(modifiers & 64);
-    key.num_lock = Boolean(modifiers & 128);
+    key.capsLock = Boolean(modifiers & 64);
+    key.numLock = Boolean(modifiers & 128);
 
     switch (match[6]) {
       case "2":

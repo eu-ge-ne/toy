@@ -3,7 +3,9 @@ import { assert_parse, create_key } from "./assert.ts";
 Deno.test("ESC", () => {
   const key = create_key({
     name: "ESC",
-    code: { key: 27, shift: undefined, base: undefined },
+    keyCode: 27,
+    shiftCode: undefined,
+    baseCode: undefined,
   });
 
   assert_parse("\x1b[27u", [key, 5]);
