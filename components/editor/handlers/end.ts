@@ -16,6 +16,6 @@ export class EndHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    return this.editor.cursor.end(key.shift);
+    return this.editor.cursor.end(Boolean(key.shift));
   }
 }

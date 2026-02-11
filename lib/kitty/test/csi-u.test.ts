@@ -1,20 +1,19 @@
-import { assert_parse, create_key } from "./assert.ts";
+import { Key } from "../key.ts";
+import { assert_parse } from "./assert.ts";
 
 Deno.test("ESC", () => {
-  const key = create_key({
+  const key: Key = {
     name: "ESC",
     keyCode: 27,
-    shiftCode: undefined,
-    baseCode: undefined,
-  });
+  };
 
   assert_parse("\x1b[27u", [key, 5]);
 
-  assert_parse("\x1b[27;5u", [create_key(key, { ctrl: true }), 7]);
-  assert_parse("\x1b[27;3u", [create_key(key, { alt: true }), 7]);
-  assert_parse("\x1b[27;2u", [create_key(key, { shift: true }), 7]);
+  assert_parse("\x1b[27;5u", [{ ...key, ctrl: true }, 7]);
+  assert_parse("\x1b[27;3u", [{ ...key, alt: true }, 7]);
+  assert_parse("\x1b[27;2u", [{ ...key, shift: true }, 7]);
 
   assert_parse("\x1b[27;1:1u", [key, 9]);
-  assert_parse("\x1b[27;1:2u", [create_key(key, { event: "repeat" }), 9]);
-  assert_parse("\x1b[27;1:3u", [create_key(key, { event: "release" }), 9]);
+  assert_parse("\x1b[27;1:2u", [{ ...key, event: "repeat" }, 9]);
+  assert_parse("\x1b[27;1:3u", [{ ...key, event: "release" }, 9]);
 });

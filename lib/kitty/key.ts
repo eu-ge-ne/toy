@@ -14,144 +14,155 @@ const dec = new TextDecoder();
  * Represents key
  * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol}
  */
-export class Key {
-  name = "";
+export interface Key {
+  name: string;
+
+  event?: "repeat" | "release";
+
   keyCode?: number;
   shiftCode?: number;
   baseCode?: number;
-  event: "press" | "repeat" | "release" = "press";
+
   text?: string;
-  shift = false;
-  alt = false;
-  ctrl = false;
-  super = false;
-  capsLock = false;
-  numLock = false;
 
-  static create(from: Partial<Key>): Key {
-    return Object.assign(new Key(), from);
+  shift?: boolean;
+  alt?: boolean;
+  ctrl?: boolean;
+  super?: boolean;
+  capsLock?: boolean;
+  numLock?: boolean;
+}
+
+export function parse(bytes: Uint8Array): [Key, number] | undefined {
+  if (bytes.length === 0) {
+    return;
   }
 
-  static parse(bytes: Uint8Array): [Key, number] | undefined {
-    if (bytes.length === 0) {
-      return;
+  const b = bytes[0];
+
+  if (b === 0x1b && bytes.length === 1) {
+    return [{ name: "ESC" }, 1];
+  }
+
+  if (b === 0x0d) {
+    return [{ name: "ENTER" }, 1];
+  }
+
+  if (b === 0x09) {
+    return [{ name: "TAB" }, 1];
+  }
+
+  if (b === 0x7f || b === 0x08) {
+    return [{ name: "BACKSPACE" }, 1];
+  }
+
+  if (b !== 0x1b) {
+    let next_esc_i = bytes.indexOf(0x1b, 1);
+    if (next_esc_i < 0) {
+      next_esc_i = bytes.length;
     }
+    const name = dec.decode(bytes.subarray(0, next_esc_i));
+    return [{ name, text: name }, next_esc_i];
+  }
 
-    const b = bytes[0];
+  const match = dec.decode(bytes).match(RE);
+  if (!match) {
+    return;
+  }
 
-    if (b === 0x1b && bytes.length === 1) {
-      const key = new Key();
-      key.name = "ESC";
-      return [key, 1];
-    }
-
-    if (b === 0x0d) {
-      const key = new Key();
-      key.name = "ENTER";
-      return [key, 1];
-    }
-
-    if (b === 0x09) {
-      const key = new Key();
-      key.name = "TAB";
-      return [key, 1];
-    }
-
-    if (b === 0x7f || b === 0x08) {
-      const key = new Key();
-      key.name = "BACKSPACE";
-      return [key, 1];
-    }
-
-    if (b !== 0x1b) {
-      let next_esc_i = bytes.indexOf(0x1b, 1);
-      if (next_esc_i < 0) {
-        next_esc_i = bytes.length;
-      }
-      const key = new Key();
-      key.name = key.text = dec.decode(bytes.subarray(0, next_esc_i));
-      return [key, next_esc_i];
-    }
-
-    const match = dec.decode(bytes).match(RE);
-    if (!match) {
-      return;
-    }
-
-    const key = new Key();
-
-    const func_name = funcNames[match[1]! + (match[2] ?? "") + match[8]!];
-    if (typeof func_name === "string") {
-      key.name = func_name;
+  let name = funcNames[match[1]! + (match[2] ?? "") + match[8]!];
+  if (typeof name !== "string") {
+    const x = int(match[2]);
+    if (typeof x === "number") {
+      name = String.fromCodePoint(x);
     } else {
-      const x = int(match[2]);
-      if (typeof x === "number") {
-        key.name = String.fromCodePoint(x);
-      } else {
-        key.name = match[1]! + match[8]!;
-      }
+      name = match[1]! + match[8]!;
     }
+  }
 
-    key.keyCode = int(match[2])!;
+  const key: Key = { name };
+
+  if (match[2]) {
+    key.keyCode = int(match[2]);
+  }
+
+  if (match[3]) {
     key.shiftCode = int(match[3]);
+  }
+
+  if (match[4]) {
     key.baseCode = int(match[4]);
-
-    const modifiers = (int(match[5]) ?? 1) - 1;
-
-    key.shift = Boolean(modifiers & 1);
-    key.alt = Boolean(modifiers & 2);
-    key.ctrl = Boolean(modifiers & 4);
-    key.super = Boolean(modifiers & 8);
-    key.capsLock = Boolean(modifiers & 64);
-    key.numLock = Boolean(modifiers & 128);
-
-    switch (match[6]) {
-      case "2":
-        key.event = "repeat";
-        break;
-      case "3":
-        key.event = "release";
-        break;
-      default:
-        key.event = "press";
-        break;
-    }
-
-    if (match[7]) {
-      key.text = String.fromCodePoint(
-        ...match[7]
-          .split(":")
-          .map(int)
-          .filter((x) => typeof x === "number"),
-      );
-    }
-
-    return [key, match.index! + match[0].length];
   }
 
-  toString(): string {
-    const chunks: string[] = [];
+  const modifiers = (int(match[5]) ?? 1) - 1;
 
-    if (this.shift) {
-      chunks.push("⇧");
-    }
-
-    if (this.ctrl) {
-      chunks.push("⌃");
-    }
-
-    if (this.alt) {
-      chunks.push("⌥");
-    }
-
-    if (this.super) {
-      chunks.push("⌘");
-    }
-
-    chunks.push(this.name.toUpperCase());
-
-    return chunks.join("");
+  if (modifiers & 1) {
+    key.shift = true;
   }
+
+  if (modifiers & 2) {
+    key.alt = true;
+  }
+
+  if (modifiers & 4) {
+    key.ctrl = true;
+  }
+
+  if (modifiers & 8) {
+    key.super = true;
+  }
+
+  if (modifiers & 64) {
+    key.capsLock = true;
+  }
+
+  if (modifiers & 128) {
+    key.numLock = true;
+  }
+
+  switch (match[6]) {
+    case "2":
+      key.event = "repeat";
+      break;
+    case "3":
+      key.event = "release";
+      break;
+  }
+
+  if (match[7]) {
+    key.text = String.fromCodePoint(
+      ...match[7]
+        .split(":")
+        .map(int)
+        .filter((x) => typeof x === "number"),
+    );
+  }
+
+  return [key, match.index! + match[0].length];
+}
+
+export function shortcut(key: Key): string {
+  const chunks: string[] = [];
+
+  if (key.shift) {
+    chunks.push("⇧");
+  }
+
+  if (key.ctrl) {
+    chunks.push("⌃");
+  }
+
+  if (key.alt) {
+    chunks.push("⌥");
+  }
+
+  if (key.super) {
+    chunks.push("⌘");
+  }
+
+  chunks.push(key.name.toUpperCase());
+
+  return chunks.join("");
 }
 
 function int(text: string | undefined): number | undefined {

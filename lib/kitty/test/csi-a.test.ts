@@ -1,20 +1,19 @@
-import { assert_parse, create_key } from "./assert.ts";
+import { Key } from "../key.ts";
+import { assert_parse } from "./assert.ts";
 
 Deno.test("LEFT", () => {
-  const key = create_key({
+  const key: Key = {
     name: "LEFT",
     keyCode: 1,
-    shiftCode: undefined,
-    baseCode: undefined,
-  });
+  };
 
   assert_parse("\x1b[1D", [key, 4]);
 
-  assert_parse("\x1b[1;5D", [create_key(key, { ctrl: true }), 6]);
-  assert_parse("\x1b[1;3D", [create_key(key, { alt: true }), 6]);
-  assert_parse("\x1b[1;2D", [create_key(key, { shift: true }), 6]);
+  assert_parse("\x1b[1;5D", [{ ...key, ctrl: true }, 6]);
+  assert_parse("\x1b[1;3D", [{ ...key, alt: true }, 6]);
+  assert_parse("\x1b[1;2D", [{ ...key, shift: true }, 6]);
 
   assert_parse("\x1b[1;1:1D", [key, 8]);
-  assert_parse("\x1b[1;1:2D", [create_key(key, { event: "repeat" }), 8]);
-  assert_parse("\x1b[1;1:3D", [create_key(key, { event: "release" }), 8]);
+  assert_parse("\x1b[1;1:2D", [{ ...key, event: "repeat" }, 8]);
+  assert_parse("\x1b[1;1:3D", [{ ...key, event: "release" }, 8]);
 });

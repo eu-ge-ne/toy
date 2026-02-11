@@ -8,19 +8,15 @@ import {
   pushFlags,
   setFlags,
 } from "../flags.ts";
-import { Key } from "../key.ts";
+import { Key, parse } from "../key.ts";
 
-const encoder = new TextEncoder();
-
-export function create_key(src0: Partial<Key>, src1?: Partial<Key>): Key {
-  return Object.assign(new Key(), src0, src1);
-}
+const enc = new TextEncoder();
 
 export function assert_parse(
   actual: string,
   expected: [Key, number] | undefined,
 ): void {
-  assertEquals(Key.parse(encoder.encode(actual)), expected);
+  assertEquals(parse(enc.encode(actual)), expected);
 }
 
 export function assert_set_flags(
@@ -49,5 +45,5 @@ export function assert_parse_flags(
   actual: string,
   expected: Flags | undefined,
 ): void {
-  assertEquals(parseFlags(encoder.encode(actual)), expected);
+  assertEquals(parseFlags(enc.encode(actual)), expected);
 }

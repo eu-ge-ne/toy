@@ -4,7 +4,7 @@ import { EditorHandler } from "./handler.ts";
 
 export class TopHandler extends EditorHandler {
   match(key: Key): boolean {
-    return key.name === "UP" && key.super;
+    return key.name === "UP" && Boolean(key.super);
   }
 
   handle(key: Key): boolean {
@@ -12,6 +12,6 @@ export class TopHandler extends EditorHandler {
       return false;
     }
 
-    return this.editor.cursor.top(key.shift);
+    return this.editor.cursor.top(Boolean(key.shift));
   }
 }

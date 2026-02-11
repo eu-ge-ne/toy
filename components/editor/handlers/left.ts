@@ -8,6 +8,6 @@ export class LeftHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    return this.editor.cursor.left(key.shift);
+    return this.editor.cursor.left(Boolean(key.shift));
   }
 }
