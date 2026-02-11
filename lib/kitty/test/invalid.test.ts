@@ -1,5 +1,9 @@
 import { assertParse } from "./assert.ts";
 
+Deno.test("empty", () => {
+  assertParse("", undefined);
+});
+
 Deno.test("CSI ? flags u", () => {
   assertParse("\x1b[?31u", undefined);
 });
