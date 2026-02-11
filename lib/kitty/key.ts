@@ -76,7 +76,7 @@ export function parse(data: Uint8Array): [Key, number] | undefined {
 
   let name = func[match[1]! + (match[2] ?? "") + match[8]!];
   if (typeof name !== "string") {
-    const x = int(match[2]);
+    const x = toInt(match[2]);
     if (typeof x === "number") {
       name = String.fromCodePoint(x);
     } else {
@@ -87,18 +87,18 @@ export function parse(data: Uint8Array): [Key, number] | undefined {
   const key: Key = { name };
 
   if (match[2]) {
-    key.keyCode = int(match[2]);
+    key.keyCode = toInt(match[2]);
   }
 
   if (match[3]) {
-    key.shiftCode = int(match[3]);
+    key.shiftCode = toInt(match[3]);
   }
 
   if (match[4]) {
-    key.baseCode = int(match[4]);
+    key.baseCode = toInt(match[4]);
   }
 
-  const modifiers = (int(match[5]) ?? 1) - 1;
+  const modifiers = (toInt(match[5]) ?? 1) - 1;
 
   if (modifiers & 1) {
     key.shift = true;
@@ -137,7 +137,7 @@ export function parse(data: Uint8Array): [Key, number] | undefined {
     key.text = String.fromCodePoint(
       ...match[7]
         .split(":")
-        .map(int)
+        .map(toInt)
         .filter((x) => typeof x === "number"),
     );
   }
@@ -145,11 +145,14 @@ export function parse(data: Uint8Array): [Key, number] | undefined {
   return [key, match.index! + match[0].length];
 }
 
-function int(text: string | undefined): number | undefined {
-  if (text) {
-    const n = Number.parseInt(text);
-    if (Number.isSafeInteger(n)) {
-      return n;
-    }
+function toInt(text: string | undefined): number | undefined {
+  if (!text) {
+    return;
+  }
+
+  const n = Number.parseInt(text);
+
+  if (Number.isSafeInteger(n)) {
+    return n;
   }
 }
