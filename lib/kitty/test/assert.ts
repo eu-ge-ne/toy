@@ -12,14 +12,14 @@ import { Key, parse } from "../key.ts";
 
 const enc = new TextEncoder();
 
-export function assert_parse(
+export function assertParse(
   actual: string,
   expected: [Key, number] | undefined,
 ): void {
   assertEquals(parse(enc.encode(actual)), expected);
 }
 
-export function assert_set_flags(
+export function assertSetFlags(
   flags: Flags,
   mode: FlagsMode,
   text: string,
@@ -27,21 +27,21 @@ export function assert_set_flags(
   assertEquals(setFlags(flags, mode), new TextEncoder().encode(text));
 }
 
-export function assert_push_flags(
+export function assertPushFlags(
   flags: Flags,
   text: string,
 ): void {
   assertEquals(pushFlags(flags), new TextEncoder().encode(text));
 }
 
-export function assert_pop_flags(
+export function assertPopFlags(
   number: number,
   text: string,
 ): void {
   assertEquals(popFlags(number), new TextEncoder().encode(text));
 }
 
-export function assert_parse_flags(
+export function assertParseFlags(
   actual: string,
   expected: Flags | undefined,
 ): void {

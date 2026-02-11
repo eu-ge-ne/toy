@@ -1,15 +1,9 @@
-import { assert_parse } from "./assert.ts";
+import { assertParse } from "./assert.ts";
 
 Deno.test("1 Disambiguate escape codes", () => {
-  assert_parse("\x1b[27u", [
-    {
-      name: "ESC",
-      keyCode: 27,
-    },
-    5,
-  ]);
+  assertParse("\x1b[27u", [{ name: "ESC", keyCode: 27 }, 5]);
 
-  assert_parse("\x1b[1078;8u", [
+  assertParse("\x1b[1078;8u", [
     {
       name: "ж",
       keyCode: 1078,
@@ -22,7 +16,7 @@ Deno.test("1 Disambiguate escape codes", () => {
 });
 
 Deno.test("1 + 4 Report alternate keys", () => {
-  assert_parse("\x1b[1078:1046:59;8u", [
+  assertParse("\x1b[1078:1046:59;8u", [
     {
       name: "ж",
       keyCode: 1078,
@@ -37,17 +31,11 @@ Deno.test("1 + 4 Report alternate keys", () => {
 });
 
 Deno.test("1 + 4 + 8 Report all keys as escape codes", () => {
-  assert_parse("\x1b[1078u", [
-    {
-      name: "ж",
-      keyCode: 1078,
-    },
-    7,
-  ]);
+  assertParse("\x1b[1078u", [{ name: "ж", keyCode: 1078 }, 7]);
 });
 
 Deno.test("1 + 4 + 8 + 16 Report associated text", () => {
-  assert_parse("\x1b[1078:1046:59;2;1046u", [
+  assertParse("\x1b[1078:1046:59;2;1046u", [
     {
       name: "ж",
       keyCode: 1078,
@@ -61,7 +49,7 @@ Deno.test("1 + 4 + 8 + 16 Report associated text", () => {
 });
 
 Deno.test("1 + 4 + 8 + 16 + 2 Report event types", () => {
-  assert_parse("\x1b[1078:1046:59;2:1;1046u", [
+  assertParse("\x1b[1078:1046:59;2:1;1046u", [
     {
       name: "ж",
       keyCode: 1078,
@@ -73,7 +61,7 @@ Deno.test("1 + 4 + 8 + 16 + 2 Report event types", () => {
     24,
   ]);
 
-  assert_parse("\x1b[1078:1046:59;2:2;1046u", [
+  assertParse("\x1b[1078:1046:59;2:2;1046u", [
     {
       name: "ж",
       keyCode: 1078,
@@ -86,7 +74,7 @@ Deno.test("1 + 4 + 8 + 16 + 2 Report event types", () => {
     24,
   ]);
 
-  assert_parse("\x1b[1078::59;2:3u", [
+  assertParse("\x1b[1078::59;2:3u", [
     {
       name: "ж",
       keyCode: 1078,
