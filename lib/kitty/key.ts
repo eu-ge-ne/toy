@@ -35,39 +35,41 @@ export interface Key {
   numLock?: boolean;
 }
 
-export function parse(bytes: Uint8Array): [Key, number] | undefined {
-  if (bytes.length === 0) {
+export function parse(data: Uint8Array): [Key, number] | undefined {
+  if (data.byteLength === 0) {
     return;
   }
 
-  const b = bytes[0];
+  const b = data[0];
 
-  if (b === 0x1b && bytes.length === 1) {
-    return [{ name: "ESC" }, 1];
-  }
+  if (data.byteLength === 1) {
+    if (b === 0x1b) {
+      return [{ name: "ESC" }, 1];
+    }
 
-  if (b === 0x0d) {
-    return [{ name: "ENTER" }, 1];
-  }
+    if (b === 0x0d) {
+      return [{ name: "ENTER" }, 1];
+    }
 
-  if (b === 0x09) {
-    return [{ name: "TAB" }, 1];
-  }
+    if (b === 0x09) {
+      return [{ name: "TAB" }, 1];
+    }
 
-  if (b === 0x7f || b === 0x08) {
-    return [{ name: "BACKSPACE" }, 1];
+    if (b === 0x7f || b === 0x08) {
+      return [{ name: "BACKSPACE" }, 1];
+    }
   }
 
   if (b !== 0x1b) {
-    let next_esc_i = bytes.indexOf(0x1b, 1);
-    if (next_esc_i < 0) {
-      next_esc_i = bytes.length;
+    let escI = data.indexOf(0x1b, 1);
+    if (escI < 0) {
+      escI = data.byteLength;
     }
-    const name = dec.decode(bytes.subarray(0, next_esc_i));
-    return [{ name, text: name }, next_esc_i];
+    const name = dec.decode(data.subarray(0, escI));
+    return [{ name, text: name }, escI];
   }
 
-  const match = dec.decode(bytes).match(RE);
+  const match = dec.decode(data).match(RE);
   if (!match) {
     return;
   }
