@@ -1,10 +1,10 @@
 import { func } from "./func.ts";
 
-const PREFIX_RE = String.raw`(\x1b\x5b|\x1b\x4f)`;
-const CODES_RE = String.raw`(?:(\d+)(?::(\d*))?(?::(\d*))?)?`;
-const PARAMS_RE = String.raw`(?:;(\d*)?(?::(\d*))?)?`;
-const CODEPOINTS_RE = String.raw`(?:;([\d:]*))?`;
-const SCHEME_RE = String.raw`([u~ABCDEFHPQS])`;
+const PREFIX_RE = String.raw`(\x1b\x5b|\x1b\x4f)`; // 1
+const CODES_RE = String.raw`(?:(\d+)(?::(\d*))?(?::(\d*))?)?`; // 2 3 4
+const PARAMS_RE = String.raw`(?:;(\d*)?(?::(\d*))?)?`; // 5 6
+const CODEPOINTS_RE = String.raw`(?:;([\d:]*))?`; // 7
+const SCHEME_RE = String.raw`([u~ABCDEFHPQS])`; // 8
 
 const RE = new RegExp(
   PREFIX_RE + CODES_RE + PARAMS_RE + CODEPOINTS_RE + SCHEME_RE,
