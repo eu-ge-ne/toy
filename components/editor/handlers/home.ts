@@ -16,6 +16,6 @@ export class HomeHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    return this.editor.cursor.home(key.shift);
+    return this.editor.cursor.home(Boolean(key.shift));
   }
 }

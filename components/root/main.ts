@@ -8,6 +8,7 @@ import { Palette } from "@components/palette";
 import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
+import * as kitty from "@lib/kitty";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -116,7 +117,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
       this.isLayoutDirty = false;
 
-      const cmdName = ShortcutToCommand[key.toString()];
+      const cmdName = ShortcutToCommand[kitty.shortcut(key)];
       if (typeof cmdName !== "undefined") {
         const cmd = { name: cmdName } as Command;
         await this.handleTree(cmd);

@@ -1,97 +1,47 @@
-const encoder: TextEncoder = new TextEncoder();
-const decoder: TextDecoder = new TextDecoder();
+const enc = new TextEncoder();
+const dec = new TextDecoder();
 
 /**
  * The progressive enhancement flags.
  * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#id5}
  */
 export interface Flags {
-  /**
-   * 0b1 (1) Disambiguate escape codes.
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#disambiguate-escape-codes}
-   */
   disambiguate?: boolean;
-
-  /**
-   * 0b10 (2) Report event types.
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#report-events}
-   */
   events?: boolean;
-
-  /**
-   * 0b100 (4) Report alternate keys.
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#report-alternates}
-   */
   alternates?: boolean;
-
-  /**
-   * 0b1000 (8) Report all keys as escape codes.
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#report-all-keys}
-   */
-  all_keys?: boolean;
-
-  /**
-   * 0b10000 (16) Report associated text.
-   * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#report-text}
-   */
+  allKeys?: boolean;
   text?: boolean;
 }
 
-/**
- * Set flags mode
- */
 export const enum FlagsMode {
   Set = 1,
   Update = 2,
   Reset = 3,
 }
 
-/**
- * Serializes `Set progressive enhancement flags` request to bytes
- * @param flags
- * @param mode
- * @returns bytes
- * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement}
- */
-export function set_flags(
+export function setFlags(
   flags: Flags,
   mode: FlagsMode = FlagsMode.Set,
 ): Uint8Array {
-  const f = stringify_flags(flags);
+  const f = stringifyFlags(flags);
 
-  return encoder.encode(`\x1b[=${f};${mode}u`);
+  return enc.encode(`\x1b[=${f};${mode}u`);
 }
 
-/**
- * Serializes `Push progressive enhancement flags` request to bytes.
- * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement}
- */
-export function push_flags(flags: Flags): Uint8Array {
-  const f = stringify_flags(flags);
+export function pushFlags(flags: Flags): Uint8Array {
+  const f = stringifyFlags(flags);
 
-  return encoder.encode(`\x1b[>${f}u`);
+  return enc.encode(`\x1b[>${f}u`);
 }
 
-/**
- * Serializes `Pop progressive enhancement flags` request to bytes.
- * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement}
- */
-export function pop_flags(number: number): Uint8Array {
-  return encoder.encode(`\x1b[<${number}u`);
+export function popFlags(number: number): Uint8Array {
+  return enc.encode(`\x1b[<${number}u`);
 }
 
-/**
- * Serialized `Query progressive enhancement flags` request.
- * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement}
- */
-export const query_flags: Uint8Array = encoder.encode("\x1b[?u");
+export const queryFlags = enc.encode("\x1b[?u");
 
-/**
- * Parses progressive enhancement flags reply from bytes.
- * @see {@link https://sw.kovidgoyal.net/kitty/keyboard-protocol/#progressive-enhancement}
- */
-export function parse_flags(bytes: Uint8Array): Flags | undefined {
-  const text = decoder.decode(bytes);
+export function parseFlags(bytes: Uint8Array): Flags | undefined {
+  const text = dec.decode(bytes);
   if (!text.startsWith("\x1b[?") || text.at(-1) !== "u") {
     return;
   }
@@ -116,7 +66,7 @@ export function parse_flags(bytes: Uint8Array): Flags | undefined {
   }
 
   if (f & 8) {
-    flags.all_keys = true;
+    flags.allKeys = true;
   }
 
   if (f & 16) {
@@ -126,7 +76,7 @@ export function parse_flags(bytes: Uint8Array): Flags | undefined {
   return flags;
 }
 
-function stringify_flags(flags: Flags): string {
+function stringifyFlags(flags: Flags): string {
   let result = 0;
 
   if (flags.disambiguate) {
@@ -141,7 +91,7 @@ function stringify_flags(flags: Flags): string {
     result += 4;
   }
 
-  if (flags.all_keys) {
+  if (flags.allKeys) {
     result += 8;
   }
 

@@ -12,6 +12,6 @@ export class DownHandler extends EditorHandler {
       return false;
     }
 
-    return this.editor.cursor.down(1, key.shift);
+    return this.editor.cursor.down(1, Boolean(key.shift));
   }
 }

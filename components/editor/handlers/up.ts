@@ -12,6 +12,6 @@ export class UpHandler extends EditorHandler {
       return false;
     }
 
-    return this.editor.cursor.up(1, key.shift);
+    return this.editor.cursor.up(1, Boolean(key.shift));
   }
 }

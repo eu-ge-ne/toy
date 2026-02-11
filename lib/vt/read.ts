@@ -1,4 +1,4 @@
-import { Key } from "@lib/kitty";
+import * as kitty from "@lib/kitty";
 
 const buf = new Uint8Array(1024);
 let bufLen = 0;
@@ -13,10 +13,10 @@ function appendToBuf(chunk: Uint8Array): void {
   bufLen += chunk.byteLength;
 }
 
-export async function readKey(): Promise<Key> {
+export async function readKey(): Promise<kitty.Key> {
   while (true) {
     const data = buf.subarray(0, bufLen);
-    const parsed = Key.parse(data);
+    const parsed = kitty.parse(data);
 
     if (parsed) {
       const tail = data.subarray(parsed[1]);

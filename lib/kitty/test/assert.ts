@@ -3,51 +3,47 @@ import { assertEquals } from "@std/assert";
 import {
   type Flags,
   type FlagsMode,
-  Key,
-  parse_flags,
-  pop_flags,
-  push_flags,
-  set_flags,
-} from "../mod.ts";
+  parseFlags,
+  popFlags,
+  pushFlags,
+  setFlags,
+} from "../flags.ts";
+import { Key, parse } from "../key.ts";
 
-const encoder = new TextEncoder();
+const enc = new TextEncoder();
 
-export function create_key(src0: Partial<Key>, src1?: Partial<Key>): Key {
-  return Object.assign(new Key(), src0, src1);
-}
-
-export function assert_parse(
+export function assertParse(
   actual: string,
   expected: [Key, number] | undefined,
 ): void {
-  assertEquals(Key.parse(encoder.encode(actual)), expected);
+  assertEquals(parse(enc.encode(actual)), expected);
 }
 
-export function assert_set_flags(
+export function assertSetFlags(
   flags: Flags,
   mode: FlagsMode,
   text: string,
 ): void {
-  assertEquals(set_flags(flags, mode), new TextEncoder().encode(text));
+  assertEquals(setFlags(flags, mode), new TextEncoder().encode(text));
 }
 
-export function assert_push_flags(
+export function assertPushFlags(
   flags: Flags,
   text: string,
 ): void {
-  assertEquals(push_flags(flags), new TextEncoder().encode(text));
+  assertEquals(pushFlags(flags), new TextEncoder().encode(text));
 }
 
-export function assert_pop_flags(
+export function assertPopFlags(
   number: number,
   text: string,
 ): void {
-  assertEquals(pop_flags(number), new TextEncoder().encode(text));
+  assertEquals(popFlags(number), new TextEncoder().encode(text));
 }
 
-export function assert_parse_flags(
+export function assertParseFlags(
   actual: string,
   expected: Flags | undefined,
 ): void {
-  assertEquals(parse_flags(encoder.encode(actual)), expected);
+  assertEquals(parseFlags(enc.encode(actual)), expected);
 }
