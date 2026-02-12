@@ -19,3 +19,7 @@ Deno.test("CSI 1", () => {
 Deno.test("CSI", () => {
   assertParse("\x1b[", undefined);
 });
+
+Deno.test("CSI u", () => {
+  assertParse("\x1b[u", [{ name: "\x1b[u" }, 3]);
+});
