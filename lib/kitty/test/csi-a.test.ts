@@ -2,6 +2,8 @@ import { Key } from "../key.ts";
 import { assertParse } from "./assert.ts";
 
 Deno.test("LEFT", () => {
+  assertParse("\x1b[D", [{ name: "LEFT" }, 3]);
+
   const key: Key = {
     name: "LEFT",
     keyCode: 1,
