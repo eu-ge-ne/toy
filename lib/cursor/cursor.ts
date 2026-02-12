@@ -111,8 +111,8 @@ export class Cursor {
   #set_col(col: number): void {
     let len = 0;
 
-    for (const { g } of this.buffer.line(this.ln)) {
-      if (g.is_eol) {
+    for (const { gr } of this.buffer.line(this.ln)) {
+      if (gr.isEol) {
         break;
       }
       len += 1;

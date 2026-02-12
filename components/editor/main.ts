@@ -1,7 +1,7 @@
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { Cursor } from "@lib/cursor";
-import { graphemes } from "@lib/grapheme";
+import { graphemes, segmenter } from "@lib/graphemes";
 import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
 import { SegBuf } from "@lib/seg-buf";
@@ -180,12 +180,12 @@ export class Editor extends Component {
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
     );
-    const eol_count = grms.filter((x) => x.is_eol).length;
+    const eol_count = grms.filter((x) => x.isEol).length;
 
     if (eol_count === 0) {
       cursor.forward(grms.length);
     } else {
-      const col = grms.length - grms.findLastIndex((x) => x.is_eol) - 1;
+      const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
       cursor.set(cursor.ln + eol_count, col, false);
     }
 
@@ -330,12 +330,12 @@ export class Editor extends Component {
     }
 
     this.text_width = this.w - this.index_width;
-    this.buffer.wrap_width = this.#wrapEnabled
+    segmenter.settings.width = this.#wrapEnabled
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
-    this.buffer.measure_y = this.cursor_y = this.y;
-    this.buffer.measure_x = this.cursor_x = this.x + this.index_width;
+    segmenter.settings.y = this.cursor_y = this.y;
+    segmenter.settings.x = this.cursor_x = this.x + this.index_width;
 
     if (this.w >= this.index_width) {
       this.#render_lines();
@@ -390,7 +390,7 @@ export class Editor extends Component {
 
     const xs = this.buffer.line(ln);
 
-    for (const { g: { width, is_visible, bytes }, i, col } of xs) {
+    for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {
         if (i > 0) {
           row += 1;
@@ -424,7 +424,7 @@ export class Editor extends Component {
 
       const color = charColor(
         cursor.is_selected(ln, i),
-        is_visible,
+        isVisible,
         this.#whitespaceEnabled,
       );
 
@@ -501,7 +501,7 @@ export class Editor extends Component {
     const xs = this.buffer.line(cursor.ln, true)
       .drop(cursor.col - delta_col)
       .take(delta_col)
-      .map((x) => x.g.width)
+      .map((x) => x.gr.width)
       .toArray();
 
     let width = sum(xs);

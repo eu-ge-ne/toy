@@ -1,7 +1,6 @@
 import { Node, TextBuf } from "@lib/text-buf";
 
-import { Grapheme, graphemes } from "@lib/grapheme";
-import * as vt from "@lib/vt";
+import { Grapheme, segmenter } from "@lib/graphemes";
 
 export type Snapshot = Node;
 
@@ -9,11 +8,6 @@ type Pos = { ln: number; col: number };
 
 export class SegBuf {
   #buf = new TextBuf();
-  #sgr = new Intl.Segmenter();
-
-  wrap_width = Number.MAX_SAFE_INTEGER;
-  measure_y = 0;
-  measure_x = 0;
 
   get line_count(): number {
     return this.#buf.line_count;
@@ -43,55 +37,12 @@ export class SegBuf {
     return this.#buf.read(0).reduce((a, x) => a + x, "");
   }
 
-  *line(
+  line(
     ln: number,
     extra = false,
-  ): Generator<{ i: number; g: Grapheme; ln: number; col: number }> {
-    const { measure_y, measure_x, wrap_width } = this;
-
-    const c = {
-      i: 0,
-      g: undefined as unknown as Grapheme,
-      ln: 0,
-      col: 0,
-    };
-
-    let w = 0;
-
-    for (const chunk of this.#buf.read2([ln, 0], [ln + 1, 0])) {
-      for (const { segment } of this.#sgr.segment(chunk)) {
-        c.g = graphemes.get(segment);
-
-        if (c.g.width < 0) {
-          c.g.width = vt.wchar(measure_y, measure_x, c.g.bytes);
-        }
-
-        w += c.g.width;
-        if (w > wrap_width) {
-          w = c.g.width;
-          c.ln += 1;
-          c.col = 0;
-        }
-
-        yield c;
-
-        c.i += 1;
-        c.col += 1;
-      }
-    }
-
-    if (extra) {
-      c.g = graphemes.get(" ");
-
-      w += c.g.width;
-      if (w > wrap_width) {
-        w = c.g.width;
-        c.ln += 1;
-        c.col = 0;
-      }
-
-      yield c;
-    }
+  ): IteratorObject<{ i: number; gr: Grapheme; ln: number; col: number }> {
+    const chunks = this.#buf.read2([ln, 0], [ln + 1, 0]);
+    return segmenter.segments(chunks, extra);
   }
 
   read(start: Pos, end: Pos): string {
@@ -111,13 +62,13 @@ export class SegBuf {
     let unit_col = 0;
     let i = 0;
 
-    for (const { g } of this.line(ln)) {
+    for (const { gr } of this.line(ln)) {
       if (i === col) {
         break;
       }
 
       if (i < col) {
-        unit_col += g.seg.length;
+        unit_col += gr.char.length;
       }
 
       i += 1;
