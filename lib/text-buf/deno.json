@@ -1,4 +1,4 @@
 {
   "name": "@lib/text-buf",
-  "exports": "./mod.ts"
+  "exports": "./main.ts"
 }
