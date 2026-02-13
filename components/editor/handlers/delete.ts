@@ -9,9 +9,9 @@ export class DeleteHandler extends EditorHandler {
 
   handle(): boolean {
     if (this.editor.cursor.selecting) {
-      this.editor.delete_selection();
+      this.editor.deleteSelection();
     } else {
-      this.editor.delete_char();
+      this.editor.deleteChar();
     }
 
     return true;
