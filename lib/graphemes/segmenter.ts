@@ -11,7 +11,7 @@ export const settings = {
   x: 0,
 };
 
-interface Segment {
+export interface Segment {
   i: number;
   gr: Grapheme;
   ln: number;

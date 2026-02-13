@@ -3,6 +3,7 @@ import { Command } from "@lib/commands";
 import { graphemes, segmenter } from "@lib/graphemes";
 import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
+import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -47,9 +48,10 @@ export class Editor extends Component {
     new keys.UpHandler(this),
   ];
 
-  readonly buffer = new SegBuf();
-  readonly cursor = new Cursor(this.buffer);
-  readonly history = new History(this.buffer, this.cursor);
+  readonly buf = new TextBuf();
+  readonly buffer = new SegBuf(this.buf);
+  readonly cursor = new Cursor(this.buf, this.buffer);
+  readonly history = new History(this.buf, this.cursor);
 
   #indexEnabled = false;
   #whitespaceEnabled = false;
@@ -321,8 +323,8 @@ export class Editor extends Component {
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
-    if (this.#indexEnabled && (this.buffer.buf.lineCount > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.buffer.buf.lineCount)) + 3;
+    if (this.#indexEnabled && (this.buf.lineCount > 0)) {
+      this.index_width = Math.trunc(Math.log10(this.buf.lineCount)) + 3;
     } else {
       this.index_width = 0;
     }
@@ -352,7 +354,7 @@ export class Editor extends Component {
     if (this.opts.multiLine) {
       this.root.ln = this.cursor.ln;
       this.root.col = this.cursor.col;
-      this.root.lnCount = this.buffer.buf.lineCount;
+      this.root.lnCount = this.buf.lineCount;
     }
   }
 
@@ -363,7 +365,7 @@ export class Editor extends Component {
     let row = this.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < this.buffer.buf.lineCount) {
+      if (ln < this.buf.lineCount) {
         row = this.#render_line(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);

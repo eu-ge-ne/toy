@@ -1,39 +1,40 @@
+import { Node, TextBuf } from "@lib/text-buf";
+
 import { Cursor } from "./cursor.ts";
-import { SegBuf, Snapshot } from "./seg-buf.ts";
 
 export class History {
   #index = -1;
-  #entries: { ln: number; col: number; snapshot: Snapshot }[] = [];
+  #entries: { ln: number; col: number; snapshot: Node }[] = [];
 
-  on_changed?: () => void;
+  onChange?: () => void;
 
-  get is_empty(): boolean {
+  get isEmpty(): boolean {
     return this.#index === 0;
   }
 
-  constructor(private buffer: SegBuf, private cursor: Cursor) {
+  constructor(private buffer: TextBuf, private cursor: Cursor) {
     this.reset();
   }
 
   reset(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.buf.save();
+    const snapshot = this.buffer.save();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
 
-    this.on_changed?.();
+    this.onChange?.();
   }
 
   push(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.buf.save();
+    const snapshot = this.buffer.save();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
     this.#entries.length = this.#index + 1;
 
-    this.on_changed?.();
+    this.onChange?.();
   }
 
   undo(): boolean {
@@ -43,7 +44,7 @@ export class History {
 
     this.#index -= 1;
     this.#restore();
-    this.on_changed?.();
+    this.onChange?.();
 
     return true;
   }
@@ -55,7 +56,7 @@ export class History {
 
     this.#index += 1;
     this.#restore();
-    this.on_changed?.();
+    this.onChange?.();
 
     return true;
   }
@@ -63,7 +64,7 @@ export class History {
   #restore(): void {
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    this.buffer.buf.restore(snapshot);
+    this.buffer.restore(snapshot);
     this.cursor.set(ln, col, false);
   }
 }

@@ -1,4 +1,5 @@
 import { clamp } from "@lib/std";
+import { TextBuf } from "@lib/text-buf";
 
 import { SegBuf } from "./seg-buf.ts";
 
@@ -14,7 +15,7 @@ export class Cursor {
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
 
-  constructor(private buffer: SegBuf) {
+  constructor(private readonly buf: TextBuf, private readonly buffer: SegBuf) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
@@ -69,7 +70,7 @@ export class Cursor {
       return true;
     }
 
-    if (this.ln < this.buffer.buf.lineCount - 1) {
+    if (this.ln < this.buf.lineCount - 1) {
       return this.set(this.ln + 1, 0, sel);
     }
 
@@ -101,7 +102,7 @@ export class Cursor {
   }
 
   #set_ln(ln: number): void {
-    let max = this.buffer.buf.lineCount - 1;
+    let max = this.buf.lineCount - 1;
     if (max < 0) {
       max = 0;
     }

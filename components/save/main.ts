@@ -25,7 +25,7 @@ export class Save extends Component<[string], string> {
     this.#enabled = true;
     this.#editor.enable(true);
 
-    this.#editor.buffer.buf.reset(path);
+    this.#editor.buf.reset(path);
     this.#editor.reset(true);
 
     this.root.render();
@@ -89,7 +89,7 @@ export class Save extends Component<[string], string> {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = this.#editor.buffer.buf.text();
+          const path = this.#editor.buf.text();
           if (path) {
             return path;
           }

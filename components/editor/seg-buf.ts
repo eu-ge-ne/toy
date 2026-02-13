@@ -1,4 +1,4 @@
-import { Grapheme, segmenter } from "@lib/graphemes";
+import { segmenter } from "@lib/graphemes";
 import { Node, TextBuf } from "@lib/text-buf";
 
 export type Snapshot = Node;
@@ -6,27 +6,25 @@ export type Snapshot = Node;
 type Pos = { ln: number; col: number };
 
 export class SegBuf {
-  buf = new TextBuf();
+  constructor(private readonly buffer: TextBuf) {
+  }
 
-  line(
-    ln: number,
-    extra = false,
-  ): IteratorObject<{ i: number; gr: Grapheme; ln: number; col: number }> {
-    const chunks = this.buf.read2([ln, 0], [ln + 1, 0]);
+  line(ln: number, extra = false): IteratorObject<segmenter.Segment> {
+    const chunks = this.buffer.read2([ln, 0], [ln + 1, 0]);
     return segmenter.segments(chunks, extra);
   }
 
   read(start: Pos, end: Pos): string {
-    return this.buf.read2(this.#unit_pos(start), this.#unit_pos(end))
+    return this.buffer.read2(this.#unit_pos(start), this.#unit_pos(end))
       .reduce((a, x) => a + x, "");
   }
 
   insert(pos: Pos, text: string): void {
-    this.buf.insert2(this.#unit_pos(pos), text);
+    this.buffer.insert2(this.#unit_pos(pos), text);
   }
 
   delete(start: Pos, end: Pos): void {
-    this.buf.delete2(this.#unit_pos(start), this.#unit_pos(end));
+    this.buffer.delete2(this.#unit_pos(start), this.#unit_pos(end));
   }
 
   #unit_pos({ ln, col }: Pos): [number, number] {
