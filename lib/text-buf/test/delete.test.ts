@@ -9,25 +9,25 @@ const EXPECTED =
 function text_buf(): TextBuf {
   const buf = new TextBuf();
 
-  buf.insert(buf.count, "Lorem");
-  buf.insert(buf.count, " ipsum");
-  buf.insert(buf.count, " dolor");
-  buf.insert(buf.count, " sit");
-  buf.insert(buf.count, " amet,");
-  buf.insert(buf.count, " consectetur");
-  buf.insert(buf.count, " adipiscing");
-  buf.insert(buf.count, " elit,");
-  buf.insert(buf.count, " sed");
-  buf.insert(buf.count, " do");
-  buf.insert(buf.count, " eiusmod");
-  buf.insert(buf.count, " tempor");
-  buf.insert(buf.count, " incididunt");
-  buf.insert(buf.count, " ut");
-  buf.insert(buf.count, " labore");
-  buf.insert(buf.count, " et");
-  buf.insert(buf.count, " dolore");
-  buf.insert(buf.count, " magna");
-  buf.insert(buf.count, " aliqua.");
+  buf.insert(buf.charCount, "Lorem");
+  buf.insert(buf.charCount, " ipsum");
+  buf.insert(buf.charCount, " dolor");
+  buf.insert(buf.charCount, " sit");
+  buf.insert(buf.charCount, " amet,");
+  buf.insert(buf.charCount, " consectetur");
+  buf.insert(buf.charCount, " adipiscing");
+  buf.insert(buf.charCount, " elit,");
+  buf.insert(buf.charCount, " sed");
+  buf.insert(buf.charCount, " do");
+  buf.insert(buf.charCount, " eiusmod");
+  buf.insert(buf.charCount, " tempor");
+  buf.insert(buf.charCount, " incididunt");
+  buf.insert(buf.charCount, " ut");
+  buf.insert(buf.charCount, " labore");
+  buf.insert(buf.charCount, " et");
+  buf.insert(buf.charCount, " dolore");
+  buf.insert(buf.charCount, " magna");
+  buf.insert(buf.charCount, " aliqua.");
 
   return buf;
 }
@@ -63,7 +63,7 @@ function test_delete_head(buf: TextBuf, n: number): void {
 
   while (expected.length > 0) {
     assert_generator(buf.read(0), expected);
-    assertEquals(buf.count, expected.length);
+    assertEquals(buf.charCount, expected.length);
     assert_root(buf.tree.root);
 
     buf.delete(0, n);
@@ -71,7 +71,7 @@ function test_delete_head(buf: TextBuf, n: number): void {
   }
 
   assert_generator(buf.read(0), "");
-  assertEquals(buf.count, 0);
+  assertEquals(buf.charCount, 0);
   assert_root(buf.tree.root);
 }
 
@@ -80,15 +80,15 @@ function test_delete_tail(buf: TextBuf, n: number): void {
 
   while (expected.length > 0) {
     assert_generator(buf.read(0), expected);
-    assertEquals(buf.count, expected.length);
+    assertEquals(buf.charCount, expected.length);
     assert_root(buf.tree.root);
 
-    buf.delete(Math.max(buf.count - n, 0), buf.count);
+    buf.delete(Math.max(buf.charCount - n, 0), buf.charCount);
     expected = expected.slice(0, -n);
   }
 
   assert_generator(buf.read(0), "");
-  assertEquals(buf.count, 0);
+  assertEquals(buf.charCount, 0);
   assert_root(buf.tree.root);
 }
 
@@ -97,16 +97,16 @@ function test_delete_middle(buf: TextBuf, n: number): void {
 
   while (expected.length > 0) {
     assert_generator(buf.read(0), expected);
-    assertEquals(buf.count, expected.length);
+    assertEquals(buf.charCount, expected.length);
     assert_root(buf.tree.root);
 
-    const pos = Math.floor(buf.count / 2);
+    const pos = Math.floor(buf.charCount / 2);
     buf.delete(pos, pos + n);
     expected = expected.slice(0, pos) + expected.slice(pos + n);
   }
 
   assert_generator(buf.read(0), expected);
-  assertEquals(buf.count, 0);
+  assertEquals(buf.charCount, 0);
   assert_root(buf.tree.root);
 }
 
@@ -151,11 +151,11 @@ Deno.test("Delete splitting nodes", () => {
 
   let expected = EXPECTED;
 
-  for (let n = 2; buf.count > 0;) {
-    const s = Math.floor(buf.count / n);
+  for (let n = 2; buf.charCount > 0;) {
+    const s = Math.floor(buf.charCount / n);
     for (let i = n - 1; i >= 1; i -= 1) {
       assert_generator(buf.read(0), expected);
-      assertEquals(buf.count, expected.length);
+      assertEquals(buf.charCount, expected.length);
       assert_root(buf.tree.root);
 
       buf.delete(s * i, s * i + 2);
@@ -165,7 +165,7 @@ Deno.test("Delete splitting nodes", () => {
   }
 
   assert_generator(buf.read(0), expected);
-  assertEquals(buf.count, 0);
+  assertEquals(buf.charCount, 0);
   assert_root(buf.tree.root);
 });
 
@@ -189,8 +189,8 @@ Deno.test("Delete removes lines", () => {
   buf.delete(0, 6);
   buf.delete(5, 6);
 
-  assertEquals(buf.count, 5);
-  assertEquals(buf.line_count, 1);
+  assertEquals(buf.charCount, 5);
+  assertEquals(buf.lineCount, 1);
   assert_generator(buf.read(0), "ipsum");
   assert_generator(buf.read2([0, 0], [1, 0]), "ipsum");
   assert_root(buf.tree.root);
@@ -199,35 +199,35 @@ Deno.test("Delete removes lines", () => {
 Deno.test("Delete newline char removes line", () => {
   const buf = new TextBuf(" \n \n");
 
-  assertEquals(buf.line_count, 3);
+  assertEquals(buf.lineCount, 3);
 
   buf.delete(1, 2);
 
   assert_generator(buf.read(0), "  \n");
-  assertEquals(buf.line_count, 2);
+  assertEquals(buf.lineCount, 2);
   assert_root(buf.tree.root);
 });
 
 Deno.test("Delete first newline char removes line", () => {
   const buf = new TextBuf("\n\n");
 
-  assertEquals(buf.line_count, 3);
+  assertEquals(buf.lineCount, 3);
 
   buf.delete(0, 1);
 
   assert_generator(buf.read(0), "\n");
-  assertEquals(buf.line_count, 2);
+  assertEquals(buf.lineCount, 2);
   assert_root(buf.tree.root);
 });
 
 Deno.test("Delete line followed by newline", () => {
   const buf = new TextBuf(" \n \n\n \n");
 
-  assertEquals(buf.line_count, 5);
+  assertEquals(buf.lineCount, 5);
 
   buf.delete(2, 4);
 
   assert_generator(buf.read(0), " \n\n \n");
-  assertEquals(buf.line_count, 4);
+  assertEquals(buf.lineCount, 4);
   assert_root(buf.tree.root);
 });

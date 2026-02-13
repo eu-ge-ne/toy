@@ -6,7 +6,7 @@ import { assert_generator, assert_root } from "./assert.ts";
 Deno.test("Empty", () => {
   const buf = new TextBuf();
 
-  assertEquals(buf.line_count, 0);
+  assertEquals(buf.lineCount, 0);
   assert_generator(buf.read2([0, 0], [1, 0]), "");
 
   assert_root(buf.tree.root);
@@ -15,7 +15,7 @@ Deno.test("Empty", () => {
 Deno.test("1 line", () => {
   const buf = new TextBuf("0");
 
-  assertEquals(buf.line_count, 1);
+  assertEquals(buf.lineCount, 1);
   assert_generator(buf.read2([0, 0], [1, 0]), "0");
 
   assert_root(buf.tree.root);
@@ -24,7 +24,7 @@ Deno.test("1 line", () => {
 Deno.test("2 lines", () => {
   const buf = new TextBuf("0\n");
 
-  assertEquals(buf.line_count, 2);
+  assertEquals(buf.lineCount, 2);
   assert_generator(buf.read2([0, 0], [1, 0]), "0\n");
   assert_generator(buf.read2([1, 0], [2, 0]), "");
 
@@ -34,7 +34,7 @@ Deno.test("2 lines", () => {
 Deno.test("3 lines", () => {
   const buf = new TextBuf("0\n1\n");
 
-  assertEquals(buf.line_count, 3);
+  assertEquals(buf.lineCount, 3);
   assert_generator(buf.read2([0, 0], [1, 0]), "0\n");
   assert_generator(buf.read2([1, 0], [2, 0]), "1\n");
   assert_generator(buf.read2([2, 0], [3, 0]), "");
@@ -94,11 +94,11 @@ Deno.test("Line at index < 0", () => {
 
   assert_generator(buf.read2([0, 0], [1, 0]), "Lorem\n");
   assert_generator(
-    buf.read2([buf.line_count - 1, 0], [buf.line_count, 0]),
+    buf.read2([buf.lineCount - 1, 0], [buf.lineCount, 0]),
     "amet",
   );
   assert_generator(
-    buf.read2([buf.line_count - 2, 0], [buf.line_count - 1, 0]),
+    buf.read2([buf.lineCount - 2, 0], [buf.lineCount - 1, 0]),
     "sit\n",
   );
 
@@ -109,14 +109,14 @@ Deno.test("Insert adds lines", () => {
   const buf = new TextBuf();
 
   for (let i = 0; i < 10; i += 1) {
-    buf.insert(buf.count, `${i}\n`);
+    buf.insert(buf.charCount, `${i}\n`);
 
-    assertEquals(buf.line_count, i + 2);
+    assertEquals(buf.lineCount, i + 2);
     assert_generator(buf.read2([i, 0], [i + 1, 0]), `${i}\n`);
     assert_root(buf.tree.root);
   }
 
-  assertEquals(buf.line_count, 11);
+  assertEquals(buf.lineCount, 11);
   assert_generator(buf.read2([11, 0], [12, 0]), "");
   assert_root(buf.tree.root);
 });

@@ -27,8 +27,8 @@ Deno.test("Line at index < 0", () => {
   const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([0, 0]), "Lorem\nipsum\ndolor\nsit\namet");
-  assert_generator(buf.read2([buf.line_count - 1, 0]), "amet");
-  assert_generator(buf.read2([buf.line_count - 2, 0]), "sit\namet");
+  assert_generator(buf.read2([buf.lineCount - 1, 0]), "amet");
+  assert_generator(buf.read2([buf.lineCount - 2, 0]), "sit\namet");
 
   assert_root(buf.tree.root);
 });

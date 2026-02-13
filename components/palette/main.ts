@@ -117,7 +117,7 @@ export class Palette extends Component<[], Command | undefined> {
   }
 
   #filter(): void {
-    const text = this.#editor.buffer.text().toUpperCase();
+    const text = this.#editor.buffer.buf.text().toUpperCase();
 
     if (!text) {
       this.#filtered_options = options;

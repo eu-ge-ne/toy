@@ -321,8 +321,8 @@ export class Editor extends Component {
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
-    if (this.#indexEnabled && (this.buffer.buf.line_count > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.buffer.buf.line_count)) + 3;
+    if (this.#indexEnabled && (this.buffer.buf.lineCount > 0)) {
+      this.index_width = Math.trunc(Math.log10(this.buffer.buf.lineCount)) + 3;
     } else {
       this.index_width = 0;
     }
@@ -352,7 +352,7 @@ export class Editor extends Component {
     if (this.opts.multiLine) {
       this.root.ln = this.cursor.ln;
       this.root.col = this.cursor.col;
-      this.root.lnCount = this.buffer.buf.line_count;
+      this.root.lnCount = this.buffer.buf.lineCount;
     }
   }
 
@@ -363,7 +363,7 @@ export class Editor extends Component {
     let row = this.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < this.buffer.buf.line_count) {
+      if (ln < this.buffer.buf.lineCount) {
         row = this.#render_line(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);

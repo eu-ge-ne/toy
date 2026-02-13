@@ -89,7 +89,7 @@ export class Save extends Component<[string], string> {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = this.#editor.buffer.text();
+          const path = this.#editor.buffer.buf.text();
           if (path) {
             return path;
           }

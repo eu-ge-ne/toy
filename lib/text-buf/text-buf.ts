@@ -9,25 +9,11 @@ export const enum InsertionCase {
   Split,
 }
 
-/**
- * `Piece Table` data structure implemented using `Red-Black Tree`
- */
 export class TextBuf {
-  /**
-   * @ignore
-   * @internal
-   */
   tree: Tree = new Tree();
 
   #content = new Content();
 
-  /**
-   * Creates instances of `TextBuf` interpreting text characters as `UTF-16 code units`.
-   * Visit [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#utf-16_characters_unicode_code_points_and_grapheme_clusters) for more details. Accepts optional initial text.
-   *
-   * @param `text` Initial text.
-   * @returns `TextBuf` instance.
-   */
   constructor(text?: string) {
     if (text && text.length > 0) {
       this.tree.root = this.#content.create(text);
@@ -35,110 +21,28 @@ export class TextBuf {
     }
   }
 
-  /**
-   * Returns number of characters in the buffer.
-   *
-   * @returns Number of characters.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem ipsum");
-   *
-   * assertEquals(buf.count, 11);
-   * ```
-   */
-  get count(): number {
+  get charCount(): number {
     return this.tree.root.total_len;
   }
 
-  /**
-   * Returns number of lines in the buffer.
-   *
-   * @returns Number of lines.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
-   *
-   * assertEquals(buf.line_count, 5);
-   * ```
-   */
-  get line_count(): number {
+  get lineCount(): number {
     return this.tree.root.total_len === 0
       ? 0
       : this.tree.root.total_eols_len + 1;
   }
 
-  /**
-   * Saves snapshot
-   *
-   * @returns Node
-   *
-   * @example
-   *
-   * ```ts
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem\nipsum");
-   *
-   * buf.save();
-   * ```
-   */
   save(): Node {
     return structuredClone(this.tree.root);
   }
 
-  /**
-   * Restores a snapshot
-   *
-   * @param `node` Node
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("0");
-   *
-   * const snapshot = buf.save();
-   * buf.insert(0, "Lorem ipsum");
-   * buf.restore(snapshot);
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "0");
-   * ```
-   */
   restore(node: Node): void {
     this.tree.root = structuredClone(node);
   }
 
-  /**
-   * Returns text in the buffer's section, specified by start (inclusive) and end (exclusive) indexes.
-   *
-   * @param `start` Start index.
-   * @param `end` Optional end index.
-   * @returns Text.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem\nipsum");
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem\nipsum");
-   * assertEquals(buf.read(6).toArray().join(""), "ipsum");
-   * ```
-   */
+  text(): string {
+    return this.read(0).reduce((a, x) => a + x, "");
+  }
+
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
     const first = find(this.tree.root, start);
     if (!first) {
@@ -199,7 +103,7 @@ export class TextBuf {
    * ```
    */
   insert(i: number, text: string): void {
-    if (i > this.count) {
+    if (i > this.charCount) {
       return;
     }
 
@@ -311,7 +215,7 @@ export class TextBuf {
    * ```
    */
   append(text: string): void {
-    this.insert(this.count, text);
+    this.insert(this.charCount, text);
   }
 
   /**

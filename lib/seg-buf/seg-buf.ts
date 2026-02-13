@@ -9,10 +9,6 @@ type Pos = { ln: number; col: number };
 export class SegBuf {
   buf = new TextBuf();
 
-  text(): string {
-    return this.buf.read(0).reduce((a, x) => a + x, "");
-  }
-
   line(
     ln: number,
     extra = false,
