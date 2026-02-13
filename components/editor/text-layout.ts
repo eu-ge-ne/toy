@@ -1,11 +1,12 @@
 import { segmenter } from "@lib/graphemes";
-import { Node, TextBuf } from "@lib/text-buf";
+import { TextBuf } from "@lib/text-buf";
 
-export type Snapshot = Node;
+interface Pos {
+  ln: number;
+  col: number;
+}
 
-type Pos = { ln: number; col: number };
-
-export class SegBuf {
+export class TextLayout {
   constructor(private readonly buffer: TextBuf) {
   }
 
@@ -15,19 +16,19 @@ export class SegBuf {
   }
 
   read(start: Pos, end: Pos): string {
-    return this.buffer.read2(this.#unit_pos(start), this.#unit_pos(end))
+    return this.buffer.read2(this.#unitPos(start), this.#unitPos(end))
       .reduce((a, x) => a + x, "");
   }
 
   insert(pos: Pos, text: string): void {
-    this.buffer.insert2(this.#unit_pos(pos), text);
+    this.buffer.insert2(this.#unitPos(pos), text);
   }
 
   delete(start: Pos, end: Pos): void {
-    this.buffer.delete2(this.#unit_pos(start), this.#unit_pos(end));
+    this.buffer.delete2(this.#unitPos(start), this.#unitPos(end));
   }
 
-  #unit_pos({ ln, col }: Pos): [number, number] {
+  #unitPos({ ln, col }: Pos): [number, number] {
     let unit_col = 0;
     let i = 0;
 

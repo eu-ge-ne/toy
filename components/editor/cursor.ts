@@ -1,7 +1,7 @@
 import { clamp } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 
-import { SegBuf } from "./seg-buf.ts";
+import { TextLayout } from "./text-layout.ts";
 
 export class Cursor {
   #ln0 = 0;
@@ -15,18 +15,21 @@ export class Cursor {
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
 
-  constructor(private readonly buf: TextBuf, private readonly buffer: SegBuf) {
+  constructor(
+    private readonly textBuf: TextBuf,
+    private readonly textLayout: TextLayout,
+  ) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {
-    const { ln: old_ln, col: old_col } = this;
+    const { ln: oldLn, col: oldCol } = this;
 
-    this.#set_ln(ln);
-    this.#set_col(col);
-    this.#set_selection(old_ln, old_col, sel);
-    this.#set_range();
+    this.#setLn(ln);
+    this.#setCol(col);
+    this.#setSelection(oldLn, oldCol, sel);
+    this.#setRange();
 
-    return this.ln !== old_ln || this.col !== old_col;
+    return this.ln !== oldLn || this.col !== oldCol;
   }
 
   top(sel: boolean): boolean {
@@ -70,7 +73,7 @@ export class Cursor {
       return true;
     }
 
-    if (this.ln < this.buf.lineCount - 1) {
+    if (this.ln < this.textBuf.lineCount - 1) {
       return this.set(this.ln + 1, 0, sel);
     }
 
@@ -81,7 +84,7 @@ export class Cursor {
     return this.set(this.ln, this.col + n, false);
   }
 
-  is_selected(ln: number, col: number): boolean {
+  isSelected(ln: number, col: number): boolean {
     if (!this.selecting) {
       return false;
     }
@@ -101,8 +104,8 @@ export class Cursor {
     return true;
   }
 
-  #set_ln(ln: number): void {
-    let max = this.buf.lineCount - 1;
+  #setLn(ln: number): void {
+    let max = this.textBuf.lineCount - 1;
     if (max < 0) {
       max = 0;
     }
@@ -110,10 +113,10 @@ export class Cursor {
     this.ln = clamp(ln, 0, max);
   }
 
-  #set_col(col: number): void {
+  #setCol(col: number): void {
     let len = 0;
 
-    for (const { gr } of this.buffer.line(this.ln)) {
+    for (const { gr } of this.textLayout.line(this.ln)) {
       if (gr.isEol) {
         break;
       }
@@ -123,7 +126,7 @@ export class Cursor {
     this.col = clamp(col, 0, len);
   }
 
-  #set_selection(ln: number, col: number, sel: boolean): void {
+  #setSelection(ln: number, col: number, sel: boolean): void {
     if (!sel) {
       this.selecting = false;
       return;
@@ -137,7 +140,7 @@ export class Cursor {
     this.selecting = true;
   }
 
-  #set_range(): void {
+  #setRange(): void {
     if (
       (this.#ln0 > this.ln) ||
       (this.#ln0 === this.ln && this.#col0 > this.col)

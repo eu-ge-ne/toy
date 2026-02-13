@@ -12,13 +12,16 @@ export class History {
     return this.#index === 0;
   }
 
-  constructor(private buffer: TextBuf, private cursor: Cursor) {
+  constructor(
+    private readonly textBuf: TextBuf,
+    private readonly cursor: Cursor,
+  ) {
     this.reset();
   }
 
   reset(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.save();
+    const snapshot = this.textBuf.save();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
@@ -28,7 +31,7 @@ export class History {
 
   push(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.save();
+    const snapshot = this.textBuf.save();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
@@ -64,7 +67,7 @@ export class History {
   #restore(): void {
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    this.buffer.restore(snapshot);
+    this.textBuf.restore(snapshot);
     this.cursor.set(ln, col, false);
   }
 }
