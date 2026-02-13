@@ -25,7 +25,7 @@ export class Save extends Component<[string], string> {
     this.#enabled = true;
     this.#editor.enable(true);
 
-    this.#editor.buffer.reset(path);
+    this.#editor.buffer.buf.reset(path);
     this.#editor.reset(true);
 
     this.root.render();

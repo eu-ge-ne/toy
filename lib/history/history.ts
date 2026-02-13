@@ -17,7 +17,7 @@ export class History {
 
   reset(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.save();
+    const snapshot = this.buffer.buf.save();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
@@ -27,7 +27,7 @@ export class History {
 
   push(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.buffer.save();
+    const snapshot = this.buffer.buf.save();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
@@ -63,7 +63,7 @@ export class History {
   #restore(): void {
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    this.buffer.restore(snapshot);
+    this.buffer.buf.restore(snapshot);
     this.cursor.set(ln, col, false);
   }
 }

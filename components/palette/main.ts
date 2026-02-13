@@ -33,7 +33,7 @@ export class Palette extends Component<[], Command | undefined> {
     this.#enabled = true;
     this.#editor.enable(true);
 
-    this.#editor.buffer.reset();
+    this.#editor.buffer.buf.reset();
     this.#editor.reset(false);
 
     this.#filter();

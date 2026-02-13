@@ -19,13 +19,13 @@ export async function load(buffer: SegBuf, file_path: string): Promise<void> {
 
     if (n > 0) {
       const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-      buffer.append(text);
+      buffer.buf.append(text);
     }
   }
 
   const text = decoder.decode();
   if (text.length > 0) {
-    buffer.append(text);
+    buffer.buf.append(text);
   }
 }
 
@@ -41,7 +41,7 @@ export async function save(buffer: SegBuf, file_path: string): Promise<void> {
 
   encoder.readable.pipeTo(file.writable);
 
-  for (const text of buffer.iter()) {
+  for (const text of buffer.buf.read(0)) {
     await writer.write(text);
   }
 }
