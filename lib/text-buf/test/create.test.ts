@@ -7,8 +7,8 @@ Deno.test("Create empty", () => {
   const buf = new TextBuf();
 
   assert_generator(buf.read(0), "");
-  assertEquals(buf.count, 0);
-  assertEquals(buf.line_count, 0);
+  assertEquals(buf.charCount, 0);
+  assertEquals(buf.lineCount, 0);
 
   assert_root(buf.tree.root);
 });
@@ -17,8 +17,8 @@ Deno.test("Create", () => {
   const buf = new TextBuf("Lorem ipsum");
 
   assert_generator(buf.read(0), "Lorem ipsum");
-  assertEquals(buf.count, 11);
-  assertEquals(buf.line_count, 1);
+  assertEquals(buf.charCount, 11);
+  assertEquals(buf.lineCount, 1);
 
   assert_root(buf.tree.root);
 });

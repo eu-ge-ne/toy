@@ -29,8 +29,8 @@ Deno.test("Read at start < 0", () => {
   const buf = new TextBuf("Lorem");
 
   assert_generator(buf.read(0), "Lorem");
-  assert_generator(buf.read(buf.count - 1), "m");
-  assert_generator(buf.read(buf.count - 2), "em");
+  assert_generator(buf.read(buf.charCount - 1), "m");
+  assert_generator(buf.read(buf.charCount - 2), "em");
 
   assert_root(buf.tree.root);
 });

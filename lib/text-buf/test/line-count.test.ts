@@ -7,9 +7,9 @@ Deno.test("0 newlines", () => {
   const buf2 = new TextBuf("😄");
   const buf3 = new TextBuf("🤦🏼‍♂️");
 
-  assertEquals(buf1.line_count, 1);
-  assertEquals(buf2.line_count, 1);
-  assertEquals(buf3.line_count, 1);
+  assertEquals(buf1.lineCount, 1);
+  assertEquals(buf2.lineCount, 1);
+  assertEquals(buf3.lineCount, 1);
 });
 
 Deno.test("LF", () => {
@@ -17,9 +17,9 @@ Deno.test("LF", () => {
   const buf2 = new TextBuf("😄\n😄");
   const buf3 = new TextBuf("🤦🏼‍♂️\n🤦🏼‍♂️");
 
-  assertEquals(buf1.line_count, 2);
-  assertEquals(buf2.line_count, 2);
-  assertEquals(buf3.line_count, 2);
+  assertEquals(buf1.lineCount, 2);
+  assertEquals(buf2.lineCount, 2);
+  assertEquals(buf3.lineCount, 2);
 });
 
 Deno.test("CRLF", () => {
@@ -27,7 +27,7 @@ Deno.test("CRLF", () => {
   const buf2 = new TextBuf("😄\r\n😄");
   const buf3 = new TextBuf("🤦🏼‍♂️\r\n🤦🏼‍♂️");
 
-  assertEquals(buf1.line_count, 2);
-  assertEquals(buf2.line_count, 2);
-  assertEquals(buf3.line_count, 2);
+  assertEquals(buf1.lineCount, 2);
+  assertEquals(buf2.lineCount, 2);
+  assertEquals(buf3.lineCount, 2);
 });

@@ -56,8 +56,8 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async run(fileName?: string): Promise<void> {
     this.#children.editor.enable(true);
-    this.#children.editor.history.on_changed = () =>
-      this.isDirty = !this.#children.editor.history.is_empty;
+    this.#children.editor.history.onChange = () =>
+      this.isDirty = !this.#children.editor.history.isEmpty;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
@@ -167,7 +167,7 @@ export class Root extends Component<[string], void> implements IRoot {
   async #handleExit(): Promise<void> {
     this.#children.editor.enable(false);
 
-    if (!this.#children.editor.history.is_empty) {
+    if (!this.#children.editor.history.isEmpty) {
       if (await this.#children.ask.run("Save changes?")) {
         await this.#save();
       }
@@ -204,7 +204,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async #open(filePath: string): Promise<void> {
     try {
-      await file.load(this.#children.editor.buffer, filePath);
+      await file.load(this.#children.editor.textBuf, filePath);
 
       this.filePath = filePath;
     } catch (err) {
@@ -228,7 +228,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.#children.editor.buffer, this.filePath);
+      await file.save(this.#children.editor.textBuf, this.filePath);
 
       return true;
     } catch (err) {
@@ -246,7 +246,7 @@ export class Root extends Component<[string], void> implements IRoot {
       }
 
       try {
-        await file.save(this.#children.editor.buffer, filePath);
+        await file.save(this.#children.editor.textBuf, filePath);
 
         this.filePath = filePath;
 

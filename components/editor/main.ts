@@ -1,17 +1,18 @@
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
-import { Cursor } from "@lib/cursor";
 import { graphemes, segmenter } from "@lib/graphemes";
-import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
-import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
+import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
+import { Cursor } from "./cursor.ts";
 import * as keys from "./handlers/mod.ts";
+import { History } from "./history.ts";
+import { TextLayout } from "./text-layout.ts";
 
 export * from "./colors.ts";
 
@@ -47,9 +48,10 @@ export class Editor extends Component {
     new keys.UpHandler(this),
   ];
 
-  readonly buffer = new SegBuf();
-  readonly cursor = new Cursor(this.buffer);
-  readonly history = new History(this.buffer, this.cursor);
+  readonly textBuf = new TextBuf();
+  readonly #textLayout = new TextLayout(this.textBuf);
+  readonly cursor = new Cursor(this.textBuf, this.#textLayout);
+  readonly history = new History(this.textBuf, this.cursor);
 
   #indexEnabled = false;
   #whitespaceEnabled = false;
@@ -164,10 +166,10 @@ export class Editor extends Component {
   #sgr = new Intl.Segmenter();
 
   insert(text: string): void {
-    const { cursor, buffer, history } = this;
+    const { cursor, history } = this;
 
     if (cursor.selecting) {
-      buffer.delete(cursor.from, {
+      this.#textLayout.delete(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
@@ -175,7 +177,7 @@ export class Editor extends Component {
       cursor.set(cursor.from.ln, cursor.from.col, false);
     }
 
-    buffer.insert(cursor, text);
+    this.#textLayout.insert(cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -193,19 +195,22 @@ export class Editor extends Component {
   }
 
   backspace(): void {
-    const { cursor, buffer, history } = this;
+    const { cursor, history } = this;
 
     if (cursor.ln > 0 && cursor.col === 0) {
-      const len = buffer.line(cursor.ln).take(2).reduce((a) => a + 1, 0);
+      const len = this.#textLayout.line(cursor.ln).take(2).reduce(
+        (a) => a + 1,
+        0,
+      );
       if (len === 1) {
-        buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
         cursor.left(false);
       } else {
         cursor.left(false);
-        buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
       }
     } else {
-      buffer.delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
+      this.#textLayout.delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
       cursor.left(false);
     }
 
@@ -213,17 +218,17 @@ export class Editor extends Component {
   }
 
   delete_char(): void {
-    const { cursor, buffer, history } = this;
+    const { cursor, history } = this;
 
-    buffer.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+    this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
 
     history.push();
   }
 
   delete_selection(): void {
-    const { cursor, buffer, history } = this;
+    const { cursor, history } = this;
 
-    buffer.delete(cursor.from, {
+    this.#textLayout.delete(cursor.from, {
       ln: cursor.to.ln,
       col: cursor.to.col + 1,
     });
@@ -233,17 +238,17 @@ export class Editor extends Component {
   }
 
   copy(): boolean {
-    const { cursor, buffer } = this;
+    const { cursor } = this;
 
     if (cursor.selecting) {
-      this.#clipboard = buffer.read(cursor.from, {
+      this.#clipboard = this.#textLayout.read(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
 
       cursor.set(cursor.ln, cursor.col, false);
     } else {
-      this.#clipboard = buffer.read(cursor, {
+      this.#clipboard = this.#textLayout.read(cursor, {
         ln: cursor.ln,
         col: cursor.col + 1,
       });
@@ -255,17 +260,17 @@ export class Editor extends Component {
   }
 
   cut(): boolean {
-    const { cursor, buffer } = this;
+    const { cursor } = this;
 
     if (cursor.selecting) {
-      this.#clipboard = buffer.read(cursor.from, {
+      this.#clipboard = this.#textLayout.read(cursor.from, {
         ln: cursor.to.ln,
         col: cursor.to.col + 1,
       });
 
       this.delete_selection();
     } else {
-      this.#clipboard = buffer.read(cursor, {
+      this.#clipboard = this.#textLayout.read(cursor, {
         ln: cursor.ln,
         col: cursor.col + 1,
       });
@@ -314,8 +319,6 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   render(): void {
-    const { buffer: { line_count } } = this;
-
     vt.sync.bsu();
 
     vt.buf.write(vt.cursor.hide);
@@ -323,8 +326,8 @@ export class Editor extends Component {
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
-    if (this.#indexEnabled && (line_count > 0)) {
-      this.index_width = Math.trunc(Math.log10(line_count)) + 3;
+    if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
+      this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
     } else {
       this.index_width = 0;
     }
@@ -354,20 +357,18 @@ export class Editor extends Component {
     if (this.opts.multiLine) {
       this.root.ln = this.cursor.ln;
       this.root.col = this.cursor.col;
-      this.root.lnCount = this.buffer.line_count;
+      this.root.lnCount = this.textBuf.lineCount;
     }
   }
 
   #render_lines(): void {
-    const { buffer: { line_count } } = this;
-
     this.#scroll_v();
     this.#scroll_h();
 
     let row = this.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < line_count) {
+      if (ln < this.textBuf.lineCount) {
         row = this.#render_line(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -388,7 +389,7 @@ export class Editor extends Component {
     let available_w = 0;
     let current_color = CharColor.Undefined;
 
-    const xs = this.buffer.line(ln);
+    const xs = this.#textLayout.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {
@@ -423,7 +424,7 @@ export class Editor extends Component {
       }
 
       const color = charColor(
-        cursor.is_selected(ln, i),
+        cursor.isSelected(ln, i),
         isVisible,
         this.#whitespaceEnabled,
       );
@@ -459,7 +460,7 @@ export class Editor extends Component {
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
-      this.buffer.line(ln)
+      this.#textLayout.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -482,7 +483,7 @@ export class Editor extends Component {
     const { cursor } = this;
 
     const cell =
-      this.buffer.line(cursor.ln, true).drop(cursor.col).next().value;
+      this.#textLayout.line(cursor.ln, true).drop(cursor.col).next().value;
     if (cell) {
       this.cursor_y += cell.ln;
     }
@@ -498,7 +499,7 @@ export class Editor extends Component {
 
     // After?
 
-    const xs = this.buffer.line(cursor.ln, true)
+    const xs = this.#textLayout.line(cursor.ln, true)
       .drop(cursor.col - delta_col)
       .take(delta_col)
       .map((x) => x.gr.width)

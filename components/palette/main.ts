@@ -33,7 +33,7 @@ export class Palette extends Component<[], Command | undefined> {
     this.#enabled = true;
     this.#editor.enable(true);
 
-    this.#editor.buffer.reset();
+    this.#editor.textBuf.reset();
     this.#editor.reset(false);
 
     this.#filter();
@@ -117,7 +117,7 @@ export class Palette extends Component<[], Command | undefined> {
   }
 
   #filter(): void {
-    const text = this.#editor.buffer.text().toUpperCase();
+    const text = this.#editor.textBuf.text().toUpperCase();
 
     if (!text) {
       this.#filtered_options = options;
