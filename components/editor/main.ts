@@ -217,7 +217,7 @@ export class Editor extends Component {
     history.push();
   }
 
-  delete_char(): void {
+  deleteChar(): void {
     const { cursor, history } = this;
 
     this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
@@ -225,7 +225,7 @@ export class Editor extends Component {
     history.push();
   }
 
-  delete_selection(): void {
+  deleteSelection(): void {
     const { cursor, history } = this;
 
     this.#textLayout.delete(cursor.from, {
@@ -268,14 +268,14 @@ export class Editor extends Component {
         col: cursor.to.col + 1,
       });
 
-      this.delete_selection();
+      this.deleteSelection();
     } else {
       this.#clipboard = this.#textLayout.read(cursor, {
         ln: cursor.ln,
         col: cursor.col + 1,
       });
 
-      this.delete_char();
+      this.deleteChar();
     }
 
     vt.copy_to_clipboard(vt.sync, this.#clipboard);
@@ -341,7 +341,7 @@ export class Editor extends Component {
     segmenter.settings.x = this.cursor_x = this.x + this.index_width;
 
     if (this.w >= this.index_width) {
-      this.#render_lines();
+      this.#renderLines();
     }
 
     if (this.#enabled) {
@@ -361,15 +361,15 @@ export class Editor extends Component {
     }
   }
 
-  #render_lines(): void {
-    this.#scroll_v();
-    this.#scroll_h();
+  #renderLines(): void {
+    this.#scrollV();
+    this.#scrollH();
 
     let row = this.y;
 
     for (let ln = this.scroll_ln;; ln += 1) {
       if (ln < this.textBuf.lineCount) {
-        row = this.#render_line(ln, row);
+        row = this.#renderLine(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#colors.void);
@@ -383,7 +383,7 @@ export class Editor extends Component {
     }
   }
 
-  #render_line(ln: number, row: number): number {
+  #renderLine(ln: number, row: number): number {
     const { cursor } = this;
 
     let available_w = 0;
@@ -442,7 +442,7 @@ export class Editor extends Component {
     return row;
   }
 
-  #scroll_v(): void {
+  #scrollV(): void {
     const { cursor } = this;
 
     const delta_ln = cursor.ln - this.scroll_ln;
@@ -479,7 +479,7 @@ export class Editor extends Component {
     }
   }
 
-  #scroll_h(): void {
+  #scrollH(): void {
     const { cursor } = this;
 
     const cell =
