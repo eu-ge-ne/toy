@@ -1,6 +1,6 @@
 import { TextBuf } from "@lib/text-buf";
 
-export async function load(buffer: TextBuf, filePath: string): Promise<void> {
+export async function load(textBuf: TextBuf, filePath: string): Promise<void> {
   using file = await Deno.open(filePath, { read: true });
 
   const info = await file.stat();
@@ -19,17 +19,17 @@ export async function load(buffer: TextBuf, filePath: string): Promise<void> {
 
     if (n > 0) {
       const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-      buffer.append(text);
+      textBuf.append(text);
     }
   }
 
   const text = decoder.decode();
   if (text.length > 0) {
-    buffer.append(text);
+    textBuf.append(text);
   }
 }
 
-export async function save(buffer: TextBuf, filePath: string): Promise<void> {
+export async function save(textBuf: TextBuf, filePath: string): Promise<void> {
   using file = await Deno.open(filePath, {
     create: true,
     write: true,
@@ -41,7 +41,7 @@ export async function save(buffer: TextBuf, filePath: string): Promise<void> {
 
   encoder.readable.pipeTo(file.writable);
 
-  for (const text of buffer.read(0)) {
+  for (const text of textBuf.read(0)) {
     await writer.write(text);
   }
 }

@@ -7,25 +7,25 @@ interface Pos {
 }
 
 export class TextLayout {
-  constructor(private readonly buffer: TextBuf) {
+  constructor(private readonly textBuf: TextBuf) {
   }
 
   line(ln: number, extra = false): IteratorObject<segmenter.Segment> {
-    const chunks = this.buffer.read2([ln, 0], [ln + 1, 0]);
+    const chunks = this.textBuf.read2([ln, 0], [ln + 1, 0]);
     return segmenter.segments(chunks, extra);
   }
 
   read(start: Pos, end: Pos): string {
-    return this.buffer.read2(this.#unitPos(start), this.#unitPos(end))
+    return this.textBuf.read2(this.#unitPos(start), this.#unitPos(end))
       .reduce((a, x) => a + x, "");
   }
 
   insert(pos: Pos, text: string): void {
-    this.buffer.insert2(this.#unitPos(pos), text);
+    this.textBuf.insert2(this.#unitPos(pos), text);
   }
 
   delete(start: Pos, end: Pos): void {
-    this.buffer.delete2(this.#unitPos(start), this.#unitPos(end));
+    this.textBuf.delete2(this.#unitPos(start), this.#unitPos(end));
   }
 
   #unitPos({ ln, col }: Pos): [number, number] {
