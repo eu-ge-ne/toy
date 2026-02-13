@@ -1,5 +1,5 @@
-import { Cursor } from "@lib/cursor";
-import { SegBuf, Snapshot } from "@lib/seg-buf";
+import { Cursor } from "./cursor.ts";
+import { SegBuf, Snapshot } from "./seg-buf.ts";
 
 export class History {
   #index = -1;

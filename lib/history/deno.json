@@ -1,4 +1,0 @@
-{
-  "name": "@lib/history",
-  "exports": "./mod.ts"
-}

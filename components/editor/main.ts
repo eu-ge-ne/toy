@@ -1,17 +1,17 @@
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
-import { Cursor } from "@lib/cursor";
 import { graphemes, segmenter } from "@lib/graphemes";
-import { History } from "@lib/history";
 import { Key } from "@lib/kitty";
-import { SegBuf } from "@lib/seg-buf";
 import { range, sum } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
+import { Cursor } from "./cursor.ts";
 import * as keys from "./handlers/mod.ts";
+import { History } from "./history.ts";
+import { SegBuf } from "./seg-buf.ts";
 
 export * from "./colors.ts";
 

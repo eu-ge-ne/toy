@@ -204,7 +204,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async #open(filePath: string): Promise<void> {
     try {
-      await file.load(this.#children.editor.buffer, filePath);
+      await file.load(this.#children.editor.buffer.buf, filePath);
 
       this.filePath = filePath;
     } catch (err) {
@@ -228,7 +228,7 @@ export class Root extends Component<[string], void> implements IRoot {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.#children.editor.buffer, this.filePath);
+      await file.save(this.#children.editor.buffer.buf, this.filePath);
 
       return true;
     } catch (err) {
@@ -246,7 +246,7 @@ export class Root extends Component<[string], void> implements IRoot {
       }
 
       try {
-        await file.save(this.#children.editor.buffer, filePath);
+        await file.save(this.#children.editor.buffer.buf, filePath);
 
         this.filePath = filePath;
 

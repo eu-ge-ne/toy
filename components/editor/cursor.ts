@@ -1,5 +1,6 @@
-import { SegBuf } from "@lib/seg-buf";
 import { clamp } from "@lib/std";
+
+import { SegBuf } from "./seg-buf.ts";
 
 export class Cursor {
   #ln0 = 0;

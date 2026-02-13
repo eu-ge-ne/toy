@@ -1,6 +1,5 @@
-import { Node, TextBuf } from "@lib/text-buf";
-
 import { Grapheme, segmenter } from "@lib/graphemes";
+import { Node, TextBuf } from "@lib/text-buf";
 
 export type Snapshot = Node;
 
