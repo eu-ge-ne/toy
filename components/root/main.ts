@@ -74,7 +74,7 @@ export class Root extends Component implements IRoot {
       }),
       footer: new Footer(this),
       debug: new Debug(this),
-      palette: new Palette(this),
+      palette: new Palette(this, this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),

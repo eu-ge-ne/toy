@@ -5,7 +5,7 @@ import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -61,7 +61,7 @@ export class Editor extends Component {
   constructor(
     private readonly root: IRoot,
     readonly opts: EditorOptions,
-    layout: (_: Area, __: Area) => void,
+    layout: (_: Component, __: Component) => void,
   ) {
     super(layout);
 
