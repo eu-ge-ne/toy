@@ -17,7 +17,7 @@ export class Alert extends Component {
     super();
   }
 
-  layout2(): void {
+  layout(): void {
   }
 
   async run(err: unknown): Promise<void> {

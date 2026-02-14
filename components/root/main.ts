@@ -70,13 +70,13 @@ export class Root extends Component implements IRoot {
 
     this.#children.editor.reset(true);
 
-    this.layout2();
+    this.layout();
     this.render();
 
     await this.#processInput();
   }
 
-  layout2(): void {
+  layout(): void {
     const { columns, rows } = Deno.consoleSize();
     this.w = columns;
     this.h = rows;
@@ -173,7 +173,7 @@ export class Root extends Component implements IRoot {
       }
 
       if (this.isLayoutDirty) {
-        this.layout2();
+        this.layout();
       }
       this.render();
     }
@@ -305,7 +305,7 @@ export class Root extends Component implements IRoot {
   }
 
   #onSigwinch = () => {
-    this.layout2();
+    this.layout();
     this.render();
   };
 

@@ -37,7 +37,7 @@ export class Save extends Component {
     return result;
   }
 
-  layout2(): void {
+  layout(): void {
     this.#editor.resize(this.y + 4, this.x + 2, this.w - 4, 1);
   }
 

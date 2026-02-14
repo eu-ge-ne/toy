@@ -30,7 +30,7 @@ export class Ask extends Component {
     return result;
   }
 
-  layout2(): void {
+  layout(): void {
   }
 
   render(): void {

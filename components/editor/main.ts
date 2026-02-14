@@ -297,7 +297,7 @@ export class Editor extends Component {
   private scroll_ln = 0;
   private scroll_col = 0;
 
-  layout2(): void {
+  layout(): void {
   }
 
   render(): void {

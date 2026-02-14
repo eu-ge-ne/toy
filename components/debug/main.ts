@@ -18,7 +18,7 @@ export class Debug extends Component {
     super();
   }
 
-  layout2(): void {
+  layout(): void {
   }
 
   render(): void {

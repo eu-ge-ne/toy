@@ -49,7 +49,7 @@ export class Palette extends Component {
     return cmd;
   }
 
-  layout2(): void {
+  layout(): void {
   }
 
   render(): void {

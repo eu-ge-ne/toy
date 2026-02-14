@@ -17,7 +17,7 @@ export class Header extends Component {
     this.#onZen();
   }
 
-  layout2(): void {
+  layout(): void {
   }
 
   render(): void {
