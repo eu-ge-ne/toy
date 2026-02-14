@@ -41,7 +41,6 @@ export class Ask extends Component {
       return;
     }
 
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
 
