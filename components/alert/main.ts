@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
@@ -14,12 +15,23 @@ export class Alert extends Component {
   #enabled = false;
   #text = "";
 
+  #area: Area;
+
   constructor(private readonly root: IRoot) {
     super((a, p) => {
       a.w = clamp(60, 0, p.w);
       a.h = clamp(10, 0, p.h);
       a.y = p.y + Math.trunc((p.h - this.h) / 2);
       a.x = p.x + Math.trunc((p.w - this.w) / 2);
+
+      this.#area.layout(this);
+    });
+
+    this.#area = new Area(this.#colors.background, (a, p) => {
+      a.w = p.w;
+      a.h = p.h;
+      a.y = p.y;
+      a.x = p.x;
     });
   }
 
@@ -39,8 +51,7 @@ export class Alert extends Component {
       return;
     }
 
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
 
     let pos = 0;
 
@@ -67,6 +78,7 @@ export class Alert extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
     }
   }
