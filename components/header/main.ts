@@ -42,8 +42,7 @@ export class Header extends Component {
     const span: [number] = [this.w];
 
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.cursor.set(vt.buf, this.y, this.x);
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.root.filePath);
@@ -60,6 +59,7 @@ export class Header extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Zen":

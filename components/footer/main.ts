@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
@@ -14,11 +15,22 @@ export class Footer extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
 
+  #area: Area;
+
   constructor(private readonly root: IRoot) {
     super((a, p) => {
       a.w = p.w;
       a.h = 1;
       a.y = p.y + p.h - 1;
+      a.x = p.x;
+
+      this.#area.layout(this);
+    });
+
+    this.#area = new Area(this.#colors.background, (a, p) => {
+      a.w = p.w;
+      a.h = p.h;
+      a.y = p.y;
       a.x = p.x;
     });
 
@@ -38,8 +50,7 @@ export class Footer extends Component {
     const cursorStatus = `${ln} ${col}  ${pct}% `;
 
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
@@ -53,6 +64,7 @@ export class Footer extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Zen":
