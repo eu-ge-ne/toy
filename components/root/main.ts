@@ -16,7 +16,7 @@ import { IRoot } from "./root.ts";
 
 export type { IRoot } from "./root.ts";
 
-export class Root extends Component<[string], void> implements IRoot {
+export class Root extends Component implements IRoot {
   isLayoutDirty = false;
   zen = true;
 

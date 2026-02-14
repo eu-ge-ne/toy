@@ -12,7 +12,7 @@ export * from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Component<[], Command | undefined> {
+export class Palette extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #pa: Area = { y: 0, x: 0, w: 0, h: 0 };

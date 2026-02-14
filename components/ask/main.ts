@@ -9,7 +9,7 @@ import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Ask extends Component<[string], boolean> {
+export class Ask extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";

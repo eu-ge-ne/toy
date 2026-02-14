@@ -10,7 +10,7 @@ import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Save extends Component<[string], string> {
+export class Save extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #editor: Editor;

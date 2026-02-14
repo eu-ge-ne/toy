@@ -9,7 +9,7 @@ import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Alert extends Component<[unknown], void> {
+export class Alert extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
   #text = "";
