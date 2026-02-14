@@ -105,10 +105,26 @@ export class Root extends Component implements IRoot {
       const x = p.x + p.w - w;
       this.#children.debug.resize(w, h, y, x);
     }
-    this.#children.palette.layout(p);
-    this.#children.alert.layout(p);
-    this.#children.ask.layout(p);
-    this.#children.save.layout(p);
+    {
+      this.#children.palette.layout(p);
+    }
+    {
+      const w = clamp(60, 0, p.w);
+      const h = clamp(10, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.alert.resize(w, h, y, x);
+    }
+    {
+      const w = clamp(60, 0, p.w);
+      const h = clamp(7, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.ask.resize(w, h, y, x);
+    }
+    {
+      this.#children.save.layout(p);
+    }
   }
 
   render(): void {
