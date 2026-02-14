@@ -1,7 +1,8 @@
-import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
+import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -12,6 +13,7 @@ export * from "./colors.ts";
 
 export class Footer extends Component {
   #colors = colors(DefaultTheme);
+  #area = new Area(this.#colors.background);
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
@@ -21,6 +23,7 @@ export class Footer extends Component {
   }
 
   layout(): void {
+    this.#area.resize(this.w, this.h, this.y, this.x);
   }
 
   render(): void {
@@ -36,8 +39,7 @@ export class Footer extends Component {
     const cursorStatus = `${ln} ${col}  ${pct}% `;
 
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
@@ -51,6 +53,7 @@ export class Footer extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Zen":

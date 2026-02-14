@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { graphemes, segmenter } from "@lib/graphemes";
@@ -22,6 +23,7 @@ interface EditorOptions {
 
 export class Editor extends Component {
   #colors = colors(DefaultTheme);
+  #area = new Area(this.#colors.background);
   #enabled = false;
 
   #handlers: keys.EditorHandler[] = [
@@ -100,6 +102,7 @@ export class Editor extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Zen":
@@ -298,12 +301,12 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   layout(): void {
+    this.#area.resize(this.w, this.h, this.y, this.x);
   }
 
   render(): void {
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
 
     if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;

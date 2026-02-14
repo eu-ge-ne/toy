@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
@@ -12,6 +13,7 @@ const MIB = Math.pow(1024, 2);
 
 export class Debug extends Component {
   #colors = colors(DefaultTheme);
+  #area = new Area(this.#colors.background);
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
@@ -19,6 +21,7 @@ export class Debug extends Component {
   }
 
   layout(): void {
+    this.#area.resize(this.w, this.h, this.y, this.x);
   }
 
   render(): void {
@@ -33,8 +36,7 @@ export class Debug extends Component {
     const external_mem = (mem.external / MIB).toFixed();
 
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.buf.write(this.#colors.text);
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(
@@ -65,6 +67,7 @@ export class Debug extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Debug":

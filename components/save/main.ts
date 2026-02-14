@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
@@ -11,8 +12,9 @@ export * from "./colors.ts";
 
 export class Save extends Component {
   #colors = colors(DefaultTheme);
-  #enabled = false;
+  #area = new Area(this.#colors.background);
   #editor: Editor;
+  #enabled = false;
 
   constructor(private readonly root: IRoot) {
     super();
@@ -38,6 +40,7 @@ export class Save extends Component {
   }
 
   layout(): void {
+    this.#area.resize(this.w, this.h, this.y, this.x);
     this.#editor.resize(this.y + 4, this.x + 2, this.w - 4, 1);
   }
 
@@ -46,8 +49,7 @@ export class Save extends Component {
       return;
     }
 
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.cursor.set(vt.buf, this.y + 1, this.x);
     vt.buf.write(this.#colors.text);
     vt.write_text_center(vt.buf, [this.w], "Save As");
@@ -61,6 +63,7 @@ export class Save extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
     }
   }

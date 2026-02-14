@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
@@ -14,8 +15,9 @@ const MAX_LIST_SIZE = 10;
 
 export class Palette extends Component {
   #colors = colors(DefaultTheme);
-  #enabled = false;
+  #area = new Area(this.#colors.background);
   #editor: Editor;
+  #enabled = false;
 
   #filtered_options: Option[] = [];
   #list_size = 0;
@@ -67,6 +69,7 @@ export class Palette extends Component {
     this.#y = this.y + Math.trunc((this.h - this.#h) / 2);
     this.#x = this.x + Math.trunc((this.w - this.#w) / 2);
 
+    this.#area.resize(this.#w, this.#h, this.#y, this.#x);
     this.#editor.resize(this.#w - 4, 1, this.#y + 1, this.#x + 2);
   }
 
@@ -77,13 +80,7 @@ export class Palette extends Component {
 
     this.#scroll();
 
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, {
-      w: this.#w,
-      h: this.#h,
-      y: this.#y,
-      x: this.#x,
-    });
+    this.#area.render();
 
     if (this.#filtered_options.length === 0) {
       this.#render_empty();
@@ -98,6 +95,7 @@ export class Palette extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
     }
   }
