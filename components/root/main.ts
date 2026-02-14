@@ -48,7 +48,7 @@ export class Root extends Component implements IRoot {
       editor: new Editor(this, { multiLine: true }),
       footer: new Footer(this),
       debug: new Debug(this),
-      palette: new Palette(this, this),
+      palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
@@ -134,6 +134,11 @@ export class Root extends Component implements IRoot {
   render(): void {
     const t0 = performance.now();
 
+    if (this.isLayoutDirty) {
+      this.layout();
+      this.isLayoutDirty = false;
+    }
+
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
 
@@ -162,8 +167,6 @@ export class Root extends Component implements IRoot {
     while (true) {
       const key = await vt.readKey();
 
-      this.isLayoutDirty = false;
-
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
       if (typeof cmdName !== "undefined") {
         const cmd = { name: cmdName } as Command;
@@ -172,9 +175,6 @@ export class Root extends Component implements IRoot {
         this.#children.editor.handleKey(key);
       }
 
-      if (this.isLayoutDirty) {
-        this.layout();
-      }
       this.render();
     }
   }
