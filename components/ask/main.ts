@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
@@ -10,7 +11,9 @@ export * from "./colors.ts";
 
 export class Ask extends Component {
   #colors = colors(DefaultTheme);
+  #area = new Area(this.#colors.background);
   #enabled = false;
+
   #text = "";
 
   constructor(private readonly root: IRoot) {
@@ -31,6 +34,7 @@ export class Ask extends Component {
   }
 
   layout(): void {
+    this.#area.resize(this.w, this.h, this.y, this.x);
   }
 
   render(): void {
@@ -38,8 +42,7 @@ export class Ask extends Component {
       return;
     }
 
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
 
     let pos = 0;
 
@@ -66,6 +69,7 @@ export class Ask extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
     }
   }
