@@ -9,14 +9,14 @@ import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { IRoot } from "./root.ts";
 
 export type { IRoot } from "./root.ts";
 
-export class Root extends Component<[string], void> implements IRoot {
+export class Root extends Component implements IRoot {
   isLayoutDirty = false;
   zen = true;
 
@@ -40,14 +40,41 @@ export class Root extends Component<[string], void> implements IRoot {
   };
 
   constructor() {
-    super();
+    super(() => {
+      const { columns, rows } = Deno.consoleSize();
+      this.w = columns;
+      this.h = rows;
+
+      this.#children.header.layout(this);
+      this.#children.footer.layout(this);
+      this.#children.editor.layout(this);
+
+      const p = this.#children.editor;
+      this.#children.debug.layout(p);
+      this.#children.palette.layout(p);
+      this.#children.alert.layout(p);
+      this.#children.ask.layout(p);
+      this.#children.save.layout(p);
+    });
 
     this.#children = {
       header: new Header(this),
-      editor: new Editor(this, { multiLine: true }),
+      editor: new Editor(this, { multiLine: true }, (a, p) => {
+        if (this.zen) {
+          a.y = p.y;
+          a.x = p.x;
+          a.w = p.w;
+          a.h = p.h;
+        } else {
+          a.y = p.y + 1;
+          a.x = p.x;
+          a.w = p.w;
+          a.h = p.h - 2;
+        }
+      }),
       footer: new Footer(this),
       debug: new Debug(this),
-      palette: new Palette(this),
+      palette: new Palette(this, this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
@@ -73,23 +100,6 @@ export class Root extends Component<[string], void> implements IRoot {
     this.render();
 
     await this.#processInput();
-  }
-
-  layout(_: Area): void {
-    const { columns, rows } = Deno.consoleSize();
-    this.w = columns;
-    this.h = rows;
-
-    this.#children.header.layout(this);
-    this.#children.footer.layout(this);
-    this.#children.editor.layout(this);
-
-    const p = this.#children.editor;
-    this.#children.debug.layout(p);
-    this.#children.palette.layout(p);
-    this.#children.alert.layout(p);
-    this.#children.ask.layout(p);
-    this.#children.save.layout(p);
   }
 
   render(): void {

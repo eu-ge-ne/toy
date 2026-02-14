@@ -2,9 +2,8 @@ import * as commands from "@lib/commands";
 import { sprintf } from "@std/fmt/printf";
 
 import { IRoot } from "@components/root";
-import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -16,20 +15,14 @@ export class Footer extends Component {
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
-    super();
+    super((a, p) => {
+      a.w = p.w;
+      a.h = 1;
+      a.y = p.y + p.h - 1;
+      a.x = p.x;
+    });
 
     this.#onZen();
-  }
-
-  async run(): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  layout(p: Area): void {
-    this.w = p.w;
-    this.h = clamp(1, 0, p.h);
-    this.y = p.y + p.h - 1;
-    this.x = p.x;
   }
 
   render(): void {

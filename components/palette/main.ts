@@ -2,7 +2,7 @@ import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -12,10 +12,9 @@ export * from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Component<[], Command | undefined> {
+export class Palette extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #pa: Area = { y: 0, x: 0, w: 0, h: 0 };
   #editor: Editor;
 
   #filtered_options: Option[] = [];
@@ -23,10 +22,18 @@ export class Palette extends Component<[], Command | undefined> {
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(private readonly root: IRoot) {
-    super();
+  constructor(
+    private readonly root: IRoot,
+    private readonly parent: Component,
+  ) {
+    super(() => {});
 
-    this.#editor = new Editor(root, { multiLine: false });
+    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
+      a.w = p.w - 4;
+      a.h = 1;
+      a.y = p.y + 1;
+      a.x = p.x + 2;
+    });
   }
 
   async run(): Promise<Command | undefined> {
@@ -45,10 +52,6 @@ export class Palette extends Component<[], Command | undefined> {
     this.#editor.enable(false);
 
     return cmd;
-  }
-
-  layout(p: Area): void {
-    this.#pa = p;
   }
 
   render(): void {
@@ -133,25 +136,20 @@ export class Palette extends Component<[], Command | undefined> {
   #resize(): void {
     this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
-    this.w = Math.min(60, this.#pa.w);
+    this.w = Math.min(60, this.parent.w);
 
     this.h = 3 + Math.max(this.#list_size, 1);
-    if (this.h > this.#pa.h) {
-      this.h = this.#pa.h;
+    if (this.h > this.parent.h) {
+      this.h = this.parent.h;
       if (this.#list_size > 0) {
         this.#list_size = this.h - 3;
       }
     }
 
-    this.y = this.#pa.y + Math.trunc((this.#pa.h - this.h) / 2);
-    this.x = this.#pa.x + Math.trunc((this.#pa.w - this.w) / 2);
+    this.y = this.parent.y + Math.trunc((this.parent.h - this.h) / 2);
+    this.x = this.parent.x + Math.trunc((this.parent.w - this.w) / 2);
 
-    this.#editor.layout({
-      y: this.y + 1,
-      x: this.x + 2,
-      w: this.w - 4,
-      h: 1,
-    });
+    this.#editor.layout(this);
   }
 
   #scroll(): void {
