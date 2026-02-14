@@ -24,9 +24,16 @@ export class Palette extends Component {
   #scroll_index = 0;
 
   constructor(private readonly root: IRoot) {
-    super();
+    super((_, p) => {
+      this.#pa = p;
+    });
 
-    this.#editor = new Editor(root, { multiLine: false });
+    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
+      a.w = p.w - 4;
+      a.h = 1;
+      a.y = p.y + 1;
+      a.x = p.x + 2;
+    });
   }
 
   async run(): Promise<Command | undefined> {
@@ -45,10 +52,6 @@ export class Palette extends Component {
     this.#editor.enable(false);
 
     return cmd;
-  }
-
-  layout(p: Area): void {
-    this.#pa = p;
   }
 
   render(): void {
@@ -146,12 +149,7 @@ export class Palette extends Component {
     this.y = this.#pa.y + Math.trunc((this.#pa.h - this.h) / 2);
     this.x = this.#pa.x + Math.trunc((this.#pa.w - this.w) / 2);
 
-    this.#editor.layout({
-      y: this.y + 1,
-      x: this.x + 2,
-      w: this.w - 4,
-      h: 1,
-    });
+    this.#editor.layout(this);
   }
 
   #scroll(): void {
