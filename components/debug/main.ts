@@ -35,7 +35,6 @@ export class Debug extends Component {
     const heap_used = (mem.heapUsed / MIB).toFixed();
     const external_mem = (mem.external / MIB).toFixed();
 
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -63,7 +62,6 @@ export class Debug extends Component {
     vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
     vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
     vt.buf.write(vt.cursor.restore);
-    vt.buf.write(vt.cursor.show);
   }
 
   async handle(cmd: Command): Promise<void> {

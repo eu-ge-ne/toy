@@ -29,7 +29,6 @@ export class Header extends Component {
 
     const span: [number] = [this.w];
 
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -43,7 +42,6 @@ export class Header extends Component {
     }
 
     vt.buf.write(vt.cursor.restore);
-    vt.buf.write(vt.cursor.show);
   }
 
   async handle(cmd: commands.Command): Promise<void> {

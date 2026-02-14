@@ -302,7 +302,6 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   render(): void {
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -330,7 +329,6 @@ export class Editor extends Component {
     } else {
       vt.buf.write(vt.cursor.restore);
     }
-    vt.buf.write(vt.cursor.show);
   }
 
   #renderLines(): void {

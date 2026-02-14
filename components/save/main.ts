@@ -55,7 +55,6 @@ export class Save extends Component {
       return;
     }
 
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
     vt.cursor.set(vt.buf, this.y + 1, this.x);

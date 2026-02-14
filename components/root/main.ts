@@ -106,6 +106,7 @@ export class Root extends Component implements IRoot {
     const t0 = performance.now();
 
     vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
 
     this.#children.header.render();
     this.#children.footer.render();
@@ -121,6 +122,7 @@ export class Root extends Component implements IRoot {
     this.#children.ask.render();
     this.#children.save.render();
 
+    vt.buf.write(vt.cursor.show);
     vt.buf.flush();
     vt.sync.esu();
 

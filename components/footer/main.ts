@@ -37,7 +37,6 @@ export class Footer extends Component {
       : ((ln / this.root.lnCount) * 100).toFixed(0);
     const cursorStatus = `${ln} ${col}  ${pct}% `;
 
-    vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -48,7 +47,6 @@ export class Footer extends Component {
       sprintf("%*s", this.w, cursorStatus),
     );
     vt.buf.write(vt.cursor.restore);
-    vt.buf.write(vt.cursor.show);
   }
 
   async handle(cmd: commands.Command): Promise<void> {
