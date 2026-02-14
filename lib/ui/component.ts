@@ -10,9 +10,10 @@ export abstract class Component {
     this.y = y;
     this.x = x;
 
-    this.layout2();
+    this.layout();
   }
 
-  abstract layout2(): void;
+  abstract layout(): void;
+
   abstract render(): void;
 }
