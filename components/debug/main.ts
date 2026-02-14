@@ -2,7 +2,7 @@ import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -16,18 +16,12 @@ export class Debug extends Component {
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
-    super();
-  }
-
-  async run(): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  layout(p: Area): void {
-    this.w = clamp(30, 0, p.w);
-    this.h = clamp(7, 0, p.h);
-    this.y = p.y + p.h - this.h;
-    this.x = p.x + p.w - this.w;
+    super((a, p) => {
+      a.w = clamp(30, 0, p.w);
+      a.h = clamp(7, 0, p.h);
+      a.y = p.y + p.h - this.h;
+      a.x = p.x + p.w - this.w;
+    });
   }
 
   render(): void {
