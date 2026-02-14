@@ -3,7 +3,7 @@ import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -16,9 +16,21 @@ export class Save extends Component {
   #editor: Editor;
 
   constructor(private readonly root: IRoot) {
-    super();
+    super((a, p) => {
+      a.w = clamp(60, 0, p.w);
+      a.h = clamp(10, 0, p.h);
+      a.y = p.y + Math.trunc((p.h - this.h) / 2);
+      a.x = p.x + Math.trunc((p.w - this.w) / 2);
 
-    this.#editor = new Editor(root, { multiLine: false });
+      this.#editor.layout(this);
+    });
+
+    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
+      a.y = p.y + 4;
+      a.x = p.x + 2;
+      a.w = p.w - 4;
+      a.h = 1;
+    });
   }
 
   async run(path: string): Promise<string> {
@@ -36,20 +48,6 @@ export class Save extends Component {
     this.#editor.enable(false);
 
     return result;
-  }
-
-  layout(p: Area): void {
-    this.w = clamp(60, 0, p.w);
-    this.h = clamp(10, 0, p.h);
-    this.y = p.y + Math.trunc((p.h - this.h) / 2);
-    this.x = p.x + Math.trunc((p.w - this.w) / 2);
-
-    this.#editor.layout({
-      y: this.y + 4,
-      x: this.x + 2,
-      w: this.w - 4,
-      h: 1,
-    });
   }
 
   render(): void {
