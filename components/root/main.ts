@@ -40,22 +40,7 @@ export class Root extends Component implements IRoot {
   };
 
   constructor() {
-    super(() => {
-      const { columns, rows } = Deno.consoleSize();
-      this.w = columns;
-      this.h = rows;
-
-      this.#children.header.layout(this);
-      this.#children.footer.layout(this);
-      this.#children.editor.layout(this);
-
-      const p = this.#children.editor;
-      this.#children.debug.layout(p);
-      this.#children.palette.layout(p);
-      this.#children.alert.layout(p);
-      this.#children.ask.layout(p);
-      this.#children.save.layout(p);
-    });
+    super();
 
     this.#children = {
       header: new Header(this),
@@ -96,10 +81,27 @@ export class Root extends Component implements IRoot {
 
     this.#children.editor.reset(true);
 
-    this.layout(this);
+    this.layout2();
     this.render();
 
     await this.#processInput();
+  }
+
+  layout2(): void {
+    const { columns, rows } = Deno.consoleSize();
+    this.w = columns;
+    this.h = rows;
+
+    this.#children.header.resize(this.w, 1, this.y, this.x);
+    this.#children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
+    this.#children.editor.layout(this);
+
+    const p = this.#children.editor;
+    this.#children.debug.layout(p);
+    this.#children.palette.layout(p);
+    this.#children.alert.layout(p);
+    this.#children.ask.layout(p);
+    this.#children.save.layout(p);
   }
 
   render(): void {
@@ -144,7 +146,7 @@ export class Root extends Component implements IRoot {
       }
 
       if (this.isLayoutDirty) {
-        this.layout(this);
+        this.layout2();
       }
       this.render();
     }
@@ -276,7 +278,7 @@ export class Root extends Component implements IRoot {
   }
 
   #onSigwinch = () => {
-    this.layout(this);
+    this.layout2();
     this.render();
   };
 

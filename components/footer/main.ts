@@ -15,14 +15,12 @@ export class Footer extends Component {
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
-    super((a, p) => {
-      a.w = p.w;
-      a.h = 1;
-      a.y = p.y + p.h - 1;
-      a.x = p.x;
-    });
+    super();
 
     this.#onZen();
+  }
+
+  layout2(): void {
   }
 
   render(): void {
