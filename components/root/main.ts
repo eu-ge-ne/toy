@@ -110,12 +110,18 @@ export class Root extends Component implements IRoot {
     this.#children.header.render();
     this.#children.footer.render();
     this.#children.editor.render();
+
+    this.ln = this.#children.editor.cursor.ln;
+    this.col = this.#children.editor.cursor.col;
+    this.lnCount = this.#children.editor.textBuf.lineCount;
     this.#children.debug.render();
+
     this.#children.palette.render();
     this.#children.alert.render();
     this.#children.ask.render();
     this.#children.save.render();
 
+    vt.buf.flush();
     vt.sync.esu();
 
     this.renderTime = performance.now() - t0;

@@ -39,8 +39,6 @@ export class Alert extends Component {
       return;
     }
 
-    vt.sync.bsu();
-
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -64,9 +62,6 @@ export class Alert extends Component {
 
     vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
     vt.write_text_center(vt.buf, [this.w], "ENTER‧ok");
-
-    vt.buf.flush();
-    vt.sync.esu();
   }
 
   async handle(cmd: commands.Command): Promise<void> {

@@ -27,8 +27,6 @@ export class Header extends Component {
       return;
     }
 
-    vt.sync.bsu();
-
     const span: [number] = [this.w];
 
     vt.buf.write(vt.cursor.hide);
@@ -46,9 +44,6 @@ export class Header extends Component {
 
     vt.buf.write(vt.cursor.restore);
     vt.buf.write(vt.cursor.show);
-
-    vt.buf.flush();
-    vt.sync.esu();
   }
 
   async handle(cmd: commands.Command): Promise<void> {

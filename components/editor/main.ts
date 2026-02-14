@@ -302,8 +302,6 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   render(): void {
-    vt.sync.bsu();
-
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(vt.cursor.save);
     vt.buf.write(this.#colors.background);
@@ -333,15 +331,6 @@ export class Editor extends Component {
       vt.buf.write(vt.cursor.restore);
     }
     vt.buf.write(vt.cursor.show);
-
-    vt.buf.flush();
-    vt.sync.esu();
-
-    if (this.opts.multiLine) {
-      this.root.ln = this.cursor.ln;
-      this.root.col = this.cursor.col;
-      this.root.lnCount = this.textBuf.lineCount;
-    }
   }
 
   #renderLines(): void {
