@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
@@ -11,10 +12,21 @@ export class Header extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
 
+  #area: Area;
+
   constructor(private readonly root: IRoot) {
     super((a, p) => {
       a.w = p.w;
       a.h = 1;
+      a.y = p.y;
+      a.x = p.x;
+
+      this.#area.layout(this);
+    });
+
+    this.#area = new Area(this.#colors.background, (a, p) => {
+      a.w = p.w;
+      a.h = p.h;
       a.y = p.y;
       a.x = p.x;
     });

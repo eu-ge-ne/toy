@@ -1,3 +1,4 @@
+import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { clamp } from "@lib/std";
@@ -15,12 +16,23 @@ export class Debug extends Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
 
+  #area: Area;
+
   constructor(private readonly root: IRoot) {
     super((a, p) => {
       a.w = clamp(30, 0, p.w);
       a.h = clamp(7, 0, p.h);
       a.y = p.y + p.h - this.h;
       a.x = p.x + p.w - this.w;
+
+      this.#area.layout(this);
+    });
+
+    this.#area = new Area(this.#colors.background, (a, p) => {
+      a.w = p.w;
+      a.h = p.h;
+      a.y = p.y;
+      a.x = p.x;
     });
   }
 
@@ -36,8 +48,7 @@ export class Debug extends Component {
     const external_mem = (mem.external / MIB).toFixed();
 
     vt.buf.write(vt.cursor.save);
-    vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    this.#area.render();
     vt.buf.write(this.#colors.text);
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(
@@ -68,6 +79,7 @@ export class Debug extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+        this.#area.background = this.#colors.background;
         break;
 
       case "Debug":
