@@ -1,7 +1,6 @@
 import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
-import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -16,14 +15,7 @@ export class Save extends Component {
   #editor: Editor;
 
   constructor(private readonly root: IRoot) {
-    super((a, p) => {
-      a.w = clamp(60, 0, p.w);
-      a.h = clamp(10, 0, p.h);
-      a.y = p.y + Math.trunc((p.h - this.h) / 2);
-      a.x = p.x + Math.trunc((p.w - this.w) / 2);
-
-      this.#editor.layout(this);
-    });
+    super();
 
     this.#editor = new Editor(root, { multiLine: false });
   }

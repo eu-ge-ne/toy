@@ -123,7 +123,11 @@ export class Root extends Component implements IRoot {
       this.#children.ask.resize(w, h, y, x);
     }
     {
-      this.#children.save.layout(p);
+      const w = clamp(60, 0, p.w);
+      const h = clamp(10, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.save.resize(w, h, y, x);
     }
   }
 
