@@ -6,6 +6,8 @@ export abstract class Component implements Area {
   w = 0;
   h = 0;
 
-  abstract layout(_: Area): void;
+  constructor(readonly layout: (_: Area, __: Area) => void) {
+  }
+
   abstract render(): void;
 }
