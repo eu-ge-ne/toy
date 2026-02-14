@@ -61,28 +61,11 @@ export class Editor extends Component {
   constructor(
     private readonly root: IRoot,
     readonly opts: EditorOptions,
+    layout: (_: Area, __: Area) => void,
   ) {
-    super();
+    super(layout);
 
     this.#onZen();
-  }
-
-  async run(): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  layout(p: Area): void {
-    if (!this.opts.multiLine || this.root.zen) {
-      this.y = p.y;
-      this.x = p.x;
-      this.w = p.w;
-      this.h = p.h;
-    } else {
-      this.y = p.y + 1;
-      this.x = p.x;
-      this.w = p.w;
-      this.h = p.h - 2;
-    }
   }
 
   reset(reset_cursor: boolean): void {
