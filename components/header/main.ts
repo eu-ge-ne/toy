@@ -1,8 +1,7 @@
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
-import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -13,20 +12,14 @@ export class Header extends Component {
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
-    super();
+    super((a, p) => {
+      a.y = p.y;
+      a.x = p.x;
+      a.w = p.w;
+      a.h = 1;
+    });
 
     this.#onZen();
-  }
-
-  async run(): Promise<void> {
-    throw new Error("Not implemented");
-  }
-
-  layout(p: Area): void {
-    this.w = p.w;
-    this.h = clamp(1, 0, p.h);
-    this.y = p.y;
-    this.x = p.x;
   }
 
   render(): void {
