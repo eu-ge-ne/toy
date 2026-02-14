@@ -26,10 +26,9 @@ export class Palette extends Component {
     private readonly root: IRoot,
     private readonly parent: Component,
   ) {
-    super(() => {});
+    super();
 
-    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
-    });
+    this.#editor = new Editor(root, { multiLine: false });
   }
 
   async run(): Promise<Command | undefined> {
@@ -48,6 +47,9 @@ export class Palette extends Component {
     this.#editor.enable(false);
 
     return cmd;
+  }
+
+  layout2(): void {
   }
 
   render(): void {

@@ -107,9 +107,7 @@ export class Root extends Component implements IRoot {
       const x = p.x + p.w - w;
       this.#children.debug.resize(w, h, y, x);
     }
-    {
-      this.#children.palette.layout(p);
-    }
+    this.#children.palette.resize(p.w, p.h, p.y, p.x);
     {
       const w = clamp(60, 0, p.w);
       const h = clamp(10, 0, p.h);
