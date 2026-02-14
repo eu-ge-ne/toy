@@ -62,8 +62,6 @@ export class Palette extends Component {
     this.#resize();
     this.#scroll();
 
-    vt.sync.bsu();
-
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -75,8 +73,6 @@ export class Palette extends Component {
     }
 
     this.#editor.render();
-
-    vt.sync.esu();
   }
 
   async handle(cmd: Command): Promise<void> {

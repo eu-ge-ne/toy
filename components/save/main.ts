@@ -55,8 +55,6 @@ export class Save extends Component {
       return;
     }
 
-    vt.sync.bsu();
-
     vt.buf.write(vt.cursor.hide);
     vt.buf.write(this.#colors.background);
     vt.clear_area(vt.buf, this);
@@ -67,8 +65,6 @@ export class Save extends Component {
     vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
 
     this.#editor.render();
-
-    vt.sync.esu();
   }
 
   async handle(cmd: commands.Command): Promise<void> {
