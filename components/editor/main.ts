@@ -58,12 +58,8 @@ export class Editor extends Component {
   #wrapEnabled = false;
   #clipboard = "";
 
-  constructor(
-    private readonly root: IRoot,
-    readonly opts: EditorOptions,
-    layout: (_: Component, __: Component) => void,
-  ) {
-    super(layout);
+  constructor(private readonly root: IRoot, readonly opts: EditorOptions) {
+    super();
 
     this.#onZen();
   }
@@ -300,6 +296,9 @@ export class Editor extends Component {
   private cursor_x = 0;
   private scroll_ln = 0;
   private scroll_col = 0;
+
+  layout(): void {
+  }
 
   render(): void {
     vt.buf.write(vt.cursor.save);

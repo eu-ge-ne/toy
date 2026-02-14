@@ -9,6 +9,7 @@ import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
+import { clamp } from "@lib/std";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -40,41 +41,14 @@ export class Root extends Component implements IRoot {
   };
 
   constructor() {
-    super(() => {
-      const { columns, rows } = Deno.consoleSize();
-      this.w = columns;
-      this.h = rows;
-
-      this.#children.header.layout(this);
-      this.#children.footer.layout(this);
-      this.#children.editor.layout(this);
-
-      const p = this.#children.editor;
-      this.#children.debug.layout(p);
-      this.#children.palette.layout(p);
-      this.#children.alert.layout(p);
-      this.#children.ask.layout(p);
-      this.#children.save.layout(p);
-    });
+    super();
 
     this.#children = {
       header: new Header(this),
-      editor: new Editor(this, { multiLine: true }, (a, p) => {
-        if (this.zen) {
-          a.y = p.y;
-          a.x = p.x;
-          a.w = p.w;
-          a.h = p.h;
-        } else {
-          a.y = p.y + 1;
-          a.x = p.x;
-          a.w = p.w;
-          a.h = p.h - 2;
-        }
-      }),
+      editor: new Editor(this, { multiLine: true }),
       footer: new Footer(this),
       debug: new Debug(this),
-      palette: new Palette(this, this),
+      palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
@@ -96,14 +70,74 @@ export class Root extends Component implements IRoot {
 
     this.#children.editor.reset(true);
 
-    this.layout(this);
+    this.layout();
     this.render();
 
     await this.#processInput();
   }
 
+  layout(): void {
+    const { columns, rows } = Deno.consoleSize();
+    this.w = columns;
+    this.h = rows;
+
+    this.#children.header.resize(this.w, 1, this.y, this.x);
+    this.#children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
+    {
+      let w, h, y, x: number;
+      if (this.zen) {
+        w = this.w;
+        h = this.h;
+        y = this.y;
+        x = this.x;
+      } else {
+        w = this.w;
+        h = this.h - 2;
+        y = this.y + 1;
+        x = this.x;
+      }
+      this.#children.editor.resize(w, h, y, x);
+    }
+
+    const p = this.#children.editor;
+    {
+      const w = clamp(30, 0, p.w);
+      const h = clamp(7, 0, p.h);
+      const y = p.y + p.h - h;
+      const x = p.x + p.w - w;
+      this.#children.debug.resize(w, h, y, x);
+    }
+    this.#children.palette.resize(p.w, p.h, p.y, p.x);
+    {
+      const w = clamp(60, 0, p.w);
+      const h = clamp(10, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.alert.resize(w, h, y, x);
+    }
+    {
+      const w = clamp(60, 0, p.w);
+      const h = clamp(7, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.ask.resize(w, h, y, x);
+    }
+    {
+      const w = clamp(60, 0, p.w);
+      const h = clamp(10, 0, p.h);
+      const y = p.y + Math.trunc((p.h - h) / 2);
+      const x = p.x + Math.trunc((p.w - w) / 2);
+      this.#children.save.resize(w, h, y, x);
+    }
+  }
+
   render(): void {
     const t0 = performance.now();
+
+    if (this.isLayoutDirty) {
+      this.layout();
+      this.isLayoutDirty = false;
+    }
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
@@ -133,8 +167,6 @@ export class Root extends Component implements IRoot {
     while (true) {
       const key = await vt.readKey();
 
-      this.isLayoutDirty = false;
-
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
       if (typeof cmdName !== "undefined") {
         const cmd = { name: cmdName } as Command;
@@ -143,9 +175,6 @@ export class Root extends Component implements IRoot {
         this.#children.editor.handleKey(key);
       }
 
-      if (this.isLayoutDirty) {
-        this.layout(this);
-      }
       this.render();
     }
   }
@@ -276,7 +305,7 @@ export class Root extends Component implements IRoot {
   }
 
   #onSigwinch = () => {
-    this.layout(this);
+    this.layout();
     this.render();
   };
 

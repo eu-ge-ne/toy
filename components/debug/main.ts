@@ -1,6 +1,5 @@
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
-import { clamp } from "@lib/std";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -16,12 +15,10 @@ export class Debug extends Component {
   #enabled = false;
 
   constructor(private readonly root: IRoot) {
-    super((a, p) => {
-      a.w = clamp(30, 0, p.w);
-      a.h = clamp(7, 0, p.h);
-      a.y = p.y + p.h - this.h;
-      a.x = p.x + p.w - this.w;
-    });
+    super();
+  }
+
+  layout(): void {
   }
 
   render(): void {

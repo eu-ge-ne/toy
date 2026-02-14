@@ -22,18 +22,15 @@ export class Palette extends Component {
   #selected_index = 0;
   #scroll_index = 0;
 
-  constructor(
-    private readonly root: IRoot,
-    private readonly parent: Component,
-  ) {
-    super(() => {});
+  #w = 0;
+  #h = 0;
+  #y = 0;
+  #x = 0;
 
-    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
-      a.w = p.w - 4;
-      a.h = 1;
-      a.y = p.y + 1;
-      a.x = p.x + 2;
-    });
+  constructor(private readonly root: IRoot) {
+    super();
+
+    this.#editor = new Editor(root, { multiLine: false });
   }
 
   async run(): Promise<Command | undefined> {
@@ -54,16 +51,39 @@ export class Palette extends Component {
     return cmd;
   }
 
+  layout(): void {
+    this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
+
+    this.#w = Math.min(60, this.w);
+
+    this.#h = 3 + Math.max(this.#list_size, 1);
+    if (this.#h > this.h) {
+      this.#h = this.h;
+      if (this.#list_size > 0) {
+        this.#list_size = this.#h - 3;
+      }
+    }
+
+    this.#y = this.y + Math.trunc((this.h - this.#h) / 2);
+    this.#x = this.x + Math.trunc((this.w - this.#w) / 2);
+
+    this.#editor.resize(this.#w - 4, 1, this.#y + 1, this.#x + 2);
+  }
+
   render(): void {
     if (!this.#enabled) {
       return;
     }
 
-    this.#resize();
     this.#scroll();
 
     vt.buf.write(this.#colors.background);
-    vt.clear_area(vt.buf, this);
+    vt.clear_area(vt.buf, {
+      w: this.#w,
+      h: this.#h,
+      y: this.#y,
+      x: this.#x,
+    });
 
     if (this.#filtered_options.length === 0) {
       this.#render_empty();
@@ -126,25 +146,8 @@ export class Palette extends Component {
     }
 
     this.#selected_index = 0;
-  }
 
-  #resize(): void {
-    this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
-
-    this.w = Math.min(60, this.parent.w);
-
-    this.h = 3 + Math.max(this.#list_size, 1);
-    if (this.h > this.parent.h) {
-      this.h = this.parent.h;
-      if (this.#list_size > 0) {
-        this.#list_size = this.h - 3;
-      }
-    }
-
-    this.y = this.parent.y + Math.trunc((this.parent.h - this.h) / 2);
-    this.x = this.parent.x + Math.trunc((this.parent.w - this.w) / 2);
-
-    this.#editor.layout(this);
+    this.root.isLayoutDirty = true;
   }
 
   #scroll(): void {
@@ -157,14 +160,14 @@ export class Palette extends Component {
   }
 
   #render_empty(): void {
-    vt.cursor.set(vt.buf, this.y + 2, this.x + 2);
+    vt.cursor.set(vt.buf, this.#y + 2, this.#x + 2);
     vt.buf.write(this.#colors.option);
-    vt.write_text(vt.buf, [this.w - 4], "No matching commands");
+    vt.write_text(vt.buf, [this.#w - 4], "No matching commands");
   }
 
   #render_options(): void {
     let i = 0;
-    let y = this.y + 2;
+    let y = this.#y + 2;
 
     while (true) {
       if (i === this.#list_size) {
@@ -175,18 +178,18 @@ export class Palette extends Component {
       if (!option) {
         break;
       }
-      if (y === this.y + this.h) {
+      if (y === this.#y + this.#h) {
         break;
       }
 
-      const span: [number] = [this.w - 4];
+      const span: [number] = [this.#w - 4];
 
       vt.buf.write(
         index === this.#selected_index
           ? this.#colors.selectedOption
           : this.#colors.option,
       );
-      vt.cursor.set(vt.buf, y, this.x + 2);
+      vt.cursor.set(vt.buf, y, this.#x + 2);
       vt.write_text(vt.buf, span, option.name);
       vt.write_text(
         vt.buf,
