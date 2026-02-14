@@ -9,6 +9,7 @@ import { Save } from "@components/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
+import { clamp } from "@lib/std";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -97,7 +98,13 @@ export class Root extends Component implements IRoot {
     this.#children.editor.layout(this);
 
     const p = this.#children.editor;
-    this.#children.debug.layout(p);
+    {
+      const w = clamp(30, 0, p.w);
+      const h = clamp(7, 0, p.h);
+      const y = p.y + p.h - h;
+      const x = p.x + p.w - w;
+      this.#children.debug.resize(w, h, y, x);
+    }
     this.#children.palette.layout(p);
     this.#children.alert.layout(p);
     this.#children.ask.layout(p);
