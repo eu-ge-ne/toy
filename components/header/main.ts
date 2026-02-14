@@ -13,10 +13,10 @@ export class Header extends Component {
 
   constructor(private readonly root: IRoot) {
     super((a, p) => {
-      a.y = p.y;
-      a.x = p.x;
       a.w = p.w;
       a.h = 1;
+      a.y = p.y;
+      a.x = p.x;
     });
 
     this.#onZen();
