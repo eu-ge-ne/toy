@@ -45,19 +45,7 @@ export class Root extends Component implements IRoot {
 
     this.#children = {
       header: new Header(this),
-      editor: new Editor(this, { multiLine: true }, (a, p) => {
-        if (this.zen) {
-          a.y = p.y;
-          a.x = p.x;
-          a.w = p.w;
-          a.h = p.h;
-        } else {
-          a.y = p.y + 1;
-          a.x = p.x;
-          a.w = p.w;
-          a.h = p.h - 2;
-        }
-      }),
+      editor: new Editor(this, { multiLine: true }),
       footer: new Footer(this),
       debug: new Debug(this),
       palette: new Palette(this, this),
@@ -95,7 +83,21 @@ export class Root extends Component implements IRoot {
 
     this.#children.header.resize(this.w, 1, this.y, this.x);
     this.#children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
-    this.#children.editor.layout(this);
+    {
+      let w, h, y, x: number;
+      if (this.zen) {
+        w = this.w;
+        h = this.h;
+        y = this.y;
+        x = this.x;
+      } else {
+        w = this.w;
+        h = this.h - 2;
+        y = this.y + 1;
+        x = this.x;
+      }
+      this.#children.editor.resize(w, h, y, x);
+    }
 
     const p = this.#children.editor;
     {

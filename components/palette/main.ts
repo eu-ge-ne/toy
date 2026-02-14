@@ -29,10 +29,6 @@ export class Palette extends Component {
     super(() => {});
 
     this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
-      a.w = p.w - 4;
-      a.h = 1;
-      a.y = p.y + 1;
-      a.x = p.x + 2;
     });
   }
 
@@ -144,7 +140,7 @@ export class Palette extends Component {
     this.y = this.parent.y + Math.trunc((this.parent.h - this.h) / 2);
     this.x = this.parent.x + Math.trunc((this.parent.w - this.w) / 2);
 
-    this.#editor.layout(this);
+    this.#editor.resize(this.w - 4, 1, this.y + 1, this.x + 2);
   }
 
   #scroll(): void {

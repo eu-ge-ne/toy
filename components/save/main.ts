@@ -25,12 +25,7 @@ export class Save extends Component {
       this.#editor.layout(this);
     });
 
-    this.#editor = new Editor(root, { multiLine: false }, (a, p) => {
-      a.y = p.y + 4;
-      a.x = p.x + 2;
-      a.w = p.w - 4;
-      a.h = 1;
-    });
+    this.#editor = new Editor(root, { multiLine: false });
   }
 
   async run(path: string): Promise<string> {
@@ -48,6 +43,10 @@ export class Save extends Component {
     this.#editor.enable(false);
 
     return result;
+  }
+
+  layout2(): void {
+    this.#editor.resize(this.y + 4, this.x + 2, this.w - 4, 1);
   }
 
   render(): void {
