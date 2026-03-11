@@ -2,7 +2,7 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import { Root } from "@components/root";
 
-import deno from "./deno.json" with { type: "json" };
+import deno from "../deno.json" with { type: "json" };
 
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],

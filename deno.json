@@ -2,8 +2,8 @@
   "name": "@eu-ge-ne/toy",
   "version": "0.0.28-rc",
   "license": "MIT",
-  "exports": "./main.ts",
-  "workspace": ["components/*", "lib/*"],
+  "exports": "",
+  "workspace": ["src/components/*", "src/lib/*"],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
   },
