@@ -3,14 +3,14 @@ import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Save extends Component {
+export class Save extends Unit {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #editor: Editor;
