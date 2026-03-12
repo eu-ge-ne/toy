@@ -1,4 +1,4 @@
-export abstract class Component {
+export abstract class Unit {
   w = 0;
   h = 0;
   y = 0;

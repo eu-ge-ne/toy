@@ -10,14 +10,14 @@ import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
 import { clamp } from "@lib/std";
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { IRoot } from "./root.ts";
 
 export type { IRoot } from "./root.ts";
 
-export class Root extends Component implements IRoot {
+export class Root extends Unit implements IRoot {
   isLayoutDirty = false;
   zen = true;
 

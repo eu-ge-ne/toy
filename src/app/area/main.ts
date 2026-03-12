@@ -1,7 +1,7 @@
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Area extends Component {
+export class Area extends Unit {
   constructor(public background: Uint8Array) {
     super();
   }

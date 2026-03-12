@@ -4,14 +4,14 @@ import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Footer extends Component {
+export class Footer extends Unit {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;

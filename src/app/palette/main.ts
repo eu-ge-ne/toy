@@ -3,7 +3,7 @@ import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -13,7 +13,7 @@ export * from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Component {
+export class Palette extends Unit {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #editor: Editor;

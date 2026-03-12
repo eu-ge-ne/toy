@@ -6,7 +6,7 @@ import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -21,7 +21,7 @@ interface EditorOptions {
   multiLine: boolean;
 }
 
-export class Editor extends Component {
+export class Editor extends Unit {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
