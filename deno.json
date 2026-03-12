@@ -3,7 +3,7 @@
   "version": "0.0.28-rc",
   "license": "MIT",
   "exports": "",
-  "workspace": ["src/components/*", "src/lib/*"],
+  "workspace": ["src/app/*", "src/lib/*"],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
   },
