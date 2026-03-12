@@ -4,7 +4,7 @@ APP_V=$(deno bin/version.ts)
 DENO_V=$(deno -v)
 EXPECTED="toy $APP_V ($DENO_V)"
 
-deno compile --quiet --frozen --reload --output tmp/toy -ERW main.ts
+deno compile --quiet --frozen --reload --output tmp/toy -ERW src/main.ts
 
 ACTUAL="$(./tmp/toy -v)"
 
