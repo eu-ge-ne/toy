@@ -191,6 +191,15 @@ export class Root extends Unit implements IRoot {
         await this.#handleSave();
         break;
     }
+
+    await this.children.header.handleCommand(cmd);
+    await this.children.footer.handleCommand(cmd);
+    await this.children.editor.handleCommand(cmd);
+    await this.children.debug.handleCommand(cmd);
+    await this.children.palette.handleCommand(cmd);
+    await this.children.alert.handleCommand(cmd);
+    await this.children.ask.handleCommand(cmd);
+    await this.children.save.handleCommand(cmd);
   }
 
   async #processInput(): Promise<void> {
@@ -200,25 +209,13 @@ export class Root extends Unit implements IRoot {
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
       if (typeof cmdName !== "undefined") {
         const cmd = { name: cmdName } as Command;
-        await this.handleTree(cmd);
+        await this.handleCommand(cmd);
       } else {
         this.handleKey(key);
       }
 
       this.render();
     }
-  }
-
-  async handleTree(cmd: Command): Promise<void> {
-    await this.handleCommand(cmd);
-    await this.children.header.handleCommand(cmd);
-    await this.children.footer.handleCommand(cmd);
-    await this.children.editor.handleCommand(cmd);
-    await this.children.debug.handleCommand(cmd);
-    await this.children.palette.handleCommand(cmd);
-    await this.children.alert.handleCommand(cmd);
-    await this.children.ask.handleCommand(cmd);
-    await this.children.save.handleCommand(cmd);
   }
 
   async #handleExit(): Promise<void> {
@@ -243,7 +240,7 @@ export class Root extends Unit implements IRoot {
     this.render();
 
     if (cmd) {
-      await this.handleTree(cmd);
+      await this.handleCommand(cmd);
     }
   }
 
