@@ -50,7 +50,8 @@ export class Footer extends Unit {
     vt.buf.write(vt.cursor.restore);
   }
 
-  handleKey(_: kitty.Key): void {
+  handleKey(_: kitty.Key): boolean {
+    return false;
   }
 
   async handleCommand(cmd: commands.Command): Promise<void> {

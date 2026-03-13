@@ -2,10 +2,10 @@ import { Area } from "@components/area";
 import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
+import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
-import * as kitty from "@lib/kitty";
 
 import { colors } from "./colors.ts";
 
@@ -60,7 +60,8 @@ export class Save extends Unit {
     this.#editor.render();
   }
 
-  handleKey(_: kitty.Key): void {
+  handleKey(_: kitty.Key): boolean {
+    return false;
   }
 
   async handleCommand(cmd: commands.Command): Promise<void> {

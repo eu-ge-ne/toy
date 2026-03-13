@@ -23,7 +23,8 @@ export class Area extends Unit {
     }
   }
 
-  handleKey(_: kitty.Key): void {
+  handleKey(_: kitty.Key): boolean {
+    return false;
   }
 
   async handleCommand(_: commands.Command): Promise<void> {
