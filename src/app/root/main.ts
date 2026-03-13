@@ -163,23 +163,10 @@ export class Root extends Unit implements IRoot {
     this.renderTime = performance.now() - t0;
   }
 
-  async #processInput(): Promise<void> {
-    while (true) {
-      const key = await vt.readKey();
-
-      const cmdName = ShortcutToCommand[kitty.shortcut(key)];
-      if (typeof cmdName !== "undefined") {
-        const cmd = { name: cmdName } as Command;
-        await this.handleTree(cmd);
-      } else {
-        this.#children.editor.handleKey(key);
-      }
-
-      this.render();
-    }
+  handleKey(_: kitty.Key): void {
   }
 
-  async handle(cmd: Command): Promise<void> {
+  async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.zen = !this.zen;
@@ -199,16 +186,32 @@ export class Root extends Unit implements IRoot {
     }
   }
 
+  async #processInput(): Promise<void> {
+    while (true) {
+      const key = await vt.readKey();
+
+      const cmdName = ShortcutToCommand[kitty.shortcut(key)];
+      if (typeof cmdName !== "undefined") {
+        const cmd = { name: cmdName } as Command;
+        await this.handleTree(cmd);
+      } else {
+        this.#children.editor.handleKey(key);
+      }
+
+      this.render();
+    }
+  }
+
   async handleTree(cmd: Command): Promise<void> {
-    await this.handle(cmd);
-    await this.#children.header.handle(cmd);
-    await this.#children.footer.handle(cmd);
-    await this.#children.editor.handle(cmd);
-    await this.#children.debug.handle(cmd);
-    await this.#children.palette.handle(cmd);
-    await this.#children.alert.handle(cmd);
-    await this.#children.ask.handle(cmd);
-    await this.#children.save.handle(cmd);
+    await this.handleCommand(cmd);
+    await this.#children.header.handleCommand(cmd);
+    await this.#children.footer.handleCommand(cmd);
+    await this.#children.editor.handleCommand(cmd);
+    await this.#children.debug.handleCommand(cmd);
+    await this.#children.palette.handleCommand(cmd);
+    await this.#children.alert.handleCommand(cmd);
+    await this.#children.ask.handleCommand(cmd);
+    await this.#children.save.handleCommand(cmd);
   }
 
   async #handleExit(): Promise<void> {

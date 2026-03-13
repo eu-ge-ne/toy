@@ -1,3 +1,5 @@
+import * as commands from "@lib/commands";
+import * as kitty from "@lib/kitty";
 import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -19,5 +21,11 @@ export class Area extends Unit {
 
       vt.buf.write(vt.cursor.down);
     }
+  }
+
+  handleKey(_: kitty.Key): void {
+  }
+
+  async handleCommand(_: commands.Command): Promise<void> {
   }
 }

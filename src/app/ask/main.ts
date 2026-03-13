@@ -1,6 +1,7 @@
 import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
+import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -65,7 +66,10 @@ export class Ask extends Unit {
     vt.write_text_center(vt.buf, [this.w], "ESC‧no    ENTER‧yes");
   }
 
-  async handle(cmd: commands.Command): Promise<void> {
+  handleKey(_: kitty.Key): void {
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

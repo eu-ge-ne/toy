@@ -6,6 +6,7 @@ import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
+import * as kitty from "@lib/kitty";
 
 import { colors } from "./colors.ts";
 
@@ -49,7 +50,10 @@ export class Footer extends Unit {
     vt.buf.write(vt.cursor.restore);
   }
 
-  async handle(cmd: commands.Command): Promise<void> {
+  handleKey(_: kitty.Key): void {
+  }
+
+  async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

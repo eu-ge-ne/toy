@@ -1,3 +1,6 @@
+import * as commands from "@lib/commands";
+import * as kitty from "@lib/kitty";
+
 export abstract class Unit {
   w = 0;
   h = 0;
@@ -14,6 +17,7 @@ export abstract class Unit {
   }
 
   abstract layout(): void;
-
   abstract render(): void;
+  abstract handleKey(key: kitty.Key): void;
+  abstract handleCommand(cmd: commands.Command): Promise<void>;
 }

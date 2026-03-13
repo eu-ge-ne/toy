@@ -1,6 +1,7 @@
 import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
+import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
 import { Unit } from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -63,7 +64,10 @@ export class Debug extends Unit {
     vt.buf.write(vt.cursor.restore);
   }
 
-  async handle(cmd: Command): Promise<void> {
+  handleKey(_: kitty.Key): void {
+  }
+
+  async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

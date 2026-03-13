@@ -94,7 +94,7 @@ export class Editor extends Unit {
     this.root.inputTime = performance.now() - t0;
   }
 
-  async handle(cmd: Command): Promise<void> {
+  async handleCommand(cmd: Command): Promise<void> {
     if (!this.#enabled) {
       return;
     }
