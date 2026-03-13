@@ -192,14 +192,9 @@ export class Root extends Unit implements IRoot {
         break;
     }
 
-    await this.children.header.handleCommand(cmd);
-    await this.children.footer.handleCommand(cmd);
-    await this.children.editor.handleCommand(cmd);
-    await this.children.debug.handleCommand(cmd);
-    await this.children.palette.handleCommand(cmd);
-    await this.children.alert.handleCommand(cmd);
-    await this.children.ask.handleCommand(cmd);
-    await this.children.save.handleCommand(cmd);
+    for (const child of Object.values(this.children)) {
+      await child.handleCommand(cmd);
+    }
   }
 
   async #processInput(): Promise<void> {
