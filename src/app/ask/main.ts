@@ -66,7 +66,8 @@ export class Ask extends Unit {
     vt.write_text_center(vt.buf, [this.w], "ESC‧no    ENTER‧yes");
   }
 
-  handleKey(_: kitty.Key): void {
+  handleKey(_: kitty.Key): boolean {
+    return false;
   }
 
   async handleCommand(cmd: commands.Command): Promise<void> {

@@ -29,7 +29,7 @@ export class Root extends Unit implements IRoot {
   col = 0;
   lnCount = 0;
 
-  #children: {
+  override children: {
     header: Header;
     editor: Editor;
     footer: Footer;
@@ -43,7 +43,7 @@ export class Root extends Unit implements IRoot {
   constructor() {
     super();
 
-    this.#children = {
+    this.children = {
       header: new Header(this),
       editor: new Editor(this, { multiLine: true }),
       footer: new Footer(this),
@@ -56,9 +56,9 @@ export class Root extends Unit implements IRoot {
   }
 
   async run(fileName?: string): Promise<void> {
-    this.#children.editor.enable(true);
-    this.#children.editor.history.onChange = () =>
-      this.isDirty = !this.#children.editor.history.isEmpty;
+    this.children.editor.enable(true);
+    this.children.editor.history.onChange = () =>
+      this.isDirty = !this.children.editor.history.isEmpty;
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
@@ -68,7 +68,7 @@ export class Root extends Unit implements IRoot {
       await this.#open(fileName);
     }
 
-    this.#children.editor.reset(true);
+    this.children.editor.reset(true);
 
     this.layout();
     this.render();
@@ -81,8 +81,8 @@ export class Root extends Unit implements IRoot {
     this.w = columns;
     this.h = rows;
 
-    this.#children.header.resize(this.w, 1, this.y, this.x);
-    this.#children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
+    this.children.header.resize(this.w, 1, this.y, this.x);
+    this.children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
     {
       let w, h, y, x: number;
       if (this.zen) {
@@ -96,38 +96,38 @@ export class Root extends Unit implements IRoot {
         y = this.y + 1;
         x = this.x;
       }
-      this.#children.editor.resize(w, h, y, x);
+      this.children.editor.resize(w, h, y, x);
     }
 
-    const p = this.#children.editor;
+    const p = this.children.editor;
     {
       const w = clamp(30, 0, p.w);
       const h = clamp(7, 0, p.h);
       const y = p.y + p.h - h;
       const x = p.x + p.w - w;
-      this.#children.debug.resize(w, h, y, x);
+      this.children.debug.resize(w, h, y, x);
     }
-    this.#children.palette.resize(p.w, p.h, p.y, p.x);
+    this.children.palette.resize(p.w, p.h, p.y, p.x);
     {
       const w = clamp(60, 0, p.w);
       const h = clamp(10, 0, p.h);
       const y = p.y + Math.trunc((p.h - h) / 2);
       const x = p.x + Math.trunc((p.w - w) / 2);
-      this.#children.alert.resize(w, h, y, x);
+      this.children.alert.resize(w, h, y, x);
     }
     {
       const w = clamp(60, 0, p.w);
       const h = clamp(7, 0, p.h);
       const y = p.y + Math.trunc((p.h - h) / 2);
       const x = p.x + Math.trunc((p.w - w) / 2);
-      this.#children.ask.resize(w, h, y, x);
+      this.children.ask.resize(w, h, y, x);
     }
     {
       const w = clamp(60, 0, p.w);
       const h = clamp(10, 0, p.h);
       const y = p.y + Math.trunc((p.h - h) / 2);
       const x = p.x + Math.trunc((p.w - w) / 2);
-      this.#children.save.resize(w, h, y, x);
+      this.children.save.resize(w, h, y, x);
     }
   }
 
@@ -142,19 +142,19 @@ export class Root extends Unit implements IRoot {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
 
-    this.#children.header.render();
-    this.#children.footer.render();
-    this.#children.editor.render();
+    this.children.header.render();
+    this.children.footer.render();
+    this.children.editor.render();
 
-    this.ln = this.#children.editor.cursor.ln;
-    this.col = this.#children.editor.cursor.col;
-    this.lnCount = this.#children.editor.textBuf.lineCount;
-    this.#children.debug.render();
+    this.ln = this.children.editor.cursor.ln;
+    this.col = this.children.editor.cursor.col;
+    this.lnCount = this.children.editor.textBuf.lineCount;
+    this.children.debug.render();
 
-    this.#children.palette.render();
-    this.#children.alert.render();
-    this.#children.ask.render();
-    this.#children.save.render();
+    this.children.palette.render();
+    this.children.alert.render();
+    this.children.ask.render();
+    this.children.save.render();
 
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
@@ -163,7 +163,14 @@ export class Root extends Unit implements IRoot {
     this.renderTime = performance.now() - t0;
   }
 
-  handleKey(_: kitty.Key): void {
+  handleKey(key: kitty.Key): boolean {
+    for (const child of Object.values(this.children)) {
+      const handled = child.handleKey(key);
+      if (handled) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async handleCommand(cmd: Command): Promise<void> {
@@ -195,7 +202,7 @@ export class Root extends Unit implements IRoot {
         const cmd = { name: cmdName } as Command;
         await this.handleTree(cmd);
       } else {
-        this.#children.editor.handleKey(key);
+        this.handleKey(key);
       }
 
       this.render();
@@ -204,21 +211,21 @@ export class Root extends Unit implements IRoot {
 
   async handleTree(cmd: Command): Promise<void> {
     await this.handleCommand(cmd);
-    await this.#children.header.handleCommand(cmd);
-    await this.#children.footer.handleCommand(cmd);
-    await this.#children.editor.handleCommand(cmd);
-    await this.#children.debug.handleCommand(cmd);
-    await this.#children.palette.handleCommand(cmd);
-    await this.#children.alert.handleCommand(cmd);
-    await this.#children.ask.handleCommand(cmd);
-    await this.#children.save.handleCommand(cmd);
+    await this.children.header.handleCommand(cmd);
+    await this.children.footer.handleCommand(cmd);
+    await this.children.editor.handleCommand(cmd);
+    await this.children.debug.handleCommand(cmd);
+    await this.children.palette.handleCommand(cmd);
+    await this.children.alert.handleCommand(cmd);
+    await this.children.ask.handleCommand(cmd);
+    await this.children.save.handleCommand(cmd);
   }
 
   async #handleExit(): Promise<void> {
-    this.#children.editor.enable(false);
+    this.children.editor.enable(false);
 
-    if (!this.#children.editor.history.isEmpty) {
-      if (await this.#children.ask.run("Save changes?")) {
+    if (!this.children.editor.history.isEmpty) {
+      if (await this.children.ask.run("Save changes?")) {
         await this.#save();
       }
     }
@@ -227,11 +234,11 @@ export class Root extends Unit implements IRoot {
   }
 
   async #handlePalette(): Promise<void> {
-    this.#children.editor.enable(false);
+    this.children.editor.enable(false);
 
-    const cmd = await this.#children.palette.run();
+    const cmd = await this.children.palette.run();
 
-    this.#children.editor.enable(true);
+    this.children.editor.enable(true);
 
     this.render();
 
@@ -241,27 +248,27 @@ export class Root extends Unit implements IRoot {
   }
 
   async #handleSave(): Promise<void> {
-    this.#children.editor.enable(false);
+    this.children.editor.enable(false);
 
     if (await this.#save()) {
-      this.#children.editor.reset(false);
+      this.children.editor.reset(false);
     }
 
-    this.#children.editor.enable(true);
+    this.children.editor.enable(true);
 
     this.render();
   }
 
   async #open(filePath: string): Promise<void> {
     try {
-      await file.load(this.#children.editor.textBuf, filePath);
+      await file.load(this.children.editor.textBuf, filePath);
 
       this.filePath = filePath;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.#children.alert.run(err);
+        await this.children.alert.run(err);
 
         this.#exit();
       }
@@ -278,11 +285,11 @@ export class Root extends Unit implements IRoot {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.#children.editor.textBuf, this.filePath);
+      await file.save(this.children.editor.textBuf, this.filePath);
 
       return true;
     } catch (err) {
-      await this.#children.alert.run(err);
+      await this.children.alert.run(err);
 
       return await this.#saveFileAs();
     }
@@ -290,19 +297,19 @@ export class Root extends Unit implements IRoot {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const filePath = await this.#children.save.run(this.filePath);
+      const filePath = await this.children.save.run(this.filePath);
       if (!filePath) {
         return false;
       }
 
       try {
-        await file.save(this.#children.editor.textBuf, filePath);
+        await file.save(this.children.editor.textBuf, filePath);
 
         this.filePath = filePath;
 
         return true;
       } catch (err) {
-        await this.#children.alert.run(err);
+        await this.children.alert.run(err);
       }
     }
   }

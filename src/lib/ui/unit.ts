@@ -7,6 +7,8 @@ export abstract class Unit {
   y = 0;
   x = 0;
 
+  protected children: Record<string, Unit> = {};
+
   resize(w: number, h: number, y: number, x: number): void {
     this.w = w;
     this.h = h;
@@ -18,6 +20,6 @@ export abstract class Unit {
 
   abstract layout(): void;
   abstract render(): void;
-  abstract handleKey(key: kitty.Key): void;
+  abstract handleKey(key: kitty.Key): boolean;
   abstract handleCommand(cmd: commands.Command): Promise<void>;
 }

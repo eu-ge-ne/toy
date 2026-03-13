@@ -82,16 +82,23 @@ export class Editor extends Unit {
     this.history.reset();
   }
 
-  handleKey(key: Key): void {
+  handleKey(key: Key): boolean {
     if (!this.#enabled) {
-      return;
+      return false;
     }
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x.match(key))?.handle(key);
+    const h = this.#handlers.find((x) => x.match(key));
+    if (!h) {
+      return false
+    }
+
+    h.handle(key);
 
     this.root.inputTime = performance.now() - t0;
+
+    return true
   }
 
   async handleCommand(cmd: Command): Promise<void> {
