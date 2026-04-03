@@ -1,26 +1,38 @@
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Alert extends Component {
+export class Alert extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
-
   #text = "";
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+    footer: new ui.Text(this.#colors.text, "center"),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
+
+    this.children.footer.value = "ENTER‧ok";
   }
 
-  layout(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+  override resizeChildren(): void {
+    this.children.background.resize(this.width, this.height, this.y, this.x);
+
+    this.children.footer.resize(
+      this.width,
+      1,
+      this.y + this.height - 2,
+      this.x,
+    );
   }
 
   async run(err: unknown): Promise<void> {
@@ -39,7 +51,7 @@ export class Alert extends Component {
       return;
     }
 
-    this.#area.render();
+    this.children.background.render();
 
     let pos = 0;
 
@@ -58,15 +70,15 @@ export class Alert extends Component {
       vt.write_text(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
-    vt.write_text_center(vt.buf, [this.width], "ENTER‧ok");
+    this.children.footer.render();
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.children.background.color = this.#colors.background;
+        this.children.footer.color = this.#colors.text;
         break;
     }
   }

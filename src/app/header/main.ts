@@ -1,16 +1,19 @@
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 export * from "./colors.ts";
 
-export class Header extends Component {
+export class Header extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -18,8 +21,8 @@ export class Header extends Component {
     this.#onZen();
   }
 
-  layout(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+  override resizeChildren(): void {
+    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -30,7 +33,7 @@ export class Header extends Component {
     const span: [number] = [this.width];
 
     vt.buf.write(vt.cursor.save);
-    this.#area.render();
+    this.children.background.render();
     vt.cursor.set(vt.buf, this.y, this.x);
     vt.buf.write(this.#colors.filePath);
     vt.write_text_center(vt.buf, span, this.root.filePath);
@@ -47,9 +50,8 @@ export class Header extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
-
       case "Zen":
         this.#onZen();
         this.root.isLayoutDirty = true;

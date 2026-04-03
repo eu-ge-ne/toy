@@ -2,7 +2,7 @@ import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -12,9 +12,8 @@ export * from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Component {
+export class Palette extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #editor: Editor;
   #enabled = false;
 
@@ -27,6 +26,10 @@ export class Palette extends Component {
   #h = 0;
   #y = 0;
   #x = 0;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -52,7 +55,7 @@ export class Palette extends Component {
     return cmd;
   }
 
-  layout(): void {
+  override resizeChildren(): void {
     this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
     this.#w = Math.min(60, this.width);
@@ -68,7 +71,7 @@ export class Palette extends Component {
     this.#y = this.y + Math.trunc((this.height - this.#h) / 2);
     this.#x = this.x + Math.trunc((this.width - this.#w) / 2);
 
-    this.#area.resize(this.#w, this.#h, this.#y, this.#x);
+    this.children.background.resize(this.#w, this.#h, this.#y, this.#x);
     this.#editor.resize(this.#w - 4, 1, this.#y + 1, this.#x + 2);
   }
 
@@ -79,7 +82,7 @@ export class Palette extends Component {
 
     this.#scroll();
 
-    this.#area.render();
+    this.children.background.render();
 
     if (this.#filtered_options.length === 0) {
       this.#render_empty();
@@ -94,7 +97,7 @@ export class Palette extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
     }
   }

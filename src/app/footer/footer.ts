@@ -1,19 +1,20 @@
-import { sprintf } from "@std/fmt/printf";
-
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
-import * as vt from "@lib/vt";
+import * as ui from "@lib/ui";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Footer extends Component {
+export class Footer extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+    text: new ui.Text(this.#colors.text, "right"),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -21,8 +22,9 @@ export class Footer extends Component {
     this.#onZen();
   }
 
-  layout(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+  override resizeChildren(): void {
+    this.children.background.resize(this.width, this.height, this.y, this.x);
+    this.children.text.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -30,31 +32,24 @@ export class Footer extends Component {
       return;
     }
 
+    this.children.background.render();
+
     const ln = this.root.ln + 1;
     const col = this.root.col + 1;
     const pct = this.root.lnCount === 0
       ? 0
       : ((ln / this.root.lnCount) * 100).toFixed(0);
-    const cursorStatus = `${ln} ${col}  ${pct}% `;
-
-    vt.buf.write(vt.cursor.save);
-    this.#area.render();
-    vt.buf.write(this.#colors.text);
-    vt.write_text(
-      vt.buf,
-      [this.width],
-      sprintf("%*s", this.width, cursorStatus),
-    );
-    vt.buf.write(vt.cursor.restore);
+    this.children.text.value = `${ln} ${col}  ${pct}% `;
+    this.children.text.render();
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.children.background.color = this.#colors.background;
+        this.children.text.color = this.#colors.text;
         break;
-
       case "Zen":
         this.#onZen();
         this.root.isLayoutDirty = true;

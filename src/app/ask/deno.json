@@ -1,4 +1,4 @@
 {
   "name": "@components/ask",
-  "exports": "./main.ts"
+  "exports": "./ask.ts"
 }

@@ -2,16 +2,13 @@ import * as vt from "@lib/vt";
 
 import { Component } from "./component.ts";
 
-export class Area extends Component {
-  constructor(public background: Uint8Array) {
+export class Background extends Component {
+  constructor(public color: Uint8Array) {
     super();
   }
 
-  layout(): void {
-  }
-
   render(): void {
-    vt.buf.write(this.background);
+    vt.buf.write(this.color);
 
     vt.cursor.set(vt.buf, this.y, this.x);
 

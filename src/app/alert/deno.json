@@ -1,4 +1,4 @@
 {
   "name": "@components/alert",
-  "exports": "./main.ts"
+  "exports": "./alert.ts"
 }

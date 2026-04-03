@@ -15,10 +15,12 @@ export abstract class Component {
     this.y = y;
     this.x = x;
 
-    this.layout();
+    this.resizeChildren();
   }
 
-  abstract layout(): void;
+  resizeChildren(): void {
+  }
+
   abstract render(): void;
 
   handleKey(_: kitty.Key): boolean {
