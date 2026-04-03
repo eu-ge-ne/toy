@@ -18,7 +18,7 @@ export class Header extends Component {
     this.#onZen();
   }
 
-  layout(): void {
+  override resizeChildren(): void {
     this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
@@ -47,9 +47,8 @@ export class Header extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.#area.bgColor = this.#colors.background;
         break;
-
       case "Zen":
         this.#onZen();
         this.root.isLayoutDirty = true;

@@ -52,7 +52,7 @@ export class Palette extends Component {
     return cmd;
   }
 
-  layout(): void {
+  override resizeChildren(): void {
     this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
     this.#w = Math.min(60, this.width);
@@ -94,7 +94,7 @@ export class Palette extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.#area.bgColor = this.#colors.background;
         break;
     }
   }

@@ -38,7 +38,7 @@ export class Save extends Component {
     return result;
   }
 
-  layout(): void {
+  override resizeChildren(): void {
     this.#area.resize(this.width, this.height, this.y, this.x);
     this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
@@ -62,7 +62,7 @@ export class Save extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.#area.bgColor = this.#colors.background;
         break;
     }
   }

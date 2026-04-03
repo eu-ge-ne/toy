@@ -108,7 +108,7 @@ export class Editor extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.background = this.#colors.background;
+        this.#area.bgColor = this.#colors.background;
         break;
 
       case "Zen":
@@ -306,7 +306,7 @@ export class Editor extends Component {
   private scroll_ln = 0;
   private scroll_col = 0;
 
-  layout(): void {
+  override resizeChildren(): void {
     this.#area.resize(this.width, this.height, this.y, this.x);
   }
 

@@ -3,15 +3,12 @@ import * as vt from "@lib/vt";
 import { Component } from "./component.ts";
 
 export class Area extends Component {
-  constructor(public background: Uint8Array) {
+  constructor(public bgColor: Uint8Array) {
     super();
   }
 
-  layout(): void {
-  }
-
   render(): void {
-    vt.buf.write(this.background);
+    vt.buf.write(this.bgColor);
 
     vt.cursor.set(vt.buf, this.y, this.x);
 
