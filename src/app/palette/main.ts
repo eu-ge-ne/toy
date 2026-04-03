@@ -4,7 +4,7 @@ import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -14,7 +14,7 @@ export * from "./colors.ts";
 
 const MAX_LIST_SIZE = 10;
 
-export class Palette extends Unit {
+export class Palette extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #editor: Editor;
@@ -57,18 +57,18 @@ export class Palette extends Unit {
   layout(): void {
     this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
 
-    this.#w = Math.min(60, this.w);
+    this.#w = Math.min(60, this.width);
 
     this.#h = 3 + Math.max(this.#list_size, 1);
-    if (this.#h > this.h) {
-      this.#h = this.h;
+    if (this.#h > this.height) {
+      this.#h = this.height;
       if (this.#list_size > 0) {
         this.#list_size = this.#h - 3;
       }
     }
 
-    this.#y = this.y + Math.trunc((this.h - this.#h) / 2);
-    this.#x = this.x + Math.trunc((this.w - this.#w) / 2);
+    this.#y = this.y + Math.trunc((this.height - this.#h) / 2);
+    this.#x = this.x + Math.trunc((this.width - this.#w) / 2);
 
     this.#area.resize(this.#w, this.#h, this.#y, this.#x);
     this.#editor.resize(this.#w - 4, 1, this.#y + 1, this.#x + 2);

@@ -3,7 +3,7 @@ import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -12,7 +12,7 @@ export * from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export class Debug extends Unit {
+export class Debug extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -22,7 +22,7 @@ export class Debug extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -42,25 +42,25 @@ export class Debug extends Unit {
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.w - 1],
+      [this.width - 1],
       `Input    : ${this.root.inputTime.toFixed(1)} ms`,
     );
     vt.cursor.set(vt.buf, this.y + 2, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.w - 1],
+      [this.width - 1],
       `Render   : ${this.root.renderTime.toFixed(1)} ms`,
     );
     vt.cursor.set(vt.buf, this.y + 3, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `RSS      : ${rss} MiB`);
+    vt.write_text(vt.buf, [this.width - 1], `RSS      : ${rss} MiB`);
     vt.cursor.set(vt.buf, this.y + 4, this.x + 1);
     vt.write_text(
       vt.buf,
-      [this.w - 1],
+      [this.width - 1],
       `Heap     : ${heap_used}/${heap_total} MiB`,
     );
     vt.cursor.set(vt.buf, this.y + 5, this.x + 1);
-    vt.write_text(vt.buf, [this.w - 1], `External : ${external_mem} MiB`);
+    vt.write_text(vt.buf, [this.width - 1], `External : ${external_mem} MiB`);
     vt.buf.write(vt.cursor.restore);
   }
 

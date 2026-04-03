@@ -3,14 +3,14 @@ import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Alert extends Unit {
+export class Alert extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -22,7 +22,7 @@ export class Alert extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   async run(err: unknown): Promise<void> {
@@ -45,12 +45,12 @@ export class Alert extends Unit {
 
     let pos = 0;
 
-    for (let y = this.y + 1; y < this.y + this.h - 3; y += 1) {
+    for (let y = this.y + 1; y < this.y + this.height - 3; y += 1) {
       if (pos === this.#text.length) {
         break;
       }
 
-      const span: [number] = [this.w - 4];
+      const span: [number] = [this.width - 4];
       const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
@@ -60,8 +60,8 @@ export class Alert extends Unit {
       vt.write_text(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
-    vt.write_text_center(vt.buf, [this.w], "ENTER‧ok");
+    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
+    vt.write_text_center(vt.buf, [this.width], "ENTER‧ok");
   }
 
   handleKey(_: kitty.Key): boolean {

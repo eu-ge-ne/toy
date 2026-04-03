@@ -10,14 +10,14 @@ import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
 import { clamp } from "@lib/std";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { IRoot } from "./root.ts";
 
 export type { IRoot } from "./root.ts";
 
-export class Root extends Unit implements IRoot {
+export class Root extends Component implements IRoot {
   isLayoutDirty = false;
   zen = true;
 
@@ -78,21 +78,21 @@ export class Root extends Unit implements IRoot {
 
   layout(): void {
     const { columns, rows } = Deno.consoleSize();
-    this.w = columns;
-    this.h = rows;
+    this.width = columns;
+    this.height = rows;
 
-    this.children.header.resize(this.w, 1, this.y, this.x);
-    this.children.footer.resize(this.w, 1, this.y + this.h - 1, this.x);
+    this.children.header.resize(this.width, 1, this.y, this.x);
+    this.children.footer.resize(this.width, 1, this.y + this.height - 1, this.x);
     {
       let w, h, y, x: number;
       if (this.zen) {
-        w = this.w;
-        h = this.h;
+        w = this.width;
+        h = this.height;
         y = this.y;
         x = this.x;
       } else {
-        w = this.w;
-        h = this.h - 2;
+        w = this.width;
+        h = this.height - 2;
         y = this.y + 1;
         x = this.x;
       }
@@ -101,32 +101,32 @@ export class Root extends Unit implements IRoot {
 
     const p = this.children.editor;
     {
-      const w = clamp(30, 0, p.w);
-      const h = clamp(7, 0, p.h);
-      const y = p.y + p.h - h;
-      const x = p.x + p.w - w;
+      const w = clamp(30, 0, p.width);
+      const h = clamp(7, 0, p.height);
+      const y = p.y + p.height - h;
+      const x = p.x + p.width - w;
       this.children.debug.resize(w, h, y, x);
     }
-    this.children.palette.resize(p.w, p.h, p.y, p.x);
+    this.children.palette.resize(p.width, p.height, p.y, p.x);
     {
-      const w = clamp(60, 0, p.w);
-      const h = clamp(10, 0, p.h);
-      const y = p.y + Math.trunc((p.h - h) / 2);
-      const x = p.x + Math.trunc((p.w - w) / 2);
+      const w = clamp(60, 0, p.width);
+      const h = clamp(10, 0, p.height);
+      const y = p.y + Math.trunc((p.height - h) / 2);
+      const x = p.x + Math.trunc((p.width - w) / 2);
       this.children.alert.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, p.w);
-      const h = clamp(7, 0, p.h);
-      const y = p.y + Math.trunc((p.h - h) / 2);
-      const x = p.x + Math.trunc((p.w - w) / 2);
+      const w = clamp(60, 0, p.width);
+      const h = clamp(7, 0, p.height);
+      const y = p.y + Math.trunc((p.height - h) / 2);
+      const x = p.x + Math.trunc((p.width - w) / 2);
       this.children.ask.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, p.w);
-      const h = clamp(10, 0, p.h);
-      const y = p.y + Math.trunc((p.h - h) / 2);
-      const x = p.x + Math.trunc((p.w - w) / 2);
+      const w = clamp(60, 0, p.width);
+      const h = clamp(10, 0, p.height);
+      const y = p.y + Math.trunc((p.height - h) / 2);
+      const x = p.x + Math.trunc((p.width - w) / 2);
       this.children.save.resize(w, h, y, x);
     }
   }

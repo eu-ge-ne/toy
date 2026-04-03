@@ -3,14 +3,14 @@ import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Ask extends Unit {
+export class Ask extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -35,7 +35,7 @@ export class Ask extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -47,12 +47,12 @@ export class Ask extends Unit {
 
     let pos = 0;
 
-    for (let y = this.y + 1; y < this.y + this.h - 3; y += 1) {
+    for (let y = this.y + 1; y < this.y + this.height - 3; y += 1) {
       if (pos === this.#text.length) {
         break;
       }
 
-      const span: [number] = [this.w - 2];
+      const span: [number] = [this.width - 2];
       const line = this.#text.slice(pos, pos + span[0]);
 
       pos += line.length;
@@ -62,8 +62,8 @@ export class Ask extends Unit {
       vt.write_text_center(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
-    vt.write_text_center(vt.buf, [this.w], "ESC‧no    ENTER‧yes");
+    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
+    vt.write_text_center(vt.buf, [this.width], "ESC‧no    ENTER‧yes");
   }
 
   handleKey(_: kitty.Key): boolean {

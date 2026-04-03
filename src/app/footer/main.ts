@@ -4,7 +4,7 @@ import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import * as kitty from "@lib/kitty";
 
@@ -12,7 +12,7 @@ import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Footer extends Unit {
+export class Footer extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -24,7 +24,7 @@ export class Footer extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -44,8 +44,8 @@ export class Footer extends Unit {
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
-      [this.w],
-      sprintf("%*s", this.w, cursorStatus),
+      [this.width],
+      sprintf("%*s", this.width, cursorStatus),
     );
     vt.buf.write(vt.cursor.restore);
   }

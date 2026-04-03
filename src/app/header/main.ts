@@ -2,14 +2,14 @@ import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 import * as kitty from "@lib/kitty";
 
 import { colors } from "./colors.ts";
 export * from "./colors.ts";
 
-export class Header extends Unit {
+export class Header extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -21,7 +21,7 @@ export class Header extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -29,7 +29,7 @@ export class Header extends Unit {
       return;
     }
 
-    const span: [number] = [this.w];
+    const span: [number] = [this.width];
 
     vt.buf.write(vt.cursor.save);
     this.#area.render();
