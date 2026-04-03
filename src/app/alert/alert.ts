@@ -26,6 +26,7 @@ export class Alert extends ui.Component {
 
   override resizeChildren(): void {
     this.children.background.resize(this.width, this.height, this.y, this.x);
+
     this.children.footer.resize(
       this.width,
       1,

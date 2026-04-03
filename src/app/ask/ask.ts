@@ -15,10 +15,24 @@ export class Ask extends ui.Component {
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
+    footer: new ui.Text(this.#colors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
     super();
+
+    this.children.footer.value = "ESC‧no    ENTER‧yes";
+  }
+
+  override resizeChildren(): void {
+    this.children.background.resize(this.width, this.height, this.y, this.x);
+
+    this.children.footer.resize(
+      this.width,
+      1,
+      this.y + this.height - 2,
+      this.x,
+    );
   }
 
   async run(text: string): Promise<boolean> {
@@ -32,10 +46,6 @@ export class Ask extends ui.Component {
     this.#enabled = false;
 
     return result;
-  }
-
-  override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -62,8 +72,7 @@ export class Ask extends ui.Component {
       vt.write_text_center(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
-    vt.write_text_center(vt.buf, [this.width], "ESC‧no    ENTER‧yes");
+    this.children.footer.render();
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
@@ -71,6 +80,7 @@ export class Ask extends ui.Component {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
         this.children.background.color = this.#colors.background;
+        this.children.footer.color = this.#colors.text;
         break;
     }
   }
