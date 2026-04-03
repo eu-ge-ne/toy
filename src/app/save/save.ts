@@ -16,12 +16,36 @@ export class Save extends ui.Component {
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
+    header: new ui.Text(this.#colors.text, "center"),
+    footer: new ui.Text(this.#colors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
+    this.children.header.value = "Save As";
+    this.children.footer.value = "ESC‧cancel    ENTER‧ok";
     this.#editor = new Editor(root, { multiLine: false });
+  }
+
+  override resizeChildren(): void {
+    this.children.background.resize(this.width, this.height, this.y, this.x);
+
+    this.children.header.resize(
+      this.width,
+      1,
+      this.y + 1,
+      this.x,
+    );
+
+    this.children.footer.resize(
+      this.width,
+      1,
+      this.y + this.height - 2,
+      this.x,
+    );
+
+    this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
 
   async run(path: string): Promise<string> {
@@ -41,23 +65,14 @@ export class Save extends ui.Component {
     return result;
   }
 
-  override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
-    this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
-  }
-
   render(): void {
     if (!this.#enabled) {
       return;
     }
 
     this.children.background.render();
-    vt.cursor.set(vt.buf, this.y + 1, this.x);
-    vt.buf.write(this.#colors.text);
-    vt.write_text_center(vt.buf, [this.width], "Save As");
-    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
-    vt.write_text_center(vt.buf, [this.width], "ESC‧cancel    ENTER‧ok");
-
+    this.children.header.render();
+    this.children.footer.render();
     this.#editor.render();
   }
 
@@ -66,6 +81,7 @@ export class Save extends ui.Component {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
         this.children.background.color = this.#colors.background;
+        this.children.footer.color = this.#colors.text;
         break;
     }
   }
