@@ -1,10 +1,8 @@
-import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
-import * as kitty from "@lib/kitty";
 
 import { colors } from "./colors.ts";
 export * from "./colors.ts";
@@ -45,11 +43,7 @@ export class Header extends Component {
     vt.buf.write(vt.cursor.restore);
   }
 
-  handleKey(_: kitty.Key): boolean {
-    return false;
-  }
-
-  async handleCommand(cmd: commands.Command): Promise<void> {
+  override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

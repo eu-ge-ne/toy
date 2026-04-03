@@ -1,4 +1,3 @@
-import { Area } from "@components/area";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { graphemes, segmenter } from "@lib/graphemes";
@@ -6,7 +5,7 @@ import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -82,7 +81,7 @@ export class Editor extends Component {
     this.history.reset();
   }
 
-  handleKey(key: Key): boolean {
+  override handleKey(key: Key): boolean {
     if (!this.#enabled) {
       return false;
     }
@@ -101,7 +100,7 @@ export class Editor extends Component {
     return true;
   }
 
-  async handleCommand(cmd: Command): Promise<void> {
+  override async handleCommand(cmd: Command): Promise<void> {
     if (!this.#enabled) {
       return;
     }

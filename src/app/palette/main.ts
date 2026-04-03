@@ -1,10 +1,8 @@
-import { Area } from "@components/area";
 import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
-import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Component } from "@lib/ui";
+import { Area, Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -92,11 +90,7 @@ export class Palette extends Component {
     this.#editor.render();
   }
 
-  handleKey(_: kitty.Key): boolean {
-    return false;
-  }
-
-  async handleCommand(cmd: Command): Promise<void> {
+  override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);

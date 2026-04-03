@@ -1,7 +1,6 @@
-import * as commands from "@lib/commands";
-import * as kitty from "@lib/kitty";
-import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
+
+import { Component } from "./component.ts";
 
 export class Area extends Component {
   constructor(public background: Uint8Array) {
@@ -21,12 +20,5 @@ export class Area extends Component {
 
       vt.buf.write(vt.cursor.down);
     }
-  }
-
-  handleKey(_: kitty.Key): boolean {
-    return false;
-  }
-
-  async handleCommand(_: commands.Command): Promise<void> {
   }
 }
