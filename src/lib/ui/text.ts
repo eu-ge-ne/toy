@@ -4,7 +4,7 @@ import { Component } from "./component.ts";
 
 const encoder = new TextEncoder();
 
-type TextAlign = "left" | "center";
+type TextAlign = "left" | "center" | "right";
 
 export class Text extends Component {
   value = "";
@@ -28,6 +28,12 @@ export class Text extends Component {
       }
       case "center": {
         const n = Math.trunc((this.width - t.length) / 2);
+        vt.write_spaces(vt.buf, n);
+        vt.buf.write(b);
+        break;
+      }
+      case "right": {
+        const n = this.width - t.length;
         vt.write_spaces(vt.buf, n);
         vt.buf.write(b);
         break;
