@@ -2,18 +2,21 @@ import { Editor } from "@components/editor";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Save extends Component {
+export class Save extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #editor: Editor;
   #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -39,7 +42,7 @@ export class Save extends Component {
   }
 
   override resizeChildren(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.children.background.resize(this.width, this.height, this.y, this.x);
     this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
 
@@ -48,7 +51,7 @@ export class Save extends Component {
       return;
     }
 
-    this.#area.render();
+    this.children.background.render();
     vt.cursor.set(vt.buf, this.y + 1, this.x);
     vt.buf.write(this.#colors.text);
     vt.write_text_center(vt.buf, [this.width], "Save As");
@@ -62,7 +65,7 @@ export class Save extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.bgColor = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
     }
   }

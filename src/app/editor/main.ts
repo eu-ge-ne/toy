@@ -5,7 +5,7 @@ import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -20,9 +20,8 @@ interface EditorOptions {
   multiLine: boolean;
 }
 
-export class Editor extends Component {
+export class Editor extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
 
   #handlers: keys.EditorHandler[] = [
@@ -58,6 +57,10 @@ export class Editor extends Component {
   #whitespaceEnabled = false;
   #wrapEnabled = false;
   #clipboard = "";
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot, readonly opts: EditorOptions) {
     super();
@@ -108,7 +111,7 @@ export class Editor extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.bgColor = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
 
       case "Zen":
@@ -307,12 +310,12 @@ export class Editor extends Component {
   private scroll_col = 0;
 
   override resizeChildren(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
     vt.buf.write(vt.cursor.save);
-    this.#area.render();
+    this.children.background.render();
 
     if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;

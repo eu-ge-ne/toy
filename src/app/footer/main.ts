@@ -3,17 +3,20 @@ import { sprintf } from "@std/fmt/printf";
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Footer extends Component {
+export class Footer extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -22,7 +25,7 @@ export class Footer extends Component {
   }
 
   override resizeChildren(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -38,7 +41,7 @@ export class Footer extends Component {
     const cursorStatus = `${ln} ${col}  ${pct}% `;
 
     vt.buf.write(vt.cursor.save);
-    this.#area.render();
+    this.children.background.render();
     vt.buf.write(this.#colors.text);
     vt.write_text(
       vt.buf,
@@ -52,7 +55,7 @@ export class Footer extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.bgColor = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
       case "Zen":
         this.#onZen();

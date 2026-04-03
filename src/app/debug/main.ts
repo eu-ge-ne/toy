@@ -1,7 +1,7 @@
 import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
@@ -10,17 +10,20 @@ export * from "./colors.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export class Debug extends Component {
+export class Debug extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
   }
 
   override resizeChildren(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -35,7 +38,7 @@ export class Debug extends Component {
     const external_mem = (mem.external / MIB).toFixed();
 
     vt.buf.write(vt.cursor.save);
-    this.#area.render();
+    this.children.background.render();
     vt.buf.write(this.#colors.text);
     vt.cursor.set(vt.buf, this.y + 1, this.x + 1);
     vt.write_text(
@@ -66,7 +69,7 @@ export class Debug extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.bgColor = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
       case "Debug":
         this.#enabled = !this.#enabled;

@@ -1,19 +1,21 @@
 import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Area, Component } from "@lib/ui";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Ask extends Component {
+export class Ask extends ui.Component {
   #colors = colors(DefaultTheme);
-  #area = new Area(this.#colors.background);
   #enabled = false;
-
   #text = "";
+
+  protected override children = {
+    background: new ui.Background(this.#colors.background),
+  };
 
   constructor(private readonly root: IRoot) {
     super();
@@ -33,7 +35,7 @@ export class Ask extends Component {
   }
 
   override resizeChildren(): void {
-    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.children.background.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -41,7 +43,7 @@ export class Ask extends Component {
       return;
     }
 
-    this.#area.render();
+    this.children.background.render();
 
     let pos = 0;
 
@@ -68,7 +70,7 @@ export class Ask extends Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.#area.bgColor = this.#colors.background;
+        this.children.background.color = this.#colors.background;
         break;
     }
   }
