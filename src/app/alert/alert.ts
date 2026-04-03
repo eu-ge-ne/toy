@@ -15,14 +15,23 @@ export class Alert extends ui.Component {
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
+    footer: new ui.Text(this.#colors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
     super();
+
+    this.children.footer.value = "ENTER‧ok";
   }
 
   override resizeChildren(): void {
     this.children.background.resize(this.width, this.height, this.y, this.x);
+    this.children.footer.resize(
+      this.width,
+      1,
+      this.y + this.height - 2,
+      this.x,
+    );
   }
 
   async run(err: unknown): Promise<void> {
@@ -60,8 +69,7 @@ export class Alert extends ui.Component {
       vt.write_text(vt.buf, span, line);
     }
 
-    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
-    vt.write_text_center(vt.buf, [this.width], "ENTER‧ok");
+    this.children.footer.render();
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
@@ -69,6 +77,7 @@ export class Alert extends ui.Component {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
         this.children.background.color = this.#colors.background;
+        this.children.footer.color = this.#colors.text;
         break;
     }
   }
