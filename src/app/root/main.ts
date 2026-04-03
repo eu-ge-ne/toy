@@ -82,7 +82,12 @@ export class Root extends Component implements IRoot {
     this.height = rows;
 
     this.children.header.resize(this.width, 1, this.y, this.x);
-    this.children.footer.resize(this.width, 1, this.y + this.height - 1, this.x);
+    this.children.footer.resize(
+      this.width,
+      1,
+      this.y + this.height - 1,
+      this.x,
+    );
     {
       let w, h, y, x: number;
       if (this.zen) {
@@ -163,7 +168,7 @@ export class Root extends Component implements IRoot {
     this.renderTime = performance.now() - t0;
   }
 
-  handleKey(key: kitty.Key): boolean {
+  override handleKey(key: kitty.Key): boolean {
     for (const child of Object.values(this.children)) {
       const handled = child.handleKey(key);
       if (handled) {
@@ -173,7 +178,7 @@ export class Root extends Component implements IRoot {
     return false;
   }
 
-  async handleCommand(cmd: Command): Promise<void> {
+  override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.zen = !this.zen;

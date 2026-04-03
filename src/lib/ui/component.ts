@@ -20,6 +20,11 @@ export abstract class Component {
 
   abstract layout(): void;
   abstract render(): void;
-  abstract handleKey(key: kitty.Key): boolean;
-  abstract handleCommand(cmd: commands.Command): Promise<void>;
+
+  handleKey(_: kitty.Key): boolean {
+    return false;
+  }
+
+  async handleCommand(_: commands.Command): Promise<void> {
+  }
 }
