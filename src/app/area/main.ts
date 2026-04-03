@@ -1,9 +1,9 @@
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Area extends Unit {
+export class Area extends Component {
   constructor(public background: Uint8Array) {
     super();
   }
@@ -16,8 +16,8 @@ export class Area extends Unit {
 
     vt.cursor.set(vt.buf, this.y, this.x);
 
-    for (let i = this.h; i > 0; i -= 1) {
-      vt.ech(vt.buf, this.w);
+    for (let i = this.height; i > 0; i -= 1) {
+      vt.ech(vt.buf, this.width);
 
       vt.buf.write(vt.cursor.down);
     }

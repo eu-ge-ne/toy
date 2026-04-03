@@ -6,7 +6,7 @@ import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { CharColor, charColor, colors } from "./colors.ts";
@@ -21,7 +21,7 @@ interface EditorOptions {
   multiLine: boolean;
 }
 
-export class Editor extends Unit {
+export class Editor extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #enabled = false;
@@ -91,14 +91,14 @@ export class Editor extends Unit {
 
     const h = this.#handlers.find((x) => x.match(key));
     if (!h) {
-      return false
+      return false;
     }
 
     h.handle(key);
 
     this.root.inputTime = performance.now() - t0;
 
-    return true
+    return true;
   }
 
   async handleCommand(cmd: Command): Promise<void> {
@@ -308,7 +308,7 @@ export class Editor extends Unit {
   private scroll_col = 0;
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
+    this.#area.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -321,7 +321,7 @@ export class Editor extends Unit {
       this.index_width = 0;
     }
 
-    this.text_width = this.w - this.index_width;
+    this.text_width = this.width - this.index_width;
     segmenter.settings.width = this.#wrapEnabled
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
@@ -329,7 +329,7 @@ export class Editor extends Unit {
     segmenter.settings.y = this.cursor_y = this.y;
     segmenter.settings.x = this.cursor_x = this.x + this.index_width;
 
-    if (this.w >= this.index_width) {
+    if (this.width >= this.index_width) {
       this.#renderLines();
     }
 
@@ -352,11 +352,11 @@ export class Editor extends Unit {
       } else {
         vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, this.w);
+        vt.clear_line(vt.buf, this.width);
       }
 
       row += 1;
-      if (row >= this.y + this.h) {
+      if (row >= this.y + this.height) {
         break;
       }
     }
@@ -374,7 +374,7 @@ export class Editor extends Unit {
       if (col === 0) {
         if (i > 0) {
           row += 1;
-          if (row >= this.y + this.h) {
+          if (row >= this.y + this.height) {
             return row;
           }
         }
@@ -395,7 +395,7 @@ export class Editor extends Unit {
           }
         }
 
-        available_w = this.w - this.index_width;
+        available_w = this.width - this.index_width;
       }
 
       if ((col < this.scroll_col) || (width > available_w)) {
@@ -434,8 +434,8 @@ export class Editor extends Unit {
 
     // Below?
 
-    if (delta_ln > this.h) {
-      this.scroll_ln = cursor.ln - this.h;
+    if (delta_ln > this.height) {
+      this.scroll_ln = cursor.ln - this.height;
     }
 
     const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
@@ -446,7 +446,7 @@ export class Editor extends Unit {
     let i = 0;
     let height = sum(xs);
 
-    while (height > this.h) {
+    while (height > this.height) {
       height -= xs[i]!;
       this.scroll_ln += 1;
       i += 1;

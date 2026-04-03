@@ -1,17 +1,17 @@
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 
-export abstract class Unit {
-  w = 0;
-  h = 0;
+export abstract class Component {
+  width = 0;
+  height = 0;
   y = 0;
   x = 0;
 
-  protected children: Record<string, Unit> = {};
+  protected children: Record<string, Component> = {};
 
-  resize(w: number, h: number, y: number, x: number): void {
-    this.w = w;
-    this.h = h;
+  resize(width: number, height: number, y: number, x: number): void {
+    this.width = width;
+    this.height = height;
     this.y = y;
     this.x = x;
 

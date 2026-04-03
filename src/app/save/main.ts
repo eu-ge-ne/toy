@@ -4,14 +4,14 @@ import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 import { DefaultTheme, Themes } from "@lib/themes";
-import { Unit } from "@lib/ui";
+import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
 export * from "./colors.ts";
 
-export class Save extends Unit {
+export class Save extends Component {
   #colors = colors(DefaultTheme);
   #area = new Area(this.#colors.background);
   #editor: Editor;
@@ -41,8 +41,8 @@ export class Save extends Unit {
   }
 
   layout(): void {
-    this.#area.resize(this.w, this.h, this.y, this.x);
-    this.#editor.resize(this.y + 4, this.x + 2, this.w - 4, 1);
+    this.#area.resize(this.width, this.height, this.y, this.x);
+    this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
 
   render(): void {
@@ -53,9 +53,9 @@ export class Save extends Unit {
     this.#area.render();
     vt.cursor.set(vt.buf, this.y + 1, this.x);
     vt.buf.write(this.#colors.text);
-    vt.write_text_center(vt.buf, [this.w], "Save As");
-    vt.cursor.set(vt.buf, this.y + this.h - 2, this.x);
-    vt.write_text_center(vt.buf, [this.w], "ESC‧cancel    ENTER‧ok");
+    vt.write_text_center(vt.buf, [this.width], "Save As");
+    vt.cursor.set(vt.buf, this.y + this.height - 2, this.x);
+    vt.write_text_center(vt.buf, [this.width], "ESC‧cancel    ENTER‧ok");
 
     this.#editor.render();
   }
