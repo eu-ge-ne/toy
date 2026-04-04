@@ -2,6 +2,7 @@ import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
+import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
@@ -32,6 +33,8 @@ export class Footer extends ui.Component {
       return;
     }
 
+    vt.buf.write(vt.cursor.save);
+
     this.children.background.render();
 
     const ln = this.root.ln + 1;
@@ -41,6 +44,8 @@ export class Footer extends ui.Component {
       : ((ln / this.root.lnCount) * 100).toFixed(0);
     this.children.text.value = `${ln} ${col}  ${pct}% `;
     this.children.text.render();
+
+    vt.buf.write(vt.cursor.restore);
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {

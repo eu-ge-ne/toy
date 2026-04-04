@@ -30,9 +30,10 @@ export class Header extends ui.Component {
       return;
     }
 
+    vt.buf.write(vt.cursor.save);
+
     const span: [number] = [this.width];
 
-    vt.buf.write(vt.cursor.save);
     this.children.background.render();
     vt.cursor.set(vt.buf, this.y, this.x);
     vt.buf.write(this.#colors.filePath);
