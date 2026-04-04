@@ -6,7 +6,7 @@ export interface Option {
   command: Command;
 }
 
-export const options: Option[] = [
+export const availableOptions: Option[] = [
   {
     name: "Edit: Copy",
     shortcuts: CommandToShortcuts["Copy"],

@@ -6,27 +6,23 @@ import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
-import { Option, options } from "./options.ts";
+import { availableOptions, Option } from "./options.ts";
 
-const MAX_LIST_SIZE = 10;
+const maxListSize = 10;
 
 export class Palette extends ui.Component {
   #colors = colors(DefaultTheme);
   #editor: Editor;
   #enabled = false;
-
-  #filtered_options: Option[] = [];
-  #list_size = 0;
-  #selected_index = 0;
-  #scroll_index = 0;
-
-  #w = 0;
-  #h = 0;
-  #y = 0;
-  #x = 0;
+  #options: Option[] = availableOptions;
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
+    list: new ui.List(
+      "No matching commands",
+      this.#colors.option,
+      this.#colors.selectedOption,
+    ),
   };
 
   constructor(private readonly root: IRoot) {
@@ -54,23 +50,23 @@ export class Palette extends ui.Component {
   }
 
   override resizeChildren(): void {
-    this.#list_size = Math.min(this.#filtered_options.length, MAX_LIST_SIZE);
+    const width = Math.min(60, this.width);
 
-    this.#w = Math.min(60, this.width);
-
-    this.#h = 3 + Math.max(this.#list_size, 1);
-    if (this.#h > this.height) {
-      this.#h = this.height;
-      if (this.#list_size > 0) {
-        this.#list_size = this.#h - 3;
+    let listSize = Math.min(this.#options.length, maxListSize);
+    let height = 3 + Math.max(listSize, 1);
+    if (height > this.height) {
+      height = this.height;
+      if (listSize > 0) {
+        listSize = height - 3;
       }
     }
 
-    this.#y = this.y + Math.trunc((this.height - this.#h) / 2);
-    this.#x = this.x + Math.trunc((this.width - this.#w) / 2);
+    const y = this.y + Math.trunc((this.height - height) / 2);
+    const x = this.x + Math.trunc((this.width - width) / 2);
 
-    this.children.background.resize(this.#w, this.#h, this.#y, this.#x);
-    this.#editor.resize(this.#w - 4, 1, this.#y + 1, this.#x + 2);
+    this.children.background.resize(width, height, y, x);
+    this.#editor.resize(width - 4, 1, y + 1, x + 2);
+    this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
   render(): void {
@@ -78,24 +74,20 @@ export class Palette extends ui.Component {
       return;
     }
 
-    this.#scroll();
-
     this.children.background.render();
-
-    if (this.#filtered_options.length === 0) {
-      this.#render_empty();
-    } else {
-      this.#render_options();
-    }
-
     this.#editor.render();
+    this.children.list.render();
   }
 
   override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
+
         this.children.background.color = this.#colors.background;
+        this.children.list.color = this.#colors.option;
+        this.children.list.selectedColor = this.#colors.selectedOption;
+
         break;
     }
   }
@@ -108,18 +100,21 @@ export class Palette extends ui.Component {
         case "ESC":
           return;
         case "ENTER":
-          return this.#filtered_options[this.#selected_index]?.command;
+          return this.#options[this.children.list.selectedIndex]?.command;
         case "UP":
-          if (this.#filtered_options.length > 0) {
-            this.#selected_index = Math.max(this.#selected_index - 1, 0);
+          if (this.#options.length > 0) {
+            this.children.list.selectedIndex = Math.max(
+              this.children.list.selectedIndex - 1,
+              0,
+            );
             this.root.render();
           }
           continue;
         case "DOWN":
-          if (this.#filtered_options.length > 0) {
-            this.#selected_index = Math.min(
-              this.#selected_index + 1,
-              this.#filtered_options.length - 1,
+          if (this.#options.length > 0) {
+            this.children.list.selectedIndex = Math.min(
+              this.children.list.selectedIndex + 1,
+              this.#options.length - 1,
             );
             this.root.render();
           }
@@ -136,67 +131,21 @@ export class Palette extends ui.Component {
     const text = this.#editor.textBuf.text().toUpperCase();
 
     if (!text) {
-      this.#filtered_options = options;
+      this.#options = availableOptions;
     } else {
-      this.#filtered_options = options.filter((x) =>
+      this.#options = availableOptions.filter((x) =>
         x.name.toUpperCase().includes(text)
       );
     }
 
-    this.#selected_index = 0;
+    this.children.list.selectedIndex = 0;
+    this.children.list.values = this.#options.map((x) => {
+      const shortcuts = (x.shortcuts ?? []).join(" ");
+      const w = this.width - shortcuts.length;
+      const s = x.name.slice(0, w).padEnd(w, " ");
+      return s + shortcuts;
+    });
 
     this.root.isLayoutDirty = true;
-  }
-
-  #scroll(): void {
-    const delta = this.#selected_index - this.#scroll_index;
-    if (delta < 0) {
-      this.#scroll_index = this.#selected_index;
-    } else if (delta >= this.#list_size) {
-      this.#scroll_index = this.#selected_index - this.#list_size + 1;
-    }
-  }
-
-  #render_empty(): void {
-    vt.cursor.set(vt.buf, this.#y + 2, this.#x + 2);
-    vt.buf.write(this.#colors.option);
-    vt.write_text(vt.buf, [this.#w - 4], "No matching commands");
-  }
-
-  #render_options(): void {
-    let i = 0;
-    let y = this.#y + 2;
-
-    while (true) {
-      if (i === this.#list_size) {
-        break;
-      }
-      const index = this.#scroll_index + i;
-      const option = this.#filtered_options[index];
-      if (!option) {
-        break;
-      }
-      if (y === this.#y + this.#h) {
-        break;
-      }
-
-      const span: [number] = [this.#w - 4];
-
-      vt.buf.write(
-        index === this.#selected_index
-          ? this.#colors.selectedOption
-          : this.#colors.option,
-      );
-      vt.cursor.set(vt.buf, y, this.#x + 2);
-      vt.write_text(vt.buf, span, option.name);
-      vt.write_text(
-        vt.buf,
-        span,
-        (option.shortcuts ?? []).join(" ").padStart(span[0]),
-      );
-
-      i += 1;
-      y += 1;
-    }
   }
 }
