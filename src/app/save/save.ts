@@ -7,17 +7,16 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export * from "./colors.ts";
+const defaultColors = colors(DefaultTheme);
 
 export class Save extends ui.Component {
-  #colors = colors(DefaultTheme);
   #editor: Editor;
   #enabled = false;
 
   protected override children = {
-    background: new ui.Background(this.#colors.background),
-    header: new ui.Text(this.#colors.text, "center"),
-    footer: new ui.Text(this.#colors.text, "center"),
+    background: new ui.Background(defaultColors.background),
+    header: new ui.Text(defaultColors.text, "center"),
+    footer: new ui.Text(defaultColors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
@@ -29,22 +28,11 @@ export class Save extends ui.Component {
   }
 
   override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
+    const { background, header, footer } = this.children;
 
-    this.children.header.resize(
-      this.width,
-      1,
-      this.y + 1,
-      this.x,
-    );
-
-    this.children.footer.resize(
-      this.width,
-      1,
-      this.y + this.height - 2,
-      this.x,
-    );
-
+    background.resize(this.width, this.height, this.y, this.x);
+    header.resize(this.width, 1, this.y + 1, this.x);
+    footer.resize(this.width, 1, this.y + this.height - 2, this.x);
     this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
 
@@ -78,11 +66,14 @@ export class Save extends ui.Component {
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        this.children.background.color = this.#colors.background;
-        this.children.footer.color = this.#colors.text;
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
+
+        this.children.background.color = c.background;
+        this.children.footer.color = c.text;
+
         break;
+      }
     }
   }
 
