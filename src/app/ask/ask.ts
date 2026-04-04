@@ -6,16 +6,15 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export * from "./colors.ts";
+const defaultColors = colors(DefaultTheme);
 
 export class Ask extends ui.Component {
-  #colors = colors(DefaultTheme);
   #enabled = false;
 
   protected override children = {
-    background: new ui.Background(this.#colors.background),
-    text: new ui.MultiLineText(this.#colors.text, "center"),
-    footer: new ui.Text(this.#colors.text, "center"),
+    background: new ui.Background(defaultColors.background),
+    text: new ui.MultiLineText(defaultColors.text, "center"),
+    footer: new ui.Text(defaultColors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
@@ -57,12 +56,15 @@ export class Ask extends ui.Component {
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        this.children.background.color = this.#colors.background;
-        this.children.text.color = this.#colors.text;
-        this.children.footer.color = this.#colors.text;
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
+
+        this.children.background.color = c.background;
+        this.children.text.color = c.text;
+        this.children.footer.color = c.text;
+
         break;
+      }
     }
   }
 
