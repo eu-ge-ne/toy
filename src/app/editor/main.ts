@@ -14,8 +14,6 @@ import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
-export * from "./colors.ts";
-
 interface EditorOptions {
   multiLine: boolean;
 }

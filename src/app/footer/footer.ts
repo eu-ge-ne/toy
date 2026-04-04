@@ -6,8 +6,6 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export * from "./colors.ts";
-
 export class Footer extends ui.Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
