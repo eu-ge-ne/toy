@@ -1,4 +1,4 @@
 {
   "name": "@components/debug",
-  "exports": "./main.ts"
+  "exports": "./debug.ts"
 }
