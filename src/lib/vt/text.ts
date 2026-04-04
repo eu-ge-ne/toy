@@ -23,21 +23,3 @@ export function write_text(out: Writer, span: [number], text: string): void {
 
   span[0] -= text.length;
 }
-
-export function write_text_center(
-  out: Writer,
-  span: [number],
-  text: string,
-): void {
-  if (text.length > span[0]) {
-    text = text.slice(0, span[0]);
-  }
-
-  const ab = span[0] - text.length;
-  const a = Math.trunc(ab / 2);
-
-  write_spaces(out, a);
-  out.write(encoder.encode(text));
-
-  span[0] -= a + text.length;
-}

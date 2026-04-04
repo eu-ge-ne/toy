@@ -5,14 +5,15 @@ import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
-export * from "./colors.ts";
+
+const defaultColors = colors(DefaultTheme);
 
 export class Header extends ui.Component {
-  #colors = colors(DefaultTheme);
   #enabled = false;
 
   protected override children = {
-    background: new ui.Background(this.#colors.background),
+    background: new ui.Background(defaultColors.background),
+    text: new ui.Text(defaultColors.text, "center"),
   };
 
   constructor(private readonly root: IRoot) {
@@ -22,7 +23,10 @@ export class Header extends ui.Component {
   }
 
   override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
+    const { background, text } = this.children;
+
+    background.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
@@ -32,27 +36,25 @@ export class Header extends ui.Component {
 
     vt.buf.write(vt.cursor.save);
 
-    const span: [number] = [this.width];
-
     this.children.background.render();
-    vt.cursor.set(vt.buf, this.y, this.x);
-    vt.buf.write(this.#colors.filePath);
-    vt.write_text_center(vt.buf, span, this.root.filePath);
 
-    if (this.root.isDirty) {
-      vt.buf.write(this.#colors.isDirty);
-      vt.write_text(vt.buf, span, " +");
-    }
+    const f = this.root.isDirty ? " +" : "";
+    this.children.text.value = `${this.root.filePath}${f}`;
+    this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        this.children.background.color = this.#colors.background;
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
+
+        this.children.background.color = c.background;
+        this.children.text.color = c.text;
+
         break;
+      }
       case "Zen":
         this.#onZen();
         this.root.isLayoutDirty = true;
