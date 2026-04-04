@@ -11,10 +11,10 @@ export * from "./colors.ts";
 export class Alert extends ui.Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
-  #text = "";
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
+    text: new ui.MultiLineText(this.#colors.text),
     footer: new ui.Text(this.#colors.text, "center"),
   };
 
@@ -25,18 +25,17 @@ export class Alert extends ui.Component {
   }
 
   override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
+    const { background, text, footer } = this.children;
 
-    this.children.footer.resize(
-      this.width,
-      1,
-      this.y + this.height - 2,
-      this.x,
-    );
+    background.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width - 4, this.height - 2, this.y + 1, this.x + 2);
+    footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
   async run(err: unknown): Promise<void> {
-    this.#text = Error.isError(err) ? err.message : Deno.inspect(err);
+    this.children.text.value = Error.isError(err)
+      ? err.message
+      : Deno.inspect(err);
 
     this.#enabled = true;
 
@@ -52,24 +51,7 @@ export class Alert extends ui.Component {
     }
 
     this.children.background.render();
-
-    let pos = 0;
-
-    for (let y = this.y + 1; y < this.y + this.height - 3; y += 1) {
-      if (pos === this.#text.length) {
-        break;
-      }
-
-      const span: [number] = [this.width - 4];
-      const line = this.#text.slice(pos, pos + span[0]);
-
-      pos += line.length;
-
-      vt.cursor.set(vt.buf, y, this.x + 2);
-      vt.buf.write(this.#colors.text);
-      vt.write_text(vt.buf, span, line);
-    }
-
+    this.children.text.render();
     this.children.footer.render();
   }
 
@@ -78,6 +60,7 @@ export class Alert extends ui.Component {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
         this.children.background.color = this.#colors.background;
+        this.children.text.color = this.#colors.text;
         this.children.footer.color = this.#colors.text;
         break;
     }

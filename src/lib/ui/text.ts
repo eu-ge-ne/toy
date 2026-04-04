@@ -41,3 +41,31 @@ export class Text extends Component {
     }
   }
 }
+
+export class MultiLineText extends Component {
+  value = "";
+
+  constructor(public color: Uint8Array) {
+    super();
+  }
+
+  render(): void {
+    vt.buf.write(this.color);
+
+    let i = 0;
+
+    for (let y = 0; y < this.height; y += 1) {
+      if (i >= this.value.length) {
+        break;
+      }
+
+      const t = this.value.slice(i, i + this.width);
+      const b = encoder.encode(t);
+
+      vt.cursor.set(vt.buf, this.y + y, this.x);
+      vt.buf.write(b);
+
+      i += t.length;
+    }
+  }
+}
