@@ -8,8 +8,6 @@ import * as vt from "@lib/vt";
 import { colors } from "./colors.ts";
 import { Option, options } from "./options.ts";
 
-export * from "./colors.ts";
-
 const MAX_LIST_SIZE = 10;
 
 export class Palette extends ui.Component {
