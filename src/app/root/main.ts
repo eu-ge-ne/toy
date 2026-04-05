@@ -23,7 +23,6 @@ export class Root extends Component implements IRoot {
 
   filePath = "";
   isDirty = false;
-  inputTime = 0;
 
   override children: {
     header: Header;
@@ -43,19 +42,24 @@ export class Root extends Component implements IRoot {
       header: new Header(this, { zen: this.zen }),
       editor: new Editor(this, { zen: this.zen, multiLine: true }),
       footer: new Footer(this, { zen: this.zen, ln: 0, col: 0, lnCount: 0 }),
-      debug: new Debug(this, { renderTime: 0 }),
+      debug: new Debug({ renderTime: 0, inputTime: 0 }),
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
     };
 
-    this.children.editor.on("cursorChanged", (ev) => {
+    this.children.editor.on("cursorChanged", (data) => {
       const s = this.children.footer.state;
-      s.ln = ev.ln;
-      s.col = ev.col;
-      s.lnCount = ev.lnCount;
+      s.ln = data.ln;
+      s.col = data.col;
+      s.lnCount = data.lnCount;
     });
+
+    this.children.editor.on(
+      "inputHandled",
+      (data) => this.children.debug.state.inputTime = data,
+    );
   }
 
   async run(fileName?: string): Promise<void> {

@@ -3,5 +3,4 @@ export interface IRoot {
   isLayoutDirty: boolean;
   filePath: string;
   isDirty: boolean;
-  inputTime: number;
 }

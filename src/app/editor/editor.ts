@@ -25,6 +25,7 @@ interface EditorEvents {
     col: number;
     lnCount: number;
   };
+  inputHandled: number;
 }
 
 export class Editor extends ui.Component<EditorEvents> {
@@ -112,7 +113,7 @@ export class Editor extends ui.Component<EditorEvents> {
 
     h.handle(key);
 
-    this.root.inputTime = performance.now() - t0;
+    this.emit("inputHandled", performance.now() - t0);
 
     return true;
   }
@@ -211,14 +212,23 @@ export class Editor extends ui.Component<EditorEvents> {
         0,
       );
       if (len === 1) {
-        this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+        this.#textLayout.delete(this.cursor, {
+          ln: this.cursor.ln,
+          col: this.cursor.col + 1,
+        });
         this.cursor.left(false);
       } else {
         this.cursor.left(false);
-        this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+        this.#textLayout.delete(this.cursor, {
+          ln: this.cursor.ln,
+          col: this.cursor.col + 1,
+        });
       }
     } else {
-      this.#textLayout.delete({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
+      this.#textLayout.delete(
+        { ln: this.cursor.ln, col: this.cursor.col - 1 },
+        this.cursor,
+      );
       this.cursor.left(false);
     }
 
@@ -228,7 +238,10 @@ export class Editor extends ui.Component<EditorEvents> {
   deleteChar(): void {
     const { history } = this;
 
-    this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+    this.#textLayout.delete(this.cursor, {
+      ln: this.cursor.ln,
+      col: this.cursor.col + 1,
+    });
 
     history.push();
   }
@@ -471,7 +484,8 @@ export class Editor extends ui.Component<EditorEvents> {
 
   #scrollH(): void {
     const cell =
-      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
+        .value;
     if (cell) {
       this.cursor_y += cell.ln;
     }

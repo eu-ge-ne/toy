@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -11,6 +10,7 @@ const MIB = Math.pow(1024, 2);
 
 interface DebugState {
   renderTime: number;
+  inputTime: number;
 }
 
 export class Debug extends ui.Component {
@@ -25,10 +25,7 @@ export class Debug extends ui.Component {
     line5: ui.Text;
   };
 
-  constructor(
-    private readonly root: IRoot,
-    readonly state: DebugState,
-  ) {
+  constructor(readonly state: DebugState) {
     super();
 
     this.children = {
@@ -67,7 +64,7 @@ export class Debug extends ui.Component {
 
     this.children.bg.render();
 
-    const i = this.root.inputTime.toFixed(1);
+    const i = this.state.inputTime.toFixed(1);
     this.children.line1.value = `Input    : ${i} ms`;
     this.children.line1.render();
 
