@@ -6,7 +6,7 @@ import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
-import { availableOptions, Option } from "./options.ts";
+import { availableOptions } from "./options.ts";
 
 const maxListSize = 10;
 
@@ -14,11 +14,10 @@ export class Palette extends ui.Component {
   #colors = colors(DefaultTheme);
   #editor: Editor;
   #enabled = false;
-  #options: Option[] = availableOptions;
 
   protected override children = {
     background: new ui.Background(this.#colors.background),
-    list: new ui.List(
+    list: new ui.List<Command>(
       "No matching commands",
       this.#colors.option,
       this.#colors.selectedOption,
@@ -29,6 +28,7 @@ export class Palette extends ui.Component {
     super();
 
     this.#editor = new Editor(root, { multiLine: false });
+    this.children.list.values = availableOptions;
   }
 
   async run(): Promise<Command | undefined> {
@@ -52,7 +52,7 @@ export class Palette extends ui.Component {
   override resizeChildren(): void {
     const width = Math.min(60, this.width);
 
-    let listSize = Math.min(this.#options.length, maxListSize);
+    let listSize = Math.min(this.children.list.values.length, maxListSize);
     let height = 3 + Math.max(listSize, 1);
     if (height > this.height) {
       height = this.height;
@@ -100,9 +100,10 @@ export class Palette extends ui.Component {
         case "ESC":
           return;
         case "ENTER":
-          return this.#options[this.children.list.selectedIndex]?.command;
+          return this.children.list.values[this.children.list.selectedIndex]
+            ?.value;
         case "UP":
-          if (this.#options.length > 0) {
+          if (this.children.list.values.length > 0) {
             this.children.list.selectedIndex = Math.max(
               this.children.list.selectedIndex - 1,
               0,
@@ -111,10 +112,10 @@ export class Palette extends ui.Component {
           }
           continue;
         case "DOWN":
-          if (this.#options.length > 0) {
+          if (this.children.list.values.length > 0) {
             this.children.list.selectedIndex = Math.min(
               this.children.list.selectedIndex + 1,
-              this.#options.length - 1,
+              this.children.list.values.length - 1,
             );
             this.root.render();
           }
@@ -131,20 +132,14 @@ export class Palette extends ui.Component {
     const text = this.#editor.textBuf.text().toUpperCase();
 
     if (!text) {
-      this.#options = availableOptions;
+      this.children.list.values = availableOptions;
     } else {
-      this.#options = availableOptions.filter((x) =>
+      this.children.list.values = availableOptions.filter((x) =>
         x.name.toUpperCase().includes(text)
       );
     }
 
     this.children.list.selectedIndex = 0;
-    this.children.list.values = this.#options.map((x) => {
-      const shortcuts = (x.shortcuts ?? []).join(" ");
-      const w = this.width - shortcuts.length;
-      const s = x.name.slice(0, w).padEnd(w, " ");
-      return s + shortcuts;
-    });
 
     this.root.isLayoutDirty = true;
   }
