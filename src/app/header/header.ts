@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -8,13 +7,17 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
+interface HeaderEvents {
+  layoutChanged: unknown;
+}
+
 interface HeaderState {
   zen: boolean;
   fileName: string;
   fileModified: boolean;
 }
 
-export class Header extends ui.Component {
+export class Header extends ui.Component<HeaderEvents> {
   #enabled = false;
 
   protected override children: {
@@ -22,7 +25,7 @@ export class Header extends ui.Component {
     text: ui.Text;
   };
 
-  constructor(private readonly root: IRoot, readonly state: HeaderState) {
+  constructor(readonly state: HeaderState) {
     super();
 
     this.children = {
@@ -69,7 +72,7 @@ export class Header extends ui.Component {
       case "Zen":
         this.state.zen = !this.state.zen;
         this.#onZenChange();
-        this.root.isLayoutDirty = true;
+        this.emit("layoutChanged", undefined);
         break;
     }
   }

@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -8,6 +7,10 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
+interface FooterEvents {
+  layoutChanged: unknown;
+}
+
 interface FooterState {
   zen: boolean;
   ln: number;
@@ -15,7 +18,7 @@ interface FooterState {
   lnCount: number;
 }
 
-export class Footer extends ui.Component {
+export class Footer extends ui.Component<FooterEvents> {
   #enabled = false;
 
   protected override children: {
@@ -23,10 +26,7 @@ export class Footer extends ui.Component {
     text: ui.Text;
   };
 
-  constructor(
-    private readonly root: IRoot,
-    readonly state: FooterState,
-  ) {
+  constructor(readonly state: FooterState) {
     super();
 
     this.children = {
@@ -77,7 +77,7 @@ export class Footer extends ui.Component {
       case "Zen":
         this.state.zen = !this.state.zen;
         this.#onZenChange();
-        this.root.isLayoutDirty = true;
+        this.emit("layoutChanged", undefined);
         break;
     }
   }
