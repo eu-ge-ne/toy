@@ -1,13 +1,17 @@
 import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 
-export abstract class Component {
+export abstract class Component<EM = Record<PropertyKey, never>> {
   width = 0;
   height = 0;
   y = 0;
   x = 0;
 
-  protected children: Record<string, Component> = {};
+  protected children: Record<string, Component<unknown>> = {};
+
+  private listeners: {
+    [E in keyof EM]?: ((data: EM[E]) => void)[];
+  } = {};
 
   resize(width: number, height: number, y: number, x: number): void {
     this.width = width;
@@ -28,5 +32,13 @@ export abstract class Component {
   }
 
   async handleCommand(_: commands.Command): Promise<void> {
+  }
+
+  on<E extends keyof EM>(name: E, cb: (data: EM[E]) => void): void {
+    this.listeners[name] = [...(this.listeners[name] ?? []), cb];
+  }
+
+  emit<E extends keyof EM>(name: E, data: EM[E]): void {
+    this.listeners[name]?.forEach((cb) => cb(data));
   }
 }

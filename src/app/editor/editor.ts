@@ -19,7 +19,15 @@ interface EditorOptions {
   multiLine: boolean;
 }
 
-export class Editor extends ui.Component {
+interface EditorEvents {
+  cursorChanged: {
+    ln: number;
+    col: number;
+    lnCount: number;
+  };
+}
+
+export class Editor extends ui.Component<EditorEvents> {
   #colors = colors(DefaultTheme);
   #enabled = false;
 
@@ -166,18 +174,18 @@ export class Editor extends ui.Component {
   #sgr = new Intl.Segmenter();
 
   insert(text: string): void {
-    const { cursor, history } = this;
+    const { history } = this;
 
-    if (cursor.selecting) {
-      this.#textLayout.delete(cursor.from, {
-        ln: cursor.to.ln,
-        col: cursor.to.col + 1,
+    if (this.cursor.selecting) {
+      this.#textLayout.delete(this.cursor.from, {
+        ln: this.cursor.to.ln,
+        col: this.cursor.to.col + 1,
       });
 
-      cursor.set(cursor.from.ln, cursor.from.col, false);
+      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     }
 
-    this.#textLayout.insert(cursor, text);
+    this.#textLayout.insert(this.cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -185,72 +193,70 @@ export class Editor extends ui.Component {
     const eol_count = grms.filter((x) => x.isEol).length;
 
     if (eol_count === 0) {
-      cursor.forward(grms.length);
+      this.cursor.forward(grms.length);
     } else {
       const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-      cursor.set(cursor.ln + eol_count, col, false);
+      this.cursor.set(this.cursor.ln + eol_count, col, false);
     }
 
     history.push();
   }
 
   backspace(): void {
-    const { cursor, history } = this;
+    const { history } = this;
 
-    if (cursor.ln > 0 && cursor.col === 0) {
-      const len = this.#textLayout.line(cursor.ln).take(2).reduce(
+    if (this.cursor.ln > 0 && this.cursor.col === 0) {
+      const len = this.#textLayout.line(this.cursor.ln).take(2).reduce(
         (a) => a + 1,
         0,
       );
       if (len === 1) {
-        this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
-        cursor.left(false);
+        this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+        this.cursor.left(false);
       } else {
-        cursor.left(false);
-        this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+        this.cursor.left(false);
+        this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
       }
     } else {
-      this.#textLayout.delete({ ln: cursor.ln, col: cursor.col - 1 }, cursor);
-      cursor.left(false);
+      this.#textLayout.delete({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
+      this.cursor.left(false);
     }
 
     history.push();
   }
 
   deleteChar(): void {
-    const { cursor, history } = this;
+    const { history } = this;
 
-    this.#textLayout.delete(cursor, { ln: cursor.ln, col: cursor.col + 1 });
+    this.#textLayout.delete(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
 
     history.push();
   }
 
   deleteSelection(): void {
-    const { cursor, history } = this;
+    const { history } = this;
 
-    this.#textLayout.delete(cursor.from, {
-      ln: cursor.to.ln,
-      col: cursor.to.col + 1,
+    this.#textLayout.delete(this.cursor.from, {
+      ln: this.cursor.to.ln,
+      col: this.cursor.to.col + 1,
     });
-    cursor.set(cursor.from.ln, cursor.from.col, false);
+    this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
 
     history.push();
   }
 
   copy(): boolean {
-    const { cursor } = this;
-
-    if (cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(cursor.from, {
-        ln: cursor.to.ln,
-        col: cursor.to.col + 1,
+    if (this.cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.cursor.from, {
+        ln: this.cursor.to.ln,
+        col: this.cursor.to.col + 1,
       });
 
-      cursor.set(cursor.ln, cursor.col, false);
+      this.cursor.set(this.cursor.ln, this.cursor.col, false);
     } else {
-      this.#clipboard = this.#textLayout.read(cursor, {
-        ln: cursor.ln,
-        col: cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.cursor, {
+        ln: this.cursor.ln,
+        col: this.cursor.col + 1,
       });
     }
 
@@ -260,19 +266,17 @@ export class Editor extends ui.Component {
   }
 
   cut(): boolean {
-    const { cursor } = this;
-
-    if (cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(cursor.from, {
-        ln: cursor.to.ln,
-        col: cursor.to.col + 1,
+    if (this.cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.cursor.from, {
+        ln: this.cursor.to.ln,
+        col: this.cursor.to.col + 1,
       });
 
       this.deleteSelection();
     } else {
-      this.#clipboard = this.#textLayout.read(cursor, {
-        ln: cursor.ln,
-        col: cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.cursor, {
+        ln: this.cursor.ln,
+        col: this.cursor.col + 1,
       });
 
       this.deleteChar();
@@ -374,8 +378,6 @@ export class Editor extends ui.Component {
   }
 
   #renderLine(ln: number, row: number): number {
-    const { cursor } = this;
-
     let available_w = 0;
     let current_color = CharColor.Undefined;
 
@@ -414,7 +416,7 @@ export class Editor extends ui.Component {
       }
 
       const color = charColor(
-        cursor.isSelected(ln, i),
+        this.cursor.isSelected(ln, i),
         isVisible,
         this.#whitespaceEnabled,
       );
@@ -433,23 +435,21 @@ export class Editor extends ui.Component {
   }
 
   #scrollV(): void {
-    const { cursor } = this;
-
-    const delta_ln = cursor.ln - this.scroll_ln;
+    const delta_ln = this.cursor.ln - this.scroll_ln;
 
     // Above?
     if (delta_ln <= 0) {
-      this.scroll_ln = cursor.ln;
+      this.scroll_ln = this.cursor.ln;
       return;
     }
 
     // Below?
 
     if (delta_ln > this.height) {
-      this.scroll_ln = cursor.ln - this.height;
+      this.scroll_ln = this.cursor.ln - this.height;
     }
 
-    const xs = range(this.scroll_ln, cursor.ln + 1).map((ln) =>
+    const xs = range(this.scroll_ln, this.cursor.ln + 1).map((ln) =>
       this.#textLayout.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
@@ -470,10 +470,8 @@ export class Editor extends ui.Component {
   }
 
   #scrollH(): void {
-    const { cursor } = this;
-
     const cell =
-      this.#textLayout.line(cursor.ln, true).drop(cursor.col).next().value;
+      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.cursor_y += cell.ln;
     }
@@ -489,8 +487,8 @@ export class Editor extends ui.Component {
 
     // After?
 
-    const xs = this.#textLayout.line(cursor.ln, true)
-      .drop(cursor.col - delta_col)
+    const xs = this.#textLayout.line(this.cursor.ln, true)
+      .drop(this.cursor.col - delta_col)
       .take(delta_col)
       .map((x) => x.gr.width)
       .toArray();
