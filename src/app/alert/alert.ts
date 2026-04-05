@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 interface AlertEvents {
-  uiChanged: unknown;
+  render: unknown;
 }
 
 export class Alert extends ui.Component<AlertEvents> {
@@ -47,7 +47,7 @@ export class Alert extends ui.Component<AlertEvents> {
 
     this.#enabled = true;
 
-    this.emit("uiChanged", undefined);
+    this.emit("render", undefined);
 
     await this.#processInput();
 

@@ -12,7 +12,7 @@ const maxListSize = 10;
 
 interface PaletteEvents {
   layoutChange: unknown;
-  uiChanged: unknown;
+  render: unknown;
 }
 
 export class Palette extends ui.Component<PaletteEvents> {
@@ -49,7 +49,7 @@ export class Palette extends ui.Component<PaletteEvents> {
 
     this.#filter();
 
-    this.emit("uiChanged", undefined);
+    this.emit("render", undefined);
 
     const cmd = await this.#processInput();
 
@@ -119,7 +119,7 @@ export class Palette extends ui.Component<PaletteEvents> {
               this.children.list.selectedIndex - 1,
               0,
             );
-            this.emit("uiChanged", undefined);
+            this.emit("render", undefined);
           }
           continue;
         case "DOWN":
@@ -128,14 +128,14 @@ export class Palette extends ui.Component<PaletteEvents> {
               this.children.list.selectedIndex + 1,
               this.children.list.values.length - 1,
             );
-            this.emit("uiChanged", undefined);
+            this.emit("render", undefined);
           }
           continue;
       }
 
       this.children.editor.handleKey(key);
       this.#filter();
-      this.emit("uiChanged", undefined);
+      this.emit("render", undefined);
     }
   }
 

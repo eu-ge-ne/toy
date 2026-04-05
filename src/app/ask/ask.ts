@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 interface AskEvents {
-  uiChanged: unknown;
+  render: unknown;
 }
 
 export class Ask extends ui.Component<AskEvents> {
@@ -45,7 +45,7 @@ export class Ask extends ui.Component<AskEvents> {
 
     this.#enabled = true;
 
-    this.emit("uiChanged", undefined);
+    this.emit("render", undefined);
 
     const result = await this.#processInput();
 

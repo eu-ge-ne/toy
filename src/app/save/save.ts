@@ -9,7 +9,7 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 interface SaveEvents {
-  uiChanged: unknown;
+  render: unknown;
 }
 
 export class Save extends ui.Component<SaveEvents> {
@@ -52,7 +52,7 @@ export class Save extends ui.Component<SaveEvents> {
     this.children.editor.textBuf.reset(path);
     this.children.editor.reset(true);
 
-    this.emit("uiChanged", undefined);
+    this.emit("render", undefined);
 
     const result = await this.#processInput();
 
@@ -103,7 +103,7 @@ export class Save extends ui.Component<SaveEvents> {
 
       this.children.editor.handleKey(key);
 
-      this.emit("uiChanged", undefined);
+      this.emit("render", undefined);
     }
   }
 }

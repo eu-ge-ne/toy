@@ -64,10 +64,10 @@ export class Root extends Component {
     editor.on("layoutChange", () => this.resizeChildren());
     palette.on("layoutChange", () => this.resizeChildren());
 
-    alert.on("uiChanged", () => this.render());
-    ask.on("uiChanged", () => this.render());
-    palette.on("uiChanged", () => this.render());
-    save.on("uiChanged", () => this.render());
+    alert.on("render", () => this.render());
+    ask.on("render", () => this.render());
+    palette.on("render", () => this.render());
+    save.on("render", () => this.render());
 
     editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
