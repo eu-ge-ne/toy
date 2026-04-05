@@ -99,24 +99,17 @@ export class App extends Component {
 
     this.children.editor.reset(true);
 
-    this.resizeChildren();
-    this.render();
+    this.#onSigwinch();
 
     await this.#processInput();
   }
 
   override resizeChildren(): void {
-    const { columns, rows } = Deno.consoleSize();
-    this.width = columns;
-    this.height = rows;
+    const { header, footer, editor, debug, palette, alert, ask, save } =
+      this.children;
 
-    this.children.header.resize(this.width, 1, this.y, this.x);
-    this.children.footer.resize(
-      this.width,
-      1,
-      this.y + this.height - 1,
-      this.x,
-    );
+    header.resize(this.width, 1, this.y, this.x);
+    footer.resize(this.width, 1, this.y + this.height - 1, this.x);
     {
       let w, h, y, x: number;
       if (this.#zen) {
@@ -130,38 +123,36 @@ export class App extends Component {
         y = this.y + 1;
         x = this.x;
       }
-      this.children.editor.resize(w, h, y, x);
-    }
-
-    const p = this.children.editor;
-    {
-      const w = clamp(30, 0, p.width);
-      const h = clamp(7, 0, p.height);
-      const y = p.y + p.height - h;
-      const x = p.x + p.width - w;
-      this.children.debug.resize(w, h, y, x);
-    }
-    this.children.palette.resize(p.width, p.height, p.y, p.x);
-    {
-      const w = clamp(60, 0, p.width);
-      const h = clamp(10, 0, p.height);
-      const y = p.y + Math.trunc((p.height - h) / 2);
-      const x = p.x + Math.trunc((p.width - w) / 2);
-      this.children.alert.resize(w, h, y, x);
+      editor.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, p.width);
-      const h = clamp(7, 0, p.height);
-      const y = p.y + Math.trunc((p.height - h) / 2);
-      const x = p.x + Math.trunc((p.width - w) / 2);
-      this.children.ask.resize(w, h, y, x);
+      const w = clamp(30, 0, editor.width);
+      const h = clamp(7, 0, editor.height);
+      const y = editor.y + editor.height - h;
+      const x = editor.x + editor.width - w;
+      debug.resize(w, h, y, x);
+    }
+    palette.resize(editor.width, editor.height, editor.y, editor.x);
+    {
+      const w = clamp(60, 0, editor.width);
+      const h = clamp(10, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      alert.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, p.width);
-      const h = clamp(10, 0, p.height);
-      const y = p.y + Math.trunc((p.height - h) / 2);
-      const x = p.x + Math.trunc((p.width - w) / 2);
-      this.children.save.resize(w, h, y, x);
+      const w = clamp(60, 0, editor.width);
+      const h = clamp(7, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      ask.resize(w, h, y, x);
+    }
+    {
+      const w = clamp(60, 0, editor.width);
+      const h = clamp(10, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      save.resize(w, h, y, x);
     }
   }
 
@@ -333,7 +324,8 @@ export class App extends Component {
   }
 
   #onSigwinch = () => {
-    this.resizeChildren();
+    const { columns, rows } = Deno.consoleSize();
+    this.resize(columns, rows, 0, 0);
     this.render();
   };
 
