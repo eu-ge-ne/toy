@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 interface FooterEvents {
-  layoutChanged: unknown;
+  layoutChange: unknown;
 }
 
 interface FooterState {
@@ -77,7 +77,7 @@ export class Footer extends ui.Component<FooterEvents> {
       case "Zen":
         this.state.zen = !this.state.zen;
         this.#onZenChange();
-        this.emit("layoutChanged", undefined);
+        this.emit("layoutChange", undefined);
         break;
     }
   }

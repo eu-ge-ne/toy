@@ -1,4 +1,4 @@
 {
-  "name": "@components/palette",
+  "name": "@app/palette",
   "exports": "./palette.ts"
 }

@@ -14,7 +14,7 @@ import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface EditorEvents {
-  layoutChanged: unknown;
+  layoutChange: unknown;
   cursorChanged: {
     ln: number;
     col: number;
@@ -130,7 +130,7 @@ export class Editor extends ui.Component<EditorEvents> {
         if (typeof this.params.zen === "boolean") {
           this.params.zen = !this.params.zen;
           this.#onZenChange();
-          this.emit("layoutChanged", undefined);
+          this.emit("layoutChange", undefined);
         }
         break;
 

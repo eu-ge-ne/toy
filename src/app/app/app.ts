@@ -1,11 +1,11 @@
-import { Alert } from "@components/alert";
-import { Ask } from "@components/ask";
-import { Debug } from "@components/debug";
-import { Editor } from "@components/editor";
-import { Footer } from "@components/footer";
-import { Header } from "@components/header";
-import { Palette } from "@components/palette";
-import { Save } from "@components/save";
+import { Alert } from "@app/alert";
+import { Ask } from "@app/ask";
+import { Debug } from "@app/debug";
+import { Editor } from "@app/editor";
+import { Footer } from "@app/footer";
+import { Header } from "@app/header";
+import { Palette } from "@app/palette";
+import { Save } from "@app/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
@@ -13,15 +13,10 @@ import { clamp } from "@lib/std";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { IRoot } from "./root.ts";
-
-export type { IRoot } from "./root.ts";
-
-export class Root extends Component implements IRoot {
+export class App extends Component {
   #zen = true;
   #fileName = "";
   #fileModified = false;
-  #layoutChanged = false;
 
   override children: {
     header: Header;
@@ -37,45 +32,51 @@ export class Root extends Component implements IRoot {
   constructor() {
     super();
 
-    this.children = {
-      header: new Header({
-        zen: this.#zen,
-        fileName: this.#fileName,
-        fileModified: this.#fileModified,
-      }),
-      footer: new Footer({
-        zen: this.#zen,
-        ln: 0,
-        col: 0,
-        lnCount: 0,
-      }),
-      editor: new Editor({
-        zen: this.#zen,
-        multiLine: true,
-      }),
-      debug: new Debug({
-        renderTime: 0,
-        inputTime: 0,
-      }),
-      palette: new Palette(this),
-      alert: new Alert(this),
-      ask: new Ask(this),
-      save: new Save(this),
-    };
+    const { header, footer, editor, palette, alert, ask, save } = this
+      .children = {
+        header: new Header({
+          zen: this.#zen,
+          fileName: this.#fileName,
+          fileModified: this.#fileModified,
+        }),
+        footer: new Footer({
+          zen: this.#zen,
+          ln: 0,
+          col: 0,
+          lnCount: 0,
+        }),
+        editor: new Editor({
+          zen: this.#zen,
+          multiLine: true,
+        }),
+        debug: new Debug({
+          renderTime: 0,
+          inputTime: 0,
+        }),
+        palette: new Palette(),
+        alert: new Alert(),
+        ask: new Ask(),
+        save: new Save(),
+      };
 
-    this.children.header.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.footer.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.editor.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.palette.on("layoutChanged", () => this.#layoutChanged = true);
+    header.on("layoutChange", () => this.resizeChildren());
+    footer.on("layoutChange", () => this.resizeChildren());
+    editor.on("layoutChange", () => this.resizeChildren());
+    palette.on("layoutChange", () => this.resizeChildren());
 
-    this.children.editor.on("cursorChanged", (data) => {
+    alert.on("render", () => this.render());
+    ask.on("render", () => this.render());
+    palette.on("render", () => this.render());
+    save.on("render", () => this.render());
+
+    editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
       x.ln = data.ln;
       x.col = data.col;
       x.lnCount = data.lnCount;
     });
 
-    this.children.editor.on(
+    editor.on(
       "inputHandled",
       (data) => this.children.debug.state.inputTime = data,
     );
@@ -166,11 +167,6 @@ export class Root extends Component implements IRoot {
 
   render(): void {
     const t0 = performance.now();
-
-    if (this.#layoutChanged) {
-      this.resizeChildren();
-      this.#layoutChanged = false;
-    }
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);

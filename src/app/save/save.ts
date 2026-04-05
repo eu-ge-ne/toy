@@ -1,5 +1,4 @@
-import { Editor } from "@components/editor";
-import { IRoot } from "@components/root";
+import { Editor } from "@app/editor";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -9,7 +8,11 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-export class Save extends ui.Component {
+interface SaveEvents {
+  render: unknown;
+}
+
+export class Save extends ui.Component<SaveEvents> {
   #enabled = false;
 
   protected override children: {
@@ -19,7 +22,7 @@ export class Save extends ui.Component {
     footer: ui.Text;
   };
 
-  constructor(private readonly root: IRoot) {
+  constructor() {
     super();
 
     this.children = {
@@ -49,7 +52,7 @@ export class Save extends ui.Component {
     this.children.editor.textBuf.reset(path);
     this.children.editor.reset(true);
 
-    this.root.render();
+    this.emit("render", undefined);
 
     const result = await this.#processInput();
 
@@ -99,7 +102,8 @@ export class Save extends ui.Component {
       }
 
       this.children.editor.handleKey(key);
-      this.root.render();
+
+      this.emit("render", undefined);
     }
   }
 }

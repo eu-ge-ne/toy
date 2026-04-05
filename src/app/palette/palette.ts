@@ -1,5 +1,4 @@
-import { Editor } from "@components/editor";
-import { IRoot } from "@components/root";
+import { Editor } from "@app/editor";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -12,7 +11,8 @@ const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
 interface PaletteEvents {
-  layoutChanged: unknown;
+  layoutChange: unknown;
+  render: unknown;
 }
 
 export class Palette extends ui.Component<PaletteEvents> {
@@ -24,7 +24,7 @@ export class Palette extends ui.Component<PaletteEvents> {
     list: ui.List<Command>;
   };
 
-  constructor(private readonly root: IRoot) {
+  constructor() {
     super();
 
     this.children = {
@@ -48,7 +48,8 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.editor.reset(false);
 
     this.#filter();
-    this.root.render();
+
+    this.emit("render", undefined);
 
     const cmd = await this.#processInput();
 
@@ -118,7 +119,7 @@ export class Palette extends ui.Component<PaletteEvents> {
               this.children.list.selectedIndex - 1,
               0,
             );
-            this.root.render();
+            this.emit("render", undefined);
           }
           continue;
         case "DOWN":
@@ -127,14 +128,14 @@ export class Palette extends ui.Component<PaletteEvents> {
               this.children.list.selectedIndex + 1,
               this.children.list.values.length - 1,
             );
-            this.root.render();
+            this.emit("render", undefined);
           }
           continue;
       }
 
       this.children.editor.handleKey(key);
       this.#filter();
-      this.root.render();
+      this.emit("render", undefined);
     }
   }
 
@@ -151,6 +152,6 @@ export class Palette extends ui.Component<PaletteEvents> {
 
     this.children.list.selectedIndex = 0;
 
-    this.emit("layoutChanged", undefined);
+    this.emit("layoutChange", undefined);
   }
 }
