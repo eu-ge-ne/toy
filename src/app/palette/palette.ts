@@ -11,7 +11,7 @@ const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
 interface PaletteEvents {
-  layoutChanged: unknown;
+  layoutChange: unknown;
   uiChanged: unknown;
 }
 
@@ -152,6 +152,6 @@ export class Palette extends ui.Component<PaletteEvents> {
 
     this.children.list.selectedIndex = 0;
 
-    this.emit("layoutChanged", undefined);
+    this.emit("layoutChange", undefined);
   }
 }

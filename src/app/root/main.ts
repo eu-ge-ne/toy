@@ -17,7 +17,6 @@ export class Root extends Component {
   #zen = true;
   #fileName = "";
   #fileModified = false;
-  #layoutChanged = false;
 
   override children: {
     header: Header;
@@ -33,50 +32,51 @@ export class Root extends Component {
   constructor() {
     super();
 
-    this.children = {
-      header: new Header({
-        zen: this.#zen,
-        fileName: this.#fileName,
-        fileModified: this.#fileModified,
-      }),
-      footer: new Footer({
-        zen: this.#zen,
-        ln: 0,
-        col: 0,
-        lnCount: 0,
-      }),
-      editor: new Editor({
-        zen: this.#zen,
-        multiLine: true,
-      }),
-      debug: new Debug({
-        renderTime: 0,
-        inputTime: 0,
-      }),
-      palette: new Palette(),
-      alert: new Alert(),
-      ask: new Ask(),
-      save: new Save(),
-    };
+    const { header, footer, editor, palette, alert, ask, save } = this
+      .children = {
+        header: new Header({
+          zen: this.#zen,
+          fileName: this.#fileName,
+          fileModified: this.#fileModified,
+        }),
+        footer: new Footer({
+          zen: this.#zen,
+          ln: 0,
+          col: 0,
+          lnCount: 0,
+        }),
+        editor: new Editor({
+          zen: this.#zen,
+          multiLine: true,
+        }),
+        debug: new Debug({
+          renderTime: 0,
+          inputTime: 0,
+        }),
+        palette: new Palette(),
+        alert: new Alert(),
+        ask: new Ask(),
+        save: new Save(),
+      };
 
-    this.children.header.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.footer.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.editor.on("layoutChanged", () => this.#layoutChanged = true);
-    this.children.palette.on("layoutChanged", () => this.#layoutChanged = true);
+    header.on("layoutChange", () => this.resizeChildren());
+    footer.on("layoutChange", () => this.resizeChildren());
+    editor.on("layoutChange", () => this.resizeChildren());
+    palette.on("layoutChange", () => this.resizeChildren());
 
-    this.children.alert.on("uiChanged", () => this.render());
-    this.children.ask.on("uiChanged", () => this.render());
-    this.children.palette.on("uiChanged", () => this.render());
-    this.children.save.on("uiChanged", () => this.render());
+    alert.on("uiChanged", () => this.render());
+    ask.on("uiChanged", () => this.render());
+    palette.on("uiChanged", () => this.render());
+    save.on("uiChanged", () => this.render());
 
-    this.children.editor.on("cursorChanged", (data) => {
+    editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
       x.ln = data.ln;
       x.col = data.col;
       x.lnCount = data.lnCount;
     });
 
-    this.children.editor.on(
+    editor.on(
       "inputHandled",
       (data) => this.children.debug.state.inputTime = data,
     );
@@ -167,11 +167,6 @@ export class Root extends Component {
 
   render(): void {
     const t0 = performance.now();
-
-    if (this.#layoutChanged) {
-      this.resizeChildren();
-      this.#layoutChanged = false;
-    }
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);

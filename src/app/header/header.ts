@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 interface HeaderEvents {
-  layoutChanged: unknown;
+  layoutChange: unknown;
 }
 
 interface HeaderState {
@@ -72,7 +72,7 @@ export class Header extends ui.Component<HeaderEvents> {
       case "Zen":
         this.state.zen = !this.state.zen;
         this.#onZenChange();
-        this.emit("layoutChanged", undefined);
+        this.emit("layoutChange", undefined);
         break;
     }
   }
