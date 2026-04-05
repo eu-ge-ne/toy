@@ -1,0 +1,147 @@
+import { Editor } from "@components/editor";
+import { IRoot } from "@components/root";
+import { Command } from "@lib/commands";
+import { DefaultTheme, Themes } from "@lib/themes";
+import * as ui from "@lib/ui";
+import * as vt from "@lib/vt";
+
+import { colors } from "./colors.ts";
+import { availableOptions } from "./options.ts";
+
+const defaultColors = colors(DefaultTheme);
+const maxListSize = 10;
+
+export class Palette extends ui.Component {
+  #editor: Editor;
+  #enabled = false;
+
+  protected override children = {
+    background: new ui.Background(defaultColors.background),
+    list: new ui.List<Command>(
+      "No matching commands",
+      defaultColors.option,
+      defaultColors.selectedOption,
+    ),
+  };
+
+  constructor(private readonly root: IRoot) {
+    super();
+
+    this.#editor = new Editor(root, { multiLine: false });
+    this.children.list.values = availableOptions;
+  }
+
+  async run(): Promise<Command | undefined> {
+    this.#enabled = true;
+    this.#editor.enable(true);
+
+    this.#editor.textBuf.reset();
+    this.#editor.reset(false);
+
+    this.#filter();
+    this.root.render();
+
+    const cmd = await this.#processInput();
+
+    this.#enabled = false;
+    this.#editor.enable(false);
+
+    return cmd;
+  }
+
+  override resizeChildren(): void {
+    const width = Math.min(60, this.width);
+
+    let listSize = Math.min(this.children.list.values.length, maxListSize);
+    let height = 3 + Math.max(listSize, 1);
+    if (height > this.height) {
+      height = this.height;
+      if (listSize > 0) {
+        listSize = height - 3;
+      }
+    }
+
+    const y = this.y + Math.trunc((this.height - height) / 2);
+    const x = this.x + Math.trunc((this.width - width) / 2);
+
+    this.children.background.resize(width, height, y, x);
+    this.#editor.resize(width - 4, 1, y + 1, x + 2);
+    this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
+  }
+
+  render(): void {
+    if (!this.#enabled) {
+      return;
+    }
+
+    this.children.background.render();
+    this.#editor.render();
+    this.children.list.render();
+  }
+
+  override async handleCommand(cmd: Command): Promise<void> {
+    switch (cmd.name) {
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
+
+        this.children.background.color = c.background;
+        this.children.list.color = c.option;
+        this.children.list.selectedColor = c.selectedOption;
+
+        break;
+      }
+    }
+  }
+
+  async #processInput(): Promise<Command | undefined> {
+    while (true) {
+      const key = await vt.readKey();
+
+      switch (key.name) {
+        case "ESC":
+          return;
+        case "ENTER":
+          return this.children.list.values[this.children.list.selectedIndex]
+            ?.value;
+        case "UP":
+          if (this.children.list.values.length > 0) {
+            this.children.list.selectedIndex = Math.max(
+              this.children.list.selectedIndex - 1,
+              0,
+            );
+            this.root.render();
+          }
+          continue;
+        case "DOWN":
+          if (this.children.list.values.length > 0) {
+            this.children.list.selectedIndex = Math.min(
+              this.children.list.selectedIndex + 1,
+              this.children.list.values.length - 1,
+            );
+            this.root.render();
+          }
+          continue;
+      }
+
+      this.#editor.handleKey(key);
+      this.#filter();
+      this.root.render();
+    }
+  }
+
+  #filter(): void {
+    const text = this.#editor.textBuf.text().toUpperCase();
+
+    if (!text) {
+      this.children.list.values = availableOptions;
+    } else {
+      this.children.list.values = availableOptions.filter((x) =>
+        x.name.toUpperCase().includes(text)
+      );
+    }
+
+    this.children.list.selectedIndex = 0;
+
+    this.root.isLayoutDirty = true;
+  }
+}

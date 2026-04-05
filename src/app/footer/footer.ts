@@ -6,15 +6,15 @@ import * as vt from "@lib/vt";
 
 import { colors } from "./colors.ts";
 
-export * from "./colors.ts";
+const defaultColors = colors(DefaultTheme);
 
 export class Footer extends ui.Component {
   #colors = colors(DefaultTheme);
   #enabled = false;
 
   protected override children = {
-    background: new ui.Background(this.#colors.background),
-    text: new ui.Text(this.#colors.text, "right"),
+    background: new ui.Background(defaultColors.background),
+    text: new ui.Text(defaultColors.text, "right"),
   };
 
   constructor(private readonly root: IRoot) {
@@ -24,8 +24,10 @@ export class Footer extends ui.Component {
   }
 
   override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
-    this.children.text.resize(this.width, this.height, this.y, this.x);
+    const { background, text } = this.children;
+
+    background.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
