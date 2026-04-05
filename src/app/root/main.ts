@@ -18,11 +18,10 @@ import { IRoot } from "./root.ts";
 export type { IRoot } from "./root.ts";
 
 export class Root extends Component implements IRoot {
-  zen = true;
-  fileName = "";
-  fileModified = false;
-
-  isLayoutDirty = false;
+  #zen = true;
+  #fileName = "";
+  #fileModified = false;
+  #layoutChanged = false;
 
   override children: {
     header: Header;
@@ -40,31 +39,34 @@ export class Root extends Component implements IRoot {
 
     this.children = {
       header: new Header({
-        zen: this.zen,
-        fileName: this.fileName,
-        fileModified: this.fileModified,
+        zen: this.#zen,
+        fileName: this.#fileName,
+        fileModified: this.#fileModified,
       }),
       footer: new Footer({
-        zen: this.zen,
+        zen: this.#zen,
         ln: 0,
         col: 0,
         lnCount: 0,
       }),
       editor: new Editor({
-        zen: this.zen,
+        zen: this.#zen,
         multiLine: true,
       }),
-      debug: new Debug({ renderTime: 0, inputTime: 0 }),
+      debug: new Debug({
+        renderTime: 0,
+        inputTime: 0,
+      }),
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
     };
 
-    this.children.header.on("layoutChanged", () => this.isLayoutDirty = true);
-    this.children.footer.on("layoutChanged", () => this.isLayoutDirty = true);
-    this.children.editor.on("layoutChanged", () => this.isLayoutDirty = true);
-    this.children.palette.on("layoutChanged", () => this.isLayoutDirty = true);
+    this.children.header.on("layoutChanged", () => this.#layoutChanged = true);
+    this.children.footer.on("layoutChanged", () => this.#layoutChanged = true);
+    this.children.editor.on("layoutChanged", () => this.#layoutChanged = true);
+    this.children.palette.on("layoutChanged", () => this.#layoutChanged = true);
 
     this.children.editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
@@ -82,8 +84,8 @@ export class Root extends Component implements IRoot {
   async run(fileName?: string): Promise<void> {
     this.children.editor.enable(true);
     this.children.editor.history.onChange = () => {
-      this.fileModified = !this.children.editor.history.isEmpty;
-      this.children.header.state.fileModified = this.fileModified;
+      this.#fileModified = !this.children.editor.history.isEmpty;
+      this.children.header.state.fileModified = this.#fileModified;
     };
 
     vt.init();
@@ -116,7 +118,7 @@ export class Root extends Component implements IRoot {
     );
     {
       let w, h, y, x: number;
-      if (this.zen) {
+      if (this.#zen) {
         w = this.width;
         h = this.height;
         y = this.y;
@@ -165,9 +167,9 @@ export class Root extends Component implements IRoot {
   render(): void {
     const t0 = performance.now();
 
-    if (this.isLayoutDirty) {
+    if (this.#layoutChanged) {
       this.resizeChildren();
-      this.isLayoutDirty = false;
+      this.#layoutChanged = false;
     }
 
     vt.sync.bsu();
@@ -202,7 +204,7 @@ export class Root extends Component implements IRoot {
   override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
-        this.zen = !this.zen;
+        this.#zen = !this.#zen;
         break;
 
       case "Exit":
@@ -281,7 +283,7 @@ export class Root extends Component implements IRoot {
     try {
       await file.load(this.children.editor.textBuf, filePath);
 
-      this.fileName = filePath;
+      this.#fileName = filePath;
       this.children.header.state.fileName = filePath;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
@@ -295,7 +297,7 @@ export class Root extends Component implements IRoot {
   }
 
   async #save(): Promise<boolean> {
-    if (this.fileName) {
+    if (this.#fileName) {
       return await this.#saveFile();
     } else {
       return await this.#saveFileAs();
@@ -304,7 +306,7 @@ export class Root extends Component implements IRoot {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.children.editor.textBuf, this.fileName);
+      await file.save(this.children.editor.textBuf, this.#fileName);
 
       return true;
     } catch (err) {
@@ -316,7 +318,7 @@ export class Root extends Component implements IRoot {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const filePath = await this.children.save.run(this.fileName);
+      const filePath = await this.children.save.run(this.#fileName);
       if (!filePath) {
         return false;
       }
@@ -324,7 +326,7 @@ export class Root extends Component implements IRoot {
       try {
         await file.save(this.children.editor.textBuf, filePath);
 
-        this.fileName = filePath;
+        this.#fileName = filePath;
         this.children.header.state.fileName = filePath;
 
         return true;
