@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import * as commands from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -8,7 +7,11 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-export class Ask extends ui.Component {
+interface AskEvents {
+  uiChanged: unknown;
+}
+
+export class Ask extends ui.Component<AskEvents> {
   #enabled = false;
 
   protected override children: {
@@ -17,7 +20,7 @@ export class Ask extends ui.Component {
     footer: ui.Text;
   };
 
-  constructor(private readonly root: IRoot) {
+  constructor() {
     super();
 
     this.children = {
@@ -42,7 +45,8 @@ export class Ask extends ui.Component {
 
     this.#enabled = true;
 
-    this.root.render();
+    this.emit("uiChanged", undefined);
+
     const result = await this.#processInput();
 
     this.#enabled = false;

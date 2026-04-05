@@ -13,11 +13,7 @@ import { clamp } from "@lib/std";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { IRoot } from "./root.ts";
-
-export type { IRoot } from "./root.ts";
-
-export class Root extends Component implements IRoot {
+export class Root extends Component {
   #zen = true;
   #fileName = "";
   #fileModified = false;
@@ -57,16 +53,21 @@ export class Root extends Component implements IRoot {
         renderTime: 0,
         inputTime: 0,
       }),
-      palette: new Palette(this),
-      alert: new Alert(this),
-      ask: new Ask(this),
-      save: new Save(this),
+      palette: new Palette(),
+      alert: new Alert(),
+      ask: new Ask(),
+      save: new Save(),
     };
 
     this.children.header.on("layoutChanged", () => this.#layoutChanged = true);
     this.children.footer.on("layoutChanged", () => this.#layoutChanged = true);
     this.children.editor.on("layoutChanged", () => this.#layoutChanged = true);
     this.children.palette.on("layoutChanged", () => this.#layoutChanged = true);
+
+    this.children.alert.on("uiChanged", () => this.render());
+    this.children.ask.on("uiChanged", () => this.render());
+    this.children.palette.on("uiChanged", () => this.render());
+    this.children.save.on("uiChanged", () => this.render());
 
     this.children.editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
