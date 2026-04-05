@@ -4,5 +4,4 @@ export interface IRoot {
   filePath: string;
   isDirty: boolean;
   inputTime: number;
-  renderTime: number;
 }

@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-interface FooterParams {
+interface FooterState {
   zen: boolean;
   ln: number;
   col: number;
@@ -25,7 +25,7 @@ export class Footer extends ui.Component {
 
   constructor(
     private readonly root: IRoot,
-    readonly params: FooterParams,
+    readonly state: FooterState,
   ) {
     super();
 
@@ -53,11 +53,11 @@ export class Footer extends ui.Component {
 
     this.children.bg.render();
 
-    const ln = this.params.ln + 1;
-    const col = this.params.col + 1;
-    const pct = this.params.lnCount === 0
+    const ln = this.state.ln + 1;
+    const col = this.state.col + 1;
+    const pct = this.state.lnCount === 0
       ? 0
-      : ((ln / this.params.lnCount) * 100).toFixed(0);
+      : ((ln / this.state.lnCount) * 100).toFixed(0);
     this.children.text.value = `${ln} ${col}  ${pct}% `;
     this.children.text.render();
 
@@ -75,7 +75,7 @@ export class Footer extends ui.Component {
         break;
       }
       case "Zen":
-        this.params.zen = !this.params.zen;
+        this.state.zen = !this.state.zen;
         this.#onZenChange();
         this.root.isLayoutDirty = true;
         break;
@@ -83,6 +83,6 @@ export class Footer extends ui.Component {
   }
 
   #onZenChange(): void {
-    this.#enabled = !this.params.zen;
+    this.#enabled = !this.state.zen;
   }
 }

@@ -24,7 +24,6 @@ export class Root extends Component implements IRoot {
   filePath = "";
   isDirty = false;
   inputTime = 0;
-  renderTime = 0;
 
   override children: {
     header: Header;
@@ -44,7 +43,7 @@ export class Root extends Component implements IRoot {
       header: new Header(this, { zen: this.zen }),
       editor: new Editor(this, { zen: this.zen, multiLine: true }),
       footer: new Footer(this, { zen: this.zen, ln: 0, col: 0, lnCount: 0 }),
-      debug: new Debug(this),
+      debug: new Debug(this, { renderTime: 0 }),
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
@@ -52,10 +51,10 @@ export class Root extends Component implements IRoot {
     };
 
     this.children.editor.on("cursorChanged", (ev) => {
-      const params = this.children.footer.params;
-      params.ln = ev.ln;
-      params.col = ev.col;
-      params.lnCount = ev.lnCount;
+      const s = this.children.footer.state;
+      s.ln = ev.ln;
+      s.col = ev.col;
+      s.lnCount = ev.lnCount;
     });
   }
 
@@ -164,7 +163,7 @@ export class Root extends Component implements IRoot {
     vt.buf.flush();
     vt.sync.esu();
 
-    this.renderTime = performance.now() - t0;
+    this.children.debug.state.renderTime = performance.now() - t0;
   }
 
   override handleKey(key: kitty.Key): boolean {
