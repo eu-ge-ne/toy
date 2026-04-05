@@ -1,11 +1,11 @@
-import { Alert } from "@components/alert";
-import { Ask } from "@components/ask";
-import { Debug } from "@components/debug";
-import { Editor } from "@components/editor";
-import { Footer } from "@components/footer";
-import { Header } from "@components/header";
-import { Palette } from "@components/palette";
-import { Save } from "@components/save";
+import { Alert } from "@app/alert";
+import { Ask } from "@app/ask";
+import { Debug } from "@app/debug";
+import { Editor } from "@app/editor";
+import { Footer } from "@app/footer";
+import { Header } from "@app/header";
+import { Palette } from "@app/palette";
+import { Save } from "@app/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
@@ -13,7 +13,7 @@ import { clamp } from "@lib/std";
 import { Component } from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Root extends Component {
+export class App extends Component {
   #zen = true;
   #fileName = "";
   #fileModified = false;

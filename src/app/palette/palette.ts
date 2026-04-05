@@ -1,4 +1,4 @@
-import { Editor } from "@components/editor";
+import { Editor } from "@app/editor";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";

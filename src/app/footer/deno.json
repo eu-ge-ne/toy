@@ -1,4 +1,4 @@
 {
-  "name": "@components/footer",
+  "name": "@app/footer",
   "exports": "./footer.ts"
 }

@@ -1,4 +1,4 @@
 {
-  "name": "@components/save",
+  "name": "@app/save",
   "exports": "./save.ts"
 }

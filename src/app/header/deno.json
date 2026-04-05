@@ -1,4 +1,4 @@
 {
-  "name": "@components/header",
+  "name": "@app/header",
   "exports": "./header.ts"
 }

@@ -1,6 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Root } from "@components/root";
+import { App } from "@app/app";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -18,4 +18,4 @@ if (args.version) {
 
 const fileName = typeof args._[0] === "string" ? args._[0] : undefined;
 
-new Root().run(fileName);
+new App().run(fileName);
