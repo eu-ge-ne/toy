@@ -39,19 +39,32 @@ export class Root extends Component implements IRoot {
     super();
 
     this.children = {
-      header: new Header(this, {
+      header: new Header({
         zen: this.zen,
         fileName: this.fileName,
         fileModified: this.fileModified,
       }),
-      editor: new Editor(this, { zen: this.zen, multiLine: true }),
-      footer: new Footer(this, { zen: this.zen, ln: 0, col: 0, lnCount: 0 }),
+      footer: new Footer({
+        zen: this.zen,
+        ln: 0,
+        col: 0,
+        lnCount: 0,
+      }),
+      editor: new Editor({
+        zen: this.zen,
+        multiLine: true,
+      }),
       debug: new Debug({ renderTime: 0, inputTime: 0 }),
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
     };
+
+    this.children.header.on("layoutChanged", () => this.isLayoutDirty = true);
+    this.children.footer.on("layoutChanged", () => this.isLayoutDirty = true);
+    this.children.editor.on("layoutChanged", () => this.isLayoutDirty = true);
+    this.children.palette.on("layoutChanged", () => this.isLayoutDirty = true);
 
     this.children.editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;

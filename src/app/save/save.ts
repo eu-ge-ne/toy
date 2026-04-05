@@ -25,7 +25,7 @@ export class Save extends ui.Component {
     this.children = {
       bg: new ui.Bg(defaultColors.background),
       header: new ui.Text(defaultColors.text, "center"),
-      editor: new Editor(root, { multiLine: false }),
+      editor: new Editor({ multiLine: false }),
       footer: new ui.Text(defaultColors.text, "center"),
     };
 

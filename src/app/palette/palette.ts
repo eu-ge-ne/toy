@@ -11,7 +11,11 @@ import { availableOptions } from "./options.ts";
 const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
-export class Palette extends ui.Component {
+interface PaletteEvents {
+  layoutChanged: unknown;
+}
+
+export class Palette extends ui.Component<PaletteEvents> {
   #enabled = false;
 
   protected override children: {
@@ -25,7 +29,7 @@ export class Palette extends ui.Component {
 
     this.children = {
       bg: new ui.Bg(defaultColors.background),
-      editor: new Editor(root, { multiLine: false }),
+      editor: new Editor({ multiLine: false }),
       list: new ui.List<Command>(
         "No matching commands",
         defaultColors.option,
@@ -147,6 +151,6 @@ export class Palette extends ui.Component {
 
     this.children.list.selectedIndex = 0;
 
-    this.root.isLayoutDirty = true;
+    this.emit("layoutChanged", undefined);
   }
 }

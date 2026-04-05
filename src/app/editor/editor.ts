@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { graphemes, segmenter } from "@lib/graphemes";
 import { Key } from "@lib/kitty";
@@ -14,18 +13,19 @@ import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
-interface EditorOptions {
-  zen?: boolean;
-  multiLine: boolean;
-}
-
 interface EditorEvents {
+  layoutChanged: unknown;
   cursorChanged: {
     ln: number;
     col: number;
     lnCount: number;
   };
   inputHandled: number;
+}
+
+interface EditorOptions {
+  zen?: boolean;
+  multiLine: boolean;
 }
 
 export class Editor extends ui.Component<EditorEvents> {
@@ -70,10 +70,7 @@ export class Editor extends ui.Component<EditorEvents> {
     bg: ui.Bg;
   };
 
-  constructor(
-    private readonly root: IRoot,
-    readonly params: EditorOptions,
-  ) {
+  constructor(readonly params: EditorOptions) {
     super();
 
     this.children = {
@@ -133,7 +130,7 @@ export class Editor extends ui.Component<EditorEvents> {
         if (typeof this.params.zen === "boolean") {
           this.params.zen = !this.params.zen;
           this.#onZenChange();
-          this.root.isLayoutDirty = true;
+          this.emit("layoutChanged", undefined);
         }
         break;
 
