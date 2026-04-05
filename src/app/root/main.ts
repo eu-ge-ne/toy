@@ -44,9 +44,9 @@ export class Root extends Component implements IRoot {
     super();
 
     this.children = {
-      header: new Header(this),
-      editor: new Editor(this, { multiLine: true }),
-      footer: new Footer(this),
+      header: new Header(this, { zen: this.zen }),
+      editor: new Editor(this, { zen: this.zen, multiLine: true }),
+      footer: new Footer(this, { zen: this.zen }),
       debug: new Debug(this),
       palette: new Palette(this),
       alert: new Alert(this),

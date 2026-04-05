@@ -8,6 +8,10 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
+interface FooterParams {
+  zen: boolean;
+}
+
 export class Footer extends ui.Component {
   #enabled = false;
 
@@ -16,7 +20,10 @@ export class Footer extends ui.Component {
     text: ui.Text;
   };
 
-  constructor(private readonly root: IRoot) {
+  constructor(
+    private readonly root: IRoot,
+    private readonly params: FooterParams,
+  ) {
     super();
 
     this.children = {
@@ -24,7 +31,7 @@ export class Footer extends ui.Component {
       text: new ui.Text(defaultColors.text, "right"),
     };
 
-    this.#onZen();
+    this.#onZenChange();
   }
 
   override resizeChildren(): void {
@@ -65,13 +72,14 @@ export class Footer extends ui.Component {
         break;
       }
       case "Zen":
-        this.#onZen();
+        this.params.zen = !this.params.zen;
+        this.#onZenChange();
         this.root.isLayoutDirty = true;
         break;
     }
   }
 
-  #onZen(): void {
-    this.#enabled = !this.root.zen;
+  #onZenChange(): void {
+    this.#enabled = !this.params.zen;
   }
 }

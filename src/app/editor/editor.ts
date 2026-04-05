@@ -15,6 +15,7 @@ import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface EditorOptions {
+  zen?: boolean;
   multiLine: boolean;
 }
 
@@ -60,19 +61,22 @@ export class Editor extends ui.Component {
     bg: ui.Bg;
   };
 
-  constructor(private readonly root: IRoot, readonly opts: EditorOptions) {
+  constructor(
+    private readonly root: IRoot,
+    readonly params: EditorOptions,
+  ) {
     super();
 
     this.children = {
       bg: new ui.Bg(this.#colors.background),
     };
 
-    this.#onZen();
+    this.#onZenChange();
   }
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.opts.multiLine) {
+      if (this.params.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -117,8 +121,11 @@ export class Editor extends ui.Component {
         break;
 
       case "Zen":
-        this.#onZen();
-        this.root.isLayoutDirty = true;
+        if (typeof this.params.zen === "boolean") {
+          this.params.zen = !this.params.zen;
+          this.#onZenChange();
+          this.root.isLayoutDirty = true;
+        }
         break;
 
       case "Whitespace":
@@ -506,7 +513,7 @@ export class Editor extends ui.Component {
     this.#enabled = x;
   }
 
-  #onZen(): void {
-    this.#indexEnabled = !this.root.zen;
+  #onZenChange(): void {
+    this.#indexEnabled = !this.params.zen;
   }
 }
