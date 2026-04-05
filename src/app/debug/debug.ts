@@ -1,4 +1,3 @@
-import { IRoot } from "@components/root";
 import { Command } from "@lib/commands";
 import { DefaultTheme, Themes } from "@lib/themes";
 import * as ui from "@lib/ui";
@@ -8,6 +7,11 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 const MIB = Math.pow(1024, 2);
+
+interface DebugState {
+  renderTime: number;
+  inputTime: number;
+}
 
 export class Debug extends ui.Component {
   #enabled = false;
@@ -21,7 +25,7 @@ export class Debug extends ui.Component {
     line5: ui.Text;
   };
 
-  constructor(private readonly root: IRoot) {
+  constructor(readonly state: DebugState) {
     super();
 
     this.children = {
@@ -60,11 +64,11 @@ export class Debug extends ui.Component {
 
     this.children.bg.render();
 
-    const i = this.root.inputTime.toFixed(1);
+    const i = this.state.inputTime.toFixed(1);
     this.children.line1.value = `Input    : ${i} ms`;
     this.children.line1.render();
 
-    const r = this.root.renderTime.toFixed(1);
+    const r = this.state.renderTime.toFixed(1);
     this.children.line2.value = `Render   : ${r} ms`;
     this.children.line2.render();
 

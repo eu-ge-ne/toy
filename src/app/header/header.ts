@@ -8,7 +8,7 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-interface HeaderParams {
+interface HeaderState {
   zen: boolean;
 }
 
@@ -22,7 +22,7 @@ export class Header extends ui.Component {
 
   constructor(
     private readonly root: IRoot,
-    private readonly params: HeaderParams,
+    readonly state: HeaderState,
   ) {
     super();
 
@@ -68,7 +68,7 @@ export class Header extends ui.Component {
         break;
       }
       case "Zen":
-        this.params.zen = !this.params.zen;
+        this.state.zen = !this.state.zen;
         this.#onZenChange();
         this.root.isLayoutDirty = true;
         break;
@@ -76,6 +76,6 @@ export class Header extends ui.Component {
   }
 
   #onZenChange(): void {
-    this.#enabled = !this.params.zen;
+    this.#enabled = !this.state.zen;
   }
 }
