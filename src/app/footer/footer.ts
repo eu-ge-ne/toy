@@ -10,6 +10,9 @@ const defaultColors = colors(DefaultTheme);
 
 interface FooterParams {
   zen: boolean;
+  ln: number;
+  col: number;
+  lnCount: number;
 }
 
 export class Footer extends ui.Component {
@@ -22,7 +25,7 @@ export class Footer extends ui.Component {
 
   constructor(
     private readonly root: IRoot,
-    private readonly params: FooterParams,
+    readonly params: FooterParams,
   ) {
     super();
 
@@ -50,11 +53,11 @@ export class Footer extends ui.Component {
 
     this.children.bg.render();
 
-    const ln = this.root.ln + 1;
-    const col = this.root.col + 1;
-    const pct = this.root.lnCount === 0
+    const ln = this.params.ln + 1;
+    const col = this.params.col + 1;
+    const pct = this.params.lnCount === 0
       ? 0
-      : ((ln / this.root.lnCount) * 100).toFixed(0);
+      : ((ln / this.params.lnCount) * 100).toFixed(0);
     this.children.text.value = `${ln} ${col}  ${pct}% `;
     this.children.text.render();
 

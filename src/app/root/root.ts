@@ -5,7 +5,4 @@ export interface IRoot {
   isDirty: boolean;
   inputTime: number;
   renderTime: number;
-  ln: number;
-  col: number;
-  lnCount: number;
 }

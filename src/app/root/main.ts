@@ -25,9 +25,6 @@ export class Root extends Component implements IRoot {
   isDirty = false;
   inputTime = 0;
   renderTime = 0;
-  ln = 0;
-  col = 0;
-  lnCount = 0;
 
   override children: {
     header: Header;
@@ -46,13 +43,20 @@ export class Root extends Component implements IRoot {
     this.children = {
       header: new Header(this, { zen: this.zen }),
       editor: new Editor(this, { zen: this.zen, multiLine: true }),
-      footer: new Footer(this, { zen: this.zen }),
+      footer: new Footer(this, { zen: this.zen, ln: 0, col: 0, lnCount: 0 }),
       debug: new Debug(this),
       palette: new Palette(this),
       alert: new Alert(this),
       ask: new Ask(this),
       save: new Save(this),
     };
+
+    this.children.editor.on("cursorChanged", (ev) => {
+      const params = this.children.footer.params;
+      params.ln = ev.ln;
+      params.col = ev.col;
+      params.lnCount = ev.lnCount;
+    });
   }
 
   async run(fileName?: string): Promise<void> {
@@ -150,12 +154,7 @@ export class Root extends Component implements IRoot {
     this.children.header.render();
     this.children.footer.render();
     this.children.editor.render();
-
-    this.ln = this.children.editor.cursor.ln;
-    this.col = this.children.editor.cursor.col;
-    this.lnCount = this.children.editor.textBuf.lineCount;
     this.children.debug.render();
-
     this.children.palette.render();
     this.children.alert.render();
     this.children.ask.render();
