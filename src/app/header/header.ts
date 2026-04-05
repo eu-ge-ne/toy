@@ -10,6 +10,8 @@ const defaultColors = colors(DefaultTheme);
 
 interface HeaderState {
   zen: boolean;
+  fileName: string;
+  fileModified: boolean;
 }
 
 export class Header extends ui.Component {
@@ -20,10 +22,7 @@ export class Header extends ui.Component {
     text: ui.Text;
   };
 
-  constructor(
-    private readonly root: IRoot,
-    readonly state: HeaderState,
-  ) {
+  constructor(private readonly root: IRoot, readonly state: HeaderState) {
     super();
 
     this.children = {
@@ -50,8 +49,8 @@ export class Header extends ui.Component {
 
     this.children.bg.render();
 
-    const f = this.root.isDirty ? " +" : "";
-    this.children.text.value = `${this.root.filePath}${f}`;
+    const f = this.state.fileModified ? " +" : "";
+    this.children.text.value = `${this.state.fileName}${f}`;
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);
