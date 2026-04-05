@@ -11,21 +11,26 @@ const defaultColors = colors(DefaultTheme);
 export class Header extends ui.Component {
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    text: new ui.Text(defaultColors.text, "center"),
+  protected override children: {
+    bg: ui.Bg;
+    text: ui.Text;
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      text: new ui.Text(defaultColors.text, "center"),
+    };
+
     this.#onZen();
   }
 
   override resizeChildren(): void {
-    const { background, text } = this.children;
+    const { bg, text } = this.children;
 
-    background.resize(this.width, this.height, this.y, this.x);
+    bg.resize(this.width, this.height, this.y, this.x);
     text.resize(this.width, this.height, this.y, this.x);
   }
 
@@ -36,7 +41,7 @@ export class Header extends ui.Component {
 
     vt.buf.write(vt.cursor.save);
 
-    this.children.background.render();
+    this.children.bg.render();
 
     const f = this.root.isDirty ? " +" : "";
     this.children.text.value = `${this.root.filePath}${f}`;
@@ -50,7 +55,7 @@ export class Header extends ui.Component {
       case "Theme": {
         const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = c.background;
+        this.children.bg.color = c.background;
         this.children.text.color = c.text;
 
         break;

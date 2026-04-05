@@ -56,12 +56,16 @@ export class Editor extends ui.Component {
   #wrapEnabled = false;
   #clipboard = "";
 
-  protected override children = {
-    background: new ui.Background(this.#colors.background),
+  protected override children: {
+    bg: ui.Bg;
   };
 
   constructor(private readonly root: IRoot, readonly opts: EditorOptions) {
     super();
+
+    this.children = {
+      bg: new ui.Bg(this.#colors.background),
+    };
 
     this.#onZen();
   }
@@ -109,7 +113,7 @@ export class Editor extends ui.Component {
     switch (cmd.name) {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
-        this.children.background.color = this.#colors.background;
+        this.children.bg.color = this.#colors.background;
         break;
 
       case "Zen":
@@ -308,12 +312,12 @@ export class Editor extends ui.Component {
   private scroll_col = 0;
 
   override resizeChildren(): void {
-    this.children.background.resize(this.width, this.height, this.y, this.x);
+    this.children.bg.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
     vt.buf.write(vt.cursor.save);
-    this.children.background.render();
+    this.children.bg.render();
 
     if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;

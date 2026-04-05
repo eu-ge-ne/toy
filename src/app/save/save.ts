@@ -10,45 +10,51 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 export class Save extends ui.Component {
-  #editor: Editor;
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    header: new ui.Text(defaultColors.text, "center"),
-    footer: new ui.Text(defaultColors.text, "center"),
+  protected override children: {
+    bg: ui.Bg;
+    header: ui.Text;
+    editor: Editor;
+    footer: ui.Text;
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      header: new ui.Text(defaultColors.text, "center"),
+      editor: new Editor(root, { multiLine: false }),
+      footer: new ui.Text(defaultColors.text, "center"),
+    };
+
     this.children.header.value = "Save As";
     this.children.footer.value = "ESC‧cancel    ENTER‧ok";
-    this.#editor = new Editor(root, { multiLine: false });
   }
 
   override resizeChildren(): void {
-    const { background, header, footer } = this.children;
+    const { bg, header, editor, footer } = this.children;
 
-    background.resize(this.width, this.height, this.y, this.x);
+    bg.resize(this.width, this.height, this.y, this.x);
     header.resize(this.width, 1, this.y + 1, this.x);
+    editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
-    this.#editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
   }
 
   async run(path: string): Promise<string> {
     this.#enabled = true;
-    this.#editor.enable(true);
+    this.children.editor.enable(true);
 
-    this.#editor.textBuf.reset(path);
-    this.#editor.reset(true);
+    this.children.editor.textBuf.reset(path);
+    this.children.editor.reset(true);
 
     this.root.render();
 
     const result = await this.#processInput();
 
     this.#enabled = false;
-    this.#editor.enable(false);
+    this.children.editor.enable(false);
 
     return result;
   }
@@ -58,10 +64,10 @@ export class Save extends ui.Component {
       return;
     }
 
-    this.children.background.render();
+    this.children.bg.render();
     this.children.header.render();
     this.children.footer.render();
-    this.#editor.render();
+    this.children.editor.render();
   }
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
@@ -69,7 +75,7 @@ export class Save extends ui.Component {
       case "Theme": {
         const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = c.background;
+        this.children.bg.color = c.background;
         this.children.footer.color = c.text;
 
         break;
@@ -85,14 +91,14 @@ export class Save extends ui.Component {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = this.#editor.textBuf.text();
+          const path = this.children.editor.textBuf.text();
           if (path) {
             return path;
           }
         }
       }
 
-      this.#editor.handleKey(key);
+      this.children.editor.handleKey(key);
       this.root.render();
     }
   }

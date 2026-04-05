@@ -1,4 +1,4 @@
 {
   "name": "@components/editor",
-  "exports": "./main.ts"
+  "exports": "./editor.ts"
 }

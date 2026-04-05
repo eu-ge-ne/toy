@@ -11,22 +11,28 @@ const defaultColors = colors(DefaultTheme);
 export class Alert extends ui.Component {
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    text: new ui.MultiLineText(defaultColors.text),
-    footer: new ui.Text(defaultColors.text, "center"),
+  protected override children: {
+    bg: ui.Bg;
+    text: ui.MultiLineText;
+    footer: ui.Text;
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      text: new ui.MultiLineText(defaultColors.text),
+      footer: new ui.Text(defaultColors.text, "center"),
+    };
+
     this.children.footer.value = "ENTER‧ok";
   }
 
   override resizeChildren(): void {
-    const { background, text, footer } = this.children;
+    const { bg, text, footer } = this.children;
 
-    background.resize(this.width, this.height, this.y, this.x);
+    bg.resize(this.width, this.height, this.y, this.x);
     text.resize(this.width - 4, this.height - 2, this.y + 1, this.x + 2);
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
@@ -49,7 +55,7 @@ export class Alert extends ui.Component {
       return;
     }
 
-    this.children.background.render();
+    this.children.bg.render();
     this.children.text.render();
     this.children.footer.render();
   }
@@ -59,7 +65,7 @@ export class Alert extends ui.Component {
       case "Theme": {
         const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = c.background;
+        this.children.bg.color = c.background;
         this.children.text.color = c.text;
         this.children.footer.color = c.text;
 
