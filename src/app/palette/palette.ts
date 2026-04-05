@@ -8,19 +8,19 @@ import * as vt from "@lib/vt";
 import { colors } from "./colors.ts";
 import { availableOptions } from "./options.ts";
 
+const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
 export class Palette extends ui.Component {
-  #colors = colors(DefaultTheme);
   #editor: Editor;
   #enabled = false;
 
   protected override children = {
-    background: new ui.Background(this.#colors.background),
+    background: new ui.Background(defaultColors.background),
     list: new ui.List<Command>(
       "No matching commands",
-      this.#colors.option,
-      this.#colors.selectedOption,
+      defaultColors.option,
+      defaultColors.selectedOption,
     ),
   };
 
@@ -81,14 +81,15 @@ export class Palette extends ui.Component {
 
   override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = this.#colors.background;
-        this.children.list.color = this.#colors.option;
-        this.children.list.selectedColor = this.#colors.selectedOption;
+        this.children.background.color = c.background;
+        this.children.list.color = c.option;
+        this.children.list.selectedColor = c.selectedOption;
 
         break;
+      }
     }
   }
 
