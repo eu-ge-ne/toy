@@ -8,7 +8,7 @@ export class EnterHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    if (!this.editor.opts.multiLine) {
+    if (!this.editor.params.multiLine) {
       return false;
     }
 

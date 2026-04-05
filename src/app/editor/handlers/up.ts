@@ -8,7 +8,7 @@ export class UpHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    if (!this.editor.opts.multiLine) {
+    if (!this.editor.params.multiLine) {
       return false;
     }
 
