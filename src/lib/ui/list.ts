@@ -4,8 +4,13 @@ import { Component } from "./component.ts";
 
 const encoder = new TextEncoder();
 
-export class List extends Component {
-  values: string[] = [];
+interface ListItem<T> {
+  value: T;
+  string(width: number): string;
+}
+
+export class List<T> extends Component {
+  values: ListItem<T>[] = [];
   selectedIndex = 0;
   #scrollIndex = 0;
 
@@ -51,7 +56,7 @@ export class List extends Component {
 
       vt.buf.write(i === this.selectedIndex ? this.selectedColor : this.color);
       vt.cursor.set(vt.buf, this.y + y, this.x);
-      vt.buf.write(encoder.encode(v.slice(0, this.width)));
+      vt.buf.write(encoder.encode(v.string(this.width)));
     }
   }
 }
