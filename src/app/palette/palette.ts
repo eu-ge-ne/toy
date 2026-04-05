@@ -12,31 +12,36 @@ const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
 export class Palette extends ui.Component {
-  #editor: Editor;
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    list: new ui.List<Command>(
-      "No matching commands",
-      defaultColors.option,
-      defaultColors.selectedOption,
-    ),
+  protected override children: {
+    bg: ui.Bg;
+    editor: Editor;
+    list: ui.List<Command>;
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
-    this.#editor = new Editor(root, { multiLine: false });
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      editor: new Editor(root, { multiLine: false }),
+      list: new ui.List<Command>(
+        "No matching commands",
+        defaultColors.option,
+        defaultColors.selectedOption,
+      ),
+    };
+
     this.children.list.values = availableOptions;
   }
 
   async run(): Promise<Command | undefined> {
     this.#enabled = true;
-    this.#editor.enable(true);
+    this.children.editor.enable(true);
 
-    this.#editor.textBuf.reset();
-    this.#editor.reset(false);
+    this.children.editor.textBuf.reset();
+    this.children.editor.reset(false);
 
     this.#filter();
     this.root.render();
@@ -44,7 +49,7 @@ export class Palette extends ui.Component {
     const cmd = await this.#processInput();
 
     this.#enabled = false;
-    this.#editor.enable(false);
+    this.children.editor.enable(false);
 
     return cmd;
   }
@@ -64,8 +69,8 @@ export class Palette extends ui.Component {
     const y = this.y + Math.trunc((this.height - height) / 2);
     const x = this.x + Math.trunc((this.width - width) / 2);
 
-    this.children.background.resize(width, height, y, x);
-    this.#editor.resize(width - 4, 1, y + 1, x + 2);
+    this.children.bg.resize(width, height, y, x);
+    this.children.editor.resize(width - 4, 1, y + 1, x + 2);
     this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
@@ -74,8 +79,8 @@ export class Palette extends ui.Component {
       return;
     }
 
-    this.children.background.render();
-    this.#editor.render();
+    this.children.bg.render();
+    this.children.editor.render();
     this.children.list.render();
   }
 
@@ -84,7 +89,7 @@ export class Palette extends ui.Component {
       case "Theme": {
         const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = c.background;
+        this.children.bg.color = c.background;
         this.children.list.color = c.option;
         this.children.list.selectedColor = c.selectedOption;
 
@@ -123,14 +128,14 @@ export class Palette extends ui.Component {
           continue;
       }
 
-      this.#editor.handleKey(key);
+      this.children.editor.handleKey(key);
       this.#filter();
       this.root.render();
     }
   }
 
   #filter(): void {
-    const text = this.#editor.textBuf.text().toUpperCase();
+    const text = this.children.editor.textBuf.text().toUpperCase();
 
     if (!text) {
       this.children.list.values = availableOptions;

@@ -12,23 +12,32 @@ const MIB = Math.pow(1024, 2);
 export class Debug extends ui.Component {
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    line1: new ui.Text(defaultColors.text),
-    line2: new ui.Text(defaultColors.text),
-    line3: new ui.Text(defaultColors.text),
-    line4: new ui.Text(defaultColors.text),
-    line5: new ui.Text(defaultColors.text),
+  protected override children: {
+    bg: ui.Bg;
+    line1: ui.Text;
+    line2: ui.Text;
+    line3: ui.Text;
+    line4: ui.Text;
+    line5: ui.Text;
   };
 
   constructor(private readonly root: IRoot) {
     super();
+
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      line1: new ui.Text(defaultColors.text),
+      line2: new ui.Text(defaultColors.text),
+      line3: new ui.Text(defaultColors.text),
+      line4: new ui.Text(defaultColors.text),
+      line5: new ui.Text(defaultColors.text),
+    };
   }
 
   override resizeChildren(): void {
-    const { background, line1, line2, line3, line4, line5 } = this.children;
+    const { bg, line1, line2, line3, line4, line5 } = this.children;
 
-    background.resize(this.width, this.height, this.y, this.x);
+    bg.resize(this.width, this.height, this.y, this.x);
     line1.resize(this.width - 2, 1, this.y + 1, this.x + 1);
     line2.resize(this.width - 2, 1, this.y + 2, this.x + 1);
     line3.resize(this.width - 2, 1, this.y + 3, this.x + 1);
@@ -49,7 +58,7 @@ export class Debug extends ui.Component {
     const heap_used = (mem.heapUsed / MIB).toFixed();
     const external_mem = (mem.external / MIB).toFixed();
 
-    this.children.background.render();
+    this.children.bg.render();
 
     const i = this.root.inputTime.toFixed(1);
     this.children.line1.value = `Input    : ${i} ms`;
@@ -76,7 +85,7 @@ export class Debug extends ui.Component {
       case "Theme": {
         const c = colors(Themes[cmd.data]);
 
-        this.children.background.color = c.background;
+        this.children.bg.color = c.background;
         this.children.line1.color = c.text;
         this.children.line2.color = c.text;
         this.children.line3.color = c.text;

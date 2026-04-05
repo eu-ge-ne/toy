@@ -2,7 +2,7 @@ import * as vt from "@lib/vt";
 
 import { Component } from "./component.ts";
 
-export class Background extends Component {
+export class Bg extends Component {
   constructor(public color: Uint8Array) {
     super();
   }

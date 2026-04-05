@@ -9,24 +9,28 @@ import { colors } from "./colors.ts";
 const defaultColors = colors(DefaultTheme);
 
 export class Footer extends ui.Component {
-  #colors = colors(DefaultTheme);
   #enabled = false;
 
-  protected override children = {
-    background: new ui.Background(defaultColors.background),
-    text: new ui.Text(defaultColors.text, "right"),
+  protected override children: {
+    bg: ui.Bg;
+    text: ui.Text;
   };
 
   constructor(private readonly root: IRoot) {
     super();
 
+    this.children = {
+      bg: new ui.Bg(defaultColors.background),
+      text: new ui.Text(defaultColors.text, "right"),
+    };
+
     this.#onZen();
   }
 
   override resizeChildren(): void {
-    const { background, text } = this.children;
+    const { bg, text } = this.children;
 
-    background.resize(this.width, this.height, this.y, this.x);
+    bg.resize(this.width, this.height, this.y, this.x);
     text.resize(this.width, this.height, this.y, this.x);
   }
 
@@ -37,7 +41,7 @@ export class Footer extends ui.Component {
 
     vt.buf.write(vt.cursor.save);
 
-    this.children.background.render();
+    this.children.bg.render();
 
     const ln = this.root.ln + 1;
     const col = this.root.col + 1;
@@ -52,11 +56,14 @@ export class Footer extends ui.Component {
 
   override async handleCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        this.children.background.color = this.#colors.background;
-        this.children.text.color = this.#colors.text;
+      case "Theme": {
+        const c = colors(Themes[cmd.data]);
+
+        this.children.bg.color = c.background;
+        this.children.text.color = c.text;
+
         break;
+      }
       case "Zen":
         this.#onZen();
         this.root.isLayoutDirty = true;
