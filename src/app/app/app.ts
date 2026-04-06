@@ -32,35 +32,32 @@ export class App extends Component {
   constructor() {
     super();
 
-    const { header, footer, editor, palette, alert, ask, save } = this
-      .children = {
-        header: new Header({
-          zen: this.#zen,
-          fileName: this.#fileName,
-          fileModified: this.#fileModified,
-        }),
-        footer: new Footer({
-          zen: this.#zen,
-          ln: 0,
-          col: 0,
-          lnCount: 0,
-        }),
-        editor: new Editor({
-          zen: this.#zen,
-          multiLine: true,
-        }),
-        debug: new Debug({
-          renderTime: 0,
-          inputTime: 0,
-        }),
-        palette: new Palette(),
-        alert: new Alert(),
-        ask: new Ask(),
-        save: new Save(),
-      };
+    const { editor, palette, alert, ask, save } = this.children = {
+      header: new Header({
+        disabled: this.#zen,
+        fileName: this.#fileName,
+        fileModified: this.#fileModified,
+      }),
+      footer: new Footer({
+        disabled: this.#zen,
+        ln: 0,
+        col: 0,
+        lnCount: 0,
+      }),
+      editor: new Editor({
+        zen: this.#zen,
+        multiLine: true,
+      }),
+      debug: new Debug({
+        renderTime: 0,
+        inputTime: 0,
+      }),
+      palette: new Palette(),
+      alert: new Alert(),
+      ask: new Ask(),
+      save: new Save(),
+    };
 
-    header.on("layoutChange", () => this.resizeChildren());
-    footer.on("layoutChange", () => this.resizeChildren());
     editor.on("layoutChange", () => this.resizeChildren());
     palette.on("layoutChange", () => this.resizeChildren());
 
@@ -191,7 +188,7 @@ export class App extends Component {
   override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
-        this.#zen = !this.#zen;
+        this.#onZen();
         break;
 
       case "Exit":
@@ -226,6 +223,13 @@ export class App extends Component {
 
       this.render();
     }
+  }
+
+  #onZen(): void {
+    this.#zen = !this.#zen;
+    this.children.header.state.disabled = this.#zen;
+    this.children.footer.state.disabled = this.#zen;
+    this.resizeChildren();
   }
 
   async #handleExit(): Promise<void> {
