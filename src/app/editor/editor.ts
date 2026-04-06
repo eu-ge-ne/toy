@@ -26,6 +26,8 @@ interface EditorState {
   disabled: boolean;
   index: boolean;
   multiLine: boolean;
+  whitespace: boolean;
+  wrap: boolean;
 }
 
 export class Editor extends ui.Component<EditorEvents> {
@@ -59,9 +61,6 @@ export class Editor extends ui.Component<EditorEvents> {
   readonly #textLayout = new TextLayout(this.textBuf);
   readonly cursor = new Cursor(this.textBuf, this.#textLayout);
   readonly history = new History(this.textBuf, this.cursor);
-
-  #whitespaceEnabled = false;
-  #wrapEnabled = false;
   #clipboard = "";
 
   protected override children: {
@@ -123,11 +122,11 @@ export class Editor extends ui.Component<EditorEvents> {
         break;
 
       case "Whitespace":
-        this.#whitespaceEnabled = !this.#whitespaceEnabled;
+        this.state.whitespace = !this.state.whitespace;
         break;
 
       case "Wrap":
-        this.#wrapEnabled = !this.#wrapEnabled;
+        this.state.wrap = !this.state.wrap;
         this.cursor.home(false);
         break;
 
@@ -335,7 +334,7 @@ export class Editor extends ui.Component<EditorEvents> {
     }
 
     this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.#wrapEnabled
+    segmenter.settings.width = this.state.wrap
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
@@ -416,7 +415,7 @@ export class Editor extends ui.Component<EditorEvents> {
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.#whitespaceEnabled,
+        this.state.whitespace,
       );
 
       if (color !== current_color) {

@@ -48,6 +48,8 @@ export class App extends Component {
         disabled: false,
         index: !this.#zen,
         multiLine: true,
+        whitespace: false,
+        wrap: false,
       }),
       debug: new Debug({
         renderTime: 0,
