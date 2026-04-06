@@ -7,20 +7,14 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-interface FooterEvents {
-  layoutChange: unknown;
-}
-
 interface FooterState {
-  zen: boolean;
+  disabled: boolean;
   ln: number;
   col: number;
   lnCount: number;
 }
 
-export class Footer extends ui.Component<FooterEvents> {
-  #enabled = false;
-
+export class Footer extends ui.Component {
   protected override children: {
     bg: ui.Bg;
     text: ui.Text;
@@ -33,8 +27,6 @@ export class Footer extends ui.Component<FooterEvents> {
       bg: new ui.Bg(defaultColors.background),
       text: new ui.Text(defaultColors.text, "right"),
     };
-
-    this.#onZenChange();
   }
 
   override resizeChildren(): void {
@@ -45,7 +37,7 @@ export class Footer extends ui.Component<FooterEvents> {
   }
 
   render(): void {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return;
     }
 
@@ -74,15 +66,6 @@ export class Footer extends ui.Component<FooterEvents> {
 
         break;
       }
-      case "Zen":
-        this.state.zen = !this.state.zen;
-        this.#onZenChange();
-        this.emit("layoutChange", undefined);
-        break;
     }
-  }
-
-  #onZenChange(): void {
-    this.#enabled = !this.state.zen;
   }
 }

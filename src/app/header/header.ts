@@ -7,19 +7,13 @@ import { colors } from "./colors.ts";
 
 const defaultColors = colors(DefaultTheme);
 
-interface HeaderEvents {
-  layoutChange: unknown;
-}
-
 interface HeaderState {
-  zen: boolean;
+  disabled: boolean;
   fileName: string;
   fileModified: boolean;
 }
 
-export class Header extends ui.Component<HeaderEvents> {
-  #enabled = false;
-
+export class Header extends ui.Component {
   protected override children: {
     bg: ui.Bg;
     text: ui.Text;
@@ -32,8 +26,6 @@ export class Header extends ui.Component<HeaderEvents> {
       bg: new ui.Bg(defaultColors.background),
       text: new ui.Text(defaultColors.text, "center"),
     };
-
-    this.#onZenChange();
   }
 
   override resizeChildren(): void {
@@ -44,7 +36,7 @@ export class Header extends ui.Component<HeaderEvents> {
   }
 
   render(): void {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return;
     }
 
@@ -69,15 +61,6 @@ export class Header extends ui.Component<HeaderEvents> {
 
         break;
       }
-      case "Zen":
-        this.state.zen = !this.state.zen;
-        this.#onZenChange();
-        this.emit("layoutChange", undefined);
-        break;
     }
-  }
-
-  #onZenChange(): void {
-    this.#enabled = !this.state.zen;
   }
 }

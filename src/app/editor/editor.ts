@@ -14,7 +14,6 @@ import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface EditorEvents {
-  layoutChange: unknown;
   cursorChanged: {
     ln: number;
     col: number;
@@ -23,14 +22,16 @@ interface EditorEvents {
   inputHandled: number;
 }
 
-interface EditorOptions {
-  zen?: boolean;
+interface EditorState {
+  disabled: boolean;
+  index: boolean;
   multiLine: boolean;
+  whitespace: boolean;
+  wrap: boolean;
 }
 
 export class Editor extends ui.Component<EditorEvents> {
   #colors = colors(DefaultTheme);
-  #enabled = false;
 
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -60,29 +61,23 @@ export class Editor extends ui.Component<EditorEvents> {
   readonly #textLayout = new TextLayout(this.textBuf);
   readonly cursor = new Cursor(this.textBuf, this.#textLayout);
   readonly history = new History(this.textBuf, this.cursor);
-
-  #indexEnabled = false;
-  #whitespaceEnabled = false;
-  #wrapEnabled = false;
   #clipboard = "";
 
   protected override children: {
     bg: ui.Bg;
   };
 
-  constructor(readonly params: EditorOptions) {
+  constructor(readonly state: EditorState) {
     super();
 
     this.children = {
       bg: new ui.Bg(this.#colors.background),
     };
-
-    this.#onZenChange();
   }
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.params.multiLine) {
+      if (this.state.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -97,7 +92,7 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   override handleKey(key: Key): boolean {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return false;
     }
 
@@ -116,7 +111,7 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   override async handleCommand(cmd: Command): Promise<void> {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return;
     }
 
@@ -126,20 +121,12 @@ export class Editor extends ui.Component<EditorEvents> {
         this.children.bg.color = this.#colors.background;
         break;
 
-      case "Zen":
-        if (typeof this.params.zen === "boolean") {
-          this.params.zen = !this.params.zen;
-          this.#onZenChange();
-          this.emit("layoutChange", undefined);
-        }
-        break;
-
       case "Whitespace":
-        this.#whitespaceEnabled = !this.#whitespaceEnabled;
+        this.state.whitespace = !this.state.whitespace;
         break;
 
       case "Wrap":
-        this.#wrapEnabled = !this.#wrapEnabled;
+        this.state.wrap = !this.state.wrap;
         this.cursor.home(false);
         break;
 
@@ -340,14 +327,14 @@ export class Editor extends ui.Component<EditorEvents> {
     vt.buf.write(vt.cursor.save);
     this.children.bg.render();
 
-    if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
+    if (this.state.index && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
     } else {
       this.index_width = 0;
     }
 
     this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.#wrapEnabled
+    segmenter.settings.width = this.state.wrap
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
@@ -358,7 +345,7 @@ export class Editor extends ui.Component<EditorEvents> {
       this.#renderLines();
     }
 
-    if (this.#enabled) {
+    if (!this.state.disabled) {
       vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
     } else {
       vt.buf.write(vt.cursor.restore);
@@ -428,7 +415,7 @@ export class Editor extends ui.Component<EditorEvents> {
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.#whitespaceEnabled,
+        this.state.whitespace,
       );
 
       if (color !== current_color) {
@@ -519,10 +506,6 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   enable(x: boolean): void {
-    this.#enabled = x;
-  }
-
-  #onZenChange(): void {
-    this.#indexEnabled = !this.params.zen;
+    this.state.disabled = !x;
   }
 }
