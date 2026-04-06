@@ -23,7 +23,7 @@ interface EditorEvents {
   inputHandled: number;
 }
 
-interface EditorOptions {
+interface EditorState {
   zen?: boolean;
   multiLine: boolean;
 }
@@ -70,7 +70,7 @@ export class Editor extends ui.Component<EditorEvents> {
     bg: ui.Bg;
   };
 
-  constructor(readonly params: EditorOptions) {
+  constructor(readonly state: EditorState) {
     super();
 
     this.children = {
@@ -82,7 +82,7 @@ export class Editor extends ui.Component<EditorEvents> {
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.params.multiLine) {
+      if (this.state.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -127,8 +127,8 @@ export class Editor extends ui.Component<EditorEvents> {
         break;
 
       case "Zen":
-        if (typeof this.params.zen === "boolean") {
-          this.params.zen = !this.params.zen;
+        if (typeof this.state.zen === "boolean") {
+          this.state.zen = !this.state.zen;
           this.#onZenChange();
           this.emit("layoutChange", undefined);
         }
@@ -523,6 +523,6 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   #onZenChange(): void {
-    this.#indexEnabled = !this.params.zen;
+    this.#indexEnabled = !this.state.zen;
   }
 }
