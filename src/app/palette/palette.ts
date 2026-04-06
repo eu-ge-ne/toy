@@ -1,13 +1,11 @@
 import { Editor } from "@app/editor";
 import { Command } from "@lib/commands";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { colors } from "./colors.ts";
 import { availableOptions } from "./options.ts";
 
-const defaultColors = colors(DefaultTheme);
 const maxListSize = 10;
 
 interface PaletteEvents {
@@ -28,7 +26,7 @@ export class Palette extends ui.Component<PaletteEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(defaultColors.background),
+      bg: new ui.Bg(new Uint8Array()),
       editor: new Editor({
         disabled: false,
         index: false,
@@ -38,8 +36,8 @@ export class Palette extends ui.Component<PaletteEvents> {
       }),
       list: new ui.List<Command>(
         "No matching commands",
-        defaultColors.option,
-        defaultColors.selectedOption,
+        new Uint8Array(),
+        new Uint8Array(),
       ),
     };
 
@@ -95,18 +93,17 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.list.render();
   }
 
-  override async handleCommand(cmd: Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme": {
-        const c = colors(Themes[cmd.data]);
+  setTheme(theme: themes.Theme): void {
+    const bg = theme.bg_light1;
+    const option = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
+    const selectedOption = new Uint8Array([
+      ...theme.bg_light2,
+      ...theme.fg_light1,
+    ]);
 
-        this.children.bg.color = c.background;
-        this.children.list.color = c.option;
-        this.children.list.selectedColor = c.selectedOption;
-
-        break;
-      }
-    }
+    this.children.bg.color = bg;
+    this.children.list.color = option;
+    this.children.list.selectedColor = selectedOption;
   }
 
   async #processInput(): Promise<Command | undefined> {
