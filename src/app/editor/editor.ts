@@ -23,13 +23,13 @@ interface EditorEvents {
 }
 
 interface EditorState {
+  disabled: boolean;
   index: boolean;
   multiLine: boolean;
 }
 
 export class Editor extends ui.Component<EditorEvents> {
   #colors = colors(DefaultTheme);
-  #enabled = false;
 
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -93,7 +93,7 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   override handleKey(key: Key): boolean {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return false;
     }
 
@@ -112,7 +112,7 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   override async handleCommand(cmd: Command): Promise<void> {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return;
     }
 
@@ -346,7 +346,7 @@ export class Editor extends ui.Component<EditorEvents> {
       this.#renderLines();
     }
 
-    if (this.#enabled) {
+    if (!this.state.disabled) {
       vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
     } else {
       vt.buf.write(vt.cursor.restore);
@@ -507,6 +507,6 @@ export class Editor extends ui.Component<EditorEvents> {
   }
 
   enable(x: boolean): void {
-    this.#enabled = x;
+    this.state.disabled = !x;
   }
 }

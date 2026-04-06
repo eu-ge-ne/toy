@@ -29,7 +29,7 @@ export class Palette extends ui.Component<PaletteEvents> {
 
     this.children = {
       bg: new ui.Bg(defaultColors.background),
-      editor: new Editor({ index: false, multiLine: false }),
+      editor: new Editor({ disabled: false, index: false, multiLine: false }),
       list: new ui.List<Command>(
         "No matching commands",
         defaultColors.option,

@@ -45,6 +45,7 @@ export class App extends Component {
         lnCount: 0,
       }),
       editor: new Editor({
+        disabled: false,
         index: !this.#zen,
         multiLine: true,
       }),
