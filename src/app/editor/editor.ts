@@ -14,7 +14,6 @@ import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface EditorEvents {
-  layoutChange: unknown;
   cursorChanged: {
     ln: number;
     col: number;
@@ -24,7 +23,7 @@ interface EditorEvents {
 }
 
 interface EditorState {
-  zen?: boolean;
+  index: boolean;
   multiLine: boolean;
 }
 
@@ -61,7 +60,6 @@ export class Editor extends ui.Component<EditorEvents> {
   readonly cursor = new Cursor(this.textBuf, this.#textLayout);
   readonly history = new History(this.textBuf, this.cursor);
 
-  #indexEnabled = false;
   #whitespaceEnabled = false;
   #wrapEnabled = false;
   #clipboard = "";
@@ -76,8 +74,6 @@ export class Editor extends ui.Component<EditorEvents> {
     this.children = {
       bg: new ui.Bg(this.#colors.background),
     };
-
-    this.#onZenChange();
   }
 
   reset(reset_cursor: boolean): void {
@@ -124,14 +120,6 @@ export class Editor extends ui.Component<EditorEvents> {
       case "Theme":
         this.#colors = colors(Themes[cmd.data]);
         this.children.bg.color = this.#colors.background;
-        break;
-
-      case "Zen":
-        if (typeof this.state.zen === "boolean") {
-          this.state.zen = !this.state.zen;
-          this.#onZenChange();
-          this.emit("layoutChange", undefined);
-        }
         break;
 
       case "Whitespace":
@@ -340,7 +328,7 @@ export class Editor extends ui.Component<EditorEvents> {
     vt.buf.write(vt.cursor.save);
     this.children.bg.render();
 
-    if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
+    if (this.state.index && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
     } else {
       this.index_width = 0;
@@ -520,9 +508,5 @@ export class Editor extends ui.Component<EditorEvents> {
 
   enable(x: boolean): void {
     this.#enabled = x;
-  }
-
-  #onZenChange(): void {
-    this.#indexEnabled = !this.state.zen;
   }
 }

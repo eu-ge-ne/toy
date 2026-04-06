@@ -28,7 +28,7 @@ export class Save extends ui.Component<SaveEvents> {
     this.children = {
       bg: new ui.Bg(defaultColors.background),
       header: new ui.Text(defaultColors.text, "center"),
-      editor: new Editor({ multiLine: false }),
+      editor: new Editor({ index: false, multiLine: false }),
       footer: new ui.Text(defaultColors.text, "center"),
     };
 

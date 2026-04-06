@@ -45,7 +45,7 @@ export class App extends Component {
         lnCount: 0,
       }),
       editor: new Editor({
-        zen: this.#zen,
+        index: !this.#zen,
         multiLine: true,
       }),
       debug: new Debug({
@@ -58,7 +58,6 @@ export class App extends Component {
       save: new Save(),
     };
 
-    editor.on("layoutChange", () => this.resizeChildren());
     palette.on("layoutChange", () => this.resizeChildren());
 
     alert.on("render", () => this.render());
@@ -227,8 +226,13 @@ export class App extends Component {
 
   #onZen(): void {
     this.#zen = !this.#zen;
-    this.children.header.state.disabled = this.#zen;
-    this.children.footer.state.disabled = this.#zen;
+
+    const { header, editor, footer } = this.children;
+
+    header.state.disabled = this.#zen;
+    footer.state.disabled = this.#zen;
+    editor.state.index = !this.#zen;
+
     this.resizeChildren();
   }
 
