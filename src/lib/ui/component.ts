@@ -1,4 +1,3 @@
-import * as commands from "@lib/commands";
 import * as kitty from "@lib/kitty";
 
 export abstract class Component<EM = Record<PropertyKey, never>> {
@@ -29,9 +28,6 @@ export abstract class Component<EM = Record<PropertyKey, never>> {
 
   handleKey(_: kitty.Key): boolean {
     return false;
-  }
-
-  async handleCommand(_: commands.Command): Promise<void> {
   }
 
   on<E extends keyof EM>(name: E, cb: (data: EM[E]) => void): void {

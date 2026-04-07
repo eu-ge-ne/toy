@@ -191,39 +191,6 @@ export class App extends ui.Component {
     return false;
   }
 
-  override async handleCommand(cmd: Command): Promise<void> {
-    switch (cmd.name) {
-      case "Zen":
-        this.#onZen();
-        break;
-
-      case "Exit":
-        await this.#handleExit();
-        break;
-
-      case "Palette":
-        await this.#handlePalette();
-        break;
-
-      case "Save":
-        await this.#handleSave();
-        break;
-
-      case "Theme":
-        this.#setTheme(themes.Themes[cmd.data]);
-        break;
-
-      case "Debug":
-        this.children.debug.state.disabled = !this.children.debug.state
-          .disabled;
-        break;
-    }
-
-    for (const child of Object.values(this.children)) {
-      await child.handleCommand(cmd);
-    }
-  }
-
   async #processInput(): Promise<void> {
     while (true) {
       const key = await vt.readKey();
@@ -231,7 +198,7 @@ export class App extends ui.Component {
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
       if (typeof cmdName !== "undefined") {
         const cmd = { name: cmdName } as Command;
-        await this.handleCommand(cmd);
+        await this.#handleCommand(cmd);
       } else {
         this.handleKey(key);
       }
@@ -274,7 +241,7 @@ export class App extends ui.Component {
     this.render();
 
     if (cmd) {
-      await this.handleCommand(cmd);
+      await this.#handleCommand(cmd);
     }
   }
 
@@ -365,5 +332,84 @@ export class App extends ui.Component {
 
   #setTheme(theme: themes.Theme): void {
     Object.values(this.children).forEach((x) => x.setTheme(theme));
+  }
+
+  async #handleCommand(cmd: Command): Promise<void> {
+    switch (cmd.name) {
+      case "Zen":
+        this.#onZen();
+        break;
+
+      case "Exit":
+        await this.#handleExit();
+        break;
+
+      case "Palette":
+        await this.#handlePalette();
+        break;
+
+      case "Save":
+        await this.#handleSave();
+        break;
+
+      case "Theme":
+        this.#setTheme(themes.Themes[cmd.data]);
+        break;
+
+      case "Debug":
+        this.children.debug.state.disabled = !this.children.debug.state
+          .disabled;
+        break;
+
+      case "Whitespace":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.state.whitespace = !this.children.editor.state
+            .whitespace;
+        }
+        break;
+
+      case "Wrap":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.state.wrap = !this.children.editor.state.wrap;
+          this.children.editor.cursor.home(false);
+        }
+        break;
+
+      case "Copy":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.copy();
+        }
+        break;
+
+      case "Cut":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.cut();
+        }
+        break;
+
+      case "Paste":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.paste();
+        }
+        break;
+
+      case "Undo":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.undo();
+        }
+        break;
+
+      case "Redo":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.redo();
+        }
+        break;
+
+      case "SelectAll":
+        if (!this.children.editor.state.disabled) {
+          this.children.editor.selectAll();
+        }
+        break;
+    }
   }
 }
