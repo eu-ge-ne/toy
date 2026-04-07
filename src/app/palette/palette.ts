@@ -34,11 +34,7 @@ export class Palette extends ui.Component<PaletteEvents> {
         whitespace: false,
         wrap: false,
       }),
-      list: new ui.List<Command>(
-        "No matching commands",
-        new Uint8Array(),
-        new Uint8Array(),
-      ),
+      list: new ui.List<Command>({ emptyText: "No matching commands" }),
     };
 
     this.children.list.values = availableOptions;
