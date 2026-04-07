@@ -19,7 +19,7 @@ export class Footer extends ui.Component {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       text: new ui.Text({ align: "right" }),
     };
   }
@@ -52,7 +52,7 @@ export class Footer extends ui.Component {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_dark0;
+    const bg = new Uint8Array(theme.bg_dark0);
     const text = new Uint8Array([...theme.bg_dark0, ...theme.fg_dark0]);
 
     this.children.bg.color = bg;

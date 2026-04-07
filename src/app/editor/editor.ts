@@ -70,7 +70,7 @@ export class Editor extends ui.Component<EditorEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(this.#colors.background),
+      bg: new ui.Bg(),
     };
   }
 
@@ -111,7 +111,7 @@ export class Editor extends ui.Component<EditorEvents> {
 
   setTheme(theme: themes.Theme): void {
     this.#colors = colors(theme);
-    this.children.bg.color = this.#colors.background;
+    this.children.bg.color = new Uint8Array(this.#colors.background);
   }
 
   #sgr = new Intl.Segmenter();

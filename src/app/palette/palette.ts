@@ -26,7 +26,7 @@ export class Palette extends ui.Component<PaletteEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       editor: new Editor({
         disabled: false,
         index: false,
@@ -90,7 +90,7 @@ export class Palette extends ui.Component<PaletteEvents> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_light1;
+    const bg = new Uint8Array(theme.bg_light1);
     const option = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
     const selectedOption = new Uint8Array([
       ...theme.bg_light2,
@@ -100,6 +100,7 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.bg.color = bg;
     this.children.list.color = option;
     this.children.list.selectedColor = selectedOption;
+    this.children.editor.setTheme(theme);
   }
 
   async #processInput(): Promise<Command | undefined> {

@@ -19,7 +19,7 @@ export class Alert extends ui.Component<AlertEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       text: new ui.MultiLineText({ align: "left" }),
       footer: new ui.Text({ align: "center" }),
     };
@@ -60,7 +60,7 @@ export class Alert extends ui.Component<AlertEvents> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_danger;
+    const bg = new Uint8Array(theme.bg_danger);
     const text = new Uint8Array([...theme.bg_danger, ...theme.fg_light1]);
 
     this.children.bg.color = bg;

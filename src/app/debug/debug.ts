@@ -24,7 +24,7 @@ export class Debug extends ui.Component {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       line1: new ui.Text({ align: "left" }),
       line2: new ui.Text({ align: "left" }),
       line3: new ui.Text({ align: "left" }),
@@ -80,7 +80,7 @@ export class Debug extends ui.Component {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_light0;
+    const bg = new Uint8Array(theme.bg_light0);
     const text = new Uint8Array([...theme.bg_light0, ...theme.fg_dark0]);
 
     this.children.bg.color = bg;
