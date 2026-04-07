@@ -9,16 +9,19 @@ interface ListItem<T> {
   string(width: number): string;
 }
 
+interface ListParams {
+  emptyText: string;
+}
+
 export class List<T> extends Component {
+  color = new Uint8Array();
+  selectedColor = new Uint8Array();
   values: ListItem<T>[] = [];
   selectedIndex = 0;
+
   #scrollIndex = 0;
 
-  constructor(
-    public readonly emptyText: string,
-    public color: Uint8Array,
-    public selectedColor: Uint8Array,
-  ) {
+  constructor(private readonly params: ListParams) {
     super();
   }
 
@@ -34,7 +37,7 @@ export class List<T> extends Component {
   #renderEmpty(): void {
     vt.buf.write(this.color);
     vt.cursor.set(vt.buf, this.y, this.x);
-    vt.buf.write(encoder.encode(this.emptyText.slice(0, this.width)));
+    vt.buf.write(encoder.encode(this.params.emptyText.slice(0, this.width)));
   }
 
   #scroll(): void {
