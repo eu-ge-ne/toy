@@ -22,7 +22,7 @@ export class Save extends ui.Component<SaveEvents> {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      header: new ui.Text(new Uint8Array(), "center"),
+      header: new ui.Text({ align: "center" }),
       editor: new Editor({
         disabled: false,
         index: false,
@@ -30,7 +30,7 @@ export class Save extends ui.Component<SaveEvents> {
         whitespace: false,
         wrap: false,
       }),
-      footer: new ui.Text(new Uint8Array(), "center"),
+      footer: new ui.Text({ align: "center" }),
     };
 
     this.children.header.value = "Save As";

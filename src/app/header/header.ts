@@ -19,7 +19,7 @@ export class Header extends ui.Component {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      text: new ui.Text(new Uint8Array(), "center"),
+      text: new ui.Text({ align: "center" }),
     };
   }
 

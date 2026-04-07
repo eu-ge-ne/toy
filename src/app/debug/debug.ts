@@ -25,11 +25,11 @@ export class Debug extends ui.Component {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      line1: new ui.Text(new Uint8Array()),
-      line2: new ui.Text(new Uint8Array()),
-      line3: new ui.Text(new Uint8Array()),
-      line4: new ui.Text(new Uint8Array()),
-      line5: new ui.Text(new Uint8Array()),
+      line1: new ui.Text({ align: "left" }),
+      line2: new ui.Text({ align: "left" }),
+      line3: new ui.Text({ align: "left" }),
+      line4: new ui.Text({ align: "left" }),
+      line5: new ui.Text({ align: "left" }),
     };
   }
 

@@ -4,13 +4,15 @@ import { Component } from "./component.ts";
 
 const encoder = new TextEncoder();
 
+interface TextParams {
+  readonly align: "left" | "center" | "right";
+}
+
 export class Text extends Component {
+  color = new Uint8Array();
   value = "";
 
-  constructor(
-    public color: Uint8Array,
-    protected align: "left" | "center" | "right" = "left",
-  ) {
+  constructor(private readonly params: TextParams) {
     super();
   }
 
@@ -22,7 +24,7 @@ export class Text extends Component {
 
     vt.cursor.set(vt.buf, this.y, this.x);
 
-    switch (this.align) {
+    switch (this.params.align) {
       case "center": {
         const n = Math.trunc((this.width - t.length) / 2);
         vt.write_spaces(vt.buf, n);
@@ -40,12 +42,10 @@ export class Text extends Component {
 }
 
 export class MultiLineText extends Component {
+  color = new Uint8Array();
   value = "";
 
-  constructor(
-    public color: Uint8Array,
-    protected align: "left" | "center" = "left",
-  ) {
+  constructor(private readonly params: TextParams) {
     super();
   }
 
@@ -64,7 +64,7 @@ export class MultiLineText extends Component {
 
       vt.cursor.set(vt.buf, this.y + y, this.x);
 
-      switch (this.align) {
+      switch (this.params.align) {
         case "center": {
           const n = Math.trunc((this.width - t.length) / 2);
           vt.write_spaces(vt.buf, n);

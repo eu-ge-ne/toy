@@ -20,8 +20,8 @@ export class Alert extends ui.Component<AlertEvents> {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      text: new ui.MultiLineText(new Uint8Array()),
-      footer: new ui.Text(new Uint8Array(), "center"),
+      text: new ui.MultiLineText({ align: "left" }),
+      footer: new ui.Text({ align: "center" }),
     };
 
     this.children.footer.value = "ENTER‧ok";
