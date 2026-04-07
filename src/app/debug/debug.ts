@@ -1,4 +1,3 @@
-import { Command } from "@lib/commands";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -6,13 +5,12 @@ import * as vt from "@lib/vt";
 const MIB = Math.pow(1024, 2);
 
 interface DebugState {
+  disabled: boolean;
   renderTime: number;
   inputTime: number;
 }
 
 export class Debug extends ui.Component {
-  #enabled = false;
-
   protected override children: {
     bg: ui.Bg;
     line1: ui.Text;
@@ -47,7 +45,7 @@ export class Debug extends ui.Component {
   }
 
   render(): void {
-    if (!this.#enabled) {
+    if (this.state.disabled) {
       return;
     }
 
@@ -79,14 +77,6 @@ export class Debug extends ui.Component {
     this.children.line5.render();
 
     vt.buf.write(vt.cursor.restore);
-  }
-
-  override async handleCommand(cmd: Command): Promise<void> {
-    switch (cmd.name) {
-      case "Debug":
-        this.#enabled = !this.#enabled;
-        break;
-    }
   }
 
   setTheme(theme: themes.Theme): void {

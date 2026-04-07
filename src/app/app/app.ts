@@ -53,6 +53,7 @@ export class App extends ui.Component {
         wrap: false,
       }),
       debug: new Debug({
+        disabled: true,
         renderTime: 0,
         inputTime: 0,
       }),
@@ -210,6 +211,11 @@ export class App extends ui.Component {
 
       case "Theme":
         this.#setTheme(themes.Themes[cmd.data]);
+        break;
+
+      case "Debug":
+        this.children.debug.state.disabled = !this.children.debug.state
+          .disabled;
         break;
     }
 
