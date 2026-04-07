@@ -20,8 +20,8 @@ export class Ask extends ui.Component<AskEvents> {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      text: new ui.MultiLineText(new Uint8Array(), "center"),
-      footer: new ui.Text(new Uint8Array(), "center"),
+      text: new ui.MultiLineText({ align: "center" }),
+      footer: new ui.Text({ align: "center" }),
     };
 
     this.children.footer.value = "ESC‧no    ENTER‧yes";

@@ -10,7 +10,7 @@ interface ListItem<T> {
 }
 
 interface ListParams {
-  emptyText: string;
+  readonly emptyText: string;
 }
 
 export class List<T> extends Component {

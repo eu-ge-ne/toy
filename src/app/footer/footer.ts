@@ -20,7 +20,7 @@ export class Footer extends ui.Component {
 
     this.children = {
       bg: new ui.Bg(new Uint8Array()),
-      text: new ui.Text(new Uint8Array(), "right"),
+      text: new ui.Text({ align: "right" }),
     };
   }
 
