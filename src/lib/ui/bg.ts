@@ -3,9 +3,7 @@ import * as vt from "@lib/vt";
 import { Component } from "./component.ts";
 
 export class Bg extends Component {
-  constructor(public color: Uint8Array) {
-    super();
-  }
+  color = new Uint8Array();
 
   render(): void {
     vt.buf.write(this.color);

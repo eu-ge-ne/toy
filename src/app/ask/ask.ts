@@ -19,7 +19,7 @@ export class Ask extends ui.Component<AskEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       text: new ui.MultiLineText({ align: "center" }),
       footer: new ui.Text({ align: "center" }),
     };
@@ -60,7 +60,7 @@ export class Ask extends ui.Component<AskEvents> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_light1;
+    const bg = new Uint8Array(theme.bg_light1);
     const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
 
     this.children.bg.color = bg;

@@ -21,7 +21,7 @@ export class Save extends ui.Component<SaveEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(new Uint8Array()),
+      bg: new ui.Bg(),
       header: new ui.Text({ align: "center" }),
       editor: new Editor({
         disabled: false,
@@ -75,7 +75,7 @@ export class Save extends ui.Component<SaveEvents> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = theme.bg_light1;
+    const bg = new Uint8Array(theme.bg_light1);
     const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
 
     this.children.bg.color = bg;
