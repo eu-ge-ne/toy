@@ -90,23 +90,16 @@ export class Editor extends ui.Component<EditorEvents> {
     this.history.reset();
   }
 
-  override handleKey(key: Key): boolean {
+  onKey(key: Key): void {
     if (this.state.disabled) {
-      return false;
+      return;
     }
 
     const t0 = performance.now();
 
-    const h = this.#handlers.find((x) => x.match(key));
-    if (!h) {
-      return false;
-    }
-
-    h.handle(key);
+    this.#handlers.find((x) => x.match(key))?.handle(key);
 
     this.emit("inputHandled", performance.now() - t0);
-
-    return true;
   }
 
   setTheme(theme: themes.Theme): void {

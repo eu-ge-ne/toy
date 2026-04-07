@@ -133,7 +133,7 @@ export class Palette extends ui.Component<PaletteEvents> {
           continue;
       }
 
-      this.children.editor.handleKey(key);
+      this.children.editor.onKey(key);
       this.#filter();
       this.emit("render", undefined);
     }

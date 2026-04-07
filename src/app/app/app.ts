@@ -83,30 +83,6 @@ export class App extends ui.Component {
     );
   }
 
-  async run(fileName?: string): Promise<void> {
-    this.children.editor.enable(true);
-    this.children.editor.history.onChange = () => {
-      this.#fileModified = !this.children.editor.history.isEmpty;
-      this.children.header.state.fileModified = this.#fileModified;
-    };
-
-    vt.init();
-    globalThis.addEventListener("unhandledrejection", this.#exit);
-    Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
-
-    if (fileName) {
-      await this.#open(fileName);
-    }
-
-    this.children.editor.reset(true);
-
-    this.#onSigwinch();
-
-    this.#setTheme(themes.DefaultTheme);
-
-    await this.#processInput();
-  }
-
   override resizeChildren(): void {
     const { header, footer, editor, debug, palette, alert, ask, save } =
       this.children;
@@ -181,17 +157,27 @@ export class App extends ui.Component {
     this.children.debug.state.renderTime = performance.now() - t0;
   }
 
-  override handleKey(key: kitty.Key): boolean {
-    for (const child of Object.values(this.children)) {
-      const handled = child.handleKey(key);
-      if (handled) {
-        return true;
-      }
-    }
-    return false;
-  }
+  async run(fileName?: string): Promise<void> {
+    this.children.editor.enable(true);
+    this.children.editor.history.onChange = () => {
+      this.#fileModified = !this.children.editor.history.isEmpty;
+      this.children.header.state.fileModified = this.#fileModified;
+    };
 
-  async #processInput(): Promise<void> {
+    vt.init();
+    globalThis.addEventListener("unhandledrejection", this.#exit);
+    Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
+
+    if (fileName) {
+      await this.#open(fileName);
+    }
+
+    this.children.editor.reset(true);
+
+    this.#onSigwinch();
+
+    this.#setTheme(themes.DefaultTheme);
+
     while (true) {
       const key = await vt.readKey();
 
@@ -200,7 +186,7 @@ export class App extends ui.Component {
         const cmd = { name: cmdName } as Command;
         await this.#handleCommand(cmd);
       } else {
-        this.handleKey(key);
+        this.children.editor.onKey(key);
       }
 
       this.render();
