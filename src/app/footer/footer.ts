@@ -1,11 +1,6 @@
-import * as commands from "@lib/commands";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
-
-import { colors } from "./colors.ts";
-
-const defaultColors = colors(DefaultTheme);
 
 interface FooterState {
   disabled: boolean;
@@ -24,8 +19,8 @@ export class Footer extends ui.Component {
     super();
 
     this.children = {
-      bg: new ui.Bg(defaultColors.background),
-      text: new ui.Text(defaultColors.text, "right"),
+      bg: new ui.Bg(new Uint8Array()),
+      text: new ui.Text(new Uint8Array(), "right"),
     };
   }
 
@@ -56,16 +51,11 @@ export class Footer extends ui.Component {
     vt.buf.write(vt.cursor.restore);
   }
 
-  override async handleCommand(cmd: commands.Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme": {
-        const c = colors(Themes[cmd.data]);
+  setTheme(theme: themes.Theme): void {
+    const bg = theme.bg_dark0;
+    const text = new Uint8Array([...theme.bg_dark0, ...theme.fg_dark0]);
 
-        this.children.bg.color = c.background;
-        this.children.text.color = c.text;
-
-        break;
-      }
-    }
+    this.children.bg.color = bg;
+    this.children.text.color = text;
   }
 }

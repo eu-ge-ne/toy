@@ -1,11 +1,6 @@
-import * as commands from "@lib/commands";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
-
-import { colors } from "./colors.ts";
-
-const defaultColors = colors(DefaultTheme);
 
 interface AlertEvents {
   render: unknown;
@@ -24,9 +19,9 @@ export class Alert extends ui.Component<AlertEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(defaultColors.background),
-      text: new ui.MultiLineText(defaultColors.text),
-      footer: new ui.Text(defaultColors.text, "center"),
+      bg: new ui.Bg(new Uint8Array()),
+      text: new ui.MultiLineText(new Uint8Array()),
+      footer: new ui.Text(new Uint8Array(), "center"),
     };
 
     this.children.footer.value = "ENTER‧ok";
@@ -64,18 +59,13 @@ export class Alert extends ui.Component<AlertEvents> {
     this.children.footer.render();
   }
 
-  override async handleCommand(cmd: commands.Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme": {
-        const c = colors(Themes[cmd.data]);
+  setTheme(theme: themes.Theme): void {
+    const bg = theme.bg_danger;
+    const text = new Uint8Array([...theme.bg_danger, ...theme.fg_light1]);
 
-        this.children.bg.color = c.background;
-        this.children.text.color = c.text;
-        this.children.footer.color = c.text;
-
-        break;
-      }
-    }
+    this.children.bg.color = bg;
+    this.children.text.color = text;
+    this.children.footer.color = text;
   }
 
   async #processInput(): Promise<void> {

@@ -1,11 +1,8 @@
 import { Command } from "@lib/commands";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { colors } from "./colors.ts";
-
-const defaultColors = colors(DefaultTheme);
 const MIB = Math.pow(1024, 2);
 
 interface DebugState {
@@ -29,12 +26,12 @@ export class Debug extends ui.Component {
     super();
 
     this.children = {
-      bg: new ui.Bg(defaultColors.background),
-      line1: new ui.Text(defaultColors.text),
-      line2: new ui.Text(defaultColors.text),
-      line3: new ui.Text(defaultColors.text),
-      line4: new ui.Text(defaultColors.text),
-      line5: new ui.Text(defaultColors.text),
+      bg: new ui.Bg(new Uint8Array()),
+      line1: new ui.Text(new Uint8Array()),
+      line2: new ui.Text(new Uint8Array()),
+      line3: new ui.Text(new Uint8Array()),
+      line4: new ui.Text(new Uint8Array()),
+      line5: new ui.Text(new Uint8Array()),
     };
   }
 
@@ -86,20 +83,20 @@ export class Debug extends ui.Component {
 
   override async handleCommand(cmd: Command): Promise<void> {
     switch (cmd.name) {
-      case "Theme": {
-        const c = colors(Themes[cmd.data]);
-
-        this.children.bg.color = c.background;
-        this.children.line1.color = c.text;
-        this.children.line2.color = c.text;
-        this.children.line3.color = c.text;
-        this.children.line4.color = c.text;
-
-        break;
-      }
       case "Debug":
         this.#enabled = !this.#enabled;
         break;
     }
+  }
+
+  setTheme(theme: themes.Theme): void {
+    const bg = theme.bg_light0;
+    const text = new Uint8Array([...theme.bg_light0, ...theme.fg_dark0]);
+
+    this.children.bg.color = bg;
+    this.children.line1.color = text;
+    this.children.line2.color = text;
+    this.children.line3.color = text;
+    this.children.line4.color = text;
   }
 }

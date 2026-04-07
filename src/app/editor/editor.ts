@@ -3,7 +3,7 @@ import { graphemes, segmenter } from "@lib/graphemes";
 import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
@@ -31,7 +31,7 @@ interface EditorState {
 }
 
 export class Editor extends ui.Component<EditorEvents> {
-  #colors = colors(DefaultTheme);
+  #colors = colors(themes.DefaultTheme);
 
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
@@ -116,11 +116,6 @@ export class Editor extends ui.Component<EditorEvents> {
     }
 
     switch (cmd.name) {
-      case "Theme":
-        this.#colors = colors(Themes[cmd.data]);
-        this.children.bg.color = this.#colors.background;
-        break;
-
       case "Whitespace":
         this.state.whitespace = !this.state.whitespace;
         break;
@@ -154,6 +149,11 @@ export class Editor extends ui.Component<EditorEvents> {
         this.selectAll();
         break;
     }
+  }
+
+  setTheme(theme: themes.Theme): void {
+    this.#colors = colors(theme);
+    this.children.bg.color = this.#colors.background;
   }
 
   #sgr = new Intl.Segmenter();

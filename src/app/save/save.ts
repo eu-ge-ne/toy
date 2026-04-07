@@ -1,12 +1,7 @@
 import { Editor } from "@app/editor";
-import * as commands from "@lib/commands";
-import { DefaultTheme, Themes } from "@lib/themes";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
-
-import { colors } from "./colors.ts";
-
-const defaultColors = colors(DefaultTheme);
 
 interface SaveEvents {
   render: unknown;
@@ -26,8 +21,8 @@ export class Save extends ui.Component<SaveEvents> {
     super();
 
     this.children = {
-      bg: new ui.Bg(defaultColors.background),
-      header: new ui.Text(defaultColors.text, "center"),
+      bg: new ui.Bg(new Uint8Array()),
+      header: new ui.Text(new Uint8Array(), "center"),
       editor: new Editor({
         disabled: false,
         index: false,
@@ -35,7 +30,7 @@ export class Save extends ui.Component<SaveEvents> {
         whitespace: false,
         wrap: false,
       }),
-      footer: new ui.Text(defaultColors.text, "center"),
+      footer: new ui.Text(new Uint8Array(), "center"),
     };
 
     this.children.header.value = "Save As";
@@ -79,17 +74,12 @@ export class Save extends ui.Component<SaveEvents> {
     this.children.editor.render();
   }
 
-  override async handleCommand(cmd: commands.Command): Promise<void> {
-    switch (cmd.name) {
-      case "Theme": {
-        const c = colors(Themes[cmd.data]);
+  setTheme(theme: themes.Theme): void {
+    const bg = theme.bg_light1;
+    const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
 
-        this.children.bg.color = c.background;
-        this.children.footer.color = c.text;
-
-        break;
-      }
-    }
+    this.children.bg.color = bg;
+    this.children.footer.color = text;
   }
 
   async #processInput(): Promise<string> {

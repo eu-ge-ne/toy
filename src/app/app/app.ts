@@ -10,10 +10,11 @@ import { Command, ShortcutToCommand } from "@lib/commands";
 import * as file from "@lib/file";
 import * as kitty from "@lib/kitty";
 import { clamp } from "@lib/std";
-import { Component } from "@lib/ui";
+import * as themes from "@lib/themes";
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class App extends Component {
+export class App extends ui.Component {
   #zen = true;
   #fileName = "";
   #fileModified = false;
@@ -99,6 +100,8 @@ export class App extends Component {
     this.children.editor.reset(true);
 
     this.#onSigwinch();
+
+    this.#setTheme(themes.DefaultTheme);
 
     await this.#processInput();
   }
@@ -203,6 +206,10 @@ export class App extends Component {
 
       case "Save":
         await this.#handleSave();
+        break;
+
+      case "Theme":
+        this.#setTheme(themes.Themes[cmd.data]);
         break;
     }
 
@@ -349,4 +356,8 @@ export class App extends Component {
 
     Deno.exit(0);
   };
+
+  #setTheme(theme: themes.Theme): void {
+    Object.values(this.children).forEach((x) => x.setTheme(theme));
+  }
 }
