@@ -1,4 +1,3 @@
-import { Command } from "@lib/commands";
 import { graphemes, segmenter } from "@lib/graphemes";
 import { Key } from "@lib/kitty";
 import { range, sum } from "@lib/std";
@@ -108,47 +107,6 @@ export class Editor extends ui.Component<EditorEvents> {
     this.emit("inputHandled", performance.now() - t0);
 
     return true;
-  }
-
-  override async handleCommand(cmd: Command): Promise<void> {
-    if (this.state.disabled) {
-      return;
-    }
-
-    switch (cmd.name) {
-      case "Whitespace":
-        this.state.whitespace = !this.state.whitespace;
-        break;
-
-      case "Wrap":
-        this.state.wrap = !this.state.wrap;
-        this.cursor.home(false);
-        break;
-
-      case "Copy":
-        this.copy();
-        break;
-
-      case "Cut":
-        this.cut();
-        break;
-
-      case "Paste":
-        this.paste();
-        break;
-
-      case "Undo":
-        this.undo();
-        break;
-
-      case "Redo":
-        this.redo();
-        break;
-
-      case "SelectAll":
-        this.selectAll();
-        break;
-    }
   }
 
   setTheme(theme: themes.Theme): void {
