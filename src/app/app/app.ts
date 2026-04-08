@@ -33,35 +33,36 @@ export class App extends ui.Component {
   constructor() {
     super();
 
-    const { editor, palette, alert, ask, save } = this.children = {
-      header: new Header({
-        disabled: this.#zen,
-        fileName: this.#fileName,
-        fileModified: this.#fileModified,
-      }),
-      footer: new Footer({
-        disabled: this.#zen,
-        ln: 0,
-        col: 0,
-        lnCount: 0,
-      }),
-      editor: new Editor({
-        disabled: false,
-        index: !this.#zen,
-        multiLine: true,
-        whitespace: false,
-        wrap: false,
-      }),
-      debug: new Debug({
-        disabled: true,
-        renderTime: 0,
-        inputTime: 0,
-      }),
-      palette: new Palette(),
-      alert: new Alert(),
-      ask: new Ask(),
-      save: new Save(),
-    };
+    const { editor, palette, alert, ask, save, debug, header } = this.children =
+      {
+        header: new Header({
+          disabled: this.#zen,
+          fileName: this.#fileName,
+          fileModified: this.#fileModified,
+        }),
+        footer: new Footer({
+          disabled: this.#zen,
+          ln: 0,
+          col: 0,
+          lnCount: 0,
+        }),
+        editor: new Editor({
+          disabled: false,
+          index: !this.#zen,
+          multiLine: true,
+          whitespace: false,
+          wrap: false,
+        }),
+        debug: new Debug({
+          disabled: true,
+          renderTime: 0,
+          inputTime: 0,
+        }),
+        palette: new Palette(),
+        alert: new Alert(),
+        ask: new Ask(),
+        save: new Save(),
+      };
 
     palette.on("layoutChange", () => this.resizeChildren());
 
@@ -77,10 +78,12 @@ export class App extends ui.Component {
       x.lnCount = data.lnCount;
     });
 
-    editor.on(
-      "inputHandled",
-      (data) => this.children.debug.state.inputTime = data,
-    );
+    editor.on("keyHandled", (data) => debug.state.inputTime = data);
+
+    editor.history.onChange = () => {
+      this.#fileModified = !editor.history.isEmpty;
+      header.state.fileModified = this.#fileModified;
+    };
   }
 
   override resizeChildren(): void {
@@ -159,10 +162,6 @@ export class App extends ui.Component {
 
   async run(fileName?: string): Promise<void> {
     this.children.editor.enable(true);
-    this.children.editor.history.onChange = () => {
-      this.#fileModified = !this.children.editor.history.isEmpty;
-      this.children.header.state.fileModified = this.#fileModified;
-    };
 
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
@@ -178,7 +177,13 @@ export class App extends ui.Component {
 
     this.#setTheme(themes.DefaultTheme);
 
+    await this.#loop();
+  }
+
+  async #loop(): Promise<void> {
     while (true) {
+      this.render();
+
       const key = await vt.readKey();
 
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
@@ -188,8 +193,6 @@ export class App extends ui.Component {
       } else {
         this.children.editor.onKey(key);
       }
-
-      this.render();
     }
   }
 

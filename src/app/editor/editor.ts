@@ -18,7 +18,7 @@ interface EditorEvents {
     col: number;
     lnCount: number;
   };
-  inputHandled: number;
+  keyHandled: number;
 }
 
 interface EditorState {
@@ -99,7 +99,7 @@ export class Editor extends ui.Component<EditorEvents> {
 
     this.#handlers.find((x) => x.match(key))?.handle(key);
 
-    this.emit("inputHandled", performance.now() - t0);
+    this.emit("keyHandled", performance.now() - t0);
   }
 
   setTheme(theme: themes.Theme): void {
