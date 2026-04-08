@@ -177,6 +177,10 @@ export class App extends ui.Component {
 
     this.#setTheme(themes.DefaultTheme);
 
+    await this.#loop();
+  }
+
+  async #loop(): Promise<void> {
     while (true) {
       const key = await vt.readKey();
 

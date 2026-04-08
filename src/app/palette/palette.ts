@@ -40,25 +40,6 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.list.values = availableOptions;
   }
 
-  async run(): Promise<Command | undefined> {
-    this.#enabled = true;
-    this.children.editor.enable(true);
-
-    this.children.editor.textBuf.reset();
-    this.children.editor.reset(false);
-
-    this.#filter();
-
-    this.emit("render", undefined);
-
-    const cmd = await this.#processInput();
-
-    this.#enabled = false;
-    this.children.editor.enable(false);
-
-    return cmd;
-  }
-
   override resizeChildren(): void {
     const width = Math.min(60, this.width);
 
@@ -89,6 +70,25 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.list.render();
   }
 
+  async run(): Promise<Command | undefined> {
+    this.#enabled = true;
+    this.children.editor.enable(true);
+
+    this.children.editor.textBuf.reset();
+    this.children.editor.reset(false);
+
+    this.#filter();
+
+    this.emit("render", undefined);
+
+    const cmd = await this.#loop();
+
+    this.#enabled = false;
+    this.children.editor.enable(false);
+
+    return cmd;
+  }
+
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bg_light1);
     const option = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
@@ -103,7 +103,9 @@ export class Palette extends ui.Component<PaletteEvents> {
     this.children.editor.setTheme(theme);
   }
 
-  async #processInput(): Promise<Command | undefined> {
+  async #loop(): Promise<Command | undefined> {
+    const { list, editor } = this.children;
+
     while (true) {
       const key = await vt.readKey();
 
@@ -111,30 +113,28 @@ export class Palette extends ui.Component<PaletteEvents> {
         case "ESC":
           return;
         case "ENTER":
-          return this.children.list.values[this.children.list.selectedIndex]
-            ?.value;
+          return list.values[list.selectedIndex]?.value;
         case "UP":
-          if (this.children.list.values.length > 0) {
-            this.children.list.selectedIndex = Math.max(
-              this.children.list.selectedIndex - 1,
-              0,
-            );
+          if (list.values.length > 0) {
+            list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
             this.emit("render", undefined);
           }
           continue;
         case "DOWN":
-          if (this.children.list.values.length > 0) {
-            this.children.list.selectedIndex = Math.min(
-              this.children.list.selectedIndex + 1,
-              this.children.list.values.length - 1,
+          if (list.values.length > 0) {
+            list.selectedIndex = Math.min(
+              list.selectedIndex + 1,
+              list.values.length - 1,
             );
             this.emit("render", undefined);
           }
           continue;
       }
 
-      this.children.editor.onKey(key);
+      editor.onKey(key);
+
       this.#filter();
+
       this.emit("render", undefined);
     }
   }

@@ -46,23 +46,6 @@ export class Save extends ui.Component<SaveEvents> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async run(path: string): Promise<string> {
-    this.#enabled = true;
-    this.children.editor.enable(true);
-
-    this.children.editor.textBuf.reset(path);
-    this.children.editor.reset(true);
-
-    this.emit("render", undefined);
-
-    const result = await this.#processInput();
-
-    this.#enabled = false;
-    this.children.editor.enable(false);
-
-    return result;
-  }
-
   render(): void {
     if (!this.#enabled) {
       return;
@@ -74,6 +57,23 @@ export class Save extends ui.Component<SaveEvents> {
     this.children.editor.render();
   }
 
+  async run(path: string): Promise<string> {
+    this.#enabled = true;
+    this.children.editor.enable(true);
+
+    this.children.editor.textBuf.reset(path);
+    this.children.editor.reset(true);
+
+    this.emit("render", undefined);
+
+    const result = await this.#loop();
+
+    this.#enabled = false;
+    this.children.editor.enable(false);
+
+    return result;
+  }
+
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bg_light1);
     const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
@@ -83,7 +83,9 @@ export class Save extends ui.Component<SaveEvents> {
     this.children.editor.setTheme(theme);
   }
 
-  async #processInput(): Promise<string> {
+  async #loop(): Promise<string> {
+    const { editor } = this.children;
+
     while (true) {
       const key = await vt.readKey();
 
@@ -91,14 +93,14 @@ export class Save extends ui.Component<SaveEvents> {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = this.children.editor.textBuf.text();
+          const path = editor.textBuf.text();
           if (path) {
             return path;
           }
         }
       }
 
-      this.children.editor.onKey(key);
+      editor.onKey(key);
 
       this.emit("render", undefined);
     }
