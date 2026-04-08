@@ -182,6 +182,8 @@ export class App extends ui.Component {
 
   async #loop(): Promise<void> {
     while (true) {
+      this.render();
+
       const key = await vt.readKey();
 
       const cmdName = ShortcutToCommand[kitty.shortcut(key)];
@@ -191,8 +193,6 @@ export class App extends ui.Component {
       } else {
         this.children.editor.onKey(key);
       }
-
-      this.render();
     }
   }
 
