@@ -13,7 +13,7 @@ interface PaletteEvents {
   render: unknown;
 }
 
-export class Palette extends ui.Component<PaletteEvents> {
+export class Palette extends ui.Frame<PaletteEvents> {
   #enabled = false;
 
   protected override children: {

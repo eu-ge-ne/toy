@@ -1,8 +1,8 @@
 import * as vt from "@lib/vt";
 
-import { Component } from "./component.ts";
+import { Frame } from "./frame.ts";
 
-export class Bg extends Component {
+export class Bg extends Frame {
   color = new Uint8Array();
 
   render(): void {

@@ -8,7 +8,7 @@ interface HeaderState {
   fileModified: boolean;
 }
 
-export class Header extends ui.Component {
+export class Header extends ui.Frame {
   protected override children: {
     bg: ui.Bg;
     text: ui.Text;

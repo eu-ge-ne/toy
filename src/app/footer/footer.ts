@@ -9,7 +9,7 @@ interface FooterState {
   lnCount: number;
 }
 
-export class Footer extends ui.Component {
+export class Footer extends ui.Frame {
   protected override children: {
     bg: ui.Bg;
     text: ui.Text;

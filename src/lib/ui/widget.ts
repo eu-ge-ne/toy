@@ -1,13 +1,13 @@
-export abstract class Component<EM = Record<PropertyKey, never>> {
+export abstract class Widget<T> {
   width = 0;
   height = 0;
   y = 0;
   x = 0;
 
-  protected children: Record<string, Component<unknown>> = {};
+  protected children: Record<string, Widget<unknown>> = {};
 
   private listeners: {
-    [E in keyof EM]?: ((data: EM[E]) => void)[];
+    [K in keyof T]?: ((data: T[K]) => void)[];
   } = {};
 
   resize(width: number, height: number, y: number, x: number): void {
@@ -22,13 +22,11 @@ export abstract class Component<EM = Record<PropertyKey, never>> {
   resizeChildren(): void {
   }
 
-  abstract render(): void;
-
-  on<E extends keyof EM>(name: E, cb: (data: EM[E]) => void): void {
+  on<K extends keyof T>(name: K, cb: (data: T[K]) => void): void {
     this.listeners[name] = [...(this.listeners[name] ?? []), cb];
   }
 
-  emit<E extends keyof EM>(name: E, data: EM[E]): void {
+  emit<K extends keyof T>(name: K, data: T[K]): void {
     this.listeners[name]?.forEach((cb) => cb(data));
   }
 }

@@ -7,7 +7,7 @@ interface SaveEvents {
   render: unknown;
 }
 
-export class Save extends ui.Component<SaveEvents> {
+export class Save extends ui.Frame<SaveEvents> {
   #enabled = false;
 
   protected override children: {

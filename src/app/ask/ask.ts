@@ -6,7 +6,7 @@ interface AskEvents {
   render: unknown;
 }
 
-export class Ask extends ui.Component<AskEvents> {
+export class Ask extends ui.Frame<AskEvents> {
   #enabled = false;
 
   protected override children: {

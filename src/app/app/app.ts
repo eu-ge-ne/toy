@@ -14,7 +14,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class App extends ui.Component {
+export class App extends ui.Frame {
   #zen = true;
   #fileName = "";
   #fileModified = false;

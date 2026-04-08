@@ -6,7 +6,7 @@ interface AlertEvents {
   render: unknown;
 }
 
-export class Alert extends ui.Component<AlertEvents> {
+export class Alert extends ui.Frame<AlertEvents> {
   #enabled = false;
 
   protected override children: {
