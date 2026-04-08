@@ -1,5 +1,3 @@
-import * as kitty from "@lib/kitty";
-
 export abstract class Component<EM = Record<PropertyKey, never>> {
   width = 0;
   height = 0;
@@ -25,10 +23,6 @@ export abstract class Component<EM = Record<PropertyKey, never>> {
   }
 
   abstract render(): void;
-
-  handleKey(_: kitty.Key): boolean {
-    return false;
-  }
 
   on<E extends keyof EM>(name: E, cb: (data: EM[E]) => void): void {
     this.listeners[name] = [...(this.listeners[name] ?? []), cb];

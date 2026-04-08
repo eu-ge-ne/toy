@@ -97,7 +97,7 @@ export class Save extends ui.Component<SaveEvents> {
         }
       }
 
-      this.children.editor.handleKey(key);
+      this.children.editor.onKey(key);
 
       this.emit("render", undefined);
     }
