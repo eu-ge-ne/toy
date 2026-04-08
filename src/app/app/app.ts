@@ -161,8 +161,6 @@ export class App extends ui.Component {
   }
 
   async run(fileName?: string): Promise<void> {
-    this.children.editor.enable(true);
-
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
@@ -209,7 +207,7 @@ export class App extends ui.Component {
   }
 
   async #handleExit(): Promise<void> {
-    this.children.editor.enable(false);
+    this.children.editor.state.disabled = true;
 
     if (!this.children.editor.history.isEmpty) {
       if (await this.children.ask.run("Save changes?")) {
@@ -221,11 +219,11 @@ export class App extends ui.Component {
   }
 
   async #handlePalette(): Promise<void> {
-    this.children.editor.enable(false);
+    this.children.editor.state.disabled = true;
 
     const cmd = await this.children.palette.run();
 
-    this.children.editor.enable(true);
+    this.children.editor.state.disabled = false;
 
     this.render();
 
@@ -235,13 +233,13 @@ export class App extends ui.Component {
   }
 
   async #handleSave(): Promise<void> {
-    this.children.editor.enable(false);
+    this.children.editor.state.disabled = true;
 
     if (await this.#save()) {
       this.children.editor.reset(false);
     }
 
-    this.children.editor.enable(true);
+    this.children.editor.state.disabled = false;
 
     this.render();
   }

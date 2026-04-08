@@ -72,7 +72,6 @@ export class Palette extends ui.Component<PaletteEvents> {
 
   async run(): Promise<Command | undefined> {
     this.#enabled = true;
-    this.children.editor.enable(true);
 
     this.children.editor.textBuf.reset();
     this.children.editor.reset(false);
@@ -84,7 +83,6 @@ export class Palette extends ui.Component<PaletteEvents> {
     const cmd = await this.#loop();
 
     this.#enabled = false;
-    this.children.editor.enable(false);
 
     return cmd;
   }
