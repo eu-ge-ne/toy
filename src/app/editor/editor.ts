@@ -455,8 +455,4 @@ export class Editor extends ui.Component<EditorEvents> {
 
     this.cursor_x += width;
   }
-
-  enable(x: boolean): void {
-    this.state.disabled = !x;
-  }
 }

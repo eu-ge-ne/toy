@@ -59,7 +59,6 @@ export class Save extends ui.Component<SaveEvents> {
 
   async run(path: string): Promise<string> {
     this.#enabled = true;
-    this.children.editor.enable(true);
 
     this.children.editor.textBuf.reset(path);
     this.children.editor.reset(true);
@@ -69,7 +68,6 @@ export class Save extends ui.Component<SaveEvents> {
     const result = await this.#loop();
 
     this.#enabled = false;
-    this.children.editor.enable(false);
 
     return result;
   }
