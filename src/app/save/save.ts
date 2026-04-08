@@ -80,6 +80,7 @@ export class Save extends ui.Component<SaveEvents> {
 
     this.children.bg.color = bg;
     this.children.footer.color = text;
+    this.children.editor.setTheme(theme);
   }
 
   async #processInput(): Promise<string> {
