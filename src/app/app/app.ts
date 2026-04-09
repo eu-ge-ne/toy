@@ -33,7 +33,7 @@ export class App extends ui.Frame {
   constructor() {
     super();
 
-    const { editor, palette, save, debug, header } = this.children = {
+    const { editor, palette, debug, header } = this.children = {
       header: new Header({
         disabled: this.#zen,
         fileName: this.#fileName,
@@ -66,7 +66,6 @@ export class App extends ui.Frame {
     palette.on("layoutChange", () => this.resizeChildren());
 
     palette.on("render", () => this.render());
-    save.on("render", () => this.render());
 
     editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
@@ -146,7 +145,6 @@ export class App extends ui.Frame {
     this.children.editor.render();
     this.children.debug.render();
     this.children.palette.render();
-    this.children.save.render();
 
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
@@ -278,7 +276,7 @@ export class App extends ui.Frame {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const filePath = await this.children.save.run(this.#fileName);
+      const filePath = await this.children.save.open(this.#fileName);
       if (!filePath) {
         return false;
       }

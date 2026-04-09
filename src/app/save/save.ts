@@ -3,13 +3,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-interface SaveEvents {
-  render: unknown;
-}
-
-export class Save extends ui.Frame<SaveEvents> {
-  #enabled = false;
-
+export class Save extends ui.Modal<unknown, [string], string> {
   protected override children: {
     bg: ui.Bg;
     header: ui.Text;
@@ -46,45 +40,15 @@ export class Save extends ui.Frame<SaveEvents> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  render(): void {
-    if (!this.#enabled) {
-      return;
-    }
-
-    this.children.bg.render();
-    this.children.header.render();
-    this.children.footer.render();
-    this.children.editor.render();
-  }
-
-  async run(path: string): Promise<string> {
-    this.#enabled = true;
-
-    this.children.editor.textBuf.reset(path);
-    this.children.editor.reset(true);
-
-    this.emit("render", undefined);
-
-    const result = await this.#loop();
-
-    this.#enabled = false;
-
-    return result;
-  }
-
-  setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_light1);
-    const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
-
-    this.children.bg.color = bg;
-    this.children.footer.color = text;
-    this.children.editor.setTheme(theme);
-  }
-
-  async #loop(): Promise<string> {
+  async open(path: string): Promise<string> {
     const { editor } = this.children;
 
+    editor.textBuf.reset(path);
+    editor.reset(true);
+
     while (true) {
+      this.#render();
+
       const key = await vt.readKey();
 
       switch (key.name) {
@@ -99,8 +63,29 @@ export class Save extends ui.Frame<SaveEvents> {
       }
 
       editor.onKey(key);
-
-      this.emit("render", undefined);
     }
+  }
+
+  setTheme(theme: themes.Theme): void {
+    const bg = new Uint8Array(theme.bg_light1);
+    const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
+
+    this.children.bg.color = bg;
+    this.children.footer.color = text;
+    this.children.editor.setTheme(theme);
+  }
+
+  #render(): void {
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.children.bg.render();
+    this.children.header.render();
+    this.children.footer.render();
+    this.children.editor.render();
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
   }
 }
