@@ -1,4 +1,4 @@
-export abstract class Widget<T> {
+export abstract class Widget<E> {
   width = 0;
   height = 0;
   y = 0;
@@ -7,7 +7,7 @@ export abstract class Widget<T> {
   protected children: Record<string, Widget<unknown>> = {};
 
   private listeners: {
-    [K in keyof T]?: ((data: T[K]) => void)[];
+    [K in keyof E]?: ((data: E[K]) => void)[];
   } = {};
 
   resize(width: number, height: number, y: number, x: number): void {
@@ -22,11 +22,11 @@ export abstract class Widget<T> {
   resizeChildren(): void {
   }
 
-  on<K extends keyof T>(name: K, cb: (data: T[K]) => void): void {
+  on<K extends keyof E>(name: K, cb: (data: E[K]) => void): void {
     this.listeners[name] = [...(this.listeners[name] ?? []), cb];
   }
 
-  emit<K extends keyof T>(name: K, data: T[K]): void {
+  emit<K extends keyof E>(name: K, data: E[K]): void {
     this.listeners[name]?.forEach((cb) => cb(data));
   }
 }

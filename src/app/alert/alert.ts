@@ -2,13 +2,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-interface AlertEvents {
-  render: unknown;
-}
-
-export class Alert extends ui.Frame<AlertEvents> {
-  #enabled = false;
-
+export class Alert extends ui.Modal<unknown, [unknown]> {
   protected override children: {
     bg: ui.Bg;
     text: ui.MultiLineText;
@@ -35,28 +29,22 @@ export class Alert extends ui.Frame<AlertEvents> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async run(err: unknown): Promise<void> {
+  async open(err: unknown): Promise<void> {
     this.children.text.value = Error.isError(err)
       ? err.message
       : Deno.inspect(err);
 
-    this.#enabled = true;
+    while (true) {
+      this.#render();
 
-    this.emit("render", undefined);
+      const key = await vt.readKey();
 
-    await this.#processInput();
-
-    this.#enabled = false;
-  }
-
-  render(): void {
-    if (!this.#enabled) {
-      return;
+      switch (key.name) {
+        case "ESC":
+        case "ENTER":
+          return;
+      }
     }
-
-    this.children.bg.render();
-    this.children.text.render();
-    this.children.footer.render();
   }
 
   setTheme(theme: themes.Theme): void {
@@ -68,15 +56,16 @@ export class Alert extends ui.Frame<AlertEvents> {
     this.children.footer.color = text;
   }
 
-  async #processInput(): Promise<void> {
-    while (true) {
-      const key = await vt.readKey();
+  #render(): void {
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
 
-      switch (key.name) {
-        case "ESC":
-        case "ENTER":
-          return;
-      }
-    }
+    this.children.bg.render();
+    this.children.text.render();
+    this.children.footer.render();
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
   }
 }

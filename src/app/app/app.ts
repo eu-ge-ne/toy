@@ -33,40 +33,38 @@ export class App extends ui.Frame {
   constructor() {
     super();
 
-    const { editor, palette, alert, ask, save, debug, header } = this.children =
-      {
-        header: new Header({
-          disabled: this.#zen,
-          fileName: this.#fileName,
-          fileModified: this.#fileModified,
-        }),
-        footer: new Footer({
-          disabled: this.#zen,
-          ln: 0,
-          col: 0,
-          lnCount: 0,
-        }),
-        editor: new Editor({
-          disabled: false,
-          index: !this.#zen,
-          multiLine: true,
-          whitespace: false,
-          wrap: false,
-        }),
-        debug: new Debug({
-          disabled: true,
-          renderTime: 0,
-          inputTime: 0,
-        }),
-        palette: new Palette(),
-        alert: new Alert(),
-        ask: new Ask(),
-        save: new Save(),
-      };
+    const { editor, palette, ask, save, debug, header } = this.children = {
+      header: new Header({
+        disabled: this.#zen,
+        fileName: this.#fileName,
+        fileModified: this.#fileModified,
+      }),
+      footer: new Footer({
+        disabled: this.#zen,
+        ln: 0,
+        col: 0,
+        lnCount: 0,
+      }),
+      editor: new Editor({
+        disabled: false,
+        index: !this.#zen,
+        multiLine: true,
+        whitespace: false,
+        wrap: false,
+      }),
+      debug: new Debug({
+        disabled: true,
+        renderTime: 0,
+        inputTime: 0,
+      }),
+      palette: new Palette(),
+      alert: new Alert(),
+      ask: new Ask(),
+      save: new Save(),
+    };
 
     palette.on("layoutChange", () => this.resizeChildren());
 
-    alert.on("render", () => this.render());
     ask.on("render", () => this.render());
     palette.on("render", () => this.render());
     save.on("render", () => this.render());
@@ -149,7 +147,6 @@ export class App extends ui.Frame {
     this.children.editor.render();
     this.children.debug.render();
     this.children.palette.render();
-    this.children.alert.render();
     this.children.ask.render();
     this.children.save.render();
 
@@ -254,7 +251,7 @@ export class App extends ui.Frame {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.children.alert.run(err);
+        await this.children.alert.open(err);
 
         this.#exit();
       }
@@ -275,7 +272,7 @@ export class App extends ui.Frame {
 
       return true;
     } catch (err) {
-      await this.children.alert.run(err);
+      await this.children.alert.open(err);
 
       return await this.#saveFileAs();
     }
@@ -296,7 +293,7 @@ export class App extends ui.Frame {
 
         return true;
       } catch (err) {
-        await this.children.alert.run(err);
+        await this.children.alert.open(err);
       }
     }
   }
