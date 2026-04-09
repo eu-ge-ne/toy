@@ -33,7 +33,7 @@ export class App extends ui.Frame {
   constructor() {
     super();
 
-    const { editor, palette, ask, save, debug, header } = this.children = {
+    const { editor, palette, save, debug, header } = this.children = {
       header: new Header({
         disabled: this.#zen,
         fileName: this.#fileName,
@@ -65,7 +65,6 @@ export class App extends ui.Frame {
 
     palette.on("layoutChange", () => this.resizeChildren());
 
-    ask.on("render", () => this.render());
     palette.on("render", () => this.render());
     save.on("render", () => this.render());
 
@@ -147,7 +146,6 @@ export class App extends ui.Frame {
     this.children.editor.render();
     this.children.debug.render();
     this.children.palette.render();
-    this.children.ask.render();
     this.children.save.render();
 
     vt.buf.write(vt.cursor.show);
@@ -207,7 +205,7 @@ export class App extends ui.Frame {
     this.children.editor.state.disabled = true;
 
     if (!this.children.editor.history.isEmpty) {
-      if (await this.children.ask.run("Save changes?")) {
+      if (await this.children.ask.open("Save changes?")) {
         await this.#save();
       }
     }
