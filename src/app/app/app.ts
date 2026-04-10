@@ -19,7 +19,7 @@ export class App extends ui.Modal {
   #fileName = "";
   #fileModified = false;
 
-  override children: {
+  protected override children: {
     header: Header;
     editor: Editor;
     footer: Footer;
