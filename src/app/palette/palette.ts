@@ -66,7 +66,7 @@ export class Palette extends ui.Modal<PaletteEvents, [], Command | undefined> {
     while (true) {
       this.#filter();
       this.emit("invalidate", undefined);
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -120,18 +120,5 @@ export class Palette extends ui.Modal<PaletteEvents, [], Command | undefined> {
     }
 
     this.children.list.selectedIndex = 0;
-  }
-
-  #render(): void {
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.bg.render();
-    this.children.editor.render();
-    this.children.list.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
   }
 }

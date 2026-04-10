@@ -47,7 +47,7 @@ export class Save extends ui.Modal<unknown, [string], string> {
     editor.reset(true);
 
     while (true) {
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -73,19 +73,5 @@ export class Save extends ui.Modal<unknown, [string], string> {
     this.children.bg.color = bg;
     this.children.footer.color = text;
     this.children.editor.setTheme(theme);
-  }
-
-  #render(): void {
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.bg.render();
-    this.children.header.render();
-    this.children.footer.render();
-    this.children.editor.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
   }
 }

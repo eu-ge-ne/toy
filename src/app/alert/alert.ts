@@ -35,7 +35,7 @@ export class Alert extends ui.Modal<unknown, [unknown]> {
       : Deno.inspect(err);
 
     while (true) {
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -54,18 +54,5 @@ export class Alert extends ui.Modal<unknown, [unknown]> {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
-  }
-
-  #render(): void {
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.bg.render();
-    this.children.text.render();
-    this.children.footer.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
   }
 }

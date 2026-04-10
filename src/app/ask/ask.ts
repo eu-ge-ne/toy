@@ -33,7 +33,7 @@ export class Ask extends ui.Modal<unknown, [string], boolean> {
     this.children.text.value = text;
 
     while (true) {
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -53,18 +53,5 @@ export class Ask extends ui.Modal<unknown, [string], boolean> {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
-  }
-
-  #render(): void {
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.bg.render();
-    this.children.text.render();
-    this.children.footer.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
   }
 }
