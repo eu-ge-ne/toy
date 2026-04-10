@@ -8,7 +8,7 @@ export class PageDownHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    if (!this.editor.state.multiLine) {
+    if (!this.editor.props.multiLine) {
       return false;
     }
 

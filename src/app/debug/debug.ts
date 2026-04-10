@@ -4,7 +4,7 @@ import * as vt from "@lib/vt";
 
 const MIB = Math.pow(1024, 2);
 
-interface DebugState {
+interface DebugProps {
   disabled: boolean;
   renderTime: number;
   inputTime: number;
@@ -20,7 +20,7 @@ export class Debug extends ui.Frame {
     line5: ui.Text;
   };
 
-  constructor(readonly state: DebugState) {
+  constructor(readonly props: DebugProps) {
     super();
 
     this.children = {
@@ -45,7 +45,7 @@ export class Debug extends ui.Frame {
   }
 
   render(): void {
-    if (this.state.disabled) {
+    if (this.props.disabled) {
       return;
     }
 
@@ -59,11 +59,11 @@ export class Debug extends ui.Frame {
 
     this.children.bg.render();
 
-    const i = this.state.inputTime.toFixed(1);
+    const i = this.props.inputTime.toFixed(1);
     this.children.line1.value = `Input    : ${i} ms`;
     this.children.line1.render();
 
-    const r = this.state.renderTime.toFixed(1);
+    const r = this.props.renderTime.toFixed(1);
     this.children.line2.value = `Render   : ${r} ms`;
     this.children.line2.render();
 

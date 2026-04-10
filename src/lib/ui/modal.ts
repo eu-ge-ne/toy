@@ -3,8 +3,7 @@ import * as vt from "@lib/vt";
 import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
-export abstract class Modal<E = unknown, P extends unknown[] = [], R = void>
-  extends Widget<E> {
+export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
   abstract open(..._: P): Promise<R>;
 
   protected render(): void {

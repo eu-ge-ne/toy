@@ -1,5 +1,5 @@
 import { Widget } from "./widget.ts";
 
-export abstract class Frame<E = unknown> extends Widget<E> {
+export abstract class Frame extends Widget {
   abstract render(): void;
 }

@@ -12,24 +12,17 @@ import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
 import { TextLayout } from "./text-layout.ts";
 
-interface EditorEvents {
-  cursorChanged: {
-    ln: number;
-    col: number;
-    lnCount: number;
-  };
-  keyHandled: number;
-}
-
-interface EditorState {
+interface EditorProps {
   disabled: boolean;
   index: boolean;
   multiLine: boolean;
   whitespace: boolean;
   wrap: boolean;
+  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
+  onKeyHandle?: (_: number) => void;
 }
 
-export class Editor extends ui.Frame<EditorEvents> {
+export class Editor extends ui.Frame {
   #colors = colors(themes.DefaultTheme);
 
   #handlers: keys.EditorHandler[] = [
@@ -66,7 +59,7 @@ export class Editor extends ui.Frame<EditorEvents> {
     bg: ui.Bg;
   };
 
-  constructor(readonly state: EditorState) {
+  constructor(readonly props: EditorProps) {
     super();
 
     this.children = {
@@ -76,7 +69,7 @@ export class Editor extends ui.Frame<EditorEvents> {
 
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.state.multiLine) {
+      if (this.props.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -91,7 +84,7 @@ export class Editor extends ui.Frame<EditorEvents> {
   }
 
   onKey(key: Key): void {
-    if (this.state.disabled) {
+    if (this.props.disabled) {
       return;
     }
 
@@ -99,7 +92,7 @@ export class Editor extends ui.Frame<EditorEvents> {
 
     this.#handlers.find((x) => x.match(key))?.handle(key);
 
-    this.emit("keyHandled", performance.now() - t0);
+    this.props.onKeyHandle?.(performance.now() - t0);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -278,14 +271,14 @@ export class Editor extends ui.Frame<EditorEvents> {
     vt.buf.write(vt.cursor.save);
     this.children.bg.render();
 
-    if (this.state.index && (this.textBuf.lineCount > 0)) {
+    if (this.props.index && (this.textBuf.lineCount > 0)) {
       this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
     } else {
       this.index_width = 0;
     }
 
     this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.state.wrap
+    segmenter.settings.width = this.props.wrap
       ? this.text_width
       : Number.MAX_SAFE_INTEGER;
 
@@ -296,7 +289,7 @@ export class Editor extends ui.Frame<EditorEvents> {
       this.#renderLines();
     }
 
-    if (!this.state.disabled) {
+    if (!this.props.disabled) {
       vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
     } else {
       vt.buf.write(vt.cursor.restore);
@@ -366,7 +359,7 @@ export class Editor extends ui.Frame<EditorEvents> {
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.state.whitespace,
+        this.props.whitespace,
       );
 
       if (color !== current_color) {

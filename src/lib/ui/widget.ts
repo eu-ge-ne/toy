@@ -1,14 +1,10 @@
-export abstract class Widget<E> {
+export abstract class Widget {
   width = 0;
   height = 0;
   y = 0;
   x = 0;
 
-  protected children: Record<string, Widget<unknown>> = {};
-
-  #listeners: {
-    [K in keyof E]?: ((data: E[K]) => void)[];
-  } = {};
+  protected children: Record<string, Widget> = {};
 
   resize(w: number, h: number, y: number, x: number): void {
     this.width = w;
@@ -20,13 +16,5 @@ export abstract class Widget<E> {
   }
 
   protected resizeChildren(): void {
-  }
-
-  on<K extends keyof E>(name: K, cb: (data: E[K]) => void): void {
-    this.#listeners[name] = [...(this.#listeners[name] ?? []), cb];
-  }
-
-  protected emit<K extends keyof E>(name: K, data: E[K]): void {
-    this.#listeners[name]?.forEach((cb) => cb(data));
   }
 }

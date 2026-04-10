@@ -8,18 +8,18 @@ import { availableOptions } from "./options.ts";
 
 const maxListSize = 10;
 
-interface PaletteEvents {
-  invalidate: unknown;
+interface PaletteProps {
+  onInvalidate: () => void;
 }
 
-export class Palette extends ui.Modal<PaletteEvents, [], Command | undefined> {
+export class Palette extends ui.Modal<[], Command | undefined> {
   protected override children: {
     bg: ui.Bg;
     editor: Editor;
     list: ui.List<Command>;
   };
 
-  constructor() {
+  constructor(private readonly props: PaletteProps) {
     super();
 
     this.children = {
@@ -65,7 +65,7 @@ export class Palette extends ui.Modal<PaletteEvents, [], Command | undefined> {
 
     while (true) {
       this.#filter();
-      this.emit("invalidate", undefined);
+      this.props.onInvalidate();
       this.render();
 
       const key = await vt.readKey();

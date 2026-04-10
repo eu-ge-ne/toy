@@ -2,7 +2,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Ask extends ui.Modal<unknown, [string], boolean> {
+export class Ask extends ui.Modal<[string], boolean> {
   protected override children: {
     bg: ui.Bg;
     text: ui.MultiLineText;
