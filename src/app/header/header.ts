@@ -2,7 +2,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-interface HeaderState {
+interface HeaderProps {
   disabled: boolean;
   fileName: string;
   fileModified: boolean;
@@ -14,7 +14,7 @@ export class Header extends ui.Frame {
     text: ui.Text;
   };
 
-  constructor(readonly state: HeaderState) {
+  constructor(readonly props: HeaderProps) {
     super();
 
     this.children = {
@@ -31,7 +31,7 @@ export class Header extends ui.Frame {
   }
 
   render(): void {
-    if (this.state.disabled) {
+    if (this.props.disabled) {
       return;
     }
 
@@ -39,8 +39,8 @@ export class Header extends ui.Frame {
 
     this.children.bg.render();
 
-    const f = this.state.fileModified ? " +" : "";
-    this.children.text.value = `${this.state.fileName}${f}`;
+    const f = this.props.fileModified ? " +" : "";
+    this.children.text.value = `${this.props.fileName}${f}`;
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);

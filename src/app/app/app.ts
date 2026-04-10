@@ -33,7 +33,7 @@ export class App extends ui.Modal {
   constructor() {
     super();
 
-    const { editor, palette, debug, header } = this.children = {
+    this.children = {
       header: new Header({
         disabled: this.#zen,
         fileName: this.#fileName,
@@ -51,35 +51,32 @@ export class App extends ui.Modal {
         multiLine: true,
         whitespace: false,
         wrap: false,
+        onCursorChange: (x) => {
+          this.children.footer.props.ln = x.ln;
+          this.children.footer.props.col = x.col;
+          this.children.footer.props.lnCount = x.lnCount;
+        },
+        onKeyHandle: (x) => this.children.debug.props.inputTime = x,
       }),
       debug: new Debug({
         disabled: true,
         renderTime: 0,
         inputTime: 0,
       }),
-      palette: new Palette(),
+      palette: new Palette({
+        onInvalidate: () => {
+          this.resizeChildren();
+          this.#render();
+        },
+      }),
       alert: new Alert(),
       ask: new Ask(),
       save: new Save(),
     };
 
-    palette.on("invalidate", () => {
-      this.resizeChildren();
-      this.#render();
-    });
-
-    editor.on("cursorChanged", (data) => {
-      const x = this.children.footer.state;
-      x.ln = data.ln;
-      x.col = data.col;
-      x.lnCount = data.lnCount;
-    });
-
-    editor.on("keyHandled", (data) => debug.state.inputTime = data);
-
-    editor.history.onChange = () => {
-      this.#fileModified = !editor.history.isEmpty;
-      header.state.fileModified = this.#fileModified;
+    this.children.editor.history.onChange = () => {
+      this.#fileModified = !this.children.editor.history.isEmpty;
+      this.children.header.props.fileModified = this.#fileModified;
     };
   }
 
@@ -170,22 +167,24 @@ export class App extends ui.Modal {
   }
 
   #onZen(): void {
-    this.#zen = !this.#zen;
-
     const { header, editor, footer } = this.children;
 
-    header.state.disabled = this.#zen;
-    footer.state.disabled = this.#zen;
-    editor.state.index = !this.#zen;
+    this.#zen = !this.#zen;
+
+    header.props.disabled = this.#zen;
+    footer.props.disabled = this.#zen;
+    editor.props.index = !this.#zen;
 
     this.resizeChildren();
   }
 
   async #handleExit(): Promise<void> {
-    this.children.editor.state.disabled = true;
+    const { editor, ask } = this.children;
 
-    if (!this.children.editor.history.isEmpty) {
-      if (await this.children.ask.open("Save changes?")) {
+    editor.props.disabled = true;
+
+    if (!editor.history.isEmpty) {
+      if (await ask.open("Save changes?")) {
         await this.#save();
       }
     }
@@ -194,11 +193,13 @@ export class App extends ui.Modal {
   }
 
   async #handlePalette(): Promise<void> {
-    this.children.editor.state.disabled = true;
+    const { editor, palette } = this.children;
 
-    const cmd = await this.children.palette.open();
+    editor.props.disabled = true;
 
-    this.children.editor.state.disabled = false;
+    const cmd = await palette.open();
+
+    editor.props.disabled = false;
 
     this.#render();
 
@@ -208,28 +209,32 @@ export class App extends ui.Modal {
   }
 
   async #handleSave(): Promise<void> {
-    this.children.editor.state.disabled = true;
+    const { editor } = this.children;
+
+    editor.props.disabled = true;
 
     if (await this.#save()) {
-      this.children.editor.reset(false);
+      editor.reset(false);
     }
 
-    this.children.editor.state.disabled = false;
+    editor.props.disabled = false;
 
     this.#render();
   }
 
   async #open(filePath: string): Promise<void> {
+    const { editor, header, alert } = this.children;
+
     try {
-      await file.load(this.children.editor.textBuf, filePath);
+      await file.load(editor.textBuf, filePath);
 
       this.#fileName = filePath;
-      this.children.header.state.fileName = filePath;
+      header.props.fileName = filePath;
     } catch (err) {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.children.alert.open(err);
+        await alert.open(err);
 
         this.#exit();
       }
@@ -257,21 +262,23 @@ export class App extends ui.Modal {
   }
 
   async #saveFileAs(): Promise<boolean> {
+    const { save, editor, header, alert } = this.children;
+
     while (true) {
-      const filePath = await this.children.save.open(this.#fileName);
+      const filePath = await save.open(this.#fileName);
       if (!filePath) {
         return false;
       }
 
       try {
-        await file.save(this.children.editor.textBuf, filePath);
+        await file.save(editor.textBuf, filePath);
 
         this.#fileName = filePath;
-        this.children.header.state.fileName = filePath;
+        header.props.fileName = filePath;
 
         return true;
       } catch (err) {
-        await this.children.alert.open(err);
+        await alert.open(err);
       }
     }
   }
@@ -297,6 +304,8 @@ export class App extends ui.Modal {
   }
 
   async #handleCommand(cmd: Command): Promise<void> {
+    const { editor, debug } = this.children;
+
     switch (cmd.name) {
       case "Zen":
         this.#onZen();
@@ -319,57 +328,55 @@ export class App extends ui.Modal {
         break;
 
       case "Debug":
-        this.children.debug.state.disabled = !this.children.debug.state
-          .disabled;
+        debug.props.disabled = !debug.props.disabled;
         break;
 
       case "Whitespace":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.state.whitespace = !this.children.editor.state
-            .whitespace;
+        if (!editor.props.disabled) {
+          editor.props.whitespace = !editor.props.whitespace;
         }
         break;
 
       case "Wrap":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.state.wrap = !this.children.editor.state.wrap;
-          this.children.editor.cursor.home(false);
+        if (!editor.props.disabled) {
+          editor.props.wrap = !editor.props.wrap;
+          editor.cursor.home(false);
         }
         break;
 
       case "Copy":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.copy();
+        if (!editor.props.disabled) {
+          editor.copy();
         }
         break;
 
       case "Cut":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.cut();
+        if (!editor.props.disabled) {
+          editor.cut();
         }
         break;
 
       case "Paste":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.paste();
+        if (!editor.props.disabled) {
+          editor.paste();
         }
         break;
 
       case "Undo":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.undo();
+        if (!editor.props.disabled) {
+          editor.undo();
         }
         break;
 
       case "Redo":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.redo();
+        if (!editor.props.disabled) {
+          editor.redo();
         }
         break;
 
       case "SelectAll":
-        if (!this.children.editor.state.disabled) {
-          this.children.editor.selectAll();
+        if (!editor.props.disabled) {
+          editor.selectAll();
         }
         break;
     }
@@ -378,6 +385,6 @@ export class App extends ui.Modal {
   #render(): void {
     const t0 = performance.now();
     this.render();
-    this.children.debug.state.renderTime = performance.now() - t0;
+    this.children.debug.props.renderTime = performance.now() - t0;
   }
 }

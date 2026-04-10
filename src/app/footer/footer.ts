@@ -2,7 +2,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-interface FooterState {
+interface FooterProps {
   disabled: boolean;
   ln: number;
   col: number;
@@ -15,7 +15,7 @@ export class Footer extends ui.Frame {
     text: ui.Text;
   };
 
-  constructor(readonly state: FooterState) {
+  constructor(readonly props: FooterProps) {
     super();
 
     this.children = {
@@ -32,7 +32,7 @@ export class Footer extends ui.Frame {
   }
 
   render(): void {
-    if (this.state.disabled) {
+    if (this.props.disabled) {
       return;
     }
 
@@ -40,11 +40,11 @@ export class Footer extends ui.Frame {
 
     this.children.bg.render();
 
-    const ln = this.state.ln + 1;
-    const col = this.state.col + 1;
-    const pct = this.state.lnCount === 0
+    const ln = this.props.ln + 1;
+    const col = this.props.col + 1;
+    const pct = this.props.lnCount === 0
       ? 0
-      : ((ln / this.state.lnCount) * 100).toFixed(0);
+      : ((ln / this.props.lnCount) * 100).toFixed(0);
     this.children.text.value = `${ln} ${col}  ${pct}% `;
     this.children.text.render();
 

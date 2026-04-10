@@ -2,7 +2,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Alert extends ui.Modal<unknown, [unknown]> {
+export class Alert extends ui.Modal<[unknown]> {
   protected override children: {
     bg: ui.Bg;
     text: ui.MultiLineText;

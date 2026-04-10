@@ -3,7 +3,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class Save extends ui.Modal<unknown, [string], string> {
+export class Save extends ui.Modal<[string], string> {
   protected override children: {
     bg: ui.Bg;
     header: ui.Text;
