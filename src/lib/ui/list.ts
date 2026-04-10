@@ -1,6 +1,6 @@
 import * as vt from "@lib/vt";
 
-import { Component } from "./component.ts";
+import { Frame } from "./frame.ts";
 
 const encoder = new TextEncoder();
 
@@ -13,7 +13,7 @@ interface ListParams {
   readonly emptyText: string;
 }
 
-export class List<T> extends Component {
+export class List<T> extends Frame {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
   values: ListItem<T>[] = [];

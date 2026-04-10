@@ -10,7 +10,7 @@ interface DebugState {
   inputTime: number;
 }
 
-export class Debug extends ui.Component {
+export class Debug extends ui.Frame {
   protected override children: {
     bg: ui.Bg;
     line1: ui.Text;

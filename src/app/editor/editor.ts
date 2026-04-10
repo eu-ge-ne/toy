@@ -29,7 +29,7 @@ interface EditorState {
   wrap: boolean;
 }
 
-export class Editor extends ui.Component<EditorEvents> {
+export class Editor extends ui.Frame<EditorEvents> {
   #colors = colors(themes.DefaultTheme);
 
   #handlers: keys.EditorHandler[] = [

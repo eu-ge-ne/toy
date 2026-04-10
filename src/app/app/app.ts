@@ -14,7 +14,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class App extends ui.Component {
+export class App extends ui.Modal {
   #zen = true;
   #fileName = "";
   #fileModified = false;
@@ -33,43 +33,40 @@ export class App extends ui.Component {
   constructor() {
     super();
 
-    const { editor, palette, alert, ask, save, debug, header } = this.children =
-      {
-        header: new Header({
-          disabled: this.#zen,
-          fileName: this.#fileName,
-          fileModified: this.#fileModified,
-        }),
-        footer: new Footer({
-          disabled: this.#zen,
-          ln: 0,
-          col: 0,
-          lnCount: 0,
-        }),
-        editor: new Editor({
-          disabled: false,
-          index: !this.#zen,
-          multiLine: true,
-          whitespace: false,
-          wrap: false,
-        }),
-        debug: new Debug({
-          disabled: true,
-          renderTime: 0,
-          inputTime: 0,
-        }),
-        palette: new Palette(),
-        alert: new Alert(),
-        ask: new Ask(),
-        save: new Save(),
-      };
+    const { editor, palette, debug, header } = this.children = {
+      header: new Header({
+        disabled: this.#zen,
+        fileName: this.#fileName,
+        fileModified: this.#fileModified,
+      }),
+      footer: new Footer({
+        disabled: this.#zen,
+        ln: 0,
+        col: 0,
+        lnCount: 0,
+      }),
+      editor: new Editor({
+        disabled: false,
+        index: !this.#zen,
+        multiLine: true,
+        whitespace: false,
+        wrap: false,
+      }),
+      debug: new Debug({
+        disabled: true,
+        renderTime: 0,
+        inputTime: 0,
+      }),
+      palette: new Palette(),
+      alert: new Alert(),
+      ask: new Ask(),
+      save: new Save(),
+    };
 
-    palette.on("layoutChange", () => this.resizeChildren());
-
-    alert.on("render", () => this.render());
-    ask.on("render", () => this.render());
-    palette.on("render", () => this.render());
-    save.on("render", () => this.render());
+    palette.on("invalidate", () => {
+      this.resizeChildren();
+      this.#render();
+    });
 
     editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
@@ -138,29 +135,7 @@ export class App extends ui.Component {
     }
   }
 
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.header.render();
-    this.children.footer.render();
-    this.children.editor.render();
-    this.children.debug.render();
-    this.children.palette.render();
-    this.children.alert.render();
-    this.children.ask.render();
-    this.children.save.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.children.debug.state.renderTime = performance.now() - t0;
-  }
-
-  async run(fileName?: string): Promise<void> {
+  async open(fileName?: string): Promise<void> {
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
@@ -180,7 +155,7 @@ export class App extends ui.Component {
 
   async #loop(): Promise<void> {
     while (true) {
-      this.render();
+      this.#render();
 
       const key = await vt.readKey();
 
@@ -210,7 +185,7 @@ export class App extends ui.Component {
     this.children.editor.state.disabled = true;
 
     if (!this.children.editor.history.isEmpty) {
-      if (await this.children.ask.run("Save changes?")) {
+      if (await this.children.ask.open("Save changes?")) {
         await this.#save();
       }
     }
@@ -221,11 +196,11 @@ export class App extends ui.Component {
   async #handlePalette(): Promise<void> {
     this.children.editor.state.disabled = true;
 
-    const cmd = await this.children.palette.run();
+    const cmd = await this.children.palette.open();
 
     this.children.editor.state.disabled = false;
 
-    this.render();
+    this.#render();
 
     if (cmd) {
       await this.#handleCommand(cmd);
@@ -241,7 +216,7 @@ export class App extends ui.Component {
 
     this.children.editor.state.disabled = false;
 
-    this.render();
+    this.#render();
   }
 
   async #open(filePath: string): Promise<void> {
@@ -254,7 +229,7 @@ export class App extends ui.Component {
       const not_found = err instanceof Deno.errors.NotFound;
 
       if (!not_found) {
-        await this.children.alert.run(err);
+        await this.children.alert.open(err);
 
         this.#exit();
       }
@@ -275,7 +250,7 @@ export class App extends ui.Component {
 
       return true;
     } catch (err) {
-      await this.children.alert.run(err);
+      await this.children.alert.open(err);
 
       return await this.#saveFileAs();
     }
@@ -283,7 +258,7 @@ export class App extends ui.Component {
 
   async #saveFileAs(): Promise<boolean> {
     while (true) {
-      const filePath = await this.children.save.run(this.#fileName);
+      const filePath = await this.children.save.open(this.#fileName);
       if (!filePath) {
         return false;
       }
@@ -296,7 +271,7 @@ export class App extends ui.Component {
 
         return true;
       } catch (err) {
-        await this.children.alert.run(err);
+        await this.children.alert.open(err);
       }
     }
   }
@@ -304,7 +279,7 @@ export class App extends ui.Component {
   #onSigwinch = () => {
     const { columns, rows } = Deno.consoleSize();
     this.resize(columns, rows, 0, 0);
-    this.render();
+    this.#render();
   };
 
   #exit = (e?: PromiseRejectionEvent) => {
@@ -398,5 +373,11 @@ export class App extends ui.Component {
         }
         break;
     }
+  }
+
+  #render(): void {
+    const t0 = performance.now();
+    this.render();
+    this.children.debug.state.renderTime = performance.now() - t0;
   }
 }
