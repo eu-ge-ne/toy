@@ -18,4 +18,4 @@ if (args.version) {
 
 const fileName = typeof args._[0] === "string" ? args._[0] : undefined;
 
-new App().run(fileName);
+new App().open(fileName);

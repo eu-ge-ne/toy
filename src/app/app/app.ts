@@ -14,7 +14,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-export class App extends ui.Frame {
+export class App extends ui.Modal {
   #zen = true;
   #fileName = "";
   #fileModified = false;
@@ -65,7 +65,7 @@ export class App extends ui.Frame {
 
     palette.on("invalidate", () => {
       this.resizeChildren();
-      this.render();
+      this.#render();
     });
 
     editor.on("cursorChanged", (data) => {
@@ -135,25 +135,7 @@ export class App extends ui.Frame {
     }
   }
 
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.children.header.render();
-    this.children.footer.render();
-    this.children.editor.render();
-    this.children.debug.render();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.children.debug.state.renderTime = performance.now() - t0;
-  }
-
-  async run(fileName?: string): Promise<void> {
+  async open(fileName?: string): Promise<void> {
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
@@ -173,7 +155,7 @@ export class App extends ui.Frame {
 
   async #loop(): Promise<void> {
     while (true) {
-      this.render();
+      this.#render();
 
       const key = await vt.readKey();
 
@@ -218,7 +200,7 @@ export class App extends ui.Frame {
 
     this.children.editor.state.disabled = false;
 
-    this.render();
+    this.#render();
 
     if (cmd) {
       await this.#handleCommand(cmd);
@@ -234,7 +216,7 @@ export class App extends ui.Frame {
 
     this.children.editor.state.disabled = false;
 
-    this.render();
+    this.#render();
   }
 
   async #open(filePath: string): Promise<void> {
@@ -297,7 +279,7 @@ export class App extends ui.Frame {
   #onSigwinch = () => {
     const { columns, rows } = Deno.consoleSize();
     this.resize(columns, rows, 0, 0);
-    this.render();
+    this.#render();
   };
 
   #exit = (e?: PromiseRejectionEvent) => {
@@ -391,5 +373,11 @@ export class App extends ui.Frame {
         }
         break;
     }
+  }
+
+  #render(): void {
+    const t0 = performance.now();
+    this.render();
+    this.children.debug.state.renderTime = performance.now() - t0;
   }
 }
