@@ -9,13 +9,10 @@ import { availableOptions } from "./options.ts";
 const maxListSize = 10;
 
 interface PaletteEvents {
-  layoutChange: unknown;
-  render: unknown;
+  invalidate: unknown;
 }
 
-export class Palette extends ui.Frame<PaletteEvents> {
-  #enabled = false;
-
+export class Palette extends ui.Modal<PaletteEvents, [], Command | undefined> {
   protected override children: {
     bg: ui.Bg;
     editor: Editor;
@@ -60,31 +57,41 @@ export class Palette extends ui.Frame<PaletteEvents> {
     this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
-  render(): void {
-    if (!this.#enabled) {
-      return;
+  async open(): Promise<Command | undefined> {
+    const { list, editor } = this.children;
+
+    editor.textBuf.reset();
+    editor.reset(false);
+
+    while (true) {
+      this.#filter();
+      this.emit("invalidate", undefined);
+      this.#render();
+
+      const key = await vt.readKey();
+
+      switch (key.name) {
+        case "ESC":
+          return;
+        case "ENTER":
+          return list.values[list.selectedIndex]?.value;
+        case "UP":
+          if (list.values.length > 0) {
+            list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
+          }
+          continue;
+        case "DOWN":
+          if (list.values.length > 0) {
+            list.selectedIndex = Math.min(
+              list.selectedIndex + 1,
+              list.values.length - 1,
+            );
+          }
+          continue;
+      }
+
+      editor.onKey(key);
     }
-
-    this.children.bg.render();
-    this.children.editor.render();
-    this.children.list.render();
-  }
-
-  async run(): Promise<Command | undefined> {
-    this.#enabled = true;
-
-    this.children.editor.textBuf.reset();
-    this.children.editor.reset(false);
-
-    this.#filter();
-
-    this.emit("render", undefined);
-
-    const cmd = await this.#loop();
-
-    this.#enabled = false;
-
-    return cmd;
   }
 
   setTheme(theme: themes.Theme): void {
@@ -101,42 +108,6 @@ export class Palette extends ui.Frame<PaletteEvents> {
     this.children.editor.setTheme(theme);
   }
 
-  async #loop(): Promise<Command | undefined> {
-    const { list, editor } = this.children;
-
-    while (true) {
-      const key = await vt.readKey();
-
-      switch (key.name) {
-        case "ESC":
-          return;
-        case "ENTER":
-          return list.values[list.selectedIndex]?.value;
-        case "UP":
-          if (list.values.length > 0) {
-            list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
-            this.emit("render", undefined);
-          }
-          continue;
-        case "DOWN":
-          if (list.values.length > 0) {
-            list.selectedIndex = Math.min(
-              list.selectedIndex + 1,
-              list.values.length - 1,
-            );
-            this.emit("render", undefined);
-          }
-          continue;
-      }
-
-      editor.onKey(key);
-
-      this.#filter();
-
-      this.emit("render", undefined);
-    }
-  }
-
   #filter(): void {
     const text = this.children.editor.textBuf.text().toUpperCase();
 
@@ -149,7 +120,18 @@ export class Palette extends ui.Frame<PaletteEvents> {
     }
 
     this.children.list.selectedIndex = 0;
+  }
 
-    this.emit("layoutChange", undefined);
+  #render(): void {
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.children.bg.render();
+    this.children.editor.render();
+    this.children.list.render();
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
   }
 }

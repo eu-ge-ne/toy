@@ -63,9 +63,10 @@ export class App extends ui.Frame {
       save: new Save(),
     };
 
-    palette.on("layoutChange", () => this.resizeChildren());
-
-    palette.on("render", () => this.render());
+    palette.on("invalidate", () => {
+      this.resizeChildren();
+      this.render();
+    });
 
     editor.on("cursorChanged", (data) => {
       const x = this.children.footer.state;
@@ -144,7 +145,6 @@ export class App extends ui.Frame {
     this.children.footer.render();
     this.children.editor.render();
     this.children.debug.render();
-    this.children.palette.render();
 
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
@@ -214,7 +214,7 @@ export class App extends ui.Frame {
   async #handlePalette(): Promise<void> {
     this.children.editor.state.disabled = true;
 
-    const cmd = await this.children.palette.run();
+    const cmd = await this.children.palette.open();
 
     this.children.editor.state.disabled = false;
 
