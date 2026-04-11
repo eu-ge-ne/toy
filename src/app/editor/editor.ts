@@ -67,9 +67,6 @@ export class Editor extends ui.Frame {
         index: props.index,
         whitespace: props.whitespace,
         wrap: props.wrap,
-        textBuf: this.textBuf,
-        textLayout: this.#textLayout,
-        cursor: this.cursor,
         color: {
           bg: new Uint8Array(),
           void: new Uint8Array(),
@@ -84,6 +81,9 @@ export class Editor extends ui.Frame {
             [CharColor.EmptySelected]: new Uint8Array(),
           },
         },
+        cursor: this.cursor,
+        textBuf: this.textBuf,
+        textLayout: this.#textLayout,
       }),
     };
   }

@@ -12,15 +12,15 @@ interface TextEditorProps {
   index: boolean;
   whitespace: boolean;
   wrap: boolean;
-  textBuf: textBuf.TextBuf;
-  textLayout: TextLayout;
-  cursor: Cursor;
   color: {
     bg: Uint8Array;
     void: Uint8Array;
     index: Uint8Array;
     char: Record<CharColor, Uint8Array>;
   };
+  cursor: Cursor;
+  textBuf: textBuf.TextBuf;
+  textLayout: TextLayout;
 }
 
 export const enum CharColor {
