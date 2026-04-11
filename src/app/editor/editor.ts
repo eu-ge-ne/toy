@@ -1,19 +1,18 @@
-import { graphemes, segmenter } from "@lib/graphemes";
+import { graphemes } from "@lib/graphemes";
 import { Key } from "@lib/kitty";
-import { range, sum } from "@lib/std";
 import { TextBuf } from "@lib/text-buf";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { CharColor, charColor, colors } from "./colors.ts";
 import { Cursor } from "./cursor.ts";
 import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
+import { CharColor, TextEditor } from "./text-editor.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface EditorProps {
-  disabled: boolean;
+  disabled: boolean; // TODO: rename to `focused`
   index: boolean;
   multiLine: boolean;
   whitespace: boolean;
@@ -23,8 +22,6 @@ interface EditorProps {
 }
 
 export class Editor extends ui.Frame {
-  #colors = colors(themes.DefaultTheme);
-
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
     new keys.BackspaceHandler(this),
@@ -57,6 +54,7 @@ export class Editor extends ui.Frame {
 
   protected override children: {
     bg: ui.Bg;
+    text: TextEditor;
   };
 
   constructor(readonly props: EditorProps) {
@@ -64,7 +62,50 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
+      text: new TextEditor({
+        disabled: props.disabled,
+        index: props.index,
+        whitespace: props.whitespace,
+        wrap: props.wrap,
+        textBuf: this.textBuf,
+        textLayout: this.#textLayout,
+        cursor: this.cursor,
+        color: {
+          bg: new Uint8Array(),
+          void: new Uint8Array(),
+          index: new Uint8Array(),
+          char: {
+            [CharColor.Undefined]: new Uint8Array(),
+            [CharColor.Visible]: new Uint8Array(),
+            [CharColor.Whitespace]: new Uint8Array(),
+            [CharColor.Empty]: new Uint8Array(),
+            [CharColor.VisibleSelected]: new Uint8Array(),
+            [CharColor.WhitespaceSelected]: new Uint8Array(),
+            [CharColor.EmptySelected]: new Uint8Array(),
+          },
+        },
+      }),
     };
+  }
+
+  override resizeChildren(): void {
+    const { bg, text } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width, this.height, this.y, this.x);
+  }
+
+  render(): void {
+    const { bg, text } = this.children;
+
+    vt.buf.write(vt.cursor.save);
+
+    bg.render();
+    text.render();
+
+    if (this.props.disabled) {
+      vt.buf.write(vt.cursor.restore);
+    }
   }
 
   reset(reset_cursor: boolean): void {
@@ -96,8 +137,40 @@ export class Editor extends ui.Frame {
   }
 
   setTheme(theme: themes.Theme): void {
-    this.#colors = colors(theme);
-    this.children.bg.color = new Uint8Array(this.#colors.background);
+    const { bg, text } = this.children;
+
+    bg.color = new Uint8Array(theme.bg_main);
+
+    text.props.color.bg = new Uint8Array(theme.bg_main);
+    text.props.color.void = new Uint8Array(theme.bg_dark0);
+    text.props.color.index = new Uint8Array([
+      ...theme.bg_light0,
+      ...theme.fg_dark0,
+    ]);
+    text.props.color.char = {
+      [CharColor.Undefined]: new Uint8Array(),
+      [CharColor.Visible]: new Uint8Array([
+        ...theme.bg_main,
+        ...theme.fg_light1,
+      ]),
+      [CharColor.Whitespace]: new Uint8Array([
+        ...theme.bg_main,
+        ...theme.fg_dark0,
+      ]),
+      [CharColor.Empty]: new Uint8Array([...theme.bg_main, ...theme.fg_main]),
+      [CharColor.VisibleSelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_light1,
+      ]),
+      [CharColor.WhitespaceSelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_dark1,
+      ]),
+      [CharColor.EmptySelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_dark1,
+      ]),
+    };
   }
 
   #sgr = new Intl.Segmenter();
@@ -248,204 +321,7 @@ export class Editor extends ui.Frame {
 
   selectAll(): boolean {
     this.cursor.set(0, 0, false);
-    this.cursor.set(
-      Number.MAX_SAFE_INTEGER,
-      Number.MAX_SAFE_INTEGER,
-      true,
-    );
+    this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
     return true;
-  }
-
-  private index_width = 0;
-  private text_width = 0;
-  private cursor_y = 0;
-  private cursor_x = 0;
-  private scroll_ln = 0;
-  private scroll_col = 0;
-
-  override resizeChildren(): void {
-    this.children.bg.resize(this.width, this.height, this.y, this.x);
-  }
-
-  render(): void {
-    vt.buf.write(vt.cursor.save);
-    this.children.bg.render();
-
-    if (this.props.index && (this.textBuf.lineCount > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
-    } else {
-      this.index_width = 0;
-    }
-
-    this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.props.wrap
-      ? this.text_width
-      : Number.MAX_SAFE_INTEGER;
-
-    segmenter.settings.y = this.cursor_y = this.y;
-    segmenter.settings.x = this.cursor_x = this.x + this.index_width;
-
-    if (this.width >= this.index_width) {
-      this.#renderLines();
-    }
-
-    if (!this.props.disabled) {
-      vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
-    } else {
-      vt.buf.write(vt.cursor.restore);
-    }
-  }
-
-  #renderLines(): void {
-    this.#scrollV();
-    this.#scrollH();
-
-    let row = this.y;
-
-    for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < this.textBuf.lineCount) {
-        row = this.#renderLine(ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, this.width);
-      }
-
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
-    }
-  }
-
-  #renderLine(ln: number, row: number): number {
-    let available_w = 0;
-    let current_color = CharColor.Undefined;
-
-    const xs = this.#textLayout.line(ln);
-
-    for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
-      if (col === 0) {
-        if (i > 0) {
-          row += 1;
-          if (row >= this.y + this.height) {
-            return row;
-          }
-        }
-
-        vt.cursor.set(vt.buf, row, this.x);
-
-        if (this.index_width > 0) {
-          if (i === 0) {
-            vt.buf.write(this.#colors.index);
-            vt.write_text(
-              vt.buf,
-              [this.index_width],
-              `${ln + 1} `.padStart(this.index_width),
-            );
-          } else {
-            vt.buf.write(this.#colors.background);
-            vt.write_spaces(vt.buf, this.index_width);
-          }
-        }
-
-        available_w = this.width - this.index_width;
-      }
-
-      if ((col < this.scroll_col) || (width > available_w)) {
-        continue;
-      }
-
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.props.whitespace,
-      );
-
-      if (color !== current_color) {
-        current_color = color;
-        vt.buf.write(this.#colors.char[color]);
-      }
-
-      vt.buf.write(bytes);
-
-      available_w -= width;
-    }
-
-    return row;
-  }
-
-  #scrollV(): void {
-    const delta_ln = this.cursor.ln - this.scroll_ln;
-
-    // Above?
-    if (delta_ln <= 0) {
-      this.scroll_ln = this.cursor.ln;
-      return;
-    }
-
-    // Below?
-
-    if (delta_ln > this.height) {
-      this.scroll_ln = this.cursor.ln - this.height;
-    }
-
-    const xs = range(this.scroll_ln, this.cursor.ln + 1).map((ln) =>
-      this.#textLayout.line(ln)
-        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
-    );
-
-    let i = 0;
-    let height = sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.scroll_ln += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.cursor_y += xs[i]!;
-      i += 1;
-    }
-  }
-
-  #scrollH(): void {
-    const cell =
-      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
-        .value;
-    if (cell) {
-      this.cursor_y += cell.ln;
-    }
-
-    const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.scroll_col;
-
-    // Before?
-    if (delta_col <= 0) {
-      this.scroll_col = col;
-      return;
-    }
-
-    // After?
-
-    const xs = this.#textLayout.line(this.cursor.ln, true)
-      .drop(this.cursor.col - delta_col)
-      .take(delta_col)
-      .map((x) => x.gr.width)
-      .toArray();
-
-    let width = sum(xs);
-
-    for (const w of xs) {
-      if (width < this.text_width) {
-        break;
-      }
-
-      this.scroll_col += 1;
-      width -= w;
-    }
-
-    this.cursor_x += width;
   }
 }
