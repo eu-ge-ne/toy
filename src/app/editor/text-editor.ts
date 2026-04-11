@@ -36,8 +36,8 @@ export const enum CharColor {
 export class TextEditor extends ui.Frame {
   #indexWidth = 0;
   #textWidth = 0;
-  private scroll_ln = 0;
-  private scroll_col = 0;
+  #scrollLn = 0;
+  #scrollCol = 0;
   private cursor_y = 0;
   private cursor_x = 0;
 
@@ -46,8 +46,10 @@ export class TextEditor extends ui.Frame {
   }
 
   render(): void {
-    if (this.props.index && (this.props.textBuf.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(this.props.textBuf.lineCount)) +
+    const { textBuf } = this.props;
+
+    if (this.props.index && (textBuf.lineCount > 0)) {
+      this.#indexWidth = Math.trunc(Math.log10(textBuf.lineCount)) +
         3;
     } else {
       this.#indexWidth = 0;
@@ -63,6 +65,8 @@ export class TextEditor extends ui.Frame {
     graphemes.segmenter.settings.x = this.cursor_x = this.x + this.#indexWidth;
 
     if (this.width >= this.#indexWidth) {
+      this.#scrollV();
+      this.#scrollH();
       this.#renderLines();
     }
 
@@ -72,12 +76,9 @@ export class TextEditor extends ui.Frame {
   }
 
   #renderLines(): void {
-    this.#scrollV();
-    this.#scrollH();
-
     let row = this.y;
 
-    for (let ln = this.scroll_ln;; ln += 1) {
+    for (let ln = this.#scrollLn;; ln += 1) {
       if (ln < this.props.textBuf.lineCount) {
         row = this.#renderLine(ln, row);
       } else {
@@ -94,21 +95,21 @@ export class TextEditor extends ui.Frame {
   }
 
   #scrollV(): void {
-    const delta_ln = this.props.cursor.ln - this.scroll_ln;
+    const delta_ln = this.props.cursor.ln - this.#scrollLn;
 
     // Above?
     if (delta_ln <= 0) {
-      this.scroll_ln = this.props.cursor.ln;
+      this.#scrollLn = this.props.cursor.ln;
       return;
     }
 
     // Below?
 
     if (delta_ln > this.height) {
-      this.scroll_ln = this.props.cursor.ln - this.height;
+      this.#scrollLn = this.props.cursor.ln - this.height;
     }
 
-    const xs = range(this.scroll_ln, this.props.cursor.ln + 1).map((ln) =>
+    const xs = range(this.#scrollLn, this.props.cursor.ln + 1).map((ln) =>
       this.props.textLayout.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
@@ -118,7 +119,7 @@ export class TextEditor extends ui.Frame {
 
     while (height > this.height) {
       height -= xs[i]!;
-      this.scroll_ln += 1;
+      this.#scrollLn += 1;
       i += 1;
     }
 
@@ -138,11 +139,11 @@ export class TextEditor extends ui.Frame {
     }
 
     const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.scroll_col;
+    const delta_col = col - this.#scrollCol;
 
     // Before?
     if (delta_col <= 0) {
-      this.scroll_col = col;
+      this.#scrollCol = col;
       return;
     }
 
@@ -161,7 +162,7 @@ export class TextEditor extends ui.Frame {
         break;
       }
 
-      this.scroll_col += 1;
+      this.#scrollCol += 1;
       width -= w;
     }
 
@@ -202,7 +203,7 @@ export class TextEditor extends ui.Frame {
         available_w = this.width - this.#indexWidth;
       }
 
-      if ((col < this.scroll_col) || (width > available_w)) {
+      if ((col < this.#scrollCol) || (width > available_w)) {
         continue;
       }
 
