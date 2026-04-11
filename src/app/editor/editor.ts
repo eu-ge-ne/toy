@@ -12,6 +12,7 @@ import { TextLayout } from "./text-layout.ts";
 
 interface EditorParams {
   readonly multiLine: boolean;
+  readonly onTextChange?: () => void;
   readonly onCursorChange?: (
     _: { ln: number; col: number; lnCount: number },
   ) => void;
@@ -24,8 +25,12 @@ export class Editor extends ui.Frame {
   readonly textBuf = new TextBuf();
   readonly #textLayout = new TextLayout(this.textBuf);
   readonly cursor = new Cursor(this.textBuf, this.#textLayout);
-  readonly history = new History(this.textBuf, this.cursor);
+  readonly #history = new History(this.textBuf, this.cursor);
   #clipboard = "";
+
+  get textChanged(): boolean {
+    return this.#history.changed;
+  }
 
   protected override children: {
     bg: ui.Bg;
@@ -39,6 +44,8 @@ export class Editor extends ui.Frame {
       bg: new ui.Bg(),
       text: new TextEditor(this.cursor, this.textBuf, this.#textLayout),
     };
+
+    this.#history.onChange = params.onTextChange;
   }
 
   override resizeChildren(): void {
@@ -106,7 +113,7 @@ export class Editor extends ui.Frame {
       }
     }
 
-    this.history.reset();
+    this.#history.reset();
   }
 
   onKey(key: kitty.Key): void {
@@ -319,8 +326,6 @@ export class Editor extends ui.Frame {
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
-    const { history } = this;
-
     if (this.cursor.selecting) {
       this.#textLayout.delete(this.cursor.from, {
         ln: this.cursor.to.ln,
@@ -344,12 +349,10 @@ export class Editor extends ui.Frame {
       this.cursor.set(this.cursor.ln + eol_count, col, false);
     }
 
-    history.push();
+    this.#history.push();
   }
 
   #backspace(): void {
-    const { history } = this;
-
     if (this.cursor.ln > 0 && this.cursor.col === 0) {
       const len = this.#textLayout.line(this.cursor.ln).take(2).reduce(
         (a) => a + 1,
@@ -376,30 +379,26 @@ export class Editor extends ui.Frame {
       this.cursor.left(false);
     }
 
-    history.push();
+    this.#history.push();
   }
 
   #deleteChar(): void {
-    const { history } = this;
-
     this.#textLayout.delete(this.cursor, {
       ln: this.cursor.ln,
       col: this.cursor.col + 1,
     });
 
-    history.push();
+    this.#history.push();
   }
 
   #deleteSelection(): void {
-    const { history } = this;
-
     this.#textLayout.delete(this.cursor.from, {
       ln: this.cursor.to.ln,
       col: this.cursor.to.col + 1,
     });
     this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
 
-    history.push();
+    this.#history.push();
   }
 
   copy(): void {
@@ -469,14 +468,14 @@ export class Editor extends ui.Frame {
       return;
     }
 
-    this.history.undo();
+    this.#history.undo();
   }
 
   redo(): void {
     if (!this.#focused) {
       return;
     }
-    this.history.redo();
+    this.#history.redo();
   }
 
   selectAll(): void {

@@ -47,6 +47,10 @@ export class App extends ui.Modal {
       }),
       editor: new Editor({
         multiLine: true,
+        onTextChange: () => {
+          this.#fileModified = this.children.editor.textChanged;
+          this.children.header.props.fileModified = this.#fileModified;
+        },
         onCursorChange: (x) => {
           this.children.footer.props.ln = x.ln;
           this.children.footer.props.col = x.col;
@@ -68,11 +72,6 @@ export class App extends ui.Modal {
       alert: new Alert(),
       ask: new Ask(),
       save: new Save(),
-    };
-
-    this.children.editor.history.onChange = () => {
-      this.#fileModified = !this.children.editor.history.isEmpty;
-      this.children.header.props.fileModified = this.#fileModified;
     };
   }
 
@@ -180,7 +179,7 @@ export class App extends ui.Modal {
 
     editor.setFocused(false);
 
-    if (!editor.history.isEmpty) {
+    if (editor.textChanged) {
       if (await ask.open("Save changes?")) {
         await this.#save();
       }
