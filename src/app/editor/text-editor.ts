@@ -38,8 +38,8 @@ export class TextEditor extends ui.Frame {
   #textWidth = 0;
   #scrollLn = 0;
   #scrollCol = 0;
-  private cursor_y = 0;
-  private cursor_x = 0;
+  #cursorY = 0;
+  #cursorX = 0;
 
   constructor(readonly props: TextEditorProps) {
     super();
@@ -61,8 +61,8 @@ export class TextEditor extends ui.Frame {
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
-    graphemes.segmenter.settings.y = this.cursor_y = this.y;
-    graphemes.segmenter.settings.x = this.cursor_x = this.x + this.#indexWidth;
+    graphemes.segmenter.settings.y = this.#cursorY = this.y;
+    graphemes.segmenter.settings.x = this.#cursorX = this.x + this.#indexWidth;
 
     if (this.width >= this.#indexWidth) {
       this.#scrollV();
@@ -71,15 +71,17 @@ export class TextEditor extends ui.Frame {
     }
 
     if (!this.props.disabled) {
-      vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
+      vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
     }
   }
 
   #renderLines(): void {
+    const { textBuf } = this.props;
+
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.props.textBuf.lineCount) {
+      if (ln < textBuf.lineCount) {
         row = this.#renderLine(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -124,7 +126,7 @@ export class TextEditor extends ui.Frame {
     }
 
     while (i < xs.length - 1) {
-      this.cursor_y += xs[i]!;
+      this.#cursorY += xs[i]!;
       i += 1;
     }
   }
@@ -135,7 +137,7 @@ export class TextEditor extends ui.Frame {
     ).next()
       .value;
     if (cell) {
-      this.cursor_y += cell.ln;
+      this.#cursorY += cell.ln;
     }
 
     const col = cell?.col ?? 0; // col = f(cursor.col)
@@ -166,7 +168,7 @@ export class TextEditor extends ui.Frame {
       width -= w;
     }
 
-    this.cursor_x += width;
+    this.#cursorX += width;
   }
 
   #renderLine(ln: number, row: number): number {
