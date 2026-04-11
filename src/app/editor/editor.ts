@@ -169,11 +169,31 @@ export class Editor extends ui.Frame {
       match: (x) => x.name === "ENTER",
       handle: this.onKeyEnter,
     },
+    {
+      match: (x) => {
+        if (x.name === "HOME") {
+          return true;
+        }
+        if (x.name === "LEFT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+      handle: this.onKeyHome,
+    },
+    {
+      match: (x) => x.name === "LEFT",
+      handle: this.onKeyLeft,
+    },
+    {
+      match: (x) => x.name === "PAGE_DOWN",
+      handle: this.onKeyPageDown,
+    },
+    {
+      match: (x) => x.name === "PAGE_UP",
+      handle: this.onKeyPageUp,
+    },
     /*
-    new keys.HomeHandler(this),
-    new keys.LeftHandler(this),
-    new keys.PageDownHandler(this),
-    new keys.PageUpHandler(this),
     new keys.PasteHandler(this),
     new keys.RedoHandler(this),
     new keys.RightHandler(this),
@@ -240,6 +260,28 @@ export class Editor extends ui.Frame {
     }
     this.insert("\n");
     return true;
+  }
+
+  onKeyHome(key: kitty.Key): boolean {
+    return this.cursor.home(Boolean(key.shift));
+  }
+
+  onKeyLeft(key: kitty.Key): boolean {
+    return this.cursor.left(Boolean(key.shift));
+  }
+
+  onKeyPageDown(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.down(this.height, Boolean(key.shift));
+  }
+
+  onKeyPageUp(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.up(this.height, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
