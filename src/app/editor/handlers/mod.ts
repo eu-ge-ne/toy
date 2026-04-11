@@ -1,9 +1,3 @@
-export * from "./backspace.ts";
-export * from "./bottom.ts";
-export * from "./copy.ts";
-export * from "./cut.ts";
-export * from "./delete.ts";
-export * from "./down.ts";
 export * from "./end.ts";
 export * from "./enter.ts";
 export * from "./handler.ts";
@@ -16,7 +10,6 @@ export * from "./redo.ts";
 export * from "./right.ts";
 export * from "./select-all.ts";
 export * from "./tab.ts";
-export * from "./text.ts";
 export * from "./top.ts";
 export * from "./undo.ts";
 export * from "./up.ts";

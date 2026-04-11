@@ -1,12 +1,11 @@
 import { graphemes } from "@lib/graphemes";
-import { Key } from "@lib/kitty";
+import * as kitty from "@lib/kitty";
 import { TextBuf } from "@lib/text-buf";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
-import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
 import { TextEditor } from "./text-editor.ts";
 import { TextLayout } from "./text-layout.ts";
@@ -21,30 +20,6 @@ interface EditorParams {
 
 export class Editor extends ui.Frame {
   #focused = false;
-
-  #handlers: keys.EditorHandler[] = [
-    new keys.TextHandler(this),
-    new keys.BackspaceHandler(this),
-    new keys.BottomHandler(this),
-    new keys.CopyHandler(this),
-    new keys.CutHandler(this),
-    new keys.DeleteHandler(this),
-    new keys.DownHandler(this),
-    new keys.EndHandler(this),
-    new keys.EnterHandler(this),
-    new keys.HomeHandler(this),
-    new keys.LeftHandler(this),
-    new keys.PageDownHandler(this),
-    new keys.PageUpHandler(this),
-    new keys.PasteHandler(this),
-    new keys.RedoHandler(this),
-    new keys.RightHandler(this),
-    new keys.SelectAllHandler(this),
-    new keys.TabHandler(this),
-    new keys.TopHandler(this),
-    new keys.UndoHandler(this),
-    new keys.UpHandler(this),
-  ];
 
   readonly textBuf = new TextBuf();
   readonly #textLayout = new TextLayout(this.textBuf);
@@ -86,6 +61,11 @@ export class Editor extends ui.Frame {
     }
   }
 
+  setTheme(theme: themes.Theme): void {
+    this.children.bg.color = new Uint8Array(theme.bg_main);
+    this.children.text.setTheme(theme);
+  }
+
   setFocused(x: boolean): void {
     this.#focused = x;
     this.children.text.setFocused(x);
@@ -113,8 +93,8 @@ export class Editor extends ui.Frame {
     this.children.text.toggleIndex();
   }
 
-  reset(reset_cursor: boolean): void {
-    if (reset_cursor) {
+  reset(resetCursor: boolean): void {
+    if (resetCursor) {
       if (this.params.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
@@ -129,21 +109,111 @@ export class Editor extends ui.Frame {
     this.history.reset();
   }
 
-  onKey(key: Key): void {
+  onKey(key: kitty.Key): void {
     if (!this.#focused) {
       return;
     }
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x.match(key))?.handle(key);
+    this.#handlers.find((x) => x.match(key))?.handle.call(this, key);
 
     this.params.onKeyHandle?.(performance.now() - t0);
   }
 
-  setTheme(theme: themes.Theme): void {
-    this.children.bg.color = new Uint8Array(theme.bg_main);
-    this.children.text.setTheme(theme);
+  #handlers: {
+    match: (_: kitty.Key) => boolean;
+    handle: (_: kitty.Key) => boolean;
+  }[] = [
+    {
+      match: (x) => typeof x.text === "string",
+      handle: this.onKeyText,
+    },
+    {
+      match: (x) => x.name === "BACKSPACE",
+      handle: this.onKeyBackspace,
+    },
+    {
+      match: (x) => x.name === "DOWN" && Boolean(x.super),
+      handle: this.onKeyBottom,
+    },
+    {
+      match: (x) => x.name === "c" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyCopy,
+    },
+    {
+      match: (x) => x.name === "x" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyCut,
+    },
+    {
+      match: (x) => x.name === "DELETE",
+      handle: this.onKeyDelete,
+    },
+    {
+      match: (x) => x.name === "DOWN",
+      handle: this.onKeyDown,
+    },
+    /*
+    new keys.EndHandler(this),
+    new keys.EnterHandler(this),
+    new keys.HomeHandler(this),
+    new keys.LeftHandler(this),
+    new keys.PageDownHandler(this),
+    new keys.PageUpHandler(this),
+    new keys.PasteHandler(this),
+    new keys.RedoHandler(this),
+    new keys.RightHandler(this),
+    new keys.SelectAllHandler(this),
+    new keys.TabHandler(this),
+    new keys.TopHandler(this),
+    new keys.UndoHandler(this),
+    new keys.UpHandler(this),
+    */
+  ];
+
+  onKeyText(key: kitty.Key): boolean {
+    this.insert(key.text!);
+    return true;
+  }
+
+  onKeyBackspace(): boolean {
+    if (this.cursor.selecting) {
+      this.deleteSelection();
+    } else {
+      this.backspace();
+    }
+    return true;
+  }
+
+  onKeyBottom(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.bottom(Boolean(key.shift));
+  }
+
+  onKeyCopy(): boolean {
+    return this.copy();
+  }
+
+  onKeyCut(): boolean {
+    return this.cut();
+  }
+
+  onKeyDelete(): boolean {
+    if (this.cursor.selecting) {
+      this.deleteSelection();
+    } else {
+      this.deleteChar();
+    }
+    return true;
+  }
+
+  onKeyDown(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.down(1, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
