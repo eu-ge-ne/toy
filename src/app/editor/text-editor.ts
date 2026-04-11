@@ -1,27 +1,12 @@
 import * as graphemes from "@lib/graphemes";
 import { range, sum } from "@lib/std";
 import * as textBuf from "@lib/text-buf";
+import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
 import { TextLayout } from "./text-layout.ts";
-
-interface TextEditorProps {
-  focused: boolean;
-  index: boolean;
-  whitespace: boolean;
-  wrap: boolean;
-  color: {
-    bg: Uint8Array;
-    void: Uint8Array;
-    index: Uint8Array;
-    char: Record<CharColor, Uint8Array>;
-  };
-  cursor: Cursor;
-  textBuf: textBuf.TextBuf;
-  textLayout: TextLayout;
-}
 
 export const enum CharColor {
   Undefined,
@@ -34,6 +19,26 @@ export const enum CharColor {
 }
 
 export class TextEditor extends ui.Frame {
+  #focused = false;
+  #indexEnabled = false;
+  #whitespacesEnabled = false;
+  #wrapEnabled = false;
+
+  #color = {
+    bg: new Uint8Array(),
+    void: new Uint8Array(),
+    index: new Uint8Array(),
+    char: {
+      [CharColor.Undefined]: new Uint8Array(),
+      [CharColor.Visible]: new Uint8Array(),
+      [CharColor.Whitespace]: new Uint8Array(),
+      [CharColor.Empty]: new Uint8Array(),
+      [CharColor.VisibleSelected]: new Uint8Array(),
+      [CharColor.WhitespaceSelected]: new Uint8Array(),
+      [CharColor.EmptySelected]: new Uint8Array(),
+    },
+  };
+
   #indexWidth = 0;
   #textWidth = 0;
   #scrollLn = 0;
@@ -41,23 +46,24 @@ export class TextEditor extends ui.Frame {
   #cursorY = 0;
   #cursorX = 0;
 
-  constructor(readonly props: TextEditorProps) {
+  constructor(
+    private readonly cursor: Cursor,
+    private readonly textBuf: textBuf.TextBuf,
+    private readonly textLayout: TextLayout,
+  ) {
     super();
   }
 
   render(): void {
-    const { focused, textBuf } = this.props;
-
-    if (this.props.index && (textBuf.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(textBuf.lineCount)) +
-        3;
+    if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
+      this.#indexWidth = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
     } else {
       this.#indexWidth = 0;
     }
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    graphemes.segmenter.settings.width = this.props.wrap
+    graphemes.segmenter.settings.width = this.#wrapEnabled
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
@@ -70,22 +76,53 @@ export class TextEditor extends ui.Frame {
       this.#renderLines();
     }
 
-    if (focused) {
+    if (this.#focused) {
       vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
     }
   }
 
-  #renderLines(): void {
-    const { textBuf } = this.props;
+  setTheme(theme: themes.Theme): void {
+    this.#color.bg = new Uint8Array(theme.bg_main);
+    this.#color.void = new Uint8Array(theme.bg_dark0);
+    this.#color.index = new Uint8Array([
+      ...theme.bg_light0,
+      ...theme.fg_dark0,
+    ]);
+    this.#color.char = {
+      [CharColor.Undefined]: new Uint8Array(),
+      [CharColor.Visible]: new Uint8Array([
+        ...theme.bg_main,
+        ...theme.fg_light1,
+      ]),
+      [CharColor.Whitespace]: new Uint8Array([
+        ...theme.bg_main,
+        ...theme.fg_dark0,
+      ]),
+      [CharColor.Empty]: new Uint8Array([...theme.bg_main, ...theme.fg_main]),
+      [CharColor.VisibleSelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_light1,
+      ]),
+      [CharColor.WhitespaceSelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_dark1,
+      ]),
+      [CharColor.EmptySelected]: new Uint8Array([
+        ...theme.bg_light2,
+        ...theme.fg_dark1,
+      ]),
+    };
+  }
 
+  #renderLines(): void {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < textBuf.lineCount) {
+      if (ln < this.textBuf.lineCount) {
         row = this.#renderLine(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.props.color.void);
+        vt.buf.write(this.#color.void);
         vt.clear_line(vt.buf, this.width);
       }
 
@@ -97,22 +134,22 @@ export class TextEditor extends ui.Frame {
   }
 
   #scrollV(): void {
-    const delta_ln = this.props.cursor.ln - this.#scrollLn;
+    const delta_ln = this.cursor.ln - this.#scrollLn;
 
     // Above?
     if (delta_ln <= 0) {
-      this.#scrollLn = this.props.cursor.ln;
+      this.#scrollLn = this.cursor.ln;
       return;
     }
 
     // Below?
 
     if (delta_ln > this.height) {
-      this.#scrollLn = this.props.cursor.ln - this.height;
+      this.#scrollLn = this.cursor.ln - this.height;
     }
 
-    const xs = range(this.#scrollLn, this.props.cursor.ln + 1).map((ln) =>
-      this.props.textLayout.line(ln)
+    const xs = range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
+      this.textLayout.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -132,10 +169,9 @@ export class TextEditor extends ui.Frame {
   }
 
   #scrollH(): void {
-    const cell = this.props.textLayout.line(this.props.cursor.ln, true).drop(
-      this.props.cursor.col,
-    ).next()
-      .value;
+    const cell =
+      this.textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
+        .value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -151,8 +187,8 @@ export class TextEditor extends ui.Frame {
 
     // After?
 
-    const xs = this.props.textLayout.line(this.props.cursor.ln, true)
-      .drop(this.props.cursor.col - delta_col)
+    const xs = this.textLayout.line(this.cursor.ln, true)
+      .drop(this.cursor.col - delta_col)
       .take(delta_col)
       .map((x) => x.gr.width)
       .toArray();
@@ -175,7 +211,7 @@ export class TextEditor extends ui.Frame {
     let available_w = 0;
     let current_color = CharColor.Undefined;
 
-    const xs = this.props.textLayout.line(ln);
+    const xs = this.textLayout.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {
@@ -190,14 +226,14 @@ export class TextEditor extends ui.Frame {
 
         if (this.#indexWidth > 0) {
           if (i === 0) {
-            vt.buf.write(this.props.color.index);
+            vt.buf.write(this.#color.index);
             vt.write_text(
               vt.buf,
               [this.#indexWidth],
               `${ln + 1} `.padStart(this.#indexWidth),
             );
           } else {
-            vt.buf.write(this.props.color.bg);
+            vt.buf.write(this.#color.bg);
             vt.write_spaces(vt.buf, this.#indexWidth);
           }
         }
@@ -210,14 +246,14 @@ export class TextEditor extends ui.Frame {
       }
 
       const color = charColor(
-        this.props.cursor.isSelected(ln, i),
+        this.cursor.isSelected(ln, i),
         isVisible,
-        this.props.whitespace,
+        this.#whitespacesEnabled,
       );
 
       if (color !== current_color) {
         current_color = color;
-        vt.buf.write(this.props.color.char[color]);
+        vt.buf.write(this.#color.char[color]);
       }
 
       vt.buf.write(bytes);
