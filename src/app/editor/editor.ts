@@ -127,31 +127,31 @@ export class Editor extends ui.Frame {
   }[] = [
     {
       match: (x) => typeof x.text === "string",
-      handle: this.onKeyText,
+      handle: this.#onKeyText,
     },
     {
       match: (x) => x.name === "BACKSPACE",
-      handle: this.onKeyBackspace,
+      handle: this.#onKeyBackspace,
     },
     {
       match: (x) => x.name === "DOWN" && Boolean(x.super),
-      handle: this.onKeyBottom,
+      handle: this.#onKeyBottom,
     },
     {
       match: (x) => x.name === "c" && Boolean(x.ctrl || x.super),
-      handle: this.onKeyCopy,
+      handle: this.#onKeyCopy,
     },
     {
       match: (x) => x.name === "x" && Boolean(x.ctrl || x.super),
-      handle: this.onKeyCut,
+      handle: this.#onKeyCut,
     },
     {
       match: (x) => x.name === "DELETE",
-      handle: this.onKeyDelete,
+      handle: this.#onKeyDelete,
     },
     {
       match: (x) => x.name === "DOWN",
-      handle: this.onKeyDown,
+      handle: this.#onKeyDown,
     },
     {
       match: (x) => {
@@ -163,11 +163,11 @@ export class Editor extends ui.Frame {
         }
         return false;
       },
-      handle: this.onKeyEnd,
+      handle: this.#onKeyEnd,
     },
     {
       match: (x) => x.name === "ENTER",
-      handle: this.onKeyEnter,
+      handle: this.#onKeyEnter,
     },
     {
       match: (x) => {
@@ -179,60 +179,60 @@ export class Editor extends ui.Frame {
         }
         return false;
       },
-      handle: this.onKeyHome,
+      handle: this.#onKeyHome,
     },
     {
       match: (x) => x.name === "LEFT",
-      handle: this.onKeyLeft,
+      handle: this.#onKeyLeft,
     },
     {
       match: (x) => x.name === "PAGE_DOWN",
-      handle: this.onKeyPageDown,
+      handle: this.#onKeyPageDown,
     },
     {
       match: (x) => x.name === "PAGE_UP",
-      handle: this.onKeyPageUp,
+      handle: this.#onKeyPageUp,
     },
     {
       match: (x) => x.name === "v" && Boolean(x.ctrl || x.super),
-      handle: this.onKeyPaste,
+      handle: this.#onKeyPaste,
     },
     {
       match: (x) => x.name === "y" && Boolean(x.ctrl || x.super),
-      handle: this.onKeyRedo,
+      handle: this.#onKeyRedo,
     },
     {
       match: (x) => x.name === "RIGHT",
-      handle: this.onKeyRight,
+      handle: this.#onKeyRight,
     },
     {
       match: (x) => x.name === "a" && Boolean(x.ctrl || x.super),
-      handle: this.onKeySelectAll,
+      handle: this.#onKeySelectAll,
     },
     {
       match: (x) => x.name === "TAB",
-      handle: this.onKeyTab,
+      handle: this.#onKeyTab,
     },
     {
       match: (x) => x.name === "UP" && Boolean(x.super),
-      handle: this.onKeyTop,
+      handle: this.#onKeyTop,
     },
     {
       match: (x) => x.name === "z" && Boolean(x.ctrl || x.super),
-      handle: this.onKeyUndo,
+      handle: this.#onKeyUndo,
     },
     {
       match: (x) => x.name === "UP",
-      handle: this.onKeyUp,
+      handle: this.#onKeyUp,
     },
   ];
 
-  onKeyText(key: kitty.Key): boolean {
+  #onKeyText(key: kitty.Key): boolean {
     this.insert(key.text!);
     return true;
   }
 
-  onKeyBackspace(): boolean {
+  #onKeyBackspace(): boolean {
     if (this.cursor.selecting) {
       this.deleteSelection();
     } else {
@@ -241,22 +241,22 @@ export class Editor extends ui.Frame {
     return true;
   }
 
-  onKeyBottom(key: kitty.Key): boolean {
+  #onKeyBottom(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
     return this.cursor.bottom(Boolean(key.shift));
   }
 
-  onKeyCopy(): boolean {
+  #onKeyCopy(): boolean {
     return this.copy();
   }
 
-  onKeyCut(): boolean {
+  #onKeyCut(): boolean {
     return this.cut();
   }
 
-  onKeyDelete(): boolean {
+  #onKeyDelete(): boolean {
     if (this.cursor.selecting) {
       this.deleteSelection();
     } else {
@@ -265,18 +265,18 @@ export class Editor extends ui.Frame {
     return true;
   }
 
-  onKeyDown(key: kitty.Key): boolean {
+  #onKeyDown(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
     return this.cursor.down(1, Boolean(key.shift));
   }
 
-  onKeyEnd(key: kitty.Key): boolean {
+  #onKeyEnd(key: kitty.Key): boolean {
     return this.cursor.end(Boolean(key.shift));
   }
 
-  onKeyEnter(): boolean {
+  #onKeyEnter(): boolean {
     if (!this.params.multiLine) {
       return false;
     }
@@ -284,45 +284,45 @@ export class Editor extends ui.Frame {
     return true;
   }
 
-  onKeyHome(key: kitty.Key): boolean {
+  #onKeyHome(key: kitty.Key): boolean {
     return this.cursor.home(Boolean(key.shift));
   }
 
-  onKeyLeft(key: kitty.Key): boolean {
+  #onKeyLeft(key: kitty.Key): boolean {
     return this.cursor.left(Boolean(key.shift));
   }
 
-  onKeyPageDown(key: kitty.Key): boolean {
+  #onKeyPageDown(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
     return this.cursor.down(this.height, Boolean(key.shift));
   }
 
-  onKeyPageUp(key: kitty.Key): boolean {
+  #onKeyPageUp(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
     return this.cursor.up(this.height, Boolean(key.shift));
   }
 
-  onKeyPaste(): boolean {
+  #onKeyPaste(): boolean {
     return this.paste();
   }
 
-  onKeyRedo(): boolean {
+  #onKeyRedo(): boolean {
     return this.redo();
   }
 
-  onKeyRight(key: kitty.Key): boolean {
+  #onKeyRight(key: kitty.Key): boolean {
     return this.cursor.right(Boolean(key.shift));
   }
 
-  onKeySelectAll(): boolean {
+  #onKeySelectAll(): boolean {
     return this.selectAll();
   }
 
-  onKeyTab(): boolean {
+  #onKeyTab(): boolean {
     if (this.params.multiLine) {
       this.insert("\t");
       return true;
@@ -330,18 +330,18 @@ export class Editor extends ui.Frame {
     return false;
   }
 
-  onKeyTop(key: kitty.Key): boolean {
+  #onKeyTop(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
     return this.cursor.top(Boolean(key.shift));
   }
 
-  onKeyUndo(): boolean {
+  #onKeyUndo(): boolean {
     return this.undo();
   }
 
-  onKeyUp(key: kitty.Key): boolean {
+  #onKeyUp(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
       return false;
     }
