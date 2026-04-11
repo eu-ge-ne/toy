@@ -8,7 +8,7 @@ import { Cursor } from "./cursor.ts";
 import { TextLayout } from "./text-layout.ts";
 
 interface TextEditorProps {
-  disabled: boolean; // TODO: rename to `focused`
+  focused: boolean;
   index: boolean;
   whitespace: boolean;
   wrap: boolean;
@@ -46,7 +46,7 @@ export class TextEditor extends ui.Frame {
   }
 
   render(): void {
-    const { textBuf } = this.props;
+    const { focused, textBuf } = this.props;
 
     if (this.props.index && (textBuf.lineCount > 0)) {
       this.#indexWidth = Math.trunc(Math.log10(textBuf.lineCount)) +
@@ -70,7 +70,7 @@ export class TextEditor extends ui.Frame {
       this.#renderLines();
     }
 
-    if (!this.props.disabled) {
+    if (focused) {
       vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
     }
   }

@@ -63,7 +63,7 @@ export class Editor extends ui.Frame {
     this.children = {
       bg: new ui.Bg(),
       text: new TextEditor({
-        disabled: props.disabled,
+        focused: !props.disabled,
         index: props.index,
         whitespace: props.whitespace,
         wrap: props.wrap,
