@@ -54,6 +54,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   async open(): Promise<Command | undefined> {
     const { list, editor } = this.children;
 
+    editor.setFocused(true);
     editor.textBuf.reset();
     editor.reset(false);
 
