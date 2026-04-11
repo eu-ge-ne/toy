@@ -116,46 +116,43 @@ export class Editor extends ui.Frame {
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x.match(key))?.handle.call(this, key);
+    this.#handlers.find((x) => x[1](key))?.[0].call(this, key);
 
     this.params.onKeyHandle?.(performance.now() - t0);
   }
 
-  #handlers: {
-    match: (_: kitty.Key) => boolean;
-    handle: (_: kitty.Key) => void;
-  }[] = [
-    {
-      match: (x) => typeof x.text === "string",
-      handle: this.#onKeyText,
-    },
-    {
-      match: (x) => x.name === "BACKSPACE",
-      handle: this.#onKeyBackspace,
-    },
-    {
-      match: (x) =>
-        this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
-      handle: this.#onKeyBottom,
-    },
-    {
-      match: (x) => x.name === "c" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeyCopy,
-    },
-    {
-      match: (x) => x.name === "x" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeyCut,
-    },
-    {
-      match: (x) => x.name === "DELETE",
-      handle: this.#onKeyDelete,
-    },
-    {
-      match: (x) => this.params.multiLine && x.name === "DOWN",
-      handle: this.#onKeyDown,
-    },
-    {
-      match: (x) => {
+  #handlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
+    [
+      this.#onKeyText,
+      (x) => typeof x.text === "string",
+    ],
+    [
+      this.#onKeyBackspace,
+      (x) => x.name === "BACKSPACE",
+    ],
+    [
+      this.#onKeyBottom,
+      (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
+    ],
+    [
+      this.#onKeyCopy,
+      (x) => x.name === "c" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyCut,
+      (x) => x.name === "x" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyDelete,
+      (x) => x.name === "DELETE",
+    ],
+    [
+      this.#onKeyDown,
+      (x) => this.params.multiLine && x.name === "DOWN",
+    ],
+    [
+      this.#onKeyEnd,
+      (x) => {
         if (x.name === "END") {
           return true;
         }
@@ -164,14 +161,14 @@ export class Editor extends ui.Frame {
         }
         return false;
       },
-      handle: this.#onKeyEnd,
-    },
-    {
-      match: (x) => this.params.multiLine && x.name === "ENTER",
-      handle: this.#onKeyEnter,
-    },
-    {
-      match: (x) => {
+    ],
+    [
+      this.#onKeyEnter,
+      (x) => this.params.multiLine && x.name === "ENTER",
+    ],
+    [
+      this.#onKeyHome,
+      (x) => {
         if (x.name === "HOME") {
           return true;
         }
@@ -180,53 +177,51 @@ export class Editor extends ui.Frame {
         }
         return false;
       },
-      handle: this.#onKeyHome,
-    },
-    {
-      match: (x) => x.name === "LEFT",
-      handle: this.#onKeyLeft,
-    },
-    {
-      match: (x) => this.params.multiLine && x.name === "PAGE_DOWN",
-      handle: this.#onKeyPageDown,
-    },
-    {
-      match: (x) => this.params.multiLine && x.name === "PAGE_UP",
-      handle: this.#onKeyPageUp,
-    },
-    {
-      match: (x) => x.name === "v" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeyPaste,
-    },
-    {
-      match: (x) => x.name === "y" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeyRedo,
-    },
-    {
-      match: (x) => x.name === "RIGHT",
-      handle: this.#onKeyRight,
-    },
-    {
-      match: (x) => x.name === "a" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeySelectAll,
-    },
-    {
-      match: (x) => x.name === "TAB",
-      handle: this.#onKeyTab,
-    },
-    {
-      match: (x) =>
-        this.params.multiLine && x.name === "UP" && Boolean(x.super),
-      handle: this.#onKeyTop,
-    },
-    {
-      match: (x) => x.name === "z" && Boolean(x.ctrl || x.super),
-      handle: this.#onKeyUndo,
-    },
-    {
-      match: (x) => this.params.multiLine && x.name === "UP",
-      handle: this.#onKeyUp,
-    },
+    ],
+    [
+      this.#onKeyLeft,
+      (x) => x.name === "LEFT",
+    ],
+    [
+      this.#onKeyPageDown,
+      (x) => this.params.multiLine && x.name === "PAGE_DOWN",
+    ],
+    [
+      this.#onKeyPageUp,
+      (x) => this.params.multiLine && x.name === "PAGE_UP",
+    ],
+    [
+      this.#onKeyPaste,
+      (x) => x.name === "v" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyRedo,
+      (x) => x.name === "y" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyRight,
+      (x) => x.name === "RIGHT",
+    ],
+    [
+      this.#onKeySelectAll,
+      (x) => x.name === "a" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyTab,
+      (x) => x.name === "TAB",
+    ],
+    [
+      this.#onKeyTop,
+      (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super),
+    ],
+    [
+      this.#onKeyUndo,
+      (x) => x.name === "z" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyUp,
+      (x) => this.params.multiLine && x.name === "UP",
+    ],
   ];
 
   #onKeyText(key: kitty.Key): void {
