@@ -8,7 +8,7 @@ export class TabHandler extends EditorHandler {
   }
 
   handle(): boolean {
-    if (this.editor.props.multiLine) {
+    if (this.editor.params.multiLine) {
       this.editor.insert("\t");
 
       return true;

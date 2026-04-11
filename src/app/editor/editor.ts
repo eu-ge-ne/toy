@@ -1,53 +1,25 @@
-import { graphemes, segmenter } from "@lib/graphemes";
-import { Key } from "@lib/kitty";
-import { range, sum } from "@lib/std";
+import { graphemes } from "@lib/graphemes";
+import * as kitty from "@lib/kitty";
 import { TextBuf } from "@lib/text-buf";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { CharColor, charColor, colors } from "./colors.ts";
 import { Cursor } from "./cursor.ts";
-import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
+import { TextEditor } from "./text-editor.ts";
 import { TextLayout } from "./text-layout.ts";
 
-interface EditorProps {
-  disabled: boolean;
-  index: boolean;
-  multiLine: boolean;
-  whitespace: boolean;
-  wrap: boolean;
-  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
-  onKeyHandle?: (_: number) => void;
+interface EditorParams {
+  readonly multiLine: boolean;
+  readonly onCursorChange?: (
+    _: { ln: number; col: number; lnCount: number },
+  ) => void;
+  readonly onKeyHandle?: (_: number) => void;
 }
 
 export class Editor extends ui.Frame {
-  #colors = colors(themes.DefaultTheme);
-
-  #handlers: keys.EditorHandler[] = [
-    new keys.TextHandler(this),
-    new keys.BackspaceHandler(this),
-    new keys.BottomHandler(this),
-    new keys.CopyHandler(this),
-    new keys.CutHandler(this),
-    new keys.DeleteHandler(this),
-    new keys.DownHandler(this),
-    new keys.EndHandler(this),
-    new keys.EnterHandler(this),
-    new keys.HomeHandler(this),
-    new keys.LeftHandler(this),
-    new keys.PageDownHandler(this),
-    new keys.PageUpHandler(this),
-    new keys.PasteHandler(this),
-    new keys.RedoHandler(this),
-    new keys.RightHandler(this),
-    new keys.SelectAllHandler(this),
-    new keys.TabHandler(this),
-    new keys.TopHandler(this),
-    new keys.UndoHandler(this),
-    new keys.UpHandler(this),
-  ];
+  #focused = false;
 
   readonly textBuf = new TextBuf();
   readonly #textLayout = new TextLayout(this.textBuf);
@@ -57,19 +29,73 @@ export class Editor extends ui.Frame {
 
   protected override children: {
     bg: ui.Bg;
+    text: TextEditor;
   };
 
-  constructor(readonly props: EditorProps) {
+  constructor(readonly params: EditorParams) {
     super();
 
     this.children = {
       bg: new ui.Bg(),
+      text: new TextEditor(this.cursor, this.textBuf, this.#textLayout),
     };
   }
 
-  reset(reset_cursor: boolean): void {
-    if (reset_cursor) {
-      if (this.props.multiLine) {
+  override resizeChildren(): void {
+    const { bg, text } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width, this.height, this.y, this.x);
+  }
+
+  render(): void {
+    const { bg, text } = this.children;
+
+    vt.buf.write(vt.cursor.save);
+
+    bg.render();
+    text.render();
+
+    if (!this.#focused) {
+      vt.buf.write(vt.cursor.restore);
+    }
+  }
+
+  setTheme(theme: themes.Theme): void {
+    this.children.bg.color = new Uint8Array(theme.bg_main);
+    this.children.text.setTheme(theme);
+  }
+
+  setFocused(x: boolean): void {
+    this.#focused = x;
+    this.children.text.setFocused(x);
+  }
+
+  toggleWrapped(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWrapped();
+    this.cursor.home(false);
+  }
+
+  toggleWhitespace(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWhitespace();
+  }
+
+  toggleIndex(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleIndex();
+  }
+
+  reset(resetCursor: boolean): void {
+    if (resetCursor) {
+      if (this.params.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -83,21 +109,179 @@ export class Editor extends ui.Frame {
     this.history.reset();
   }
 
-  onKey(key: Key): void {
-    if (this.props.disabled) {
+  onKey(key: kitty.Key): void {
+    if (!this.#focused) {
       return;
     }
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x.match(key))?.handle(key);
+    this.#handlers.find((x) => x.match(key))?.handle.call(this, key);
 
-    this.props.onKeyHandle?.(performance.now() - t0);
+    this.params.onKeyHandle?.(performance.now() - t0);
   }
 
-  setTheme(theme: themes.Theme): void {
-    this.#colors = colors(theme);
-    this.children.bg.color = new Uint8Array(this.#colors.background);
+  #handlers: {
+    match: (_: kitty.Key) => boolean;
+    handle: (_: kitty.Key) => boolean;
+  }[] = [
+    {
+      match: (x) => typeof x.text === "string",
+      handle: this.onKeyText,
+    },
+    {
+      match: (x) => x.name === "BACKSPACE",
+      handle: this.onKeyBackspace,
+    },
+    {
+      match: (x) => x.name === "DOWN" && Boolean(x.super),
+      handle: this.onKeyBottom,
+    },
+    {
+      match: (x) => x.name === "c" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyCopy,
+    },
+    {
+      match: (x) => x.name === "x" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyCut,
+    },
+    {
+      match: (x) => x.name === "DELETE",
+      handle: this.onKeyDelete,
+    },
+    {
+      match: (x) => x.name === "DOWN",
+      handle: this.onKeyDown,
+    },
+    {
+      match: (x) => {
+        if (x.name === "END") {
+          return true;
+        }
+        if (x.name === "RIGHT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+      handle: this.onKeyEnd,
+    },
+    {
+      match: (x) => x.name === "ENTER",
+      handle: this.onKeyEnter,
+    },
+    {
+      match: (x) => {
+        if (x.name === "HOME") {
+          return true;
+        }
+        if (x.name === "LEFT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+      handle: this.onKeyHome,
+    },
+    {
+      match: (x) => x.name === "LEFT",
+      handle: this.onKeyLeft,
+    },
+    {
+      match: (x) => x.name === "PAGE_DOWN",
+      handle: this.onKeyPageDown,
+    },
+    {
+      match: (x) => x.name === "PAGE_UP",
+      handle: this.onKeyPageUp,
+    },
+    /*
+    new keys.PasteHandler(this),
+    new keys.RedoHandler(this),
+    new keys.RightHandler(this),
+    new keys.SelectAllHandler(this),
+    new keys.TabHandler(this),
+    new keys.TopHandler(this),
+    new keys.UndoHandler(this),
+    new keys.UpHandler(this),
+    */
+  ];
+
+  onKeyText(key: kitty.Key): boolean {
+    this.insert(key.text!);
+    return true;
+  }
+
+  onKeyBackspace(): boolean {
+    if (this.cursor.selecting) {
+      this.deleteSelection();
+    } else {
+      this.backspace();
+    }
+    return true;
+  }
+
+  onKeyBottom(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.bottom(Boolean(key.shift));
+  }
+
+  onKeyCopy(): boolean {
+    return this.copy();
+  }
+
+  onKeyCut(): boolean {
+    return this.cut();
+  }
+
+  onKeyDelete(): boolean {
+    if (this.cursor.selecting) {
+      this.deleteSelection();
+    } else {
+      this.deleteChar();
+    }
+    return true;
+  }
+
+  onKeyDown(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.down(1, Boolean(key.shift));
+  }
+
+  onKeyEnd(key: kitty.Key): boolean {
+    return this.cursor.end(Boolean(key.shift));
+  }
+
+  onKeyEnter(): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    this.insert("\n");
+    return true;
+  }
+
+  onKeyHome(key: kitty.Key): boolean {
+    return this.cursor.home(Boolean(key.shift));
+  }
+
+  onKeyLeft(key: kitty.Key): boolean {
+    return this.cursor.left(Boolean(key.shift));
+  }
+
+  onKeyPageDown(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.down(this.height, Boolean(key.shift));
+  }
+
+  onKeyPageUp(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.up(this.height, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
@@ -187,6 +371,10 @@ export class Editor extends ui.Frame {
   }
 
   copy(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (this.cursor.selecting) {
       this.#clipboard = this.#textLayout.read(this.cursor.from, {
         ln: this.cursor.to.ln,
@@ -207,6 +395,10 @@ export class Editor extends ui.Frame {
   }
 
   cut(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (this.cursor.selecting) {
       this.#clipboard = this.#textLayout.read(this.cursor.from, {
         ln: this.cursor.to.ln,
@@ -229,6 +421,10 @@ export class Editor extends ui.Frame {
   }
 
   paste(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (!this.#clipboard) {
       return false;
     }
@@ -239,213 +435,29 @@ export class Editor extends ui.Frame {
   }
 
   undo(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     return this.history.undo();
   }
 
   redo(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     return this.history.redo();
   }
 
   selectAll(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     this.cursor.set(0, 0, false);
-    this.cursor.set(
-      Number.MAX_SAFE_INTEGER,
-      Number.MAX_SAFE_INTEGER,
-      true,
-    );
+    this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+
     return true;
-  }
-
-  private index_width = 0;
-  private text_width = 0;
-  private cursor_y = 0;
-  private cursor_x = 0;
-  private scroll_ln = 0;
-  private scroll_col = 0;
-
-  override resizeChildren(): void {
-    this.children.bg.resize(this.width, this.height, this.y, this.x);
-  }
-
-  render(): void {
-    vt.buf.write(vt.cursor.save);
-    this.children.bg.render();
-
-    if (this.props.index && (this.textBuf.lineCount > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
-    } else {
-      this.index_width = 0;
-    }
-
-    this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.props.wrap
-      ? this.text_width
-      : Number.MAX_SAFE_INTEGER;
-
-    segmenter.settings.y = this.cursor_y = this.y;
-    segmenter.settings.x = this.cursor_x = this.x + this.index_width;
-
-    if (this.width >= this.index_width) {
-      this.#renderLines();
-    }
-
-    if (!this.props.disabled) {
-      vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
-    } else {
-      vt.buf.write(vt.cursor.restore);
-    }
-  }
-
-  #renderLines(): void {
-    this.#scrollV();
-    this.#scrollH();
-
-    let row = this.y;
-
-    for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < this.textBuf.lineCount) {
-        row = this.#renderLine(ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, this.width);
-      }
-
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
-    }
-  }
-
-  #renderLine(ln: number, row: number): number {
-    let available_w = 0;
-    let current_color = CharColor.Undefined;
-
-    const xs = this.#textLayout.line(ln);
-
-    for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
-      if (col === 0) {
-        if (i > 0) {
-          row += 1;
-          if (row >= this.y + this.height) {
-            return row;
-          }
-        }
-
-        vt.cursor.set(vt.buf, row, this.x);
-
-        if (this.index_width > 0) {
-          if (i === 0) {
-            vt.buf.write(this.#colors.index);
-            vt.write_text(
-              vt.buf,
-              [this.index_width],
-              `${ln + 1} `.padStart(this.index_width),
-            );
-          } else {
-            vt.buf.write(this.#colors.background);
-            vt.write_spaces(vt.buf, this.index_width);
-          }
-        }
-
-        available_w = this.width - this.index_width;
-      }
-
-      if ((col < this.scroll_col) || (width > available_w)) {
-        continue;
-      }
-
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.props.whitespace,
-      );
-
-      if (color !== current_color) {
-        current_color = color;
-        vt.buf.write(this.#colors.char[color]);
-      }
-
-      vt.buf.write(bytes);
-
-      available_w -= width;
-    }
-
-    return row;
-  }
-
-  #scrollV(): void {
-    const delta_ln = this.cursor.ln - this.scroll_ln;
-
-    // Above?
-    if (delta_ln <= 0) {
-      this.scroll_ln = this.cursor.ln;
-      return;
-    }
-
-    // Below?
-
-    if (delta_ln > this.height) {
-      this.scroll_ln = this.cursor.ln - this.height;
-    }
-
-    const xs = range(this.scroll_ln, this.cursor.ln + 1).map((ln) =>
-      this.#textLayout.line(ln)
-        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
-    );
-
-    let i = 0;
-    let height = sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.scroll_ln += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.cursor_y += xs[i]!;
-      i += 1;
-    }
-  }
-
-  #scrollH(): void {
-    const cell =
-      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
-        .value;
-    if (cell) {
-      this.cursor_y += cell.ln;
-    }
-
-    const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.scroll_col;
-
-    // Before?
-    if (delta_col <= 0) {
-      this.scroll_col = col;
-      return;
-    }
-
-    // After?
-
-    const xs = this.#textLayout.line(this.cursor.ln, true)
-      .drop(this.cursor.col - delta_col)
-      .take(delta_col)
-      .map((x) => x.gr.width)
-      .toArray();
-
-    let width = sum(xs);
-
-    for (const w of xs) {
-      if (width < this.text_width) {
-        break;
-      }
-
-      this.scroll_col += 1;
-      width -= w;
-    }
-
-    this.cursor_x += width;
   }
 }

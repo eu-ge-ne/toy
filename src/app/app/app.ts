@@ -46,11 +46,7 @@ export class App extends ui.Modal {
         lnCount: 0,
       }),
       editor: new Editor({
-        disabled: false,
-        index: !this.#zen,
         multiLine: true,
-        whitespace: false,
-        wrap: false,
         onCursorChange: (x) => {
           this.children.footer.props.ln = x.ln;
           this.children.footer.props.col = x.col;
@@ -141,6 +137,7 @@ export class App extends ui.Modal {
       await this.#open(fileName);
     }
 
+    this.children.editor.setFocused(true);
     this.children.editor.reset(true);
 
     this.#onSigwinch();
@@ -173,7 +170,7 @@ export class App extends ui.Modal {
 
     header.props.disabled = this.#zen;
     footer.props.disabled = this.#zen;
-    editor.props.index = !this.#zen;
+    editor.toggleIndex();
 
     this.resizeChildren();
   }
@@ -181,7 +178,7 @@ export class App extends ui.Modal {
   async #handleExit(): Promise<void> {
     const { editor, ask } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
     if (!editor.history.isEmpty) {
       if (await ask.open("Save changes?")) {
@@ -195,11 +192,11 @@ export class App extends ui.Modal {
   async #handlePalette(): Promise<void> {
     const { editor, palette } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
     const cmd = await palette.open();
 
-    editor.props.disabled = false;
+    editor.setFocused(true);
 
     this.#render();
 
@@ -211,13 +208,13 @@ export class App extends ui.Modal {
   async #handleSave(): Promise<void> {
     const { editor } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
     if (await this.#save()) {
       editor.reset(false);
     }
 
-    editor.props.disabled = false;
+    editor.setFocused(true);
 
     this.#render();
   }
@@ -332,52 +329,35 @@ export class App extends ui.Modal {
         break;
 
       case "Whitespace":
-        if (!editor.props.disabled) {
-          editor.props.whitespace = !editor.props.whitespace;
-        }
+        editor.toggleWhitespace();
         break;
 
       case "Wrap":
-        if (!editor.props.disabled) {
-          editor.props.wrap = !editor.props.wrap;
-          editor.cursor.home(false);
-        }
+        editor.toggleWrapped();
         break;
 
       case "Copy":
-        if (!editor.props.disabled) {
-          editor.copy();
-        }
+        editor.copy();
         break;
 
       case "Cut":
-        if (!editor.props.disabled) {
-          editor.cut();
-        }
+        editor.cut();
         break;
 
       case "Paste":
-        if (!editor.props.disabled) {
-          editor.paste();
-        }
+        editor.paste();
         break;
 
       case "Undo":
-        if (!editor.props.disabled) {
-          editor.undo();
-        }
+        editor.undo();
         break;
 
       case "Redo":
-        if (!editor.props.disabled) {
-          editor.redo();
-        }
+        editor.redo();
         break;
 
       case "SelectAll":
-        if (!editor.props.disabled) {
-          editor.selectAll();
-        }
+        editor.selectAll();
         break;
     }
   }
