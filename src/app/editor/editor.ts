@@ -123,7 +123,7 @@ export class Editor extends ui.Frame {
 
   #handlers: {
     match: (_: kitty.Key) => boolean;
-    handle: (_: kitty.Key) => boolean;
+    handle: (_: kitty.Key) => void;
   }[] = [
     {
       match: (x) => typeof x.text === "string",
@@ -134,7 +134,8 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyBackspace,
     },
     {
-      match: (x) => x.name === "DOWN" && Boolean(x.super),
+      match: (x) =>
+        this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
       handle: this.#onKeyBottom,
     },
     {
@@ -150,7 +151,7 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyDelete,
     },
     {
-      match: (x) => x.name === "DOWN",
+      match: (x) => this.params.multiLine && x.name === "DOWN",
       handle: this.#onKeyDown,
     },
     {
@@ -166,7 +167,7 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyEnd,
     },
     {
-      match: (x) => x.name === "ENTER",
+      match: (x) => this.params.multiLine && x.name === "ENTER",
       handle: this.#onKeyEnter,
     },
     {
@@ -227,70 +228,59 @@ export class Editor extends ui.Frame {
     },
   ];
 
-  #onKeyText(key: kitty.Key): boolean {
-    this.insert(key.text!);
-    return true;
+  #onKeyText(key: kitty.Key): void {
+    this.#insertText(key.text!);
   }
 
-  #onKeyBackspace(): boolean {
+  #onKeyBackspace(): void {
     if (this.cursor.selecting) {
-      this.deleteSelection();
+      this.#deleteSelection();
     } else {
-      this.backspace();
+      this.#backspace();
     }
-    return true;
   }
 
-  #onKeyBottom(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.bottom(Boolean(key.shift));
+  #onKeyBottom(key: kitty.Key): void {
+    this.cursor.bottom(Boolean(key.shift));
   }
 
-  #onKeyCopy(): boolean {
-    return this.copy();
+  #onKeyCopy(): void {
+    this.copy();
   }
 
-  #onKeyCut(): boolean {
-    return this.cut();
+  #onKeyCut(): void {
+    this.cut();
   }
 
-  #onKeyDelete(): boolean {
+  #onKeyDelete(): void {
     if (this.cursor.selecting) {
-      this.deleteSelection();
+      this.#deleteSelection();
     } else {
-      this.deleteChar();
+      this.#deleteChar();
     }
-    return true;
   }
 
-  #onKeyDown(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.down(1, Boolean(key.shift));
+  #onKeyDown(key: kitty.Key): void {
+    this.cursor.down(1, Boolean(key.shift));
   }
 
-  #onKeyEnd(key: kitty.Key): boolean {
-    return this.cursor.end(Boolean(key.shift));
+  #onKeyEnd(key: kitty.Key): void {
+    this.cursor.end(Boolean(key.shift));
   }
 
-  #onKeyEnter(): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    this.insert("\n");
-    return true;
+  #onKeyEnter(): void {
+    this.#insertText("\n");
   }
 
-  #onKeyHome(key: kitty.Key): boolean {
-    return this.cursor.home(Boolean(key.shift));
+  #onKeyHome(key: kitty.Key): void {
+    this.cursor.home(Boolean(key.shift));
   }
 
-  #onKeyLeft(key: kitty.Key): boolean {
-    return this.cursor.left(Boolean(key.shift));
+  #onKeyLeft(key: kitty.Key): void {
+    this.cursor.left(Boolean(key.shift));
   }
+
+  // TODO
 
   #onKeyPageDown(key: kitty.Key): boolean {
     if (!this.params.multiLine) {
@@ -324,7 +314,7 @@ export class Editor extends ui.Frame {
 
   #onKeyTab(): boolean {
     if (this.params.multiLine) {
-      this.insert("\t");
+      this.#insertText("\t");
       return true;
     }
     return false;
@@ -350,7 +340,7 @@ export class Editor extends ui.Frame {
 
   #sgr = new Intl.Segmenter();
 
-  insert(text: string): void {
+  #insertText(text: string): void {
     const { history } = this;
 
     if (this.cursor.selecting) {
@@ -379,7 +369,7 @@ export class Editor extends ui.Frame {
     history.push();
   }
 
-  backspace(): void {
+  #backspace(): void {
     const { history } = this;
 
     if (this.cursor.ln > 0 && this.cursor.col === 0) {
@@ -411,7 +401,7 @@ export class Editor extends ui.Frame {
     history.push();
   }
 
-  deleteChar(): void {
+  #deleteChar(): void {
     const { history } = this;
 
     this.#textLayout.delete(this.cursor, {
@@ -422,7 +412,7 @@ export class Editor extends ui.Frame {
     history.push();
   }
 
-  deleteSelection(): void {
+  #deleteSelection(): void {
     const { history } = this;
 
     this.#textLayout.delete(this.cursor.from, {
@@ -434,9 +424,9 @@ export class Editor extends ui.Frame {
     history.push();
   }
 
-  copy(): boolean {
+  copy(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
 
     if (this.cursor.selecting) {
@@ -455,12 +445,12 @@ export class Editor extends ui.Frame {
 
     vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
-    return false;
+    return;
   }
 
-  cut(): boolean {
+  cut(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
 
     if (this.cursor.selecting) {
@@ -469,19 +459,19 @@ export class Editor extends ui.Frame {
         col: this.cursor.to.col + 1,
       });
 
-      this.deleteSelection();
+      this.#deleteSelection();
     } else {
       this.#clipboard = this.#textLayout.read(this.cursor, {
         ln: this.cursor.ln,
         col: this.cursor.col + 1,
       });
 
-      this.deleteChar();
+      this.#deleteChar();
     }
 
     vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
-    return true;
+    return;
   }
 
   paste(): boolean {
@@ -493,7 +483,7 @@ export class Editor extends ui.Frame {
       return false;
     }
 
-    this.insert(this.#clipboard);
+    this.#insertText(this.#clipboard);
 
     return true;
   }
