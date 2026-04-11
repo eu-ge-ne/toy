@@ -193,16 +193,38 @@ export class Editor extends ui.Frame {
       match: (x) => x.name === "PAGE_UP",
       handle: this.onKeyPageUp,
     },
-    /*
-    new keys.PasteHandler(this),
-    new keys.RedoHandler(this),
-    new keys.RightHandler(this),
-    new keys.SelectAllHandler(this),
-    new keys.TabHandler(this),
-    new keys.TopHandler(this),
-    new keys.UndoHandler(this),
-    new keys.UpHandler(this),
-    */
+    {
+      match: (x) => x.name === "v" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyPaste,
+    },
+    {
+      match: (x) => x.name === "y" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyRedo,
+    },
+    {
+      match: (x) => x.name === "RIGHT",
+      handle: this.onKeyRight,
+    },
+    {
+      match: (x) => x.name === "a" && Boolean(x.ctrl || x.super),
+      handle: this.onKeySelectAll,
+    },
+    {
+      match: (x) => x.name === "TAB",
+      handle: this.onKeyTab,
+    },
+    {
+      match: (x) => x.name === "UP" && Boolean(x.super),
+      handle: this.onKeyTop,
+    },
+    {
+      match: (x) => x.name === "z" && Boolean(x.ctrl || x.super),
+      handle: this.onKeyUndo,
+    },
+    {
+      match: (x) => x.name === "UP",
+      handle: this.onKeyUp,
+    },
   ];
 
   onKeyText(key: kitty.Key): boolean {
@@ -282,6 +304,48 @@ export class Editor extends ui.Frame {
       return false;
     }
     return this.cursor.up(this.height, Boolean(key.shift));
+  }
+
+  onKeyPaste(): boolean {
+    return this.paste();
+  }
+
+  onKeyRedo(): boolean {
+    return this.redo();
+  }
+
+  onKeyRight(key: kitty.Key): boolean {
+    return this.cursor.right(Boolean(key.shift));
+  }
+
+  onKeySelectAll(): boolean {
+    return this.selectAll();
+  }
+
+  onKeyTab(): boolean {
+    if (this.params.multiLine) {
+      this.insert("\t");
+      return true;
+    }
+    return false;
+  }
+
+  onKeyTop(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.top(Boolean(key.shift));
+  }
+
+  onKeyUndo(): boolean {
+    return this.undo();
+  }
+
+  onKeyUp(key: kitty.Key): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    return this.cursor.up(1, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
