@@ -153,9 +153,23 @@ export class Editor extends ui.Frame {
       match: (x) => x.name === "DOWN",
       handle: this.onKeyDown,
     },
+    {
+      match: (x) => {
+        if (x.name === "END") {
+          return true;
+        }
+        if (x.name === "RIGHT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+      handle: this.onKeyEnd,
+    },
+    {
+      match: (x) => x.name === "ENTER",
+      handle: this.onKeyEnter,
+    },
     /*
-    new keys.EndHandler(this),
-    new keys.EnterHandler(this),
     new keys.HomeHandler(this),
     new keys.LeftHandler(this),
     new keys.PageDownHandler(this),
@@ -214,6 +228,18 @@ export class Editor extends ui.Frame {
       return false;
     }
     return this.cursor.down(1, Boolean(key.shift));
+  }
+
+  onKeyEnd(key: kitty.Key): boolean {
+    return this.cursor.end(Boolean(key.shift));
+  }
+
+  onKeyEnter(): boolean {
+    if (!this.params.multiLine) {
+      return false;
+    }
+    this.insert("\n");
+    return true;
   }
 
   #sgr = new Intl.Segmenter();
