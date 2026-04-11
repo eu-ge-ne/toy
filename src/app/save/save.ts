@@ -17,13 +17,7 @@ export class Save extends ui.Modal<[string], string> {
     this.children = {
       bg: new ui.Bg(),
       header: new ui.Text({ align: "center" }),
-      editor: new Editor({
-        disabled: false,
-        index: false,
-        multiLine: false,
-        whitespace: false,
-        wrap: false,
-      }),
+      editor: new Editor({ multiLine: false }),
       footer: new ui.Text({ align: "center" }),
     };
 

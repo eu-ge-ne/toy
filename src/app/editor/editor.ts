@@ -8,20 +8,20 @@ import * as vt from "@lib/vt";
 import { Cursor } from "./cursor.ts";
 import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
-import { CharColor, TextEditor } from "./text-editor.ts";
+import { TextEditor } from "./text-editor.ts";
 import { TextLayout } from "./text-layout.ts";
 
-interface EditorProps {
-  disabled: boolean; // TODO: rename to `focused`
-  index: boolean;
-  multiLine: boolean;
-  whitespace: boolean;
-  wrap: boolean;
-  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
-  onKeyHandle?: (_: number) => void;
+interface EditorParams {
+  readonly multiLine: boolean;
+  readonly onCursorChange?: (
+    _: { ln: number; col: number; lnCount: number },
+  ) => void;
+  readonly onKeyHandle?: (_: number) => void;
 }
 
 export class Editor extends ui.Frame {
+  #focused = false;
+
   #handlers: keys.EditorHandler[] = [
     new keys.TextHandler(this),
     new keys.BackspaceHandler(this),
@@ -57,34 +57,12 @@ export class Editor extends ui.Frame {
     text: TextEditor;
   };
 
-  constructor(readonly props: EditorProps) {
+  constructor(readonly params: EditorParams) {
     super();
 
     this.children = {
       bg: new ui.Bg(),
-      text: new TextEditor({
-        focused: !props.disabled,
-        index: props.index,
-        whitespace: props.whitespace,
-        wrap: props.wrap,
-        color: {
-          bg: new Uint8Array(),
-          void: new Uint8Array(),
-          index: new Uint8Array(),
-          char: {
-            [CharColor.Undefined]: new Uint8Array(),
-            [CharColor.Visible]: new Uint8Array(),
-            [CharColor.Whitespace]: new Uint8Array(),
-            [CharColor.Empty]: new Uint8Array(),
-            [CharColor.VisibleSelected]: new Uint8Array(),
-            [CharColor.WhitespaceSelected]: new Uint8Array(),
-            [CharColor.EmptySelected]: new Uint8Array(),
-          },
-        },
-        cursor: this.cursor,
-        textBuf: this.textBuf,
-        textLayout: this.#textLayout,
-      }),
+      text: new TextEditor(this.cursor, this.textBuf, this.#textLayout),
     };
   }
 
@@ -103,14 +81,41 @@ export class Editor extends ui.Frame {
     bg.render();
     text.render();
 
-    if (this.props.disabled) {
+    if (!this.#focused) {
       vt.buf.write(vt.cursor.restore);
     }
   }
 
+  setFocused(x: boolean): void {
+    this.#focused = x;
+    this.children.text.setFocused(x);
+  }
+
+  toggleWrapped(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWrapped();
+    this.cursor.home(false);
+  }
+
+  toggleWhitespace(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWhitespace();
+  }
+
+  toggleIndex(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleIndex();
+  }
+
   reset(reset_cursor: boolean): void {
     if (reset_cursor) {
-      if (this.props.multiLine) {
+      if (this.params.multiLine) {
         this.cursor.set(0, 0, false);
       } else {
         this.cursor.set(
@@ -125,7 +130,7 @@ export class Editor extends ui.Frame {
   }
 
   onKey(key: Key): void {
-    if (this.props.disabled) {
+    if (!this.#focused) {
       return;
     }
 
@@ -133,44 +138,12 @@ export class Editor extends ui.Frame {
 
     this.#handlers.find((x) => x.match(key))?.handle(key);
 
-    this.props.onKeyHandle?.(performance.now() - t0);
+    this.params.onKeyHandle?.(performance.now() - t0);
   }
 
   setTheme(theme: themes.Theme): void {
-    const { bg, text } = this.children;
-
-    bg.color = new Uint8Array(theme.bg_main);
-
-    text.props.color.bg = new Uint8Array(theme.bg_main);
-    text.props.color.void = new Uint8Array(theme.bg_dark0);
-    text.props.color.index = new Uint8Array([
-      ...theme.bg_light0,
-      ...theme.fg_dark0,
-    ]);
-    text.props.color.char = {
-      [CharColor.Undefined]: new Uint8Array(),
-      [CharColor.Visible]: new Uint8Array([
-        ...theme.bg_main,
-        ...theme.fg_light1,
-      ]),
-      [CharColor.Whitespace]: new Uint8Array([
-        ...theme.bg_main,
-        ...theme.fg_dark0,
-      ]),
-      [CharColor.Empty]: new Uint8Array([...theme.bg_main, ...theme.fg_main]),
-      [CharColor.VisibleSelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_light1,
-      ]),
-      [CharColor.WhitespaceSelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_dark1,
-      ]),
-      [CharColor.EmptySelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_dark1,
-      ]),
-    };
+    this.children.bg.color = new Uint8Array(theme.bg_main);
+    this.children.text.setTheme(theme);
   }
 
   #sgr = new Intl.Segmenter();
@@ -260,6 +233,10 @@ export class Editor extends ui.Frame {
   }
 
   copy(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (this.cursor.selecting) {
       this.#clipboard = this.#textLayout.read(this.cursor.from, {
         ln: this.cursor.to.ln,
@@ -280,6 +257,10 @@ export class Editor extends ui.Frame {
   }
 
   cut(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (this.cursor.selecting) {
       this.#clipboard = this.#textLayout.read(this.cursor.from, {
         ln: this.cursor.to.ln,
@@ -302,6 +283,10 @@ export class Editor extends ui.Frame {
   }
 
   paste(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     if (!this.#clipboard) {
       return false;
     }
@@ -312,16 +297,29 @@ export class Editor extends ui.Frame {
   }
 
   undo(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     return this.history.undo();
   }
 
   redo(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     return this.history.redo();
   }
 
   selectAll(): boolean {
+    if (!this.#focused) {
+      return false;
+    }
+
     this.cursor.set(0, 0, false);
     this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+
     return true;
   }
 }

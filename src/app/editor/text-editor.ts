@@ -21,7 +21,7 @@ export const enum CharColor {
 export class TextEditor extends ui.Frame {
   #focused = false;
   #indexEnabled = false;
-  #whitespacesEnabled = false;
+  #whitespaceEnabled = false;
   #wrapEnabled = false;
 
   #color = {
@@ -112,6 +112,22 @@ export class TextEditor extends ui.Frame {
         ...theme.fg_dark1,
       ]),
     };
+  }
+
+  setFocused(x: boolean): void {
+    this.#focused = x;
+  }
+
+  toggleWrapped(): void {
+    this.#wrapEnabled = !this.#wrapEnabled;
+  }
+
+  toggleWhitespace(): void {
+    this.#whitespaceEnabled = !this.#whitespaceEnabled;
+  }
+
+  toggleIndex(): void {
+    this.#indexEnabled = !this.#indexEnabled;
   }
 
   #renderLines(): void {
@@ -248,7 +264,7 @@ export class TextEditor extends ui.Frame {
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.#whitespacesEnabled,
+        this.#whitespaceEnabled,
       );
 
       if (color !== current_color) {

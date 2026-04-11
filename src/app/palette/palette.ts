@@ -24,13 +24,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
 
     this.children = {
       bg: new ui.Bg(),
-      editor: new Editor({
-        disabled: false,
-        index: false,
-        multiLine: false,
-        whitespace: false,
-        wrap: false,
-      }),
+      editor: new Editor({ multiLine: false }),
       list: new ui.List<Command>({ emptyText: "No matching commands" }),
     };
 

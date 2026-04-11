@@ -8,7 +8,7 @@ export class DownHandler extends EditorHandler {
   }
 
   handle(key: Key): boolean {
-    if (!this.editor.props.multiLine) {
+    if (!this.editor.params.multiLine) {
       return false;
     }
 
