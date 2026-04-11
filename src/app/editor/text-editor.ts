@@ -34,8 +34,8 @@ export const enum CharColor {
 }
 
 export class TextEditor extends ui.Frame {
-  private index_width = 0;
-  private text_width = 0;
+  #indexWidth = 0;
+  #textWidth = 0;
   private scroll_ln = 0;
   private scroll_col = 0;
   private cursor_y = 0;
@@ -47,21 +47,22 @@ export class TextEditor extends ui.Frame {
 
   render(): void {
     if (this.props.index && (this.props.textBuf.lineCount > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.props.textBuf.lineCount)) +
+      this.#indexWidth = Math.trunc(Math.log10(this.props.textBuf.lineCount)) +
         3;
     } else {
-      this.index_width = 0;
+      this.#indexWidth = 0;
     }
 
-    this.text_width = this.width - this.index_width;
+    this.#textWidth = this.width - this.#indexWidth;
+
     graphemes.segmenter.settings.width = this.props.wrap
-      ? this.text_width
+      ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
     graphemes.segmenter.settings.y = this.cursor_y = this.y;
-    graphemes.segmenter.settings.x = this.cursor_x = this.x + this.index_width;
+    graphemes.segmenter.settings.x = this.cursor_x = this.x + this.#indexWidth;
 
-    if (this.width >= this.index_width) {
+    if (this.width >= this.#indexWidth) {
       this.#renderLines();
     }
 
@@ -156,7 +157,7 @@ export class TextEditor extends ui.Frame {
     let width = sum(xs);
 
     for (const w of xs) {
-      if (width < this.text_width) {
+      if (width < this.#textWidth) {
         break;
       }
 
@@ -184,21 +185,21 @@ export class TextEditor extends ui.Frame {
 
         vt.cursor.set(vt.buf, row, this.x);
 
-        if (this.index_width > 0) {
+        if (this.#indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.props.color.index);
             vt.write_text(
               vt.buf,
-              [this.index_width],
-              `${ln + 1} `.padStart(this.index_width),
+              [this.#indexWidth],
+              `${ln + 1} `.padStart(this.#indexWidth),
             );
           } else {
             vt.buf.write(this.props.color.bg);
-            vt.write_spaces(vt.buf, this.index_width);
+            vt.write_spaces(vt.buf, this.#indexWidth);
           }
         }
 
-        available_w = this.width - this.index_width;
+        available_w = this.width - this.#indexWidth;
       }
 
       if ((col < this.scroll_col) || (width > available_w)) {
@@ -226,22 +227,22 @@ export class TextEditor extends ui.Frame {
 }
 
 function charColor(
-  is_selected: boolean,
-  is_visible: boolean,
-  whitespace_enabled: boolean,
+  isSelected: boolean,
+  isVisible: boolean,
+  whitespaceEnabled: boolean,
 ): CharColor {
-  if (is_selected) {
-    if (is_visible) {
+  if (isSelected) {
+    if (isVisible) {
       return CharColor.VisibleSelected;
-    } else if (whitespace_enabled) {
+    } else if (whitespaceEnabled) {
       return CharColor.WhitespaceSelected;
     } else {
       return CharColor.EmptySelected;
     }
   } else {
-    if (is_visible) {
+    if (isVisible) {
       return CharColor.Visible;
-    } else if (whitespace_enabled) {
+    } else if (whitespaceEnabled) {
       return CharColor.Whitespace;
     } else {
       return CharColor.Empty;
