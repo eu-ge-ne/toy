@@ -187,11 +187,11 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyLeft,
     },
     {
-      match: (x) => x.name === "PAGE_DOWN",
+      match: (x) => this.params.multiLine && x.name === "PAGE_DOWN",
       handle: this.#onKeyPageDown,
     },
     {
-      match: (x) => x.name === "PAGE_UP",
+      match: (x) => this.params.multiLine && x.name === "PAGE_UP",
       handle: this.#onKeyPageUp,
     },
     {
@@ -215,7 +215,8 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyTab,
     },
     {
-      match: (x) => x.name === "UP" && Boolean(x.super),
+      match: (x) =>
+        this.params.multiLine && x.name === "UP" && Boolean(x.super),
       handle: this.#onKeyTop,
     },
     {
@@ -223,7 +224,7 @@ export class Editor extends ui.Frame {
       handle: this.#onKeyUndo,
     },
     {
-      match: (x) => x.name === "UP",
+      match: (x) => this.params.multiLine && x.name === "UP",
       handle: this.#onKeyUp,
     },
   ];
@@ -280,62 +281,44 @@ export class Editor extends ui.Frame {
     this.cursor.left(Boolean(key.shift));
   }
 
-  // TODO
-
-  #onKeyPageDown(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.down(this.height, Boolean(key.shift));
+  #onKeyPageDown(key: kitty.Key): void {
+    this.cursor.down(this.height, Boolean(key.shift));
   }
 
-  #onKeyPageUp(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.up(this.height, Boolean(key.shift));
+  #onKeyPageUp(key: kitty.Key): void {
+    this.cursor.up(this.height, Boolean(key.shift));
   }
 
-  #onKeyPaste(): boolean {
-    return this.paste();
+  #onKeyPaste(): void {
+    this.paste();
   }
 
-  #onKeyRedo(): boolean {
-    return this.redo();
+  #onKeyRedo(): void {
+    this.redo();
   }
 
-  #onKeyRight(key: kitty.Key): boolean {
-    return this.cursor.right(Boolean(key.shift));
+  #onKeyRight(key: kitty.Key): void {
+    this.cursor.right(Boolean(key.shift));
   }
 
-  #onKeySelectAll(): boolean {
-    return this.selectAll();
+  #onKeySelectAll(): void {
+    this.selectAll();
   }
 
-  #onKeyTab(): boolean {
-    if (this.params.multiLine) {
-      this.#insertText("\t");
-      return true;
-    }
-    return false;
+  #onKeyTab(): void {
+    this.#insertText("\t");
   }
 
-  #onKeyTop(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.top(Boolean(key.shift));
+  #onKeyTop(key: kitty.Key): void {
+    this.cursor.top(Boolean(key.shift));
   }
 
-  #onKeyUndo(): boolean {
-    return this.undo();
+  #onKeyUndo(): void {
+    this.undo();
   }
 
-  #onKeyUp(key: kitty.Key): boolean {
-    if (!this.params.multiLine) {
-      return false;
-    }
-    return this.cursor.up(1, Boolean(key.shift));
+  #onKeyUp(key: kitty.Key): void {
+    this.cursor.up(1, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
@@ -474,44 +457,39 @@ export class Editor extends ui.Frame {
     return;
   }
 
-  paste(): boolean {
+  paste(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
 
     if (!this.#clipboard) {
-      return false;
+      return;
     }
 
     this.#insertText(this.#clipboard);
-
-    return true;
   }
 
-  undo(): boolean {
+  undo(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
 
-    return this.history.undo();
+    this.history.undo();
   }
 
-  redo(): boolean {
+  redo(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
-
-    return this.history.redo();
+    this.history.redo();
   }
 
-  selectAll(): boolean {
+  selectAll(): void {
     if (!this.#focused) {
-      return false;
+      return;
     }
 
     this.cursor.set(0, 0, false);
     this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
-
-    return true;
   }
 }
