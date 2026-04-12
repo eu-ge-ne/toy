@@ -129,12 +129,12 @@ export class Editor extends ui.Frame {
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x[1](key))?.[0].call(this, key);
+    this.#onKeyHandlers.find(([_, match]) => match(key))?.[0].call(this, key);
 
     this.params.onKeyHandle?.(performance.now() - t0);
   }
 
-  #handlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
+  #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
     [
       this.#onKeyText,
       (x) => typeof x.text === "string",
