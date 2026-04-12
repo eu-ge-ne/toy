@@ -1,4 +1,0 @@
-{
-  "name": "@lib/text-buf",
-  "exports": "./main.ts"
-}

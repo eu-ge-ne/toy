@@ -1,10 +1,10 @@
-import { Node, TextBuf } from "@lib/text-buf";
+import * as chars from "@lib/chars";
 
 import { Cursor } from "./cursor.ts";
 
 export class History {
   #index = 0;
-  #entries: { ln: number; col: number; snapshot: Node }[] = [];
+  #entries: { ln: number; col: number; snapshot: chars.Node }[] = [];
 
   onChange?: () => void;
 
@@ -13,7 +13,7 @@ export class History {
   }
 
   constructor(
-    private readonly textBuf: TextBuf,
+    private readonly charBuf: chars.Buf,
     private readonly cursor: Cursor,
   ) {
     this.reset();
@@ -21,7 +21,7 @@ export class History {
 
   reset(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.textBuf.save();
+    const snapshot = this.charBuf.save();
 
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
@@ -31,7 +31,7 @@ export class History {
 
   push(): void {
     const { ln, col } = this.cursor;
-    const snapshot = this.textBuf.save();
+    const snapshot = this.charBuf.save();
 
     this.#index += 1;
     this.#entries[this.#index] = { ln, col, snapshot };
@@ -67,7 +67,7 @@ export class History {
   #restore(): void {
     const { ln, col, snapshot } = this.#entries[this.#index]!;
 
-    this.textBuf.restore(snapshot);
+    this.charBuf.restore(snapshot);
     this.cursor.set(ln, col, false);
   }
 

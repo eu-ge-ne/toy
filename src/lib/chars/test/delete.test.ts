@@ -1,13 +1,13 @@
 import { assertEquals } from "@std/assert";
 
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 const EXPECTED =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-function text_buf(): TextBuf {
-  const buf = new TextBuf();
+function text_buf(): Buf {
+  const buf = new Buf();
 
   buf.insert(buf.charCount, "Lorem");
   buf.insert(buf.charCount, " ipsum");
@@ -32,8 +32,8 @@ function text_buf(): TextBuf {
   return buf;
 }
 
-function text_buf_reversed(): TextBuf {
-  const buf = new TextBuf();
+function text_buf_reversed(): Buf {
+  const buf = new Buf();
 
   buf.insert(0, " aliqua.");
   buf.insert(0, " magna");
@@ -58,7 +58,7 @@ function text_buf_reversed(): TextBuf {
   return buf;
 }
 
-function test_delete_head(buf: TextBuf, n: number): void {
+function test_delete_head(buf: Buf, n: number): void {
   let expected = EXPECTED;
 
   while (expected.length > 0) {
@@ -75,7 +75,7 @@ function test_delete_head(buf: TextBuf, n: number): void {
   assert_root(buf.tree.root);
 }
 
-function test_delete_tail(buf: TextBuf, n: number): void {
+function test_delete_tail(buf: Buf, n: number): void {
   let expected = EXPECTED;
 
   while (expected.length > 0) {
@@ -92,7 +92,7 @@ function test_delete_tail(buf: TextBuf, n: number): void {
   assert_root(buf.tree.root);
 }
 
-function test_delete_middle(buf: TextBuf, n: number): void {
+function test_delete_middle(buf: Buf, n: number): void {
   let expected = EXPECTED;
 
   while (expected.length > 0) {
@@ -147,7 +147,7 @@ for (let n = 1; n <= 10; n += 1) {
 }
 
 Deno.test("Delete splitting nodes", () => {
-  const buf = new TextBuf(EXPECTED);
+  const buf = new Buf(EXPECTED);
 
   let expected = EXPECTED;
 
@@ -170,7 +170,7 @@ Deno.test("Delete splitting nodes", () => {
 });
 
 Deno.test("Delete count < 0", () => {
-  const buf = new TextBuf("Lorem ipsum");
+  const buf = new Buf("Lorem ipsum");
 
   buf.delete(5, -6);
 
@@ -179,7 +179,7 @@ Deno.test("Delete count < 0", () => {
 });
 
 Deno.test("Delete removes lines", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, "Lorem");
   buf.insert(5, "ipsum");
@@ -197,7 +197,7 @@ Deno.test("Delete removes lines", () => {
 });
 
 Deno.test("Delete newline char removes line", () => {
-  const buf = new TextBuf(" \n \n");
+  const buf = new Buf(" \n \n");
 
   assertEquals(buf.lineCount, 3);
 
@@ -209,7 +209,7 @@ Deno.test("Delete newline char removes line", () => {
 });
 
 Deno.test("Delete first newline char removes line", () => {
-  const buf = new TextBuf("\n\n");
+  const buf = new Buf("\n\n");
 
   assertEquals(buf.lineCount, 3);
 
@@ -221,7 +221,7 @@ Deno.test("Delete first newline char removes line", () => {
 });
 
 Deno.test("Delete line followed by newline", () => {
-  const buf = new TextBuf(" \n \n\n \n");
+  const buf = new Buf(" \n \n\n \n");
 
   assertEquals(buf.lineCount, 5);
 

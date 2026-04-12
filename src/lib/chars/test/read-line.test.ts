@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
 
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Empty", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   assertEquals(buf.lineCount, 0);
   assert_generator(buf.read2([0, 0], [1, 0]), "");
@@ -13,7 +13,7 @@ Deno.test("Empty", () => {
 });
 
 Deno.test("1 line", () => {
-  const buf = new TextBuf("0");
+  const buf = new Buf("0");
 
   assertEquals(buf.lineCount, 1);
   assert_generator(buf.read2([0, 0], [1, 0]), "0");
@@ -22,7 +22,7 @@ Deno.test("1 line", () => {
 });
 
 Deno.test("2 lines", () => {
-  const buf = new TextBuf("0\n");
+  const buf = new Buf("0\n");
 
   assertEquals(buf.lineCount, 2);
   assert_generator(buf.read2([0, 0], [1, 0]), "0\n");
@@ -32,7 +32,7 @@ Deno.test("2 lines", () => {
 });
 
 Deno.test("3 lines", () => {
-  const buf = new TextBuf("0\n1\n");
+  const buf = new Buf("0\n1\n");
 
   assertEquals(buf.lineCount, 3);
   assert_generator(buf.read2([0, 0], [1, 0]), "0\n");
@@ -43,7 +43,7 @@ Deno.test("3 lines", () => {
 });
 
 Deno.test("Line at valid index", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, "Lorem\naliqua.");
   buf.insert(6, "ipsum\nmagna\n");
@@ -80,7 +80,7 @@ Deno.test("Line at valid index", () => {
 });
 
 Deno.test("Line at index >= line_count", () => {
-  const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
+  const buf = new Buf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([4, 0], [5, 0]), "amet");
   assert_generator(buf.read2([5, 0], [6, 0]), "");
@@ -90,7 +90,7 @@ Deno.test("Line at index >= line_count", () => {
 });
 
 Deno.test("Line at index < 0", () => {
-  const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
+  const buf = new Buf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([0, 0], [1, 0]), "Lorem\n");
   assert_generator(
@@ -106,7 +106,7 @@ Deno.test("Line at index < 0", () => {
 });
 
 Deno.test("Insert adds lines", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   for (let i = 0; i < 10; i += 1) {
     buf.insert(buf.charCount, `${i}\n`);

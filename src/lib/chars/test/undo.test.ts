@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
 
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Undo insert", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(buf.charCount, "Lorem");
   assert_generator(buf.read(0), "Lorem");
