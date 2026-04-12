@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
 
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Insert into the end", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(buf.charCount, "Lorem");
   assert_generator(buf.read(0), "Lorem");
@@ -142,7 +142,7 @@ Deno.test("Insert into the end", () => {
 });
 
 Deno.test("Insert into the beginning", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, " aliqua.");
   assert_generator(buf.read(0), " aliqua.");
@@ -280,7 +280,7 @@ Deno.test("Insert into the beginning", () => {
 });
 
 Deno.test("Insert splitting nodes", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, "Lorem aliqua.");
   assert_generator(buf.read(0), "Lorem aliqua.");
@@ -355,7 +355,7 @@ Deno.test("Insert splitting nodes", () => {
 });
 
 Deno.test("Insert at the negative index", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, "ipsum");
   assert_generator(buf.read(0), "ipsum");
@@ -374,7 +374,7 @@ Deno.test("Insert at the negative index", () => {
 });
 
 Deno.test("Insert splitting node with fixup", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert(0, "11");
   buf.insert(2, "22");

@@ -1,8 +1,8 @@
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Line at valid index", () => {
-  const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
+  const buf = new Buf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([0, 0]), "Lorem\nipsum\ndolor\nsit\namet");
   assert_generator(buf.read2([1, 0]), "ipsum\ndolor\nsit\namet");
@@ -14,7 +14,7 @@ Deno.test("Line at valid index", () => {
 });
 
 Deno.test("Line at index >= line_count", () => {
-  const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
+  const buf = new Buf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([4, 0]), "amet");
   assert_generator(buf.read2([5, 0]), "");
@@ -24,7 +24,7 @@ Deno.test("Line at index >= line_count", () => {
 });
 
 Deno.test("Line at index < 0", () => {
-  const buf = new TextBuf("Lorem\nipsum\ndolor\nsit\namet");
+  const buf = new Buf("Lorem\nipsum\ndolor\nsit\namet");
 
   assert_generator(buf.read2([0, 0]), "Lorem\nipsum\ndolor\nsit\namet");
   assert_generator(buf.read2([buf.lineCount - 1, 0]), "amet");

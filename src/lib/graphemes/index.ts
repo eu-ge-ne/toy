@@ -1,3 +1,4 @@
+export * from "./buf.ts";
 export * from "./grapheme.ts";
 export * from "./graphemes.ts";
-export * as segmenter from "./segmenter.ts";
+export * from "./segmenter.ts";

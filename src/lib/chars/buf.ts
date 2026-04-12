@@ -9,7 +9,7 @@ export const enum InsertionCase {
   Split,
 }
 
-export class TextBuf {
+export class Buf {
   tree: Tree = new Tree();
 
   #content = new Content();
@@ -60,25 +60,6 @@ export class TextBuf {
     yield* this.#content.read(node, offset, end - start);
   }
 
-  /**
-   * Returns text in the buffer's section, specified by start (inclusive) and end (exclusive) positions.
-   *
-   * @param `start` Start position.
-   * @param `end` Optional end position.
-   * @returns Text.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem\nipsum");
-   *
-   * assertEquals(buf.read2([0, 0], [1, 0]).toArray().join(""), "Lorem\n");
-   * assertEquals(buf.read2([1, 0], [2, 0]).toArray().join(""), "ipsum");
-   * ```
-   */
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
     const i = this.#pos_to_index(start);
     if (typeof i !== "number") {
@@ -88,26 +69,6 @@ export class TextBuf {
     yield* this.read(i, this.#pos_to_index(end));
   }
 
-  /**
-   * Inserts text into the buffer at the specified index.
-   *
-   * @param `i` Index at witch to insert the text
-   * @param `text` Text to insert
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf();
-   *
-   * buf.insert(0, "Lorem");
-   * buf.insert(5, " ipsum");
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem ipsum");
-   * ```
-   */
   insert(i: number, text: string): void {
     if (i > this.charCount) {
       return;
@@ -172,26 +133,6 @@ export class TextBuf {
     }
   }
 
-  /**
-   * Inserts text into the buffer at the specified position.
-   *
-   * @param `pos` Position at witch to insert the text
-   * @param `text` Text to insert
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf();
-   *
-   * buf.insert2([0, 0], "Lorem");
-   * buf.insert2([0, 5], " ipsum");
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem ipsum");
-   * ```
-   */
   insert2(pos: [number, number], text: string): void {
     const i = this.#pos_to_index(pos);
     if (typeof i !== "number") {
@@ -201,48 +142,10 @@ export class TextBuf {
     this.insert(i, text);
   }
 
-  /**
-   * Appends text to the buffer
-   *
-   * @param `text` Text to append
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf();
-   *
-   * buf.insert(0, "Lorem");
-   * buf.append(" ipsum");
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem ipsum");
-   * ```
-   */
   append(text: string): void {
     this.insert(this.charCount, text);
   }
 
-  /**
-   * Removes characters in the buffer's section, specified by start (inclusive) and end (exclusive) indexes.
-   *
-   * @param `start` Start index.
-   * @param `end` Optional end index.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem ipsum");
-   *
-   * buf.delete(5, 11);
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem");
-   * ```
-   */
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {
     const first = find(this.tree.root, start);
     if (!first) {
@@ -295,25 +198,6 @@ export class TextBuf {
     }
   }
 
-  /**
-   * Removes characters in the buffer's section, specified by start (inclusive) and end (exclusive) positions.
-   *
-   * @param `start` Start position.
-   * @param `end` Optional end position.
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf("Lorem ipsum");
-   *
-   * buf.delete2([0, 5], [0, 11]);
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "Lorem");
-   * ```
-   */
   delete2(start: [number, number], end?: [number, number]): void {
     const i = this.#pos_to_index(start);
     if (typeof i !== "number") {

@@ -1,12 +1,11 @@
+import * as chars from "@lib/chars";
 import * as graphemes from "@lib/graphemes";
-import { range, sum } from "@lib/std";
-import * as textBuf from "@lib/text-buf";
+import * as std from "@lib/std";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
-import { TextLayout } from "./text-layout.ts";
 
 export const enum CharColor {
   Undefined,
@@ -48,27 +47,27 @@ export class TextEditor extends ui.Frame {
 
   constructor(
     private readonly cursor: Cursor,
-    private readonly textBuf: textBuf.TextBuf,
-    private readonly textLayout: TextLayout,
+    private readonly charBuf: chars.Buf,
+    private readonly grmBuf: graphemes.Buf,
   ) {
     super();
   }
 
   render(): void {
-    if (this.#indexEnabled && (this.textBuf.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
+    if (this.#indexEnabled && (this.charBuf.lineCount > 0)) {
+      this.#indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
     } else {
       this.#indexWidth = 0;
     }
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    graphemes.segmenter.settings.width = this.#wrapEnabled
+    graphemes.settings.width = this.#wrapEnabled
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
-    graphemes.segmenter.settings.y = this.#cursorY = this.y;
-    graphemes.segmenter.settings.x = this.#cursorX = this.x + this.#indexWidth;
+    graphemes.settings.y = this.#cursorY = this.y;
+    graphemes.settings.x = this.#cursorX = this.x + this.#indexWidth;
 
     if (this.width >= this.#indexWidth) {
       this.#scrollV();
@@ -134,7 +133,7 @@ export class TextEditor extends ui.Frame {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.textBuf.lineCount) {
+      if (ln < this.charBuf.lineCount) {
         row = this.#renderLine(ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -164,13 +163,13 @@ export class TextEditor extends ui.Frame {
       this.#scrollLn = this.cursor.ln - this.height;
     }
 
-    const xs = range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
-      this.textLayout.line(ln)
+    const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
+      this.grmBuf.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
     let i = 0;
-    let height = sum(xs);
+    let height = std.sum(xs);
 
     while (height > this.height) {
       height -= xs[i]!;
@@ -186,8 +185,7 @@ export class TextEditor extends ui.Frame {
 
   #scrollH(): void {
     const cell =
-      this.textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
-        .value;
+      this.grmBuf.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -203,13 +201,13 @@ export class TextEditor extends ui.Frame {
 
     // After?
 
-    const xs = this.textLayout.line(this.cursor.ln, true)
+    const xs = this.grmBuf.line(this.cursor.ln, true)
       .drop(this.cursor.col - delta_col)
       .take(delta_col)
       .map((x) => x.gr.width)
       .toArray();
 
-    let width = sum(xs);
+    let width = std.sum(xs);
 
     for (const w of xs) {
       if (width < this.#textWidth) {
@@ -227,7 +225,7 @@ export class TextEditor extends ui.Frame {
     let available_w = 0;
     let current_color = CharColor.Undefined;
 
-    const xs = this.textLayout.line(ln);
+    const xs = this.grmBuf.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {

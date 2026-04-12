@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
 
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Delete line", () => {
-  const buf = new TextBuf("Lorem \nipsum \ndolor \nsit \namet ");
+  const buf = new Buf("Lorem \nipsum \ndolor \nsit \namet ");
 
   assertEquals(buf.lineCount, 5);
 

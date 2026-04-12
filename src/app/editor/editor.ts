@@ -1,6 +1,6 @@
-import { graphemes } from "@lib/graphemes";
+import * as chars from "@lib/chars";
+import * as graphemes from "@lib/graphemes";
 import * as kitty from "@lib/kitty";
-import { TextBuf } from "@lib/text-buf";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -8,7 +8,6 @@ import * as vt from "@lib/vt";
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
 import { TextEditor } from "./text-editor.ts";
-import { TextLayout } from "./text-layout.ts";
 
 interface EditorParams {
   readonly multiLine: boolean;
@@ -22,10 +21,10 @@ interface EditorParams {
 export class Editor extends ui.Frame {
   #focused = false;
 
-  readonly #textBuf = new TextBuf();
-  readonly #textLayout = new TextLayout(this.#textBuf);
-  readonly #cursor = new Cursor(this.#textBuf, this.#textLayout);
-  readonly #history = new History(this.#textBuf, this.#cursor);
+  readonly #charBuf = new chars.Buf();
+  readonly #grmBuf = new graphemes.Buf(this.#charBuf);
+  readonly #cursor = new Cursor(this.#charBuf, this.#grmBuf);
+  readonly #history = new History(this.#charBuf, this.#cursor);
   #clipboard = "";
 
   get textChanged(): boolean {
@@ -33,11 +32,11 @@ export class Editor extends ui.Frame {
   }
 
   get text(): string {
-    return this.#textBuf.text;
+    return this.#charBuf.text;
   }
 
   set text(x: string) {
-    this.#textBuf.text = x;
+    this.#charBuf.text = x;
   }
 
   protected override children: {
@@ -50,7 +49,7 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      text: new TextEditor(this.#cursor, this.#textBuf, this.#textLayout),
+      text: new TextEditor(this.#cursor, this.#charBuf, this.#grmBuf),
     };
 
     this.#history.onChange = params.onTextChange;
@@ -58,7 +57,7 @@ export class Editor extends ui.Frame {
       params.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
-        lnCount: this.#textBuf.lineCount,
+        lnCount: this.#charBuf.lineCount,
       });
   }
 
@@ -83,11 +82,11 @@ export class Editor extends ui.Frame {
   }
 
   read(): Generator<string> {
-    return this.#textBuf.read(0);
+    return this.#charBuf.read(0);
   }
 
   append(text: string): void {
-    this.#textBuf.append(text);
+    this.#charBuf.append(text);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -345,7 +344,7 @@ export class Editor extends ui.Frame {
 
   #insertText(text: string): void {
     if (this.#cursor.selecting) {
-      this.#textLayout.delete(this.#cursor.from, {
+      this.#grmBuf.delete(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
@@ -353,10 +352,10 @@ export class Editor extends ui.Frame {
       this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     }
 
-    this.#textLayout.insert(this.#cursor, text);
+    this.#grmBuf.insert(this.#cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
-      graphemes.get(x.segment)
+      graphemes.graphemes.get(x.segment)
     );
     const eol_count = grms.filter((x) => x.isEol).length;
 
@@ -372,25 +371,25 @@ export class Editor extends ui.Frame {
 
   #backspace(): void {
     if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-      const len = this.#textLayout.line(this.#cursor.ln).take(2).reduce(
+      const len = this.#grmBuf.line(this.#cursor.ln).take(2).reduce(
         (a) => a + 1,
         0,
       );
       if (len === 1) {
-        this.#textLayout.delete(this.#cursor, {
+        this.#grmBuf.delete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
         this.#cursor.left(false);
       } else {
         this.#cursor.left(false);
-        this.#textLayout.delete(this.#cursor, {
+        this.#grmBuf.delete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
       }
     } else {
-      this.#textLayout.delete({
+      this.#grmBuf.delete({
         ln: this.#cursor.ln,
         col: this.#cursor.col - 1,
       }, this.#cursor);
@@ -401,7 +400,7 @@ export class Editor extends ui.Frame {
   }
 
   #deleteChar(): void {
-    this.#textLayout.delete(this.#cursor, {
+    this.#grmBuf.delete(this.#cursor, {
       ln: this.#cursor.ln,
       col: this.#cursor.col + 1,
     });
@@ -410,7 +409,7 @@ export class Editor extends ui.Frame {
   }
 
   #deleteSelection(): void {
-    this.#textLayout.delete(this.#cursor.from, {
+    this.#grmBuf.delete(this.#cursor.from, {
       ln: this.#cursor.to.ln,
       col: this.#cursor.to.col + 1,
     });
@@ -425,14 +424,14 @@ export class Editor extends ui.Frame {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+      this.#clipboard = this.#grmBuf.read(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#textLayout.read(this.#cursor, {
+      this.#clipboard = this.#grmBuf.read(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -449,14 +448,14 @@ export class Editor extends ui.Frame {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+      this.#clipboard = this.#grmBuf.read(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#textLayout.read(this.#cursor, {
+      this.#clipboard = this.#grmBuf.read(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });

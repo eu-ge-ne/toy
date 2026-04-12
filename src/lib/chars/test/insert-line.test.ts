@@ -1,8 +1,8 @@
-import { TextBuf } from "../text-buf.ts";
+import { Buf } from "../buf.ts";
 import { assert_generator, assert_root } from "./assert.ts";
 
 Deno.test("Insert into 0 line", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert2([0, 0], "Lorem ipsum");
 
@@ -13,7 +13,7 @@ Deno.test("Insert into 0 line", () => {
 });
 
 Deno.test("Insert into a line", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
   buf.insert(0, "Lorem");
 
   buf.insert2([0, 5], " ipsum");
@@ -25,7 +25,7 @@ Deno.test("Insert into a line", () => {
 });
 
 Deno.test("Insert into a line which does not exist", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert2([1, 0], "Lorem ipsum");
 
@@ -36,7 +36,7 @@ Deno.test("Insert into a line which does not exist", () => {
 });
 
 Deno.test("Insert into a column which does not exist", () => {
-  const buf = new TextBuf();
+  const buf = new Buf();
 
   buf.insert2([0, 1], "Lorem ipsum");
 
