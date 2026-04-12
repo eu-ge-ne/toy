@@ -24,8 +24,8 @@ export class Editor extends ui.Frame {
 
   readonly textBuf = new TextBuf();
   readonly #textLayout = new TextLayout(this.textBuf);
-  readonly cursor = new Cursor(this.textBuf, this.#textLayout);
-  readonly #history = new History(this.textBuf, this.cursor);
+  readonly #cursor = new Cursor(this.textBuf, this.#textLayout);
+  readonly #history = new History(this.textBuf, this.#cursor);
   #clipboard = "";
 
   get textChanged(): boolean {
@@ -42,10 +42,16 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      text: new TextEditor(this.cursor, this.textBuf, this.#textLayout),
+      text: new TextEditor(this.#cursor, this.textBuf, this.#textLayout),
     };
 
     this.#history.onChange = params.onTextChange;
+    this.#cursor.onChange = () =>
+      params.onCursorChange?.({
+        ln: this.#cursor.ln,
+        col: this.#cursor.col,
+        lnCount: this.textBuf.lineCount,
+      });
   }
 
   override resizeChildren(): void {
@@ -83,7 +89,7 @@ export class Editor extends ui.Frame {
       return;
     }
     this.children.text.toggleWrapped();
-    this.cursor.home(false);
+    this.#cursor.home(false);
   }
 
   toggleWhitespace(): void {
@@ -103,9 +109,9 @@ export class Editor extends ui.Frame {
   reset(resetCursor: boolean): void {
     if (resetCursor) {
       if (this.params.multiLine) {
-        this.cursor.set(0, 0, false);
+        this.#cursor.set(0, 0, false);
       } else {
-        this.cursor.set(
+        this.#cursor.set(
           Number.MAX_SAFE_INTEGER,
           Number.MAX_SAFE_INTEGER,
           false,
@@ -236,7 +242,7 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyBackspace(): void {
-    if (this.cursor.selecting) {
+    if (this.#cursor.selecting) {
       this.#deleteSelection();
     } else {
       this.#backspace();
@@ -244,7 +250,7 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyBottom(key: kitty.Key): void {
-    this.cursor.bottom(Boolean(key.shift));
+    this.#cursor.bottom(Boolean(key.shift));
   }
 
   #onKeyCopy(): void {
@@ -256,7 +262,7 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyDelete(): void {
-    if (this.cursor.selecting) {
+    if (this.#cursor.selecting) {
       this.#deleteSelection();
     } else {
       this.#deleteChar();
@@ -264,11 +270,11 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyDown(key: kitty.Key): void {
-    this.cursor.down(1, Boolean(key.shift));
+    this.#cursor.down(1, Boolean(key.shift));
   }
 
   #onKeyEnd(key: kitty.Key): void {
-    this.cursor.end(Boolean(key.shift));
+    this.#cursor.end(Boolean(key.shift));
   }
 
   #onKeyEnter(): void {
@@ -276,19 +282,19 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyHome(key: kitty.Key): void {
-    this.cursor.home(Boolean(key.shift));
+    this.#cursor.home(Boolean(key.shift));
   }
 
   #onKeyLeft(key: kitty.Key): void {
-    this.cursor.left(Boolean(key.shift));
+    this.#cursor.left(Boolean(key.shift));
   }
 
   #onKeyPageDown(key: kitty.Key): void {
-    this.cursor.down(this.height, Boolean(key.shift));
+    this.#cursor.down(this.height, Boolean(key.shift));
   }
 
   #onKeyPageUp(key: kitty.Key): void {
-    this.cursor.up(this.height, Boolean(key.shift));
+    this.#cursor.up(this.height, Boolean(key.shift));
   }
 
   #onKeyPaste(): void {
@@ -300,7 +306,7 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyRight(key: kitty.Key): void {
-    this.cursor.right(Boolean(key.shift));
+    this.#cursor.right(Boolean(key.shift));
   }
 
   #onKeySelectAll(): void {
@@ -312,7 +318,7 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyTop(key: kitty.Key): void {
-    this.cursor.top(Boolean(key.shift));
+    this.#cursor.top(Boolean(key.shift));
   }
 
   #onKeyUndo(): void {
@@ -320,22 +326,22 @@ export class Editor extends ui.Frame {
   }
 
   #onKeyUp(key: kitty.Key): void {
-    this.cursor.up(1, Boolean(key.shift));
+    this.#cursor.up(1, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
-    if (this.cursor.selecting) {
-      this.#textLayout.delete(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+    if (this.#cursor.selecting) {
+      this.#textLayout.delete(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+      this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     }
 
-    this.#textLayout.insert(this.cursor, text);
+    this.#textLayout.insert(this.#cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -343,60 +349,60 @@ export class Editor extends ui.Frame {
     const eol_count = grms.filter((x) => x.isEol).length;
 
     if (eol_count === 0) {
-      this.cursor.forward(grms.length);
+      this.#cursor.forward(grms.length);
     } else {
       const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-      this.cursor.set(this.cursor.ln + eol_count, col, false);
+      this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
     this.#history.push();
   }
 
   #backspace(): void {
-    if (this.cursor.ln > 0 && this.cursor.col === 0) {
-      const len = this.#textLayout.line(this.cursor.ln).take(2).reduce(
+    if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
+      const len = this.#textLayout.line(this.#cursor.ln).take(2).reduce(
         (a) => a + 1,
         0,
       );
       if (len === 1) {
-        this.#textLayout.delete(this.cursor, {
-          ln: this.cursor.ln,
-          col: this.cursor.col + 1,
+        this.#textLayout.delete(this.#cursor, {
+          ln: this.#cursor.ln,
+          col: this.#cursor.col + 1,
         });
-        this.cursor.left(false);
+        this.#cursor.left(false);
       } else {
-        this.cursor.left(false);
-        this.#textLayout.delete(this.cursor, {
-          ln: this.cursor.ln,
-          col: this.cursor.col + 1,
+        this.#cursor.left(false);
+        this.#textLayout.delete(this.#cursor, {
+          ln: this.#cursor.ln,
+          col: this.#cursor.col + 1,
         });
       }
     } else {
-      this.#textLayout.delete(
-        { ln: this.cursor.ln, col: this.cursor.col - 1 },
-        this.cursor,
-      );
-      this.cursor.left(false);
+      this.#textLayout.delete({
+        ln: this.#cursor.ln,
+        col: this.#cursor.col - 1,
+      }, this.#cursor);
+      this.#cursor.left(false);
     }
 
     this.#history.push();
   }
 
   #deleteChar(): void {
-    this.#textLayout.delete(this.cursor, {
-      ln: this.cursor.ln,
-      col: this.cursor.col + 1,
+    this.#textLayout.delete(this.#cursor, {
+      ln: this.#cursor.ln,
+      col: this.#cursor.col + 1,
     });
 
     this.#history.push();
   }
 
   #deleteSelection(): void {
-    this.#textLayout.delete(this.cursor.from, {
-      ln: this.cursor.to.ln,
-      col: this.cursor.to.col + 1,
+    this.#textLayout.delete(this.#cursor.from, {
+      ln: this.#cursor.to.ln,
+      col: this.#cursor.to.col + 1,
     });
-    this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+    this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
     this.#history.push();
   }
@@ -406,17 +412,17 @@ export class Editor extends ui.Frame {
       return;
     }
 
-    if (this.cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+    if (this.#cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
-      this.cursor.set(this.cursor.ln, this.cursor.col, false);
+      this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#textLayout.read(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.#cursor, {
+        ln: this.#cursor.ln,
+        col: this.#cursor.col + 1,
       });
     }
 
@@ -430,17 +436,17 @@ export class Editor extends ui.Frame {
       return;
     }
 
-    if (this.cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+    if (this.#cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#textLayout.read(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.#cursor, {
+        ln: this.#cursor.ln,
+        col: this.#cursor.col + 1,
       });
 
       this.#deleteChar();
@@ -483,7 +489,7 @@ export class Editor extends ui.Frame {
       return;
     }
 
-    this.cursor.set(0, 0, false);
-    this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+    this.#cursor.set(0, 0, false);
+    this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
   }
 }

@@ -15,6 +15,8 @@ export class Cursor {
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
 
+  onChange?: () => void;
+
   constructor(
     private readonly textBuf: TextBuf,
     private readonly textLayout: TextLayout,
@@ -29,7 +31,13 @@ export class Cursor {
     this.#setSelection(oldLn, oldCol, sel);
     this.#setRange();
 
-    return this.ln !== oldLn || this.col !== oldCol;
+    const changed = this.ln !== oldLn || this.col !== oldCol;
+
+    if (changed) {
+      this.onChange?.();
+    }
+
+    return changed;
   }
 
   top(sel: boolean): boolean {
