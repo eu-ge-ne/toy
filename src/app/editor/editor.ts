@@ -32,6 +32,14 @@ export class Editor extends ui.Frame {
     return this.#history.changed;
   }
 
+  get text(): string {
+    return this.textBuf.text;
+  }
+
+  set text(x: string) {
+    this.textBuf.text = x;
+  }
+
   protected override children: {
     bg: ui.Bg;
     text: TextEditor;

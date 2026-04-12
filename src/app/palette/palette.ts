@@ -55,7 +55,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
     const { list, editor } = this.children;
 
     editor.setFocused(true);
-    editor.textBuf.reset();
+    editor.text = "";
     editor.reset(false);
 
     while (true) {
@@ -104,7 +104,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   }
 
   #filter(): void {
-    const text = this.children.editor.textBuf.text().toUpperCase();
+    const text = this.children.editor.text.toUpperCase();
 
     if (!text) {
       this.children.list.values = availableOptions;

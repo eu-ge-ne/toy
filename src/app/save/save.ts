@@ -37,7 +37,7 @@ export class Save extends ui.Modal<[string], string> {
   async open(path: string): Promise<string> {
     const { editor } = this.children;
 
-    editor.textBuf.reset(path);
+    editor.text = path;
     editor.reset(true);
 
     while (true) {
@@ -49,7 +49,7 @@ export class Save extends ui.Modal<[string], string> {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = editor.textBuf.text();
+          const path = editor.text;
           if (path) {
             return path;
           }
