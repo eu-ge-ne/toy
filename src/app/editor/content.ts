@@ -7,7 +7,7 @@ import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
 
-export const enum CharColor {
+const enum CharColor {
   Undefined,
   Visible,
   Whitespace,
@@ -17,11 +17,14 @@ export const enum CharColor {
   EmptySelected,
 }
 
-export class TextEditor extends ui.Frame {
+export class Content extends ui.Frame {
   #focused = false;
-  #indexEnabled = false;
-  #whitespaceEnabled = false;
-  #wrapEnabled = false;
+
+  #mode = {
+    index: false,
+    whitespace: false,
+    wrap: false,
+  };
 
   #color = {
     bg: new Uint8Array(),
@@ -38,41 +41,37 @@ export class TextEditor extends ui.Frame {
     },
   };
 
-  #indexWidth = 0;
-  #textWidth = 0;
   #scrollLn = 0;
   #scrollCol = 0;
   #cursorY = 0;
   #cursorX = 0;
 
   constructor(
-    private readonly cursor: Cursor,
     private readonly charBuf: chars.Buf,
     private readonly grmBuf: graphemes.Buf,
+    private readonly cursor: Cursor,
   ) {
     super();
   }
 
   render(): void {
-    if (this.#indexEnabled && (this.charBuf.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
-    } else {
-      this.#indexWidth = 0;
+    let indexWidth = 0;
+    if (this.#mode.index && (this.charBuf.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
     }
 
-    this.#textWidth = this.width - this.#indexWidth;
+    const textWidth = this.width - indexWidth;
 
-    graphemes.settings.width = this.#wrapEnabled
-      ? this.#textWidth
+    graphemes.settings.width = this.#mode.wrap
+      ? textWidth
       : Number.MAX_SAFE_INTEGER;
-
     graphemes.settings.y = this.#cursorY = this.y;
-    graphemes.settings.x = this.#cursorX = this.x + this.#indexWidth;
+    graphemes.settings.x = this.#cursorX = this.x + indexWidth;
 
-    if (this.width >= this.#indexWidth) {
+    if (this.width >= indexWidth) {
       this.#scrollV();
-      this.#scrollH();
-      this.#renderLines();
+      this.#scrollH(textWidth);
+      this.#renderLines(indexWidth);
     }
 
     if (this.#focused) {
@@ -118,23 +117,23 @@ export class TextEditor extends ui.Frame {
   }
 
   toggleWrapped(): void {
-    this.#wrapEnabled = !this.#wrapEnabled;
+    this.#mode.wrap = !this.#mode.wrap;
   }
 
   toggleWhitespace(): void {
-    this.#whitespaceEnabled = !this.#whitespaceEnabled;
+    this.#mode.whitespace = !this.#mode.whitespace;
   }
 
   toggleIndex(): void {
-    this.#indexEnabled = !this.#indexEnabled;
+    this.#mode.index = !this.#mode.index;
   }
 
-  #renderLines(): void {
+  #renderLines(indexWidth: number): void {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
       if (ln < this.charBuf.lineCount) {
-        row = this.#renderLine(ln, row);
+        row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#color.void);
@@ -149,17 +148,17 @@ export class TextEditor extends ui.Frame {
   }
 
   #scrollV(): void {
-    const delta_ln = this.cursor.ln - this.#scrollLn;
+    const deltaLn = this.cursor.ln - this.#scrollLn;
 
     // Above?
-    if (delta_ln <= 0) {
+    if (deltaLn <= 0) {
       this.#scrollLn = this.cursor.ln;
       return;
     }
 
     // Below?
 
-    if (delta_ln > this.height) {
+    if (deltaLn > this.height) {
       this.#scrollLn = this.cursor.ln - this.height;
     }
 
@@ -183,7 +182,7 @@ export class TextEditor extends ui.Frame {
     }
   }
 
-  #scrollH(): void {
+  #scrollH(textWidth: number): void {
     const cell =
       this.grmBuf.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
@@ -191,10 +190,10 @@ export class TextEditor extends ui.Frame {
     }
 
     const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.#scrollCol;
+    const deltaCol = col - this.#scrollCol;
 
     // Before?
-    if (delta_col <= 0) {
+    if (deltaCol <= 0) {
       this.#scrollCol = col;
       return;
     }
@@ -202,15 +201,15 @@ export class TextEditor extends ui.Frame {
     // After?
 
     const xs = this.grmBuf.line(this.cursor.ln, true)
-      .drop(this.cursor.col - delta_col)
-      .take(delta_col)
+      .drop(this.cursor.col - deltaCol)
+      .take(deltaCol)
       .map((x) => x.gr.width)
       .toArray();
 
     let width = std.sum(xs);
 
     for (const w of xs) {
-      if (width < this.#textWidth) {
+      if (width < textWidth) {
         break;
       }
 
@@ -221,9 +220,9 @@ export class TextEditor extends ui.Frame {
     this.#cursorX += width;
   }
 
-  #renderLine(ln: number, row: number): number {
-    let available_w = 0;
-    let current_color = CharColor.Undefined;
+  #renderLine(indexWidth: number, ln: number, row: number): number {
+    let availableWidth = 0;
+    let currentColor = CharColor.Undefined;
 
     const xs = this.grmBuf.line(ln);
 
@@ -238,41 +237,41 @@ export class TextEditor extends ui.Frame {
 
         vt.cursor.set(vt.buf, row, this.x);
 
-        if (this.#indexWidth > 0) {
+        if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
             vt.write_text(
               vt.buf,
-              [this.#indexWidth],
-              `${ln + 1} `.padStart(this.#indexWidth),
+              [indexWidth],
+              `${ln + 1} `.padStart(indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
-            vt.write_spaces(vt.buf, this.#indexWidth);
+            vt.write_spaces(vt.buf, indexWidth);
           }
         }
 
-        available_w = this.width - this.#indexWidth;
+        availableWidth = this.width - indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (width > available_w)) {
+      if ((col < this.#scrollCol) || (width > availableWidth)) {
         continue;
       }
 
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.#whitespaceEnabled,
+        this.#mode.whitespace,
       );
 
-      if (color !== current_color) {
-        current_color = color;
+      if (color !== currentColor) {
+        currentColor = color;
         vt.buf.write(this.#color.char[color]);
       }
 
       vt.buf.write(bytes);
 
-      available_w -= width;
+      availableWidth -= width;
     }
 
     return row;

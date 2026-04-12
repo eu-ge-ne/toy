@@ -7,7 +7,7 @@ import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
-import { TextEditor } from "./text-editor.ts";
+import { Content } from "./content.ts";
 
 interface EditorParams {
   readonly multiLine: boolean;
@@ -41,7 +41,7 @@ export class Editor extends ui.Frame {
 
   protected override children: {
     bg: ui.Bg;
-    text: TextEditor;
+    content:Content
   };
 
   constructor(readonly params: EditorParams) {
@@ -49,10 +49,11 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      text: new TextEditor(this.#cursor, this.#charBuf, this.#grmBuf),
+      content: new Content(this.#charBuf, this.#grmBuf, this.#cursor, ),
     };
 
     this.#history.onChange = params.onTextChange;
+
     this.#cursor.onChange = () =>
       params.onCursorChange?.({
         ln: this.#cursor.ln,
@@ -62,19 +63,19 @@ export class Editor extends ui.Frame {
   }
 
   override resizeChildren(): void {
-    const { bg, text } = this.children;
+    const { bg, content } = this.children;
 
     bg.resize(this.width, this.height, this.y, this.x);
-    text.resize(this.width, this.height, this.y, this.x);
+    content.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
-    const { bg, text } = this.children;
+    const { bg, content } = this.children;
 
     vt.buf.write(vt.cursor.save);
 
     bg.render();
-    text.render();
+    content.render();
 
     if (!this.#focused) {
       vt.buf.write(vt.cursor.restore);
@@ -90,20 +91,22 @@ export class Editor extends ui.Frame {
   }
 
   setTheme(theme: themes.Theme): void {
-    this.children.bg.color = new Uint8Array(theme.bg_main);
-    this.children.text.setTheme(theme);
+    const { bg, content } = this.children;
+
+    bg.color = new Uint8Array(theme.bg_main);
+    content.setTheme(theme);
   }
 
   setFocused(x: boolean): void {
     this.#focused = x;
-    this.children.text.setFocused(x);
+    this.children.content.setFocused(x);
   }
 
   toggleWrapped(): void {
     if (!this.#focused) {
       return;
     }
-    this.children.text.toggleWrapped();
+    this.children.content.toggleWrapped();
     this.#cursor.home(false);
   }
 
@@ -111,14 +114,14 @@ export class Editor extends ui.Frame {
     if (!this.#focused) {
       return;
     }
-    this.children.text.toggleWhitespace();
+    this.children.content.toggleWhitespace();
   }
 
   toggleIndex(): void {
     if (!this.#focused) {
       return;
     }
-    this.children.text.toggleIndex();
+    this.children.content.toggleIndex();
   }
 
   resetChanges(): void {
