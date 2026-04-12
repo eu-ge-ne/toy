@@ -17,13 +17,7 @@ export class Save extends ui.Modal<[string], string> {
     this.children = {
       bg: new ui.Bg(),
       header: new ui.Text({ align: "center" }),
-      editor: new Editor({
-        disabled: false,
-        index: false,
-        multiLine: false,
-        whitespace: false,
-        wrap: false,
-      }),
+      editor: new Editor({ multiLine: false }),
       footer: new ui.Text({ align: "center" }),
     };
 
@@ -43,8 +37,10 @@ export class Save extends ui.Modal<[string], string> {
   async open(path: string): Promise<string> {
     const { editor } = this.children;
 
-    editor.textBuf.reset(path);
-    editor.reset(true);
+    editor.setFocused(true);
+    editor.text = path;
+    editor.resetChanges();
+    editor.resetCursor();
 
     while (true) {
       this.render();
@@ -55,7 +51,7 @@ export class Save extends ui.Modal<[string], string> {
         case "ESC":
           return "";
         case "ENTER": {
-          const path = editor.textBuf.text();
+          const path = editor.text;
           if (path) {
             return path;
           }

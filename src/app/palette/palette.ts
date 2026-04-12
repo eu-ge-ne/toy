@@ -24,13 +24,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
 
     this.children = {
       bg: new ui.Bg(),
-      editor: new Editor({
-        disabled: false,
-        index: false,
-        multiLine: false,
-        whitespace: false,
-        wrap: false,
-      }),
+      editor: new Editor({ multiLine: false }),
       list: new ui.List<Command>({ emptyText: "No matching commands" }),
     };
 
@@ -60,8 +54,10 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   async open(): Promise<Command | undefined> {
     const { list, editor } = this.children;
 
-    editor.textBuf.reset();
-    editor.reset(false);
+    editor.setFocused(true);
+    editor.text = "";
+    editor.resetChanges();
+    editor.resetCursor();
 
     while (true) {
       this.#filter();
@@ -109,7 +105,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   }
 
   #filter(): void {
-    const text = this.children.editor.textBuf.text().toUpperCase();
+    const text = this.children.editor.text.toUpperCase();
 
     if (!text) {
       this.children.list.values = availableOptions;

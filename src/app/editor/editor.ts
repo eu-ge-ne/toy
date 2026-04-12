@@ -1,120 +1,359 @@
-import { graphemes, segmenter } from "@lib/graphemes";
-import { Key } from "@lib/kitty";
-import { range, sum } from "@lib/std";
+import { graphemes } from "@lib/graphemes";
+import * as kitty from "@lib/kitty";
 import { TextBuf } from "@lib/text-buf";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { CharColor, charColor, colors } from "./colors.ts";
 import { Cursor } from "./cursor.ts";
-import * as keys from "./handlers/mod.ts";
 import { History } from "./history.ts";
+import { TextEditor } from "./text-editor.ts";
 import { TextLayout } from "./text-layout.ts";
 
-interface EditorProps {
-  disabled: boolean;
-  index: boolean;
-  multiLine: boolean;
-  whitespace: boolean;
-  wrap: boolean;
-  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
-  onKeyHandle?: (_: number) => void;
+interface EditorParams {
+  readonly multiLine: boolean;
+  readonly onTextChange?: () => void;
+  readonly onCursorChange?: (
+    _: { ln: number; col: number; lnCount: number },
+  ) => void;
+  readonly onKeyHandle?: (_: number) => void;
 }
 
 export class Editor extends ui.Frame {
-  #colors = colors(themes.DefaultTheme);
+  #focused = false;
 
-  #handlers: keys.EditorHandler[] = [
-    new keys.TextHandler(this),
-    new keys.BackspaceHandler(this),
-    new keys.BottomHandler(this),
-    new keys.CopyHandler(this),
-    new keys.CutHandler(this),
-    new keys.DeleteHandler(this),
-    new keys.DownHandler(this),
-    new keys.EndHandler(this),
-    new keys.EnterHandler(this),
-    new keys.HomeHandler(this),
-    new keys.LeftHandler(this),
-    new keys.PageDownHandler(this),
-    new keys.PageUpHandler(this),
-    new keys.PasteHandler(this),
-    new keys.RedoHandler(this),
-    new keys.RightHandler(this),
-    new keys.SelectAllHandler(this),
-    new keys.TabHandler(this),
-    new keys.TopHandler(this),
-    new keys.UndoHandler(this),
-    new keys.UpHandler(this),
-  ];
-
-  readonly textBuf = new TextBuf();
-  readonly #textLayout = new TextLayout(this.textBuf);
-  readonly cursor = new Cursor(this.textBuf, this.#textLayout);
-  readonly history = new History(this.textBuf, this.cursor);
+  readonly #textBuf = new TextBuf();
+  readonly #textLayout = new TextLayout(this.#textBuf);
+  readonly #cursor = new Cursor(this.#textBuf, this.#textLayout);
+  readonly #history = new History(this.#textBuf, this.#cursor);
   #clipboard = "";
+
+  get textChanged(): boolean {
+    return this.#history.changed;
+  }
+
+  get text(): string {
+    return this.#textBuf.text;
+  }
+
+  set text(x: string) {
+    this.#textBuf.text = x;
+  }
 
   protected override children: {
     bg: ui.Bg;
+    text: TextEditor;
   };
 
-  constructor(readonly props: EditorProps) {
+  constructor(readonly params: EditorParams) {
     super();
 
     this.children = {
       bg: new ui.Bg(),
+      text: new TextEditor(this.#cursor, this.#textBuf, this.#textLayout),
     };
+
+    this.#history.onChange = params.onTextChange;
+    this.#cursor.onChange = () =>
+      params.onCursorChange?.({
+        ln: this.#cursor.ln,
+        col: this.#cursor.col,
+        lnCount: this.#textBuf.lineCount,
+      });
   }
 
-  reset(reset_cursor: boolean): void {
-    if (reset_cursor) {
-      if (this.props.multiLine) {
-        this.cursor.set(0, 0, false);
-      } else {
-        this.cursor.set(
-          Number.MAX_SAFE_INTEGER,
-          Number.MAX_SAFE_INTEGER,
-          false,
-        );
-      }
+  override resizeChildren(): void {
+    const { bg, text } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    text.resize(this.width, this.height, this.y, this.x);
+  }
+
+  render(): void {
+    const { bg, text } = this.children;
+
+    vt.buf.write(vt.cursor.save);
+
+    bg.render();
+    text.render();
+
+    if (!this.#focused) {
+      vt.buf.write(vt.cursor.restore);
     }
-
-    this.history.reset();
   }
 
-  onKey(key: Key): void {
-    if (this.props.disabled) {
+  read(): Generator<string> {
+    return this.#textBuf.read(0);
+  }
+
+  append(text: string): void {
+    this.#textBuf.append(text);
+  }
+
+  setTheme(theme: themes.Theme): void {
+    this.children.bg.color = new Uint8Array(theme.bg_main);
+    this.children.text.setTheme(theme);
+  }
+
+  setFocused(x: boolean): void {
+    this.#focused = x;
+    this.children.text.setFocused(x);
+  }
+
+  toggleWrapped(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWrapped();
+    this.#cursor.home(false);
+  }
+
+  toggleWhitespace(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleWhitespace();
+  }
+
+  toggleIndex(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.children.text.toggleIndex();
+  }
+
+  resetChanges(): void {
+    this.#history.reset();
+  }
+
+  resetCursor(): void {
+    if (this.params.multiLine) {
+      this.#cursor.set(0, 0, false);
+    } else {
+      this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+    }
+  }
+
+  onKey(key: kitty.Key): void {
+    if (!this.#focused) {
       return;
     }
 
     const t0 = performance.now();
 
-    this.#handlers.find((x) => x.match(key))?.handle(key);
+    this.#onKeyHandlers.find(([_, match]) => match(key))?.[0].call(this, key);
 
-    this.props.onKeyHandle?.(performance.now() - t0);
+    this.params.onKeyHandle?.(performance.now() - t0);
   }
 
-  setTheme(theme: themes.Theme): void {
-    this.#colors = colors(theme);
-    this.children.bg.color = new Uint8Array(this.#colors.background);
+  #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
+    [
+      this.#onKeyText,
+      (x) => typeof x.text === "string",
+    ],
+    [
+      this.#onKeyBackspace,
+      (x) => x.name === "BACKSPACE",
+    ],
+    [
+      this.#onKeyBottom,
+      (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
+    ],
+    [
+      this.#onKeyCopy,
+      (x) => x.name === "c" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyCut,
+      (x) => x.name === "x" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyDelete,
+      (x) => x.name === "DELETE",
+    ],
+    [
+      this.#onKeyDown,
+      (x) => this.params.multiLine && x.name === "DOWN",
+    ],
+    [
+      this.#onKeyEnd,
+      (x) => {
+        if (x.name === "END") {
+          return true;
+        }
+        if (x.name === "RIGHT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+    ],
+    [
+      this.#onKeyEnter,
+      (x) => this.params.multiLine && x.name === "ENTER",
+    ],
+    [
+      this.#onKeyHome,
+      (x) => {
+        if (x.name === "HOME") {
+          return true;
+        }
+        if (x.name === "LEFT" && x.super) {
+          return true;
+        }
+        return false;
+      },
+    ],
+    [
+      this.#onKeyLeft,
+      (x) => x.name === "LEFT",
+    ],
+    [
+      this.#onKeyPageDown,
+      (x) => this.params.multiLine && x.name === "PAGE_DOWN",
+    ],
+    [
+      this.#onKeyPageUp,
+      (x) => this.params.multiLine && x.name === "PAGE_UP",
+    ],
+    [
+      this.#onKeyPaste,
+      (x) => x.name === "v" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyRedo,
+      (x) => x.name === "y" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyRight,
+      (x) => x.name === "RIGHT",
+    ],
+    [
+      this.#onKeySelectAll,
+      (x) => x.name === "a" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyTab,
+      (x) => x.name === "TAB",
+    ],
+    [
+      this.#onKeyTop,
+      (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super),
+    ],
+    [
+      this.#onKeyUndo,
+      (x) => x.name === "z" && Boolean(x.ctrl || x.super),
+    ],
+    [
+      this.#onKeyUp,
+      (x) => this.params.multiLine && x.name === "UP",
+    ],
+  ];
+
+  #onKeyText(key: kitty.Key): void {
+    this.#insertText(key.text!);
+  }
+
+  #onKeyBackspace(): void {
+    if (this.#cursor.selecting) {
+      this.#deleteSelection();
+    } else {
+      this.#backspace();
+    }
+  }
+
+  #onKeyBottom(key: kitty.Key): void {
+    this.#cursor.bottom(Boolean(key.shift));
+  }
+
+  #onKeyCopy(): void {
+    this.copy();
+  }
+
+  #onKeyCut(): void {
+    this.cut();
+  }
+
+  #onKeyDelete(): void {
+    if (this.#cursor.selecting) {
+      this.#deleteSelection();
+    } else {
+      this.#deleteChar();
+    }
+  }
+
+  #onKeyDown(key: kitty.Key): void {
+    this.#cursor.down(1, Boolean(key.shift));
+  }
+
+  #onKeyEnd(key: kitty.Key): void {
+    this.#cursor.end(Boolean(key.shift));
+  }
+
+  #onKeyEnter(): void {
+    this.#insertText("\n");
+  }
+
+  #onKeyHome(key: kitty.Key): void {
+    this.#cursor.home(Boolean(key.shift));
+  }
+
+  #onKeyLeft(key: kitty.Key): void {
+    this.#cursor.left(Boolean(key.shift));
+  }
+
+  #onKeyPageDown(key: kitty.Key): void {
+    this.#cursor.down(this.height, Boolean(key.shift));
+  }
+
+  #onKeyPageUp(key: kitty.Key): void {
+    this.#cursor.up(this.height, Boolean(key.shift));
+  }
+
+  #onKeyPaste(): void {
+    this.paste();
+  }
+
+  #onKeyRedo(): void {
+    this.redo();
+  }
+
+  #onKeyRight(key: kitty.Key): void {
+    this.#cursor.right(Boolean(key.shift));
+  }
+
+  #onKeySelectAll(): void {
+    this.selectAll();
+  }
+
+  #onKeyTab(): void {
+    this.#insertText("\t");
+  }
+
+  #onKeyTop(key: kitty.Key): void {
+    this.#cursor.top(Boolean(key.shift));
+  }
+
+  #onKeyUndo(): void {
+    this.undo();
+  }
+
+  #onKeyUp(key: kitty.Key): void {
+    this.#cursor.up(1, Boolean(key.shift));
   }
 
   #sgr = new Intl.Segmenter();
 
-  insert(text: string): void {
-    const { history } = this;
-
-    if (this.cursor.selecting) {
-      this.#textLayout.delete(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+  #insertText(text: string): void {
+    if (this.#cursor.selecting) {
+      this.#textLayout.delete(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+      this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     }
 
-    this.#textLayout.insert(this.cursor, text);
+    this.#textLayout.insert(this.#cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.get(x.segment)
@@ -122,330 +361,147 @@ export class Editor extends ui.Frame {
     const eol_count = grms.filter((x) => x.isEol).length;
 
     if (eol_count === 0) {
-      this.cursor.forward(grms.length);
+      this.#cursor.forward(grms.length);
     } else {
       const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-      this.cursor.set(this.cursor.ln + eol_count, col, false);
+      this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
-    history.push();
+    this.#history.push();
   }
 
-  backspace(): void {
-    const { history } = this;
-
-    if (this.cursor.ln > 0 && this.cursor.col === 0) {
-      const len = this.#textLayout.line(this.cursor.ln).take(2).reduce(
+  #backspace(): void {
+    if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
+      const len = this.#textLayout.line(this.#cursor.ln).take(2).reduce(
         (a) => a + 1,
         0,
       );
       if (len === 1) {
-        this.#textLayout.delete(this.cursor, {
-          ln: this.cursor.ln,
-          col: this.cursor.col + 1,
+        this.#textLayout.delete(this.#cursor, {
+          ln: this.#cursor.ln,
+          col: this.#cursor.col + 1,
         });
-        this.cursor.left(false);
+        this.#cursor.left(false);
       } else {
-        this.cursor.left(false);
-        this.#textLayout.delete(this.cursor, {
-          ln: this.cursor.ln,
-          col: this.cursor.col + 1,
+        this.#cursor.left(false);
+        this.#textLayout.delete(this.#cursor, {
+          ln: this.#cursor.ln,
+          col: this.#cursor.col + 1,
         });
       }
     } else {
-      this.#textLayout.delete(
-        { ln: this.cursor.ln, col: this.cursor.col - 1 },
-        this.cursor,
-      );
-      this.cursor.left(false);
+      this.#textLayout.delete({
+        ln: this.#cursor.ln,
+        col: this.#cursor.col - 1,
+      }, this.#cursor);
+      this.#cursor.left(false);
     }
 
-    history.push();
+    this.#history.push();
   }
 
-  deleteChar(): void {
-    const { history } = this;
-
-    this.#textLayout.delete(this.cursor, {
-      ln: this.cursor.ln,
-      col: this.cursor.col + 1,
+  #deleteChar(): void {
+    this.#textLayout.delete(this.#cursor, {
+      ln: this.#cursor.ln,
+      col: this.#cursor.col + 1,
     });
 
-    history.push();
+    this.#history.push();
   }
 
-  deleteSelection(): void {
-    const { history } = this;
-
-    this.#textLayout.delete(this.cursor.from, {
-      ln: this.cursor.to.ln,
-      col: this.cursor.to.col + 1,
+  #deleteSelection(): void {
+    this.#textLayout.delete(this.#cursor.from, {
+      ln: this.#cursor.to.ln,
+      col: this.#cursor.to.col + 1,
     });
-    this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+    this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
-    history.push();
+    this.#history.push();
   }
 
-  copy(): boolean {
-    if (this.cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+  copy(): void {
+    if (!this.#focused) {
+      return;
+    }
+
+    if (this.#cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
-      this.cursor.set(this.cursor.ln, this.cursor.col, false);
+      this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#textLayout.read(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.#cursor, {
+        ln: this.#cursor.ln,
+        col: this.#cursor.col + 1,
       });
     }
 
     vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
-    return false;
+    return;
   }
 
-  cut(): boolean {
-    if (this.cursor.selecting) {
-      this.#clipboard = this.#textLayout.read(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
+  cut(): void {
+    if (!this.#focused) {
+      return;
+    }
+
+    if (this.#cursor.selecting) {
+      this.#clipboard = this.#textLayout.read(this.#cursor.from, {
+        ln: this.#cursor.to.ln,
+        col: this.#cursor.to.col + 1,
       });
 
-      this.deleteSelection();
+      this.#deleteSelection();
     } else {
-      this.#clipboard = this.#textLayout.read(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.#clipboard = this.#textLayout.read(this.#cursor, {
+        ln: this.#cursor.ln,
+        col: this.#cursor.col + 1,
       });
 
-      this.deleteChar();
+      this.#deleteChar();
     }
 
     vt.copy_to_clipboard(vt.sync, this.#clipboard);
 
-    return true;
+    return;
   }
 
-  paste(): boolean {
+  paste(): void {
+    if (!this.#focused) {
+      return;
+    }
+
     if (!this.#clipboard) {
-      return false;
-    }
-
-    this.insert(this.#clipboard);
-
-    return true;
-  }
-
-  undo(): boolean {
-    return this.history.undo();
-  }
-
-  redo(): boolean {
-    return this.history.redo();
-  }
-
-  selectAll(): boolean {
-    this.cursor.set(0, 0, false);
-    this.cursor.set(
-      Number.MAX_SAFE_INTEGER,
-      Number.MAX_SAFE_INTEGER,
-      true,
-    );
-    return true;
-  }
-
-  private index_width = 0;
-  private text_width = 0;
-  private cursor_y = 0;
-  private cursor_x = 0;
-  private scroll_ln = 0;
-  private scroll_col = 0;
-
-  override resizeChildren(): void {
-    this.children.bg.resize(this.width, this.height, this.y, this.x);
-  }
-
-  render(): void {
-    vt.buf.write(vt.cursor.save);
-    this.children.bg.render();
-
-    if (this.props.index && (this.textBuf.lineCount > 0)) {
-      this.index_width = Math.trunc(Math.log10(this.textBuf.lineCount)) + 3;
-    } else {
-      this.index_width = 0;
-    }
-
-    this.text_width = this.width - this.index_width;
-    segmenter.settings.width = this.props.wrap
-      ? this.text_width
-      : Number.MAX_SAFE_INTEGER;
-
-    segmenter.settings.y = this.cursor_y = this.y;
-    segmenter.settings.x = this.cursor_x = this.x + this.index_width;
-
-    if (this.width >= this.index_width) {
-      this.#renderLines();
-    }
-
-    if (!this.props.disabled) {
-      vt.cursor.set(vt.buf, this.cursor_y, this.cursor_x);
-    } else {
-      vt.buf.write(vt.cursor.restore);
-    }
-  }
-
-  #renderLines(): void {
-    this.#scrollV();
-    this.#scrollH();
-
-    let row = this.y;
-
-    for (let ln = this.scroll_ln;; ln += 1) {
-      if (ln < this.textBuf.lineCount) {
-        row = this.#renderLine(ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#colors.void);
-        vt.clear_line(vt.buf, this.width);
-      }
-
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
-    }
-  }
-
-  #renderLine(ln: number, row: number): number {
-    let available_w = 0;
-    let current_color = CharColor.Undefined;
-
-    const xs = this.#textLayout.line(ln);
-
-    for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
-      if (col === 0) {
-        if (i > 0) {
-          row += 1;
-          if (row >= this.y + this.height) {
-            return row;
-          }
-        }
-
-        vt.cursor.set(vt.buf, row, this.x);
-
-        if (this.index_width > 0) {
-          if (i === 0) {
-            vt.buf.write(this.#colors.index);
-            vt.write_text(
-              vt.buf,
-              [this.index_width],
-              `${ln + 1} `.padStart(this.index_width),
-            );
-          } else {
-            vt.buf.write(this.#colors.background);
-            vt.write_spaces(vt.buf, this.index_width);
-          }
-        }
-
-        available_w = this.width - this.index_width;
-      }
-
-      if ((col < this.scroll_col) || (width > available_w)) {
-        continue;
-      }
-
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.props.whitespace,
-      );
-
-      if (color !== current_color) {
-        current_color = color;
-        vt.buf.write(this.#colors.char[color]);
-      }
-
-      vt.buf.write(bytes);
-
-      available_w -= width;
-    }
-
-    return row;
-  }
-
-  #scrollV(): void {
-    const delta_ln = this.cursor.ln - this.scroll_ln;
-
-    // Above?
-    if (delta_ln <= 0) {
-      this.scroll_ln = this.cursor.ln;
       return;
     }
 
-    // Below?
-
-    if (delta_ln > this.height) {
-      this.scroll_ln = this.cursor.ln - this.height;
-    }
-
-    const xs = range(this.scroll_ln, this.cursor.ln + 1).map((ln) =>
-      this.#textLayout.line(ln)
-        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
-    );
-
-    let i = 0;
-    let height = sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.scroll_ln += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.cursor_y += xs[i]!;
-      i += 1;
-    }
+    this.#insertText(this.#clipboard);
   }
 
-  #scrollH(): void {
-    const cell =
-      this.#textLayout.line(this.cursor.ln, true).drop(this.cursor.col).next()
-        .value;
-    if (cell) {
-      this.cursor_y += cell.ln;
-    }
-
-    const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.scroll_col;
-
-    // Before?
-    if (delta_col <= 0) {
-      this.scroll_col = col;
+  undo(): void {
+    if (!this.#focused) {
       return;
     }
 
-    // After?
+    this.#history.undo();
+  }
 
-    const xs = this.#textLayout.line(this.cursor.ln, true)
-      .drop(this.cursor.col - delta_col)
-      .take(delta_col)
-      .map((x) => x.gr.width)
-      .toArray();
+  redo(): void {
+    if (!this.#focused) {
+      return;
+    }
+    this.#history.redo();
+  }
 
-    let width = sum(xs);
-
-    for (const w of xs) {
-      if (width < this.text_width) {
-        break;
-      }
-
-      this.scroll_col += 1;
-      width -= w;
+  selectAll(): void {
+    if (!this.#focused) {
+      return;
     }
 
-    this.cursor_x += width;
+    this.#cursor.set(0, 0, false);
+    this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
   }
 }

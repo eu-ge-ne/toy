@@ -3,13 +3,13 @@ import { Node, TextBuf } from "@lib/text-buf";
 import { Cursor } from "./cursor.ts";
 
 export class History {
-  #index = -1;
+  #index = 0;
   #entries: { ln: number; col: number; snapshot: Node }[] = [];
 
   onChange?: () => void;
 
-  get isEmpty(): boolean {
-    return this.#index === 0;
+  get changed(): boolean {
+    return this.#index > 0;
   }
 
   constructor(
@@ -26,7 +26,7 @@ export class History {
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
 
-    this.onChange?.();
+    this.#emitChange();
   }
 
   push(): void {
@@ -37,7 +37,7 @@ export class History {
     this.#entries[this.#index] = { ln, col, snapshot };
     this.#entries.length = this.#index + 1;
 
-    this.onChange?.();
+    this.#emitChange();
   }
 
   undo(): boolean {
@@ -47,7 +47,7 @@ export class History {
 
     this.#index -= 1;
     this.#restore();
-    this.onChange?.();
+    this.#emitChange();
 
     return true;
   }
@@ -59,7 +59,7 @@ export class History {
 
     this.#index += 1;
     this.#restore();
-    this.onChange?.();
+    this.#emitChange();
 
     return true;
   }
@@ -69,5 +69,9 @@ export class History {
 
     this.textBuf.restore(snapshot);
     this.cursor.set(ln, col, false);
+  }
+
+  #emitChange(): void {
+    this.onChange?.();
   }
 }

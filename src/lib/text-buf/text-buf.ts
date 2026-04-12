@@ -31,16 +31,22 @@ export class TextBuf {
       : this.tree.root.total_eols_len + 1;
   }
 
+  get text(): string {
+    return this.read(0).reduce((a, x) => a + x, "");
+  }
+
+  set text(x: string) {
+    this.delete(0);
+
+    this.insert(0, x);
+  }
+
   save(): Node {
     return structuredClone(this.tree.root);
   }
 
   restore(node: Node): void {
     this.tree.root = structuredClone(node);
-  }
-
-  text(): string {
-    return this.read(0).reduce((a, x) => a + x, "");
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
@@ -216,33 +222,6 @@ export class TextBuf {
    */
   append(text: string): void {
     this.insert(this.charCount, text);
-  }
-
-  /**
-   * Resets the buffer
-   *
-   * @param `text` Text to insert
-   *
-   * @example
-   *
-   * ```ts
-   * import { assertEquals } from "jsr:@std/assert";
-   * import { TextBuf } from "jsr:@lib/text-buf";
-   *
-   * const buf = new TextBuf();
-   *
-   * buf.insert(0, "Lorem");
-   * buf.reset();
-   *
-   * assertEquals(buf.read(0).toArray().join(""), "");
-   * ```
-   */
-  reset(text?: string): void {
-    this.delete(0);
-
-    if (typeof text === "string") {
-      this.insert(0, text);
-    }
   }
 
   /**

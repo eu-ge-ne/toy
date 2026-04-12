@@ -46,11 +46,11 @@ export class App extends ui.Modal {
         lnCount: 0,
       }),
       editor: new Editor({
-        disabled: false,
-        index: !this.#zen,
         multiLine: true,
-        whitespace: false,
-        wrap: false,
+        onTextChange: () => {
+          this.#fileModified = this.children.editor.textChanged;
+          this.children.header.props.fileModified = this.#fileModified;
+        },
         onCursorChange: (x) => {
           this.children.footer.props.ln = x.ln;
           this.children.footer.props.col = x.col;
@@ -72,11 +72,6 @@ export class App extends ui.Modal {
       alert: new Alert(),
       ask: new Ask(),
       save: new Save(),
-    };
-
-    this.children.editor.history.onChange = () => {
-      this.#fileModified = !this.children.editor.history.isEmpty;
-      this.children.header.props.fileModified = this.#fileModified;
     };
   }
 
@@ -133,6 +128,8 @@ export class App extends ui.Modal {
   }
 
   async open(fileName?: string): Promise<void> {
+    const { editor } = this.children;
+
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
@@ -141,7 +138,9 @@ export class App extends ui.Modal {
       await this.#open(fileName);
     }
 
-    this.children.editor.reset(true);
+    editor.setFocused(true);
+    editor.resetChanges();
+    editor.resetCursor();
 
     this.#onSigwinch();
 
@@ -173,7 +172,7 @@ export class App extends ui.Modal {
 
     header.props.disabled = this.#zen;
     footer.props.disabled = this.#zen;
-    editor.props.index = !this.#zen;
+    editor.toggleIndex();
 
     this.resizeChildren();
   }
@@ -181,9 +180,9 @@ export class App extends ui.Modal {
   async #handleExit(): Promise<void> {
     const { editor, ask } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
-    if (!editor.history.isEmpty) {
+    if (editor.textChanged) {
       if (await ask.open("Save changes?")) {
         await this.#save();
       }
@@ -195,11 +194,11 @@ export class App extends ui.Modal {
   async #handlePalette(): Promise<void> {
     const { editor, palette } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
     const cmd = await palette.open();
 
-    editor.props.disabled = false;
+    editor.setFocused(true);
 
     this.#render();
 
@@ -211,13 +210,13 @@ export class App extends ui.Modal {
   async #handleSave(): Promise<void> {
     const { editor } = this.children;
 
-    editor.props.disabled = true;
+    editor.setFocused(false);
 
     if (await this.#save()) {
-      editor.reset(false);
+      editor.resetChanges();
     }
 
-    editor.props.disabled = false;
+    editor.setFocused(true);
 
     this.#render();
   }
@@ -226,7 +225,7 @@ export class App extends ui.Modal {
     const { editor, header, alert } = this.children;
 
     try {
-      await file.load(editor.textBuf, filePath);
+      await file.load(filePath, (x) => editor.append(x));
 
       this.#fileName = filePath;
       header.props.fileName = filePath;
@@ -251,7 +250,7 @@ export class App extends ui.Modal {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.children.editor.textBuf, this.#fileName);
+      await file.save(this.#fileName, this.children.editor.read());
 
       return true;
     } catch (err) {
@@ -265,16 +264,16 @@ export class App extends ui.Modal {
     const { save, editor, header, alert } = this.children;
 
     while (true) {
-      const filePath = await save.open(this.#fileName);
-      if (!filePath) {
+      const fileName = await save.open(this.#fileName);
+      if (!fileName) {
         return false;
       }
 
       try {
-        await file.save(editor.textBuf, filePath);
+        await file.save(fileName, editor.read());
 
-        this.#fileName = filePath;
-        header.props.fileName = filePath;
+        this.#fileName = fileName;
+        header.props.fileName = fileName;
 
         return true;
       } catch (err) {
@@ -332,52 +331,35 @@ export class App extends ui.Modal {
         break;
 
       case "Whitespace":
-        if (!editor.props.disabled) {
-          editor.props.whitespace = !editor.props.whitespace;
-        }
+        editor.toggleWhitespace();
         break;
 
       case "Wrap":
-        if (!editor.props.disabled) {
-          editor.props.wrap = !editor.props.wrap;
-          editor.cursor.home(false);
-        }
+        editor.toggleWrapped();
         break;
 
       case "Copy":
-        if (!editor.props.disabled) {
-          editor.copy();
-        }
+        editor.copy();
         break;
 
       case "Cut":
-        if (!editor.props.disabled) {
-          editor.cut();
-        }
+        editor.cut();
         break;
 
       case "Paste":
-        if (!editor.props.disabled) {
-          editor.paste();
-        }
+        editor.paste();
         break;
 
       case "Undo":
-        if (!editor.props.disabled) {
-          editor.undo();
-        }
+        editor.undo();
         break;
 
       case "Redo":
-        if (!editor.props.disabled) {
-          editor.redo();
-        }
+        editor.redo();
         break;
 
       case "SelectAll":
-        if (!editor.props.disabled) {
-          editor.selectAll();
-        }
+        editor.selectAll();
         break;
     }
   }
