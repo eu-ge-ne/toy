@@ -7,7 +7,7 @@ import * as vt from "@lib/vt";
 
 import { Cursor } from "./cursor.ts";
 
-export const enum CharColor {
+const enum CharColor {
   Undefined,
   Visible,
   Whitespace,
@@ -17,11 +17,14 @@ export const enum CharColor {
   EmptySelected,
 }
 
-export class TextEditor extends ui.Frame {
+export class Content extends ui.Frame {
   #focused = false;
-  #indexEnabled = false;
-  #whitespaceEnabled = false;
-  #wrapEnabled = false;
+
+  #mode = {
+    index: false,
+    whitespace: false,
+    wrap: false,
+  };
 
   #color = {
     bg: new Uint8Array(),
@@ -46,15 +49,15 @@ export class TextEditor extends ui.Frame {
   #cursorX = 0;
 
   constructor(
-    private readonly cursor: Cursor,
     private readonly charBuf: chars.Buf,
     private readonly grmBuf: graphemes.Buf,
+    private readonly cursor: Cursor,
   ) {
     super();
   }
 
   render(): void {
-    if (this.#indexEnabled && (this.charBuf.lineCount > 0)) {
+    if (this.#mode.index && (this.charBuf.lineCount > 0)) {
       this.#indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
     } else {
       this.#indexWidth = 0;
@@ -62,7 +65,7 @@ export class TextEditor extends ui.Frame {
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    graphemes.settings.width = this.#wrapEnabled
+    graphemes.settings.width = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
@@ -118,15 +121,15 @@ export class TextEditor extends ui.Frame {
   }
 
   toggleWrapped(): void {
-    this.#wrapEnabled = !this.#wrapEnabled;
+    this.#mode.wrap = !this.#mode.wrap;
   }
 
   toggleWhitespace(): void {
-    this.#whitespaceEnabled = !this.#whitespaceEnabled;
+    this.#mode.whitespace = !this.#mode.whitespace;
   }
 
   toggleIndex(): void {
-    this.#indexEnabled = !this.#indexEnabled;
+    this.#mode.index = !this.#mode.index;
   }
 
   #renderLines(): void {
@@ -262,7 +265,7 @@ export class TextEditor extends ui.Frame {
       const color = charColor(
         this.cursor.isSelected(ln, i),
         isVisible,
-        this.#whitespaceEnabled,
+        this.#mode.whitespace,
       );
 
       if (color !== current_color) {
