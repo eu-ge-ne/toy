@@ -41,8 +41,6 @@ export class Content extends ui.Frame {
     },
   };
 
-  #indexWidth = 0;
-  #textWidth = 0;
   #scrollLn = 0;
   #scrollCol = 0;
   #cursorY = 0;
@@ -57,25 +55,23 @@ export class Content extends ui.Frame {
   }
 
   render(): void {
+    let indexWidth = 0;
     if (this.#mode.index && (this.charBuf.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
-    } else {
-      this.#indexWidth = 0;
+      indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
     }
 
-    this.#textWidth = this.width - this.#indexWidth;
+    const textWidth = this.width - indexWidth;
 
     graphemes.settings.width = this.#mode.wrap
-      ? this.#textWidth
+      ? textWidth
       : Number.MAX_SAFE_INTEGER;
-
     graphemes.settings.y = this.#cursorY = this.y;
-    graphemes.settings.x = this.#cursorX = this.x + this.#indexWidth;
+    graphemes.settings.x = this.#cursorX = this.x + indexWidth;
 
-    if (this.width >= this.#indexWidth) {
+    if (this.width >= indexWidth) {
       this.#scrollV();
-      this.#scrollH();
-      this.#renderLines();
+      this.#scrollH(textWidth);
+      this.#renderLines(indexWidth);
     }
 
     if (this.#focused) {
@@ -132,12 +128,12 @@ export class Content extends ui.Frame {
     this.#mode.index = !this.#mode.index;
   }
 
-  #renderLines(): void {
+  #renderLines(indexWidth: number): void {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
       if (ln < this.charBuf.lineCount) {
-        row = this.#renderLine(ln, row);
+        row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#color.void);
@@ -186,7 +182,7 @@ export class Content extends ui.Frame {
     }
   }
 
-  #scrollH(): void {
+  #scrollH(textWidth: number): void {
     const cell =
       this.grmBuf.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
@@ -213,7 +209,7 @@ export class Content extends ui.Frame {
     let width = std.sum(xs);
 
     for (const w of xs) {
-      if (width < this.#textWidth) {
+      if (width < textWidth) {
         break;
       }
 
@@ -224,7 +220,7 @@ export class Content extends ui.Frame {
     this.#cursorX += width;
   }
 
-  #renderLine(ln: number, row: number): number {
+  #renderLine(indexWidth: number, ln: number, row: number): number {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
@@ -241,21 +237,21 @@ export class Content extends ui.Frame {
 
         vt.cursor.set(vt.buf, row, this.x);
 
-        if (this.#indexWidth > 0) {
+        if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
             vt.write_text(
               vt.buf,
-              [this.#indexWidth],
-              `${ln + 1} `.padStart(this.#indexWidth),
+              [indexWidth],
+              `${ln + 1} `.padStart(indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
-            vt.write_spaces(vt.buf, this.#indexWidth);
+            vt.write_spaces(vt.buf, indexWidth);
           }
         }
 
-        availableWidth = this.width - this.#indexWidth;
+        availableWidth = this.width - indexWidth;
       }
 
       if ((col < this.#scrollCol) || (width > availableWidth)) {
