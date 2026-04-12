@@ -37,8 +37,10 @@ export class Save extends ui.Modal<[string], string> {
   async open(path: string): Promise<string> {
     const { editor } = this.children;
 
+    editor.setFocused(true);
     editor.text = path;
-    editor.reset(true);
+    editor.resetChanges();
+    editor.resetCursor();
 
     while (true) {
       this.render();

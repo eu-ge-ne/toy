@@ -122,20 +122,16 @@ export class Editor extends ui.Frame {
     this.children.text.toggleIndex();
   }
 
-  reset(resetCursor: boolean): void {
-    if (resetCursor) {
-      if (this.params.multiLine) {
-        this.#cursor.set(0, 0, false);
-      } else {
-        this.#cursor.set(
-          Number.MAX_SAFE_INTEGER,
-          Number.MAX_SAFE_INTEGER,
-          false,
-        );
-      }
-    }
-
+  resetChanges(): void {
     this.#history.reset();
+  }
+
+  resetCursor(): void {
+    if (this.params.multiLine) {
+      this.#cursor.set(0, 0, false);
+    } else {
+      this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+    }
   }
 
   onKey(key: kitty.Key): void {

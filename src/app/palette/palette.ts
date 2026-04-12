@@ -56,7 +56,8 @@ export class Palette extends ui.Modal<[], Command | undefined> {
 
     editor.setFocused(true);
     editor.text = "";
-    editor.reset(false);
+    editor.resetChanges();
+    editor.resetCursor();
 
     while (true) {
       this.#filter();

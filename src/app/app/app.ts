@@ -128,6 +128,8 @@ export class App extends ui.Modal {
   }
 
   async open(fileName?: string): Promise<void> {
+    const { editor } = this.children;
+
     vt.init();
     globalThis.addEventListener("unhandledrejection", this.#exit);
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
@@ -136,8 +138,9 @@ export class App extends ui.Modal {
       await this.#open(fileName);
     }
 
-    this.children.editor.setFocused(true);
-    this.children.editor.reset(true);
+    editor.setFocused(true);
+    editor.resetChanges();
+    editor.resetCursor();
 
     this.#onSigwinch();
 
@@ -210,7 +213,7 @@ export class App extends ui.Modal {
     editor.setFocused(false);
 
     if (await this.#save()) {
-      editor.reset(false);
+      editor.resetChanges();
     }
 
     editor.setFocused(true);
