@@ -222,7 +222,7 @@ export class App extends ui.Modal {
     const { editor, header, alert } = this.children;
 
     try {
-      await file.load(editor.textBuf, filePath);
+      await file.load(filePath, (x) => editor.append(x));
 
       this.#fileName = filePath;
       header.props.fileName = filePath;
@@ -247,7 +247,7 @@ export class App extends ui.Modal {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.children.editor.textBuf, this.#fileName);
+      await file.save(this.#fileName, this.children.editor.read());
 
       return true;
     } catch (err) {
@@ -261,16 +261,16 @@ export class App extends ui.Modal {
     const { save, editor, header, alert } = this.children;
 
     while (true) {
-      const filePath = await save.open(this.#fileName);
-      if (!filePath) {
+      const fileName = await save.open(this.#fileName);
+      if (!fileName) {
         return false;
       }
 
       try {
-        await file.save(editor.textBuf, filePath);
+        await file.save(fileName, editor.read());
 
-        this.#fileName = filePath;
-        header.props.fileName = filePath;
+        this.#fileName = fileName;
+        header.props.fileName = fileName;
 
         return true;
       } catch (err) {

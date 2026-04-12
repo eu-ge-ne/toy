@@ -1,11 +1,12 @@
-import { TextBuf } from "@lib/text-buf";
-
-export async function load(textBuf: TextBuf, filePath: string): Promise<void> {
-  using file = await Deno.open(filePath, { read: true });
+export async function load(
+  fileName: string,
+  cb: (_: string) => void,
+): Promise<void> {
+  using file = await Deno.open(fileName, { read: true });
 
   const info = await file.stat();
   if (!info.isFile) {
-    throw new Error(`${filePath} is not a file`);
+    throw new Error(`${fileName} is not a file`);
   }
 
   const bytes = new Uint8Array(1024 ** 2 * 64);
@@ -19,18 +20,21 @@ export async function load(textBuf: TextBuf, filePath: string): Promise<void> {
 
     if (n > 0) {
       const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-      textBuf.append(text);
+      cb(text);
     }
   }
 
   const text = decoder.decode();
   if (text.length > 0) {
-    textBuf.append(text);
+    cb(text);
   }
 }
 
-export async function save(textBuf: TextBuf, filePath: string): Promise<void> {
-  using file = await Deno.open(filePath, {
+export async function save(
+  fileName: string,
+  text: Generator<string>,
+): Promise<void> {
+  using file = await Deno.open(fileName, {
     create: true,
     write: true,
     truncate: true,
@@ -41,7 +45,7 @@ export async function save(textBuf: TextBuf, filePath: string): Promise<void> {
 
   encoder.readable.pipeTo(file.writable);
 
-  for (const text of textBuf.read(0)) {
-    await writer.write(text);
+  for (const t of text) {
+    await writer.write(t);
   }
 }

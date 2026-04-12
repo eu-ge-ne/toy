@@ -22,10 +22,10 @@ interface EditorParams {
 export class Editor extends ui.Frame {
   #focused = false;
 
-  readonly textBuf = new TextBuf();
-  readonly #textLayout = new TextLayout(this.textBuf);
-  readonly #cursor = new Cursor(this.textBuf, this.#textLayout);
-  readonly #history = new History(this.textBuf, this.#cursor);
+  readonly #textBuf = new TextBuf();
+  readonly #textLayout = new TextLayout(this.#textBuf);
+  readonly #cursor = new Cursor(this.#textBuf, this.#textLayout);
+  readonly #history = new History(this.#textBuf, this.#cursor);
   #clipboard = "";
 
   get textChanged(): boolean {
@@ -33,11 +33,11 @@ export class Editor extends ui.Frame {
   }
 
   get text(): string {
-    return this.textBuf.text;
+    return this.#textBuf.text;
   }
 
   set text(x: string) {
-    this.textBuf.text = x;
+    this.#textBuf.text = x;
   }
 
   protected override children: {
@@ -50,7 +50,7 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      text: new TextEditor(this.#cursor, this.textBuf, this.#textLayout),
+      text: new TextEditor(this.#cursor, this.#textBuf, this.#textLayout),
     };
 
     this.#history.onChange = params.onTextChange;
@@ -58,7 +58,7 @@ export class Editor extends ui.Frame {
       params.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
-        lnCount: this.textBuf.lineCount,
+        lnCount: this.#textBuf.lineCount,
       });
   }
 
@@ -80,6 +80,14 @@ export class Editor extends ui.Frame {
     if (!this.#focused) {
       vt.buf.write(vt.cursor.restore);
     }
+  }
+
+  read(): Generator<string> {
+    return this.#textBuf.read(0);
+  }
+
+  append(text: string): void {
+    this.#textBuf.append(text);
   }
 
   setTheme(theme: themes.Theme): void {
