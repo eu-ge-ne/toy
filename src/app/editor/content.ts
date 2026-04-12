@@ -152,17 +152,17 @@ export class Content extends ui.Frame {
   }
 
   #scrollV(): void {
-    const delta_ln = this.cursor.ln - this.#scrollLn;
+    const deltaLn = this.cursor.ln - this.#scrollLn;
 
     // Above?
-    if (delta_ln <= 0) {
+    if (deltaLn <= 0) {
       this.#scrollLn = this.cursor.ln;
       return;
     }
 
     // Below?
 
-    if (delta_ln > this.height) {
+    if (deltaLn > this.height) {
       this.#scrollLn = this.cursor.ln - this.height;
     }
 
@@ -194,10 +194,10 @@ export class Content extends ui.Frame {
     }
 
     const col = cell?.col ?? 0; // col = f(cursor.col)
-    const delta_col = col - this.#scrollCol;
+    const deltaCol = col - this.#scrollCol;
 
     // Before?
-    if (delta_col <= 0) {
+    if (deltaCol <= 0) {
       this.#scrollCol = col;
       return;
     }
@@ -205,8 +205,8 @@ export class Content extends ui.Frame {
     // After?
 
     const xs = this.grmBuf.line(this.cursor.ln, true)
-      .drop(this.cursor.col - delta_col)
-      .take(delta_col)
+      .drop(this.cursor.col - deltaCol)
+      .take(deltaCol)
       .map((x) => x.gr.width)
       .toArray();
 
@@ -225,8 +225,8 @@ export class Content extends ui.Frame {
   }
 
   #renderLine(ln: number, row: number): number {
-    let available_w = 0;
-    let current_color = CharColor.Undefined;
+    let availableWidth = 0;
+    let currentColor = CharColor.Undefined;
 
     const xs = this.grmBuf.line(ln);
 
@@ -255,10 +255,10 @@ export class Content extends ui.Frame {
           }
         }
 
-        available_w = this.width - this.#indexWidth;
+        availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (width > available_w)) {
+      if ((col < this.#scrollCol) || (width > availableWidth)) {
         continue;
       }
 
@@ -268,14 +268,14 @@ export class Content extends ui.Frame {
         this.#mode.whitespace,
       );
 
-      if (color !== current_color) {
-        current_color = color;
+      if (color !== currentColor) {
+        currentColor = color;
         vt.buf.write(this.#color.char[color]);
       }
 
       vt.buf.write(bytes);
 
-      available_w -= width;
+      availableWidth -= width;
     }
 
     return row;
