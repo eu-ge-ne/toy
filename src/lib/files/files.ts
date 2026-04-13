@@ -1,7 +1,4 @@
-export async function load(
-  fileName: string,
-  cb: (_: string) => void,
-): Promise<void> {
+export async function* load(fileName: string): AsyncGenerator<string> {
   using file = await Deno.open(fileName, { read: true });
 
   const info = await file.stat();
@@ -20,19 +17,19 @@ export async function load(
 
     if (n > 0) {
       const text = decoder.decode(bytes.subarray(0, n), { stream: true });
-      cb(text);
+      yield text;
     }
   }
 
   const text = decoder.decode();
   if (text.length > 0) {
-    cb(text);
+    yield text;
   }
 }
 
 export async function save(
   fileName: string,
-  text: Generator<string>,
+  text: Iterable<string>,
 ): Promise<void> {
   using file = await Deno.open(fileName, {
     create: true,

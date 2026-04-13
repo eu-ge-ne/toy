@@ -7,9 +7,9 @@ import { Header } from "@app/header";
 import { Palette } from "@app/palette";
 import { Save } from "@app/save";
 import { Command, ShortcutToCommand } from "@lib/commands";
-import * as file from "@lib/file";
+import * as files from "@lib/files";
 import * as kitty from "@lib/kitty";
-import { clamp } from "@lib/std";
+import * as std from "@lib/std";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
@@ -97,30 +97,30 @@ export class App extends ui.Modal {
       editor.resize(w, h, y, x);
     }
     {
-      const w = clamp(30, 0, editor.width);
-      const h = clamp(7, 0, editor.height);
+      const w = std.clamp(30, 0, editor.width);
+      const h = std.clamp(7, 0, editor.height);
       const y = editor.y + editor.height - h;
       const x = editor.x + editor.width - w;
       debug.resize(w, h, y, x);
     }
     palette.resize(editor.width, editor.height, editor.y, editor.x);
     {
-      const w = clamp(60, 0, editor.width);
-      const h = clamp(10, 0, editor.height);
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(10, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
       alert.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, editor.width);
-      const h = clamp(7, 0, editor.height);
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(7, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
       ask.resize(w, h, y, x);
     }
     {
-      const w = clamp(60, 0, editor.width);
-      const h = clamp(10, 0, editor.height);
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(10, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
       save.resize(w, h, y, x);
@@ -221,18 +221,18 @@ export class App extends ui.Modal {
     this.#render();
   }
 
-  async #open(filePath: string): Promise<void> {
+  async #open(fileName: string): Promise<void> {
     const { editor, header, alert } = this.children;
 
     try {
-      await file.load(filePath, (x) => editor.append(x));
+      for await (const text of files.load(fileName)) {
+        editor.append(text);
+      }
 
-      this.#fileName = filePath;
-      header.props.fileName = filePath;
+      this.#fileName = fileName;
+      header.props.fileName = fileName;
     } catch (err) {
-      const not_found = err instanceof Deno.errors.NotFound;
-
-      if (!not_found) {
+      if (!(err instanceof Deno.errors.NotFound)) {
         await alert.open(err);
 
         this.#exit();
@@ -250,7 +250,7 @@ export class App extends ui.Modal {
 
   async #saveFile(): Promise<boolean> {
     try {
-      await file.save(this.#fileName, this.children.editor.read());
+      await files.save(this.#fileName, this.children.editor.read());
 
       return true;
     } catch (err) {
@@ -270,7 +270,7 @@ export class App extends ui.Modal {
       }
 
       try {
-        await file.save(fileName, editor.read());
+        await files.save(fileName, editor.read());
 
         this.#fileName = fileName;
         header.props.fileName = fileName;
