@@ -9,7 +9,7 @@ export const enum InsertionCase {
   Split,
 }
 
-export class Buf {
+export class Document {
   tree: Tree = new Tree();
 
   #content = new Content();

@@ -1,13 +1,13 @@
-import * as chars from "@lib/chars";
+import { Document } from "@lib/document";
 import * as graphemes from "@lib/graphemes";
 import * as kitty from "@lib/kitty";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
+import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
-import { Content } from "./content.ts";
 
 interface EditorParams {
   readonly multiLine: boolean;
@@ -21,10 +21,10 @@ interface EditorParams {
 export class Editor extends ui.Frame {
   #focused = false;
 
-  readonly #charBuf = new chars.Buf();
-  readonly #grmBuf = new graphemes.Buf(this.#charBuf);
-  readonly #cursor = new Cursor(this.#charBuf, this.#grmBuf);
-  readonly #history = new History(this.#charBuf, this.#cursor);
+  readonly #document = new Document();
+  readonly #grmBuf = new graphemes.Buf(this.#document);
+  readonly #cursor = new Cursor(this.#document, this.#grmBuf);
+  readonly #history = new History(this.#document, this.#cursor);
   #clipboard = "";
 
   get textChanged(): boolean {
@@ -32,16 +32,16 @@ export class Editor extends ui.Frame {
   }
 
   get text(): string {
-    return this.#charBuf.text;
+    return this.#document.text;
   }
 
   set text(x: string) {
-    this.#charBuf.text = x;
+    this.#document.text = x;
   }
 
   protected override children: {
     bg: ui.Bg;
-    content:Content
+    content: Content;
   };
 
   constructor(readonly params: EditorParams) {
@@ -49,7 +49,7 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      content: new Content(this.#charBuf, this.#grmBuf, this.#cursor, ),
+      content: new Content(this.#document, this.#grmBuf, this.#cursor),
     };
 
     this.#history.onChange = params.onTextChange;
@@ -58,7 +58,7 @@ export class Editor extends ui.Frame {
       params.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
-        lnCount: this.#charBuf.lineCount,
+        lnCount: this.#document.lineCount,
       });
   }
 
@@ -83,11 +83,11 @@ export class Editor extends ui.Frame {
   }
 
   read(): Generator<string> {
-    return this.#charBuf.read(0);
+    return this.#document.read(0);
   }
 
   append(text: string): void {
-    this.#charBuf.append(text);
+    this.#document.append(text);
   }
 
   setTheme(theme: themes.Theme): void {

@@ -2,24 +2,24 @@ import { assert, assertEquals } from "@std/assert";
 
 import type { Node } from "../node.ts";
 
-export function assert_generator(
+export function assertGenerator(
   actual: Generator<string>,
   expected: string,
 ): void {
   assertEquals(actual.reduce((a, x) => a + x, ""), expected);
 }
 
-export function assert_root(root: Node): void {
+export function assertRoot(root: Node): void {
   // 1. Every node is either red or black.
   // 2. The root is black.
   assert(!root.red);
 
-  assert_node(root);
+  assertNode(root);
 
   // 5. For each node, all simple paths from the node to descendant leaves
   // contain the same number of black nodes.
   const leafs = new Set<Node>();
-  collect_leafs(root, leafs);
+  collectLeafs(root, leafs);
 
   const heights = Array.from(leafs).map((x) => {
     let height = 0;
@@ -39,7 +39,7 @@ export function assert_root(root: Node): void {
   }
 }
 
-function assert_node(x: Node): void {
+function assertNode(x: Node): void {
   // 3. Every leaf (NIL) is black.
   if (x.nil) {
     assert(!x.red);
@@ -49,21 +49,21 @@ function assert_node(x: Node): void {
       assert(!x.left.red && !x.right.red);
     }
 
-    assert_node(x.left);
-    assert_node(x.right);
+    assertNode(x.left);
+    assertNode(x.right);
 
     // 6. slice_len > 0
     assert(x.slice_len > 0);
   }
 }
 
-function collect_leafs(x: Node, leaf_parents: Set<Node>): void {
+function collectLeafs(x: Node, leaf_parents: Set<Node>): void {
   if (!x.nil) {
     if (x.left.nil || x.right.nil) {
       leaf_parents.add(x);
     }
 
-    collect_leafs(x.left, leaf_parents);
-    collect_leafs(x.right, leaf_parents);
+    collectLeafs(x.left, leaf_parents);
+    collectLeafs(x.right, leaf_parents);
   }
 }
