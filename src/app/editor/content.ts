@@ -1,4 +1,4 @@
-import * as chars from "@lib/chars";
+import { Document } from "@lib/document";
 import * as graphemes from "@lib/graphemes";
 import * as std from "@lib/std";
 import * as themes from "@lib/themes";
@@ -47,7 +47,7 @@ export class Content extends ui.Frame {
   #cursorX = 0;
 
   constructor(
-    private readonly charBuf: chars.Buf,
+    private readonly document: Document,
     private readonly grmBuf: graphemes.Buf,
     private readonly cursor: Cursor,
   ) {
@@ -56,8 +56,8 @@ export class Content extends ui.Frame {
 
   render(): void {
     let indexWidth = 0;
-    if (this.#mode.index && (this.charBuf.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.charBuf.lineCount)) + 3;
+    if (this.#mode.index && (this.document.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.document.lineCount)) + 3;
     }
 
     const textWidth = this.width - indexWidth;
@@ -132,7 +132,7 @@ export class Content extends ui.Frame {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.charBuf.lineCount) {
+      if (ln < this.document.lineCount) {
         row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);

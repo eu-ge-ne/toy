@@ -1,4 +1,4 @@
-import * as chars from "@lib/chars";
+import { Document } from "@lib/document";
 import * as graphemes from "@lib/graphemes";
 import * as std from "@lib/std";
 
@@ -17,7 +17,7 @@ export class Cursor {
   onChange?: () => void;
 
   constructor(
-    private readonly charBuf: chars.Buf,
+    private readonly document: Document,
     private readonly grmBuf: graphemes.Buf,
   ) {
   }
@@ -80,7 +80,7 @@ export class Cursor {
       return true;
     }
 
-    if (this.ln < this.charBuf.lineCount - 1) {
+    if (this.ln < this.document.lineCount - 1) {
       return this.set(this.ln + 1, 0, sel);
     }
 
@@ -112,7 +112,7 @@ export class Cursor {
   }
 
   #setLn(ln: number): void {
-    let max = this.charBuf.lineCount - 1;
+    let max = this.document.lineCount - 1;
     if (max < 0) {
       max = 0;
     }
