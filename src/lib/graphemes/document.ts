@@ -1,4 +1,4 @@
-import { Document } from "@lib/document";
+import * as document from "@lib/document";
 
 import { Segment, segments } from "./segmenter.ts";
 
@@ -7,8 +7,8 @@ interface Pos {
   col: number;
 }
 
-export class Buf {
-  constructor(private readonly document: Document) {
+export class Document {
+  constructor(private readonly document: document.Document) {
   }
 
   line(ln: number, extra = false): IteratorObject<Segment> {
