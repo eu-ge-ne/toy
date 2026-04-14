@@ -146,10 +146,6 @@ export class App extends ui.Modal {
 
     this.#setTheme(themes.DefaultTheme);
 
-    await this.#loop();
-  }
-
-  async #loop(): Promise<void> {
     while (true) {
       this.#render();
 
