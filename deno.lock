@@ -5,8 +5,7 @@
     "jsr:@std/cli@^1.0.28": "1.0.28",
     "jsr:@std/fmt@^1.0.9": "1.0.9",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "npm:@colordx/core@^5.0.3": "5.0.3",
-    "npm:@timkit/css-parser@1": "1.0.0"
+    "npm:@colordx/core@^5.0.3": "5.0.3"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -32,9 +31,6 @@
   "npm": {
     "@colordx/core@5.0.3": {
       "integrity": "sha512-xBQ0MYRTNNxW3mS2sJtlQTT7C3Sasqgh1/PsHva7fyDb5uqYY+gv9V0utDdX8X80mqzbGz3u/IDJdn2d/uW09g=="
-    },
-    "@timkit/css-parser@1.0.0": {
-      "integrity": "sha512-GAZlB5TtpVFiJd6VBAAuNp3+oM95qj1UwjNcYOjtejtyN69WYdJLM8s5Kn1fYI2SLKKL+k6eLQ0bn3v1/0pp5w=="
     }
   },
   "workspace": {
@@ -46,8 +42,7 @@
     "members": {
       "src/lib/colors": {
         "dependencies": [
-          "npm:@colordx/core@^5.0.3",
-          "npm:@timkit/css-parser@1"
+          "npm:@colordx/core@^5.0.3"
         ]
       }
     }

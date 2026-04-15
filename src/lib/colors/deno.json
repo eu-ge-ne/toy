@@ -2,7 +2,6 @@
   "name": "@lib/colors",
   "exports": "./mod.ts",
   "imports": {
-    "@colordx/core": "npm:@colordx/core@^5.0.3",
-    "@timkit/css-parser": "npm:@timkit/css-parser@^1.0.0"
+    "@colordx/core": "npm:@colordx/core@^5.0.3"
   }
 }
