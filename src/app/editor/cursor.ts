@@ -1,4 +1,4 @@
-import { Document } from "@lib/document";
+import * as document from "@lib/document";
 import * as graphemes from "@lib/graphemes";
 import * as std from "@lib/std";
 
@@ -17,8 +17,8 @@ export class Cursor {
   onChange?: () => void;
 
   constructor(
-    private readonly document: Document,
-    private readonly grmBuf: graphemes.Buf,
+    private readonly doc: document.Document,
+    private readonly gDoc: graphemes.Document,
   ) {
   }
 
@@ -80,7 +80,7 @@ export class Cursor {
       return true;
     }
 
-    if (this.ln < this.document.lineCount - 1) {
+    if (this.ln < this.doc.lineCount - 1) {
       return this.set(this.ln + 1, 0, sel);
     }
 
@@ -112,7 +112,7 @@ export class Cursor {
   }
 
   #setLn(ln: number): void {
-    let max = this.document.lineCount - 1;
+    let max = this.doc.lineCount - 1;
     if (max < 0) {
       max = 0;
     }
@@ -123,7 +123,7 @@ export class Cursor {
   #setCol(col: number): void {
     let len = 0;
 
-    for (const { gr } of this.grmBuf.line(this.ln)) {
+    for (const { gr } of this.gDoc.line(this.ln)) {
       if (gr.isEol) {
         break;
       }

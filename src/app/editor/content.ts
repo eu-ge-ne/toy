@@ -47,8 +47,8 @@ export class Content extends ui.Frame {
   #cursorX = 0;
 
   constructor(
-    private readonly document: Document,
-    private readonly grmBuf: graphemes.Buf,
+    private readonly doc: Document,
+    private readonly gDoc: graphemes.Document,
     private readonly cursor: Cursor,
   ) {
     super();
@@ -56,8 +56,8 @@ export class Content extends ui.Frame {
 
   render(): void {
     let indexWidth = 0;
-    if (this.#mode.index && (this.document.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.document.lineCount)) + 3;
+    if (this.#mode.index && (this.doc.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.doc.lineCount)) + 3;
     }
 
     const textWidth = this.width - indexWidth;
@@ -132,7 +132,7 @@ export class Content extends ui.Frame {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.document.lineCount) {
+      if (ln < this.doc.lineCount) {
         row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -163,7 +163,7 @@ export class Content extends ui.Frame {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
-      this.grmBuf.line(ln)
+      this.gDoc.line(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -184,7 +184,7 @@ export class Content extends ui.Frame {
 
   #scrollH(textWidth: number): void {
     const cell =
-      this.grmBuf.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+      this.gDoc.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -200,7 +200,7 @@ export class Content extends ui.Frame {
 
     // After?
 
-    const xs = this.grmBuf.line(this.cursor.ln, true)
+    const xs = this.gDoc.line(this.cursor.ln, true)
       .drop(this.cursor.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -224,7 +224,7 @@ export class Content extends ui.Frame {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const xs = this.grmBuf.line(ln);
+    const xs = this.gDoc.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {

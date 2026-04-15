@@ -1,4 +1,4 @@
-import { Document } from "@lib/document";
+import * as document from "@lib/document";
 import * as graphemes from "@lib/graphemes";
 import * as kitty from "@lib/kitty";
 import * as themes from "@lib/themes";
@@ -21,10 +21,10 @@ interface EditorParams {
 export class Editor extends ui.Frame {
   #focused = false;
 
-  readonly #document = new Document();
-  readonly #grmBuf = new graphemes.Buf(this.#document);
-  readonly #cursor = new Cursor(this.#document, this.#grmBuf);
-  readonly #history = new History(this.#document, this.#cursor);
+  readonly #doc = new document.Document();
+  readonly #gDoc = new graphemes.Document(this.#doc);
+  readonly #cursor = new Cursor(this.#doc, this.#gDoc);
+  readonly #history = new History(this.#doc, this.#cursor);
   #clipboard = "";
 
   get textChanged(): boolean {
@@ -32,11 +32,11 @@ export class Editor extends ui.Frame {
   }
 
   get text(): string {
-    return this.#document.text;
+    return this.#doc.text;
   }
 
   set text(x: string) {
-    this.#document.text = x;
+    this.#doc.text = x;
   }
 
   protected override children: {
@@ -49,7 +49,7 @@ export class Editor extends ui.Frame {
 
     this.children = {
       bg: new ui.Bg(),
-      content: new Content(this.#document, this.#grmBuf, this.#cursor),
+      content: new Content(this.#doc, this.#gDoc, this.#cursor),
     };
 
     this.#history.onChange = params.onTextChange;
@@ -58,7 +58,7 @@ export class Editor extends ui.Frame {
       params.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
-        lnCount: this.#document.lineCount,
+        lnCount: this.#doc.lineCount,
       });
   }
 
@@ -83,11 +83,11 @@ export class Editor extends ui.Frame {
   }
 
   read(): Generator<string> {
-    return this.#document.read(0);
+    return this.#doc.read(0);
   }
 
   append(text: string): void {
-    this.#document.append(text);
+    this.#doc.append(text);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -347,7 +347,7 @@ export class Editor extends ui.Frame {
 
   #insertText(text: string): void {
     if (this.#cursor.selecting) {
-      this.#grmBuf.delete(this.#cursor.from, {
+      this.#gDoc.delete(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
@@ -355,7 +355,7 @@ export class Editor extends ui.Frame {
       this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     }
 
-    this.#grmBuf.insert(this.#cursor, text);
+    this.#gDoc.insert(this.#cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) =>
       graphemes.graphemes.get(x.segment)
@@ -374,25 +374,23 @@ export class Editor extends ui.Frame {
 
   #backspace(): void {
     if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-      const len = this.#grmBuf.line(this.#cursor.ln).take(2).reduce(
-        (a) => a + 1,
-        0,
-      );
+      const len = this.#gDoc.line(this.#cursor.ln).take(2)
+        .reduce((a) => a + 1, 0);
       if (len === 1) {
-        this.#grmBuf.delete(this.#cursor, {
+        this.#gDoc.delete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
         this.#cursor.left(false);
       } else {
         this.#cursor.left(false);
-        this.#grmBuf.delete(this.#cursor, {
+        this.#gDoc.delete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
       }
     } else {
-      this.#grmBuf.delete({
+      this.#gDoc.delete({
         ln: this.#cursor.ln,
         col: this.#cursor.col - 1,
       }, this.#cursor);
@@ -403,7 +401,7 @@ export class Editor extends ui.Frame {
   }
 
   #deleteChar(): void {
-    this.#grmBuf.delete(this.#cursor, {
+    this.#gDoc.delete(this.#cursor, {
       ln: this.#cursor.ln,
       col: this.#cursor.col + 1,
     });
@@ -412,7 +410,7 @@ export class Editor extends ui.Frame {
   }
 
   #deleteSelection(): void {
-    this.#grmBuf.delete(this.#cursor.from, {
+    this.#gDoc.delete(this.#cursor.from, {
       ln: this.#cursor.to.ln,
       col: this.#cursor.to.col + 1,
     });
@@ -427,14 +425,14 @@ export class Editor extends ui.Frame {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#grmBuf.read(this.#cursor.from, {
+      this.#clipboard = this.#gDoc.read(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#grmBuf.read(this.#cursor, {
+      this.#clipboard = this.#gDoc.read(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -451,14 +449,14 @@ export class Editor extends ui.Frame {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#grmBuf.read(this.#cursor.from, {
+      this.#clipboard = this.#gDoc.read(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#grmBuf.read(this.#cursor, {
+      this.#clipboard = this.#gDoc.read(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
