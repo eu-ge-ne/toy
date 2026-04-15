@@ -63,8 +63,6 @@ export function charAttrs(...attrs: CharAttr[]): Uint8Array {
   return CSI(attrs.join(";") + "m");
 }
 
-export type RGBColor = [number, number, number];
-
 export function charFg(fg: number[]): Uint8Array {
   return CSI("38;2;" + fg.join(";") + "m");
 }
