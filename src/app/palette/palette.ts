@@ -4,7 +4,7 @@ import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { availableOptions } from "./options.ts";
+import { options } from "./options.ts";
 
 const maxListSize = 10;
 
@@ -28,7 +28,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
       list: new ui.List<Command>({ emptyText: "No matching commands" }),
     };
 
-    this.children.list.values = availableOptions;
+    this.children.list.values = options;
   }
 
   override resizeChildren(): void {
@@ -60,7 +60,6 @@ export class Palette extends ui.Modal<[], Command | undefined> {
     editor.resetCursor();
 
     while (true) {
-      this.#filter();
       this.props.onInvalidate();
       this.render();
 
@@ -87,6 +86,7 @@ export class Palette extends ui.Modal<[], Command | undefined> {
       }
 
       editor.onKey(key);
+      this.#filter();
     }
   }
 
@@ -105,16 +105,16 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   }
 
   #filter(): void {
-    const text = this.children.editor.text.toUpperCase();
+    const { editor, list } = this.children;
+
+    list.selectedIndex = 0;
+
+    const text = editor.text.toUpperCase();
 
     if (!text) {
-      this.children.list.values = availableOptions;
+      list.values = options;
     } else {
-      this.children.list.values = availableOptions.filter((x) =>
-        x.name.toUpperCase().includes(text)
-      );
+      list.values = options.filter((x) => x.name.toUpperCase().includes(text));
     }
-
-    this.children.list.selectedIndex = 0;
   }
 }
