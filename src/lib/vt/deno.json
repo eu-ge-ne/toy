@@ -1,4 +1,4 @@
 {
   "name": "@lib/vt",
-  "exports": "./main.ts"
+  "exports": "./index.ts"
 }

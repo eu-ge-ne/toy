@@ -27,12 +27,12 @@ export class Text extends Frame {
     switch (this.params.align) {
       case "center": {
         const n = Math.trunc((this.width - t.length) / 2);
-        vt.write_spaces(vt.buf, n);
+        vt.writeSpaces(vt.buf, n);
         break;
       }
       case "right": {
         const n = this.width - t.length;
-        vt.write_spaces(vt.buf, n);
+        vt.writeSpaces(vt.buf, n);
         break;
       }
     }
@@ -67,7 +67,7 @@ export class MultiLineText extends Frame {
       switch (this.params.align) {
         case "center": {
           const n = Math.trunc((this.width - t.length) / 2);
-          vt.write_spaces(vt.buf, n);
+          vt.writeSpaces(vt.buf, n);
           break;
         }
       }
