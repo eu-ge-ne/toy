@@ -1,4 +1,4 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import { charBg, charFg, RGBColor } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
@@ -21,19 +21,19 @@ const zinc: Record<number, RGBColor> = {
 };
 
 export const ZincTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(zinc[900]!),
-  fg_main: char_fg(zinc[900]!),
+  bgDanger: charBg(red[900]!),
+  bgMain: charBg(zinc[900]!),
+  fgMain: charFg(zinc[900]!),
 
-  bg_light2: char_bg(zinc[500]!),
-  bg_light1: char_bg(zinc[700]!),
-  bg_light0: char_bg(zinc[800]!),
-  bg_dark0: char_bg(zinc[950]!),
+  bgLight2: charBg(zinc[500]!),
+  bgLight1: charBg(zinc[700]!),
+  bgLight0: charBg(zinc[800]!),
+  bgDark0: charBg(zinc[950]!),
 
-  fg_light2: char_fg(zinc[100]!),
-  fg_light1: char_fg(zinc[200]!),
-  fg_light0: char_fg(zinc[300]!),
-  fg_dark0: char_fg(zinc[400]!),
-  fg_dark1: char_fg(zinc[600]!),
-  fg_dark2: char_fg(zinc[700]!),
+  fgLight2: charFg(zinc[100]!),
+  fgLight1: charFg(zinc[200]!),
+  fgLight0: charFg(zinc[300]!),
+  fgDark0: charFg(zinc[400]!),
+  fgDark1: charFg(zinc[600]!),
+  fgDark2: charFg(zinc[700]!),
 };

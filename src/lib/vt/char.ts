@@ -59,16 +59,16 @@ export const enum CharAttr {
   BgBrightWhite = 107,
 }
 
-export function char_attrs(...attrs: CharAttr[]): Uint8Array {
+export function charAttrs(...attrs: CharAttr[]): Uint8Array {
   return CSI(attrs.join(";") + "m");
 }
 
 export type RGBColor = [number, number, number];
 
-export function char_fg(fg: RGBColor): Uint8Array {
+export function charFg(fg: RGBColor): Uint8Array {
   return CSI("38;2;" + fg.join(";") + "m");
 }
 
-export function char_bg(bg: RGBColor): Uint8Array {
+export function charBg(bg: RGBColor): Uint8Array {
   return CSI("48;2;" + bg.join(";") + "m");
 }

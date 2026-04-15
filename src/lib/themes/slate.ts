@@ -1,4 +1,4 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import { charBg, charFg, RGBColor } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
@@ -21,19 +21,19 @@ const slate: Record<number, RGBColor> = {
 };
 
 export const SlateTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(slate[900]!),
-  fg_main: char_fg(slate[900]!),
+  bgDanger: charBg(red[900]!),
+  bgMain: charBg(slate[900]!),
+  fgMain: charFg(slate[900]!),
 
-  bg_light2: char_bg(slate[500]!),
-  bg_light1: char_bg(slate[700]!),
-  bg_light0: char_bg(slate[800]!),
-  bg_dark0: char_bg(slate[950]!),
+  bgLight2: charBg(slate[500]!),
+  bgLight1: charBg(slate[700]!),
+  bgLight0: charBg(slate[800]!),
+  bgDark0: charBg(slate[950]!),
 
-  fg_light2: char_fg(slate[100]!),
-  fg_light1: char_fg(slate[200]!),
-  fg_light0: char_fg(slate[300]!),
-  fg_dark0: char_fg(slate[400]!),
-  fg_dark1: char_fg(slate[600]!),
-  fg_dark2: char_fg(slate[700]!),
+  fgLight2: charFg(slate[100]!),
+  fgLight1: charFg(slate[200]!),
+  fgLight0: charFg(slate[300]!),
+  fgDark0: charFg(slate[400]!),
+  fgDark1: charFg(slate[600]!),
+  fgDark2: charFg(slate[700]!),
 };

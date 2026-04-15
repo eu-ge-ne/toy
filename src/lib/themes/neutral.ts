@@ -1,4 +1,4 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import { charBg, charFg, RGBColor } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
@@ -21,19 +21,19 @@ const neutral: Record<number, RGBColor> = {
 };
 
 export const NeutralTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(neutral[900]!),
-  fg_main: char_fg(neutral[900]!),
+  bgDanger: charBg(red[900]!),
+  bgMain: charBg(neutral[900]!),
+  fgMain: charFg(neutral[900]!),
 
-  bg_light2: char_bg(neutral[500]!),
-  bg_light1: char_bg(neutral[700]!),
-  bg_light0: char_bg(neutral[800]!),
-  bg_dark0: char_bg(neutral[950]!),
+  bgLight2: charBg(neutral[500]!),
+  bgLight1: charBg(neutral[700]!),
+  bgLight0: charBg(neutral[800]!),
+  bgDark0: charBg(neutral[950]!),
 
-  fg_light2: char_fg(neutral[100]!),
-  fg_light1: char_fg(neutral[200]!),
-  fg_light0: char_fg(neutral[300]!),
-  fg_dark0: char_fg(neutral[400]!),
-  fg_dark1: char_fg(neutral[600]!),
-  fg_dark2: char_fg(neutral[700]!),
+  fgLight2: charFg(neutral[100]!),
+  fgLight1: charFg(neutral[200]!),
+  fgLight0: charFg(neutral[300]!),
+  fgDark0: charFg(neutral[400]!),
+  fgDark1: charFg(neutral[600]!),
+  fgDark2: charFg(neutral[700]!),
 };

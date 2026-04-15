@@ -1,21 +1,21 @@
-import { char_attrs, CharAttr } from "@lib/vt";
+import { CharAttr, charAttrs } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
 export const Base16Theme: Theme = {
-  bg_danger: char_attrs(CharAttr.BgRed),
-  bg_main: char_attrs(CharAttr.BgBlack),
-  fg_main: char_attrs(CharAttr.FgBlack),
+  bgDanger: charAttrs(CharAttr.BgRed),
+  bgMain: charAttrs(CharAttr.BgBlack),
+  fgMain: charAttrs(CharAttr.FgBlack),
 
-  bg_light2: char_attrs(CharAttr.BgCyan),
-  bg_light1: char_attrs(CharAttr.BgBrightBlack),
-  bg_light0: char_attrs(CharAttr.BgBrightBlack),
-  bg_dark0: char_attrs(CharAttr.BgBlack),
+  bgLight2: charAttrs(CharAttr.BgCyan),
+  bgLight1: charAttrs(CharAttr.BgBrightBlack),
+  bgLight0: charAttrs(CharAttr.BgBrightBlack),
+  bgDark0: charAttrs(CharAttr.BgBlack),
 
-  fg_light2: char_attrs(CharAttr.FgCyan),
-  fg_light1: char_attrs(CharAttr.FgBrightWhite),
-  fg_light0: char_attrs(CharAttr.FgBrightWhite),
-  fg_dark0: char_attrs(CharAttr.FgWhite),
-  fg_dark1: char_attrs(CharAttr.FgWhite),
-  fg_dark2: char_attrs(CharAttr.FgWhite),
+  fgLight2: charAttrs(CharAttr.FgCyan),
+  fgLight1: charAttrs(CharAttr.FgBrightWhite),
+  fgLight0: charAttrs(CharAttr.FgBrightWhite),
+  fgDark0: charAttrs(CharAttr.FgWhite),
+  fgDark1: charAttrs(CharAttr.FgWhite),
+  fgDark2: charAttrs(CharAttr.FgWhite),
 };

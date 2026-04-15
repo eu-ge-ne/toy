@@ -1,17 +1,17 @@
 export interface Theme {
-  bg_danger: Uint8Array;
-  bg_main: Uint8Array;
-  fg_main: Uint8Array;
+  bgDanger: Uint8Array;
+  bgMain: Uint8Array;
+  fgMain: Uint8Array;
 
-  bg_light2: Uint8Array;
-  bg_light1: Uint8Array;
-  bg_light0: Uint8Array;
-  bg_dark0: Uint8Array;
+  bgLight2: Uint8Array;
+  bgLight1: Uint8Array;
+  bgLight0: Uint8Array;
+  bgDark0: Uint8Array;
 
-  fg_light2: Uint8Array;
-  fg_light1: Uint8Array;
-  fg_light0: Uint8Array;
-  fg_dark0: Uint8Array;
-  fg_dark1: Uint8Array;
-  fg_dark2: Uint8Array;
+  fgLight2: Uint8Array;
+  fgLight1: Uint8Array;
+  fgLight0: Uint8Array;
+  fgDark0: Uint8Array;
+  fgDark1: Uint8Array;
+  fgDark2: Uint8Array;
 }

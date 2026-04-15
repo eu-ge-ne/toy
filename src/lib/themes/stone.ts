@@ -1,4 +1,4 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import { charBg, charFg, RGBColor } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
@@ -21,19 +21,19 @@ const stone: Record<number, RGBColor> = {
 };
 
 export const StoneTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(stone[900]!),
-  fg_main: char_fg(stone[900]!),
+  bgDanger: charBg(red[900]!),
+  bgMain: charBg(stone[900]!),
+  fgMain: charFg(stone[900]!),
 
-  bg_light2: char_bg(stone[500]!),
-  bg_light1: char_bg(stone[700]!),
-  bg_light0: char_bg(stone[800]!),
-  bg_dark0: char_bg(stone[950]!),
+  bgLight2: charBg(stone[500]!),
+  bgLight1: charBg(stone[700]!),
+  bgLight0: charBg(stone[800]!),
+  bgDark0: charBg(stone[950]!),
 
-  fg_light2: char_fg(stone[100]!),
-  fg_light1: char_fg(stone[200]!),
-  fg_light0: char_fg(stone[300]!),
-  fg_dark0: char_fg(stone[400]!),
-  fg_dark1: char_fg(stone[600]!),
-  fg_dark2: char_fg(stone[700]!),
+  fgLight2: charFg(stone[100]!),
+  fgLight1: charFg(stone[200]!),
+  fgLight0: charFg(stone[300]!),
+  fgDark0: charFg(stone[400]!),
+  fgDark1: charFg(stone[600]!),
+  fgDark2: charFg(stone[700]!),
 };

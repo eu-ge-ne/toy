@@ -80,8 +80,8 @@ export class Debug extends ui.Frame {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_light0);
-    const text = new Uint8Array([...theme.bg_light0, ...theme.fg_dark0]);
+    const bg = new Uint8Array(theme.bgLight0);
+    const text = new Uint8Array([...theme.bgLight0, ...theme.fgDark0]);
 
     this.children.bg.color = bg;
     this.children.line1.color = text;

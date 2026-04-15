@@ -1,4 +1,4 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import { charBg, charFg, RGBColor } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
@@ -21,19 +21,19 @@ const gray: Record<number, RGBColor> = {
 };
 
 export const GrayTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(gray[900]!),
-  fg_main: char_fg(gray[900]!),
+  bgDanger: charBg(red[900]!),
+  bgMain: charBg(gray[900]!),
+  fgMain: charFg(gray[900]!),
 
-  bg_light2: char_bg(gray[500]!),
-  bg_light1: char_bg(gray[700]!),
-  bg_light0: char_bg(gray[800]!),
-  bg_dark0: char_bg(gray[950]!),
+  bgLight2: charBg(gray[500]!),
+  bgLight1: charBg(gray[700]!),
+  bgLight0: charBg(gray[800]!),
+  bgDark0: charBg(gray[950]!),
 
-  fg_light2: char_fg(gray[100]!),
-  fg_light1: char_fg(gray[200]!),
-  fg_light0: char_fg(gray[300]!),
-  fg_dark0: char_fg(gray[400]!),
-  fg_dark1: char_fg(gray[600]!),
-  fg_dark2: char_fg(gray[700]!),
+  fgLight2: charFg(gray[100]!),
+  fgLight1: charFg(gray[200]!),
+  fgLight0: charFg(gray[300]!),
+  fgDark0: charFg(gray[400]!),
+  fgDark1: charFg(gray[600]!),
+  fgDark2: charFg(gray[700]!),
 };
