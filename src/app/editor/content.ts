@@ -137,7 +137,7 @@ export class Content extends ui.Frame {
       } else {
         vt.cursor.set(vt.buf, row, this.x);
         vt.buf.write(this.#color.void);
-        vt.clear_line(vt.buf, this.width);
+        vt.clearLine(vt.buf, this.width);
       }
 
       row += 1;
@@ -240,14 +240,14 @@ export class Content extends ui.Frame {
         if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
-            vt.write_text(
+            vt.writeText(
               vt.buf,
               [indexWidth],
               `${ln + 1} `.padStart(indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
-            vt.write_spaces(vt.buf, indexWidth);
+            vt.writeSpaces(vt.buf, indexWidth);
           }
         }
 

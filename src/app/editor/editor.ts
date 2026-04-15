@@ -438,7 +438,7 @@ export class Editor extends ui.Frame {
       });
     }
 
-    vt.copy_to_clipboard(vt.sync, this.#clipboard);
+    vt.copyToClipboard(vt.sync, this.#clipboard);
 
     return;
   }
@@ -464,7 +464,7 @@ export class Editor extends ui.Frame {
       this.#deleteChar();
     }
 
-    vt.copy_to_clipboard(vt.sync, this.#clipboard);
+    vt.copyToClipboard(vt.sync, this.#clipboard);
 
     return;
   }

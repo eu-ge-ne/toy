@@ -4,7 +4,7 @@ const encoder = new TextEncoder();
 
 const cache: Record<number, Uint8Array> = {};
 
-export function write_spaces(out: Writer, n: number): void {
+export function writeSpaces(out: Writer, n: number): void {
   let bytes = cache[n];
 
   if (!bytes) {
@@ -14,7 +14,7 @@ export function write_spaces(out: Writer, n: number): void {
   out.write(bytes);
 }
 
-export function write_text(out: Writer, span: [number], text: string): void {
+export function writeText(out: Writer, span: [number], text: string): void {
   if (text.length > span[0]) {
     text = text.slice(0, span[0]);
   }
