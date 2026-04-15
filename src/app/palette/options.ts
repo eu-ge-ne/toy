@@ -56,36 +56,13 @@ export const availableOptions: Option[] = [
     CommandToShortcuts["Save"],
     { name: "Save" },
   ),
-  new Option(
-    "Theme: Base16",
-    undefined,
-    { name: "Theme", data: "Base16" },
-  ),
-  new Option(
-    "Theme: Gray",
-    undefined,
-    { name: "Theme", data: "Gray" },
-  ),
-  new Option(
-    "Theme: Neutral",
-    undefined,
-    { name: "Theme", data: "Neutral" },
-  ),
-  new Option(
-    "Theme: Slate",
-    undefined,
-    { name: "Theme", data: "Slate" },
-  ),
-  new Option(
-    "Theme: Stone",
-    undefined,
-    { name: "Theme", data: "Stone" },
-  ),
-  new Option(
-    "Theme: Zinc",
-    undefined,
-    { name: "Theme", data: "Zinc" },
-  ),
+  new Option("Theme: Base16", undefined, { name: "Theme", data: "Base16" }),
+  new Option("Theme: Gray", undefined, { name: "Theme", data: "Gray" }),
+  new Option("Theme: Neutral", undefined, { name: "Theme", data: "Neutral" }),
+  new Option("Theme: Slate", undefined, { name: "Theme", data: "Slate" }),
+  new Option("Theme: Stone", undefined, { name: "Theme", data: "Stone" }),
+  new Option("Theme: Zinc", undefined, { name: "Theme", data: "Zinc" }),
+  new Option("Theme: Taupe", undefined, { name: "Theme", data: "Taupe" }),
   new Option(
     "Edit: Undo",
     CommandToShortcuts["Undo"],
