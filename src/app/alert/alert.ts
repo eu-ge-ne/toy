@@ -48,8 +48,8 @@ export class Alert extends ui.Modal<[unknown]> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_danger);
-    const text = new Uint8Array([...theme.bg_danger, ...theme.fg_light1]);
+    const bg = new Uint8Array(theme.bgDanger);
+    const text = new Uint8Array([...theme.bgDanger, ...theme.fgLight1]);
 
     this.children.bg.color = bg;
     this.children.text.color = text;

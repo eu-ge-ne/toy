@@ -93,7 +93,7 @@ export class Editor extends ui.Frame {
   setTheme(theme: themes.Theme): void {
     const { bg, content } = this.children;
 
-    bg.color = new Uint8Array(theme.bg_main);
+    bg.color = new Uint8Array(theme.bgMain);
     content.setTheme(theme);
   }
 

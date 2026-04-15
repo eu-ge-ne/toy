@@ -1,39 +1,22 @@
-import { char_bg, char_fg, RGBColor } from "@lib/vt";
+import colors from "@lib/colors" with { type: "json" };
+import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-const red: Record<number, RGBColor> = {
-  900: [0x7f, 0x1d, 0x1d],
-};
+export const Stone: Theme = {
+  bgDanger: charBg(colors.red900),
+  bgMain: charBg(colors.stone900),
+  fgMain: charFg(colors.stone900),
 
-const stone: Record<number, RGBColor> = {
-  50: [0xfa, 0xfa, 0xf9],
-  100: [0xf5, 0xf5, 0xf4],
-  200: [0xe7, 0xe5, 0xe4],
-  300: [0xd6, 0xd3, 0xd1],
-  400: [0xa8, 0xa2, 0x9e],
-  500: [0x78, 0x71, 0x6c],
-  600: [0x57, 0x53, 0x4e],
-  700: [0x44, 0x40, 0x3c],
-  800: [0x29, 0x25, 0x24],
-  900: [0x1c, 0x19, 0x17],
-  950: [0x0c, 0x0a, 0x09],
-};
+  bgLight2: charBg(colors.stone500),
+  bgLight1: charBg(colors.stone700),
+  bgLight0: charBg(colors.stone800),
+  bgDark0: charBg(colors.stone950),
 
-export const StoneTheme: Theme = {
-  bg_danger: char_bg(red[900]!),
-  bg_main: char_bg(stone[900]!),
-  fg_main: char_fg(stone[900]!),
-
-  bg_light2: char_bg(stone[500]!),
-  bg_light1: char_bg(stone[700]!),
-  bg_light0: char_bg(stone[800]!),
-  bg_dark0: char_bg(stone[950]!),
-
-  fg_light2: char_fg(stone[100]!),
-  fg_light1: char_fg(stone[200]!),
-  fg_light0: char_fg(stone[300]!),
-  fg_dark0: char_fg(stone[400]!),
-  fg_dark1: char_fg(stone[600]!),
-  fg_dark2: char_fg(stone[700]!),
+  fgLight2: charFg(colors.stone100),
+  fgLight1: charFg(colors.stone200),
+  fgLight0: charFg(colors.stone300),
+  fgDark0: charFg(colors.stone400),
+  fgDark1: charFg(colors.stone600),
+  fgDark2: charFg(colors.stone700),
 };

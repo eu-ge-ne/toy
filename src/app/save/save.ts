@@ -63,8 +63,8 @@ export class Save extends ui.Modal<[string], string> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_light1);
-    const text = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
+    const bg = new Uint8Array(theme.bgLight1);
+    const text = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
 
     this.children.bg.color = bg;
     this.children.footer.color = text;

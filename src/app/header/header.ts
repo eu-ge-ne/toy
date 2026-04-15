@@ -47,8 +47,8 @@ export class Header extends ui.Frame {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_dark0);
-    const text = new Uint8Array([...theme.bg_dark0, ...theme.fg_dark0]);
+    const bg = new Uint8Array(theme.bgDark0);
+    const text = new Uint8Array([...theme.bgDark0, ...theme.fgDark0]);
 
     this.children.bg.color = bg;
     this.children.text.color = text;

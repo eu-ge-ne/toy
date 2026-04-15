@@ -91,11 +91,11 @@ export class Palette extends ui.Modal<[], Command | undefined> {
   }
 
   setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bg_light1);
-    const option = new Uint8Array([...theme.bg_light1, ...theme.fg_light1]);
+    const bg = new Uint8Array(theme.bgLight1);
+    const option = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
     const selectedOption = new Uint8Array([
-      ...theme.bg_light2,
-      ...theme.fg_light1,
+      ...theme.bgLight2,
+      ...theme.fgLight1,
     ]);
 
     this.children.bg.color = bg;

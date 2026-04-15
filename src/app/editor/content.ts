@@ -80,34 +80,34 @@ export class Content extends ui.Frame {
   }
 
   setTheme(theme: themes.Theme): void {
-    this.#color.bg = new Uint8Array(theme.bg_main);
-    this.#color.void = new Uint8Array(theme.bg_dark0);
+    this.#color.bg = new Uint8Array(theme.bgMain);
+    this.#color.void = new Uint8Array(theme.bgDark0);
     this.#color.index = new Uint8Array([
-      ...theme.bg_light0,
-      ...theme.fg_dark0,
+      ...theme.bgLight0,
+      ...theme.fgDark0,
     ]);
     this.#color.char = {
       [CharColor.Undefined]: new Uint8Array(),
       [CharColor.Visible]: new Uint8Array([
-        ...theme.bg_main,
-        ...theme.fg_light1,
+        ...theme.bgMain,
+        ...theme.fgLight1,
       ]),
       [CharColor.Whitespace]: new Uint8Array([
-        ...theme.bg_main,
-        ...theme.fg_dark0,
+        ...theme.bgMain,
+        ...theme.fgDark0,
       ]),
-      [CharColor.Empty]: new Uint8Array([...theme.bg_main, ...theme.fg_main]),
+      [CharColor.Empty]: new Uint8Array([...theme.bgMain, ...theme.fgMain]),
       [CharColor.VisibleSelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_light1,
+        ...theme.bgLight2,
+        ...theme.fgLight1,
       ]),
       [CharColor.WhitespaceSelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_dark1,
+        ...theme.bgLight2,
+        ...theme.fgDark1,
       ]),
       [CharColor.EmptySelected]: new Uint8Array([
-        ...theme.bg_light2,
-        ...theme.fg_dark1,
+        ...theme.bgLight2,
+        ...theme.fgDark1,
       ]),
     };
   }
