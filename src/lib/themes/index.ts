@@ -2,6 +2,7 @@ import * as vt from "@lib/vt";
 
 import { Base16 } from "./base16.ts";
 import { Gray } from "./gray.ts";
+import { Mauve } from "./mauve.ts";
 import { Mist } from "./mist.ts";
 import { Neutral } from "./neutral.ts";
 import { Olive } from "./olive.ts";
@@ -15,12 +16,13 @@ export * from "./theme.ts";
 export const Themes = {
   Default: vt.TRUECOLOR ? Neutral : Base16,
   Base16,
-  Gray,
-  Neutral,
   Slate,
-  Stone,
+  Gray,
   Zinc,
+  Neutral,
+  Stone,
   Taupe,
+  Mauve,
   Mist,
   Olive,
 };
