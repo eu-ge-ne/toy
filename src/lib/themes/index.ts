@@ -2,6 +2,7 @@ import * as vt from "@lib/vt";
 
 import { Base16 } from "./base16.ts";
 import { Gray } from "./gray.ts";
+import { Mist } from "./mist.ts";
 import { Neutral } from "./neutral.ts";
 import { Olive } from "./olive.ts";
 import { Slate } from "./slate.ts";
@@ -20,5 +21,6 @@ export const Themes = {
   Stone,
   Zinc,
   Taupe,
+  Mist,
   Olive,
 };

@@ -63,6 +63,7 @@ export const availableOptions: Option[] = [
   new Option("Theme: Stone", undefined, { name: "Theme", data: "Stone" }),
   new Option("Theme: Zinc", undefined, { name: "Theme", data: "Zinc" }),
   new Option("Theme: Taupe", undefined, { name: "Theme", data: "Taupe" }),
+  new Option("Theme: Mist", undefined, { name: "Theme", data: "Mist" }),
   new Option("Theme: Olive", undefined, { name: "Theme", data: "Olive" }),
   new Option(
     "Edit: Undo",
