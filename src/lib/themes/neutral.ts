@@ -3,7 +3,7 @@ import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const NeutralTheme: Theme = {
+export const Neutral: Theme = {
   bgDanger: charBg(colors.red900),
   bgMain: charBg(colors.neutral900),
   fgMain: charFg(colors.neutral900),

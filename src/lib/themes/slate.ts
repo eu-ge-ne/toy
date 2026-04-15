@@ -3,7 +3,7 @@ import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const SlateTheme: Theme = {
+export const Slate: Theme = {
   bgDanger: charBg(colors.red900),
   bgMain: charBg(colors.slate900),
   fgMain: charFg(colors.slate900),

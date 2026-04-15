@@ -3,7 +3,7 @@ import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const StoneTheme: Theme = {
+export const Stone: Theme = {
   bgDanger: charBg(colors.red900),
   bgMain: charBg(colors.stone900),
   fgMain: charFg(colors.stone900),

@@ -3,7 +3,7 @@ import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const ZincTheme: Theme = {
+export const Zinc: Theme = {
   bgDanger: charBg(colors.red900),
   bgMain: charBg(colors.zinc900),
   fgMain: charFg(colors.zinc900),

@@ -2,7 +2,7 @@ import { CharAttr, charAttrs } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const Base16Theme: Theme = {
+export const Base16: Theme = {
   bgDanger: charAttrs(CharAttr.BgRed),
   bgMain: charAttrs(CharAttr.BgBlack),
   fgMain: charAttrs(CharAttr.FgBlack),

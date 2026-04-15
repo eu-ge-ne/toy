@@ -144,7 +144,7 @@ export class App extends ui.Modal {
 
     this.#onSigwinch();
 
-    this.#setTheme(themes.DefaultTheme);
+    this.#setTheme(themes.Themes.Default);
 
     while (true) {
       this.#render();

@@ -3,7 +3,7 @@ import { charBg, charFg } from "@lib/vt";
 
 import { Theme } from "./theme.ts";
 
-export const GrayTheme: Theme = {
+export const Gray: Theme = {
   bgDanger: charBg(colors.red900),
   bgMain: charBg(colors.gray900),
   fgMain: charFg(colors.gray900),
