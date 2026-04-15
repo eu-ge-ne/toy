@@ -2,7 +2,7 @@ import { Grapheme } from "./grapheme.ts";
 
 const enc = new TextEncoder();
 
-export class GraphemePool {
+export class Pool {
   #pool = new Map<string, Grapheme>();
 
   constructor(pool: Record<string, [string, number]>) {

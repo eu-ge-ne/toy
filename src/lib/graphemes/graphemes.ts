@@ -1,8 +1,8 @@
 import { range } from "@lib/std";
 
-import { GraphemePool } from "./pool.ts";
+import { Pool } from "./pool.ts";
 
-export const graphemes = new GraphemePool({
+export const graphemes = new Pool({
   "\u0000": ["␀", 1],
   "\u0001": ["␁", 1],
   "\u0002": ["␂", 1],
