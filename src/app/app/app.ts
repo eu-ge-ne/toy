@@ -135,7 +135,7 @@ export class App extends ui.Modal {
     Deno.addSignalListener("SIGWINCH", this.#onSigwinch);
 
     if (fileName) {
-      await this.#open(fileName);
+      await this.#loadFile(fileName);
     }
 
     editor.setFocused(true);
@@ -180,7 +180,7 @@ export class App extends ui.Modal {
 
     if (editor.textChanged) {
       if (await ask.open("Save changes?")) {
-        await this.#save();
+        await this.#saveFile();
       }
     }
 
@@ -208,7 +208,7 @@ export class App extends ui.Modal {
 
     editor.setFocused(false);
 
-    if (await this.#save()) {
+    if (await this.#saveFile()) {
       editor.resetChanges();
     }
 
@@ -217,7 +217,7 @@ export class App extends ui.Modal {
     this.#render();
   }
 
-  async #open(fileName: string): Promise<void> {
+  async #loadFile(fileName: string): Promise<void> {
     const { editor, header, alert } = this.children;
 
     try {
@@ -236,15 +236,11 @@ export class App extends ui.Modal {
     }
   }
 
-  async #save(): Promise<boolean> {
-    if (this.#fileName) {
-      return await this.#saveFile();
-    } else {
+  async #saveFile(): Promise<boolean> {
+    if (!this.#fileName) {
       return await this.#saveFileAs();
     }
-  }
 
-  async #saveFile(): Promise<boolean> {
     try {
       await files.save(this.#fileName, this.children.editor.read());
 
