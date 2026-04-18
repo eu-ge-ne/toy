@@ -1,10 +1,10 @@
-export interface PluginParams {
+export interface PluginProps {
   onRefresh?: () => void;
   onExit?: () => void;
 }
 
 export abstract class Plugin {
-  constructor(protected readonly params: PluginParams) {
+  constructor(protected readonly props: PluginProps) {
   }
 
   abstract start(): void;

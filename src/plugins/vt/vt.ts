@@ -3,7 +3,7 @@ import * as vt from "@libs/vt";
 
 export class VT extends Plugin {
   start(): void {
-    const { onExit, onRefresh } = this.params;
+    const { onExit, onRefresh } = this.props;
 
     vt.init();
 
