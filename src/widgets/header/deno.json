@@ -1,0 +1,4 @@
+{
+  "name": "@widgets/header",
+  "exports": "./header.ts"
+}

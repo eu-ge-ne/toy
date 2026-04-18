@@ -1,0 +1,4 @@
+{
+  "name": "@widgets/list",
+  "exports": "./list.ts"
+}

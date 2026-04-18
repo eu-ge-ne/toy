@@ -1,0 +1,75 @@
+import * as themes from "@lib/themes";
+import * as vt from "@lib/vt";
+import * as widgets from "@lib/widgets";
+import { Bg } from "@widgets/bg";
+import { Editor } from "@widgets/editor";
+import { Text } from "@widgets/text";
+
+export class Save extends widgets.Modal<[string], string> {
+  protected override children: {
+    bg: Bg;
+    header: Text;
+    editor: Editor;
+    footer: Text;
+  };
+
+  constructor() {
+    super();
+
+    this.children = {
+      bg: new Bg(),
+      header: new Text({ align: "center" }),
+      editor: new Editor({ multiLine: false }),
+      footer: new Text({ align: "center" }),
+    };
+
+    this.children.header.value = "Save As";
+    this.children.footer.value = "ESC‧cancel    ENTER‧ok";
+  }
+
+  override resizeChildren(): void {
+    const { bg, header, editor, footer } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    header.resize(this.width, 1, this.y + 1, this.x);
+    editor.resize(this.width - 4, 1, this.y + 4, this.x + 2);
+    footer.resize(this.width, 1, this.y + this.height - 2, this.x);
+  }
+
+  async open(path: string): Promise<string> {
+    const { editor } = this.children;
+
+    editor.setFocused(true);
+    editor.text = path;
+    editor.resetChanges();
+    editor.resetCursor();
+
+    while (true) {
+      this.render();
+
+      const key = await vt.readKey();
+
+      switch (key.name) {
+        case "ESC":
+          return "";
+        case "ENTER": {
+          const path = editor.text;
+          if (path) {
+            return path;
+          }
+        }
+      }
+
+      editor.onKey(key);
+    }
+  }
+
+  setTheme(theme: themes.Theme): void {
+    const bg = new Uint8Array(theme.bgLight1);
+    const text = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
+
+    this.children.bg.color = bg;
+    this.children.footer.color = text;
+    this.children.editor.setTheme(theme);
+  }
+}

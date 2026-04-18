@@ -6,14 +6,14 @@ import * as kitty from "@lib/kitty";
 import * as std from "@lib/std";
 import * as themes from "@lib/themes";
 import * as vt from "@lib/vt";
-import { Alert } from "@ui/alert";
-import { Ask } from "@ui/ask";
-import { Debug } from "@ui/debug";
-import { Editor } from "@ui/editor";
-import { Footer } from "@ui/footer";
-import { Header } from "@ui/header";
-import { Palette } from "@ui/palette";
-import { Save } from "@ui/save";
+import { Alert } from "@widgets/alert";
+import { Ask } from "@widgets/ask";
+import { Debug } from "@widgets/debug";
+import { Editor } from "@widgets/editor";
+import { Footer } from "@widgets/footer";
+import { Header } from "@widgets/header";
+import { Palette } from "@widgets/palette";
+import { Save } from "@widgets/save";
 
 import deno from "../deno.json" with { type: "json" };
 
