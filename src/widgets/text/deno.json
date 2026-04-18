@@ -1,0 +1,4 @@
+{
+  "name": "@widgets/text",
+  "exports": "./text.ts"
+}

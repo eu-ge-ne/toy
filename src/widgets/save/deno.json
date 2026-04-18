@@ -1,0 +1,4 @@
+{
+  "name": "@widgets/save",
+  "exports": "./save.ts"
+}

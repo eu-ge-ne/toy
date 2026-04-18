@@ -1,4 +1,0 @@
-{
-  "name": "@lib/ui",
-  "exports": "./ui.ts"
-}

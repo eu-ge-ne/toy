@@ -1,0 +1,4 @@
+{
+  "name": "@widgets/debug",
+  "exports": "./debug.ts"
+}

@@ -4,8 +4,8 @@
   "license": "MIT",
   "exports": "",
   "workspace": [
-    "src/ui/*",
-    "src/lib/*"
+    "src/lib/*",
+    "src/widgets/*"
   ],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
