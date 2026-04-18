@@ -1,4 +1,0 @@
-{
-  "name": "@app/ask",
-  "exports": "./ask.ts"
-}

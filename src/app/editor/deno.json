@@ -1,4 +1,0 @@
-{
-  "name": "@app/editor",
-  "exports": "./editor.ts"
-}

@@ -1,0 +1,4 @@
+{
+  "name": "@ui/save",
+  "exports": "./save.ts"
+}

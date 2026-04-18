@@ -1,0 +1,4 @@
+{
+  "name": "@ui/text",
+  "exports": "./text.ts"
+}
