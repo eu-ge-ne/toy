@@ -1,4 +1,4 @@
 {
-  "name": "@app/save",
+  "name": "@ui/save",
   "exports": "./save.ts"
 }

@@ -1,6 +1,5 @@
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
-
-import { Frame } from "./frame.ts";
 
 const encoder = new TextEncoder();
 
@@ -8,7 +7,7 @@ interface TextParams {
   readonly align: "left" | "center" | "right";
 }
 
-export class Text extends Frame {
+export class Text extends ui.Frame {
   color = new Uint8Array();
   value = "";
 
@@ -41,7 +40,7 @@ export class Text extends Frame {
   }
 }
 
-export class MultiLineText extends Frame {
+export class MultiLineText extends ui.Frame {
   color = new Uint8Array();
   value = "";
 

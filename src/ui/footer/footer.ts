@@ -1,25 +1,28 @@
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
+import { Text } from "@ui/text";
 
-interface HeaderProps {
+interface FooterProps {
   disabled: boolean;
-  fileName: string;
-  fileModified: boolean;
+  ln: number;
+  col: number;
+  lnCount: number;
 }
 
-export class Header extends ui.Frame {
+export class Footer extends ui.Frame {
   protected override children: {
-    bg: ui.Bg;
-    text: ui.Text;
+    bg: Bg;
+    text: Text;
   };
 
-  constructor(readonly props: HeaderProps) {
+  constructor(readonly props: FooterProps) {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
-      text: new ui.Text({ align: "center" }),
+      bg: new Bg(),
+      text: new Text({ align: "right" }),
     };
   }
 
@@ -39,8 +42,12 @@ export class Header extends ui.Frame {
 
     this.children.bg.render();
 
-    const f = this.props.fileModified ? " +" : "";
-    this.children.text.value = `${this.props.fileName}${f}`;
+    const ln = this.props.ln + 1;
+    const col = this.props.col + 1;
+    const pct = this.props.lnCount === 0
+      ? 0
+      : ((ln / this.props.lnCount) * 100).toFixed(0);
+    this.children.text.value = `${ln} ${col}  ${pct}% `;
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);

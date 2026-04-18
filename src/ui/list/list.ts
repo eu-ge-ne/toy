@@ -1,6 +1,5 @@
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
-
-import { Frame } from "./frame.ts";
 
 const encoder = new TextEncoder();
 
@@ -13,7 +12,7 @@ interface ListParams {
   readonly emptyText: string;
 }
 
-export class List<T> extends Frame {
+export class List<T> extends ui.Frame {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
   values: ListItem<T>[] = [];

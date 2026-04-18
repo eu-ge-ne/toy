@@ -3,19 +3,26 @@
   "version": "0.0.28-rc",
   "license": "MIT",
   "exports": "",
-  "workspace": ["src/app/*", "src/lib/*"],
+  "workspace": [
+    "src/ui/*",
+    "src/lib/*"
+  ],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
   },
   "lint": {
     "rules": {
-      "tags": ["recommended"],
+      "tags": [
+        "recommended"
+      ],
       "include": [
         "eqeqeq",
         "explicit-module-boundary-types",
         "explicit-function-return-type"
       ],
-      "exclude": ["require-await"]
+      "exclude": [
+        "require-await"
+      ]
     }
   },
   "imports": {

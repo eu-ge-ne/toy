@@ -1,24 +1,26 @@
-import { Editor } from "@app/editor";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
+import { Editor } from "@ui/editor";
+import { Text } from "@ui/text";
 
 export class Save extends ui.Modal<[string], string> {
   protected override children: {
-    bg: ui.Bg;
-    header: ui.Text;
+    bg: Bg;
+    header: Text;
     editor: Editor;
-    footer: ui.Text;
+    footer: Text;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
-      header: new ui.Text({ align: "center" }),
+      bg: new Bg(),
+      header: new Text({ align: "center" }),
       editor: new Editor({ multiLine: false }),
-      footer: new ui.Text({ align: "center" }),
+      footer: new Text({ align: "center" }),
     };
 
     this.children.header.value = "Save As";

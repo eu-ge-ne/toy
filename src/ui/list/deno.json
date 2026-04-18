@@ -1,0 +1,4 @@
+{
+  "name": "@ui/list",
+  "exports": "./list.ts"
+}

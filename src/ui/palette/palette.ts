@@ -1,8 +1,10 @@
-import { Editor } from "@app/editor";
 import { Command } from "@lib/commands";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
+import { Editor } from "@ui/editor";
+import { List } from "@ui/list";
 
 import { options } from "./options.ts";
 
@@ -14,18 +16,18 @@ interface PaletteProps {
 
 export class Palette extends ui.Modal<[], Command | undefined> {
   protected override children: {
-    bg: ui.Bg;
+    bg: Bg;
     editor: Editor;
-    list: ui.List<Command>;
+    list: List<Command>;
   };
 
   constructor(private readonly props: PaletteProps) {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
+      bg: new Bg(),
       editor: new Editor({ multiLine: false }),
-      list: new ui.List<Command>({ emptyText: "No matching commands" }),
+      list: new List<Command>({ emptyText: "No matching commands" }),
     };
 
     this.children.list.values = options;

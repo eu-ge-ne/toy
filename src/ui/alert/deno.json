@@ -1,4 +1,4 @@
 {
-  "name": "@app/alert",
+  "name": "@ui/alert",
   "exports": "./alert.ts"
 }

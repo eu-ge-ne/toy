@@ -1,6 +1,8 @@
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
+import { Text } from "@ui/text";
 
 const MIB = Math.pow(1024, 2);
 
@@ -12,24 +14,24 @@ interface DebugProps {
 
 export class Debug extends ui.Frame {
   protected override children: {
-    bg: ui.Bg;
-    line1: ui.Text;
-    line2: ui.Text;
-    line3: ui.Text;
-    line4: ui.Text;
-    line5: ui.Text;
+    bg: Bg;
+    line1: Text;
+    line2: Text;
+    line3: Text;
+    line4: Text;
+    line5: Text;
   };
 
   constructor(readonly props: DebugProps) {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
-      line1: new ui.Text({ align: "left" }),
-      line2: new ui.Text({ align: "left" }),
-      line3: new ui.Text({ align: "left" }),
-      line4: new ui.Text({ align: "left" }),
-      line5: new ui.Text({ align: "left" }),
+      bg: new Bg(),
+      line1: new Text({ align: "left" }),
+      line2: new Text({ align: "left" }),
+      line3: new Text({ align: "left" }),
+      line4: new Text({ align: "left" }),
+      line5: new Text({ align: "left" }),
     };
   }
 

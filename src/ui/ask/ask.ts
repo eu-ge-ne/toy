@@ -1,21 +1,23 @@
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
+import { MultiLineText, Text } from "@ui/text";
 
 export class Ask extends ui.Modal<[string], boolean> {
   protected override children: {
-    bg: ui.Bg;
-    text: ui.MultiLineText;
-    footer: ui.Text;
+    bg: Bg;
+    text: MultiLineText;
+    footer: Text;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
-      text: new ui.MultiLineText({ align: "center" }),
-      footer: new ui.Text({ align: "center" }),
+      bg: new Bg(),
+      text: new MultiLineText({ align: "center" }),
+      footer: new Text({ align: "center" }),
     };
 
     this.children.footer.value = "ESC‧no    ENTER‧yes";

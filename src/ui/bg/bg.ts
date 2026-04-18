@@ -1,8 +1,7 @@
+import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
 
-import { Frame } from "./frame.ts";
-
-export class Bg extends Frame {
+export class Bg extends ui.Frame {
   color = new Uint8Array();
 
   render(): void {

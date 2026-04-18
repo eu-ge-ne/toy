@@ -1,19 +1,19 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Alert } from "@app/alert";
-import { Ask } from "@app/ask";
-import { Debug } from "@app/debug";
-import { Editor } from "@app/editor";
-import { Footer } from "@app/footer";
-import { Header } from "@app/header";
-import { Palette } from "@app/palette";
-import { Save } from "@app/save";
 import * as commands from "@lib/commands";
 import * as files from "@lib/files";
 import * as kitty from "@lib/kitty";
 import * as std from "@lib/std";
 import * as themes from "@lib/themes";
 import * as vt from "@lib/vt";
+import { Alert } from "@ui/alert";
+import { Ask } from "@ui/ask";
+import { Debug } from "@ui/debug";
+import { Editor } from "@ui/editor";
+import { Footer } from "@ui/footer";
+import { Header } from "@ui/header";
+import { Palette } from "@ui/palette";
+import { Save } from "@ui/save";
 
 import deno from "../deno.json" with { type: "json" };
 

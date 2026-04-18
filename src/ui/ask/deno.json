@@ -1,4 +1,4 @@
 {
-  "name": "@app/ask",
+  "name": "@ui/ask",
   "exports": "./ask.ts"
 }

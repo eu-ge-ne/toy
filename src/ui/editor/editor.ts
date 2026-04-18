@@ -4,6 +4,7 @@ import * as kitty from "@lib/kitty";
 import * as themes from "@lib/themes";
 import * as ui from "@lib/ui";
 import * as vt from "@lib/vt";
+import { Bg } from "@ui/bg";
 
 import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
@@ -40,7 +41,7 @@ export class Editor extends ui.Frame {
   }
 
   protected override children: {
-    bg: ui.Bg;
+    bg: Bg;
     content: Content;
   };
 
@@ -48,7 +49,7 @@ export class Editor extends ui.Frame {
     super();
 
     this.children = {
-      bg: new ui.Bg(),
+      bg: new Bg(),
       content: new Content(this.#doc, this.#gDoc, this.#cursor),
     };
 
