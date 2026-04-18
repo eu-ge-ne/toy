@@ -1,4 +1,4 @@
-import { Command, CommandToShortcuts } from "@lib/commands";
+import { Command, CommandToShortcuts } from "@libs/commands";
 
 export class Option {
   constructor(

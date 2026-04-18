@@ -1,9 +1,9 @@
-import { Document } from "@lib/document";
-import * as graphemes from "@lib/graphemes";
-import * as std from "@lib/std";
-import * as themes from "@lib/themes";
-import * as vt from "@lib/vt";
-import * as widgets from "@lib/widgets";
+import { Document } from "@libs/document";
+import * as graphemes from "@libs/graphemes";
+import * as std from "@libs/std";
+import * as themes from "@libs/themes";
+import * as vt from "@libs/vt";
+import * as widgets from "@libs/widgets";
 
 import { Cursor } from "./cursor.ts";
 

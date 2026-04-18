@@ -1,0 +1,4 @@
+{
+  "name": "@libs/themes",
+  "exports": "./index.ts"
+}

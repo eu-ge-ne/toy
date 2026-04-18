@@ -1,11 +1,11 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as commands from "@lib/commands";
-import * as files from "@lib/files";
-import * as kitty from "@lib/kitty";
-import * as std from "@lib/std";
-import * as themes from "@lib/themes";
-import * as vt from "@lib/vt";
+import * as commands from "@libs/commands";
+import * as files from "@libs/files";
+import * as kitty from "@libs/kitty";
+import * as std from "@libs/std";
+import * as themes from "@libs/themes";
+import * as vt from "@libs/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
 import { Debug } from "@widgets/debug";

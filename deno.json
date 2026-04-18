@@ -4,7 +4,8 @@
   "license": "MIT",
   "exports": "",
   "workspace": [
-    "src/lib/*",
+    "src/libs/*",
+    "src/plugins/*",
     "src/widgets/*"
   ],
   "compilerOptions": {

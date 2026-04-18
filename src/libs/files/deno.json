@@ -1,0 +1,4 @@
+{
+  "name": "@libs/files",
+  "exports": "./files.ts"
+}

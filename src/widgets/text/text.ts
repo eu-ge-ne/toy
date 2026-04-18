@@ -1,5 +1,5 @@
-import * as vt from "@lib/vt";
-import * as widgets from "@lib/widgets";
+import * as vt from "@libs/vt";
+import * as widgets from "@libs/widgets";
 
 const encoder = new TextEncoder();
 
