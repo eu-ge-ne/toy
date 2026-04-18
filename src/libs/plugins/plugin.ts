@@ -1,12 +1,9 @@
-export interface PluginProps {
-  onRefresh?: () => void;
-  onExit?: () => void;
-}
+import { PluginHost } from "./host.ts";
 
 export abstract class Plugin {
-  constructor(protected readonly props: PluginProps) {
+  constructor(protected readonly host: PluginHost) {
   }
 
   abstract start(): void;
-  abstract stop(): void;
+  abstract exit(e?: PromiseRejectionEvent): void;
 }

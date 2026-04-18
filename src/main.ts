@@ -3,10 +3,11 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as commands from "@libs/commands";
 import * as files from "@libs/files";
 import * as kitty from "@libs/kitty";
-import { Plugin } from "@libs/plugins";
+import { PluginHost } from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { Exit } from "@plugins/exit";
 import { VT } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
@@ -31,7 +32,17 @@ if (args.version) {
   Deno.exit();
 }
 
-const plugins: Plugin[] = [];
+const host = new class extends PluginHost {
+  refresh(): void {
+    resize();
+    render();
+  }
+}();
+
+host.plugins.push(
+  new VT(host),
+  new Exit(host),
+);
 
 let zen = true;
 let fileModified = false;
@@ -75,23 +86,8 @@ const debug = new Debug({
 });
 
 const palette = new Palette({
-  onInvalidate: refresh,
+  onInvalidate: () => host.refresh(),
 });
-
-function exit(e?: PromiseRejectionEvent): void {
-  plugins.forEach((x) => x.stop());
-
-  if (e) {
-    console.log(e.reason);
-  }
-
-  Deno.exit(0);
-}
-
-function refresh(): void {
-  resize();
-  render();
-}
 
 function resize(): void {
   const { columns, rows } = Deno.consoleSize();
@@ -181,7 +177,7 @@ async function loadFile(fileName: string): Promise<void> {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alert.open(err);
 
-      exit();
+      host.exit();
     }
   }
 }
@@ -288,7 +284,7 @@ async function handleExit(): Promise<void> {
     }
   }
 
-  exit();
+  host.exit();
 }
 
 async function handlePalette(): Promise<void> {
@@ -317,14 +313,7 @@ async function handleSave(): Promise<void> {
   render();
 }
 
-plugins.push(
-  new VT({
-    onExit: exit,
-    onRefresh: refresh,
-  }),
-);
-
-plugins.forEach((x) => x.start());
+host.start();
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
@@ -344,9 +333,11 @@ while (true) {
 
   const key = await vt.readKey();
 
-  const cmdName = commands.ShortcutToCommand[kitty.shortcut(key)];
-  if (typeof cmdName !== "undefined") {
-    const cmd = { name: cmdName } as commands.Command;
+  const name = commands.ShortcutToCommand[kitty.shortcut(key)];
+
+  if (typeof name !== "undefined") {
+    const cmd = { name } as commands.Command;
+
     await handleCommand(cmd);
   } else {
     editor.onKey(key);
