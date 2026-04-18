@@ -1,9 +1,9 @@
-import * as document from "@lib/document";
-import * as graphemes from "@lib/graphemes";
-import * as kitty from "@lib/kitty";
-import * as themes from "@lib/themes";
-import * as vt from "@lib/vt";
-import * as widgets from "@lib/widgets";
+import * as document from "@libs/document";
+import * as graphemes from "@libs/graphemes";
+import * as kitty from "@libs/kitty";
+import * as themes from "@libs/themes";
+import * as vt from "@libs/vt";
+import * as widgets from "@libs/widgets";
 import { Bg } from "@widgets/bg";
 
 import { Content } from "./content.ts";

@@ -1,0 +1,4 @@
+{
+  "name": "@libs/graphemes",
+  "exports": "./index.ts"
+}

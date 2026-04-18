@@ -1,4 +1,0 @@
-{
-  "name": "@lib/document",
-  "exports": "./index.ts"
-}

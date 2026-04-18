@@ -1,0 +1,7 @@
+{
+  "name": "@libs/colors",
+  "exports": "./colors.json",
+  "imports": {
+    "@colordx/core": "npm:@colordx/core@^5.0.3"
+  }
+}

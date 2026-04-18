@@ -1,0 +1,4 @@
+{
+  "name": "@libs/commands",
+  "exports": "./mod.ts"
+}

@@ -1,7 +1,7 @@
-import { Command } from "@lib/commands";
-import * as themes from "@lib/themes";
-import * as vt from "@lib/vt";
-import * as widgets from "@lib/widgets";
+import { Command } from "@libs/commands";
+import * as themes from "@libs/themes";
+import * as vt from "@libs/vt";
+import * as widgets from "@libs/widgets";
 import { Bg } from "@widgets/bg";
 import { Editor } from "@widgets/editor";
 import { List } from "@widgets/list";

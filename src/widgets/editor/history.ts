@@ -1,4 +1,4 @@
-import * as document from "@lib/document";
+import * as document from "@libs/document";
 
 import { Cursor } from "./cursor.ts";
 

@@ -1,4 +1,0 @@
-{
-  "name": "@lib/vt",
-  "exports": "./index.ts"
-}
