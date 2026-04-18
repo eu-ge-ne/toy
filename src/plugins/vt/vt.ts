@@ -1,12 +1,8 @@
-import { Plugin, PluginParams } from "@libs/plugins";
+import { Plugin } from "@libs/plugins";
 import * as vt from "@libs/vt";
 
 export class VT extends Plugin {
-  constructor(params: PluginParams) {
-    super(params);
-  }
-
-  override start(): void {
+  start(): void {
     const { onExit, onRefresh } = this.params;
 
     vt.init();
@@ -20,7 +16,7 @@ export class VT extends Plugin {
     }
   }
 
-  override stop(): void {
+  stop(): void {
     vt.restore();
   }
 }
