@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/vt",
+  "exports": "./vt.ts"
+}

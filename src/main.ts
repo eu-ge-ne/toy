@@ -3,9 +3,11 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as commands from "@libs/commands";
 import * as files from "@libs/files";
 import * as kitty from "@libs/kitty";
+import { Plugin } from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { VT } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
 import { Debug } from "@widgets/debug";
@@ -28,6 +30,8 @@ if (args.version) {
   console.log(`toy ${deno.version} (deno ${Deno.version.deno})`);
   Deno.exit();
 }
+
+const plugins: Plugin[] = [];
 
 let zen = true;
 let fileModified = false;
@@ -75,10 +79,12 @@ const palette = new Palette({
 });
 
 function exit(e?: PromiseRejectionEvent): void {
-  vt.restore();
+  plugins.forEach((x) => x.stop());
+
   if (e) {
     console.log(e.reason);
   }
+
   Deno.exit(0);
 }
 
@@ -311,9 +317,14 @@ async function handleSave(): Promise<void> {
   render();
 }
 
-vt.init();
-globalThis.addEventListener("unhandledrejection", exit);
-Deno.addSignalListener("SIGWINCH", refresh);
+plugins.push(
+  new VT({
+    onExit: exit,
+    onRefresh: refresh,
+  }),
+);
+
+plugins.forEach((x) => x.start());
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
