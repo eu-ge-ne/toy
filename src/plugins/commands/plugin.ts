@@ -23,10 +23,6 @@ export class CommandsPlugin extends plugins.Plugin {
         await this.host.exit();
         return true;
 
-      case "Palette":
-        await this.host.palette();
-        return true;
-
       case "Save":
         await this.host.save();
         return true;

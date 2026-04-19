@@ -117,20 +117,6 @@ const host = new class extends plugins.Host {
     host.emitExit();
   }
 
-  async palette(): Promise<void> {
-    editorPlugin.widget.setFocused(false);
-
-    const cmd = await palettePlugin.widget.open();
-
-    editorPlugin.widget.setFocused(true);
-
-    host.render();
-
-    if (cmd) {
-      await host.emitCommand(cmd);
-    }
-  }
-
   async save(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
