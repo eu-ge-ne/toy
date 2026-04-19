@@ -8,12 +8,12 @@ import * as vt from "@libs/vt";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { ExitPlugin } from "@plugins/exit";
+import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
 import { Editor } from "@widgets/editor";
 import { Footer } from "@widgets/footer";
-import { Header } from "@widgets/header";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -40,7 +40,6 @@ const host = new class extends plugins.Host {
   async handleZen(): Promise<void> {
     zen = !zen;
 
-    header.props.disabled = zen;
     footer.props.disabled = zen;
     editor.toggleIndex();
 
@@ -90,7 +89,6 @@ const host = new class extends plugins.Host {
     ask.setTheme(theme);
     editor.setTheme(theme);
     footer.setTheme(theme);
-    header.setTheme(theme);
     palette.setTheme(theme);
     save.setTheme(theme);
   }
@@ -128,13 +126,15 @@ const host = new class extends plugins.Host {
   }
 }();
 
+const headerPlugin = new HeaderPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
-  new CommandsPlugin(host),
+  headerPlugin,
   debugPlugin,
+  new CommandsPlugin(host),
 );
 
 let zen = true;
@@ -144,12 +144,6 @@ let fileName0: string | undefined;
 const alert = new Alert();
 const ask = new Ask();
 const save = new Save();
-
-const header = new Header({
-  disabled: zen,
-  fileName: "",
-  fileModified,
-});
 
 const footer = new Footer({
   disabled: zen,
@@ -162,7 +156,7 @@ const editor = new Editor({
   multiLine: true,
   onTextChange: () => {
     fileModified = editor.textChanged;
-    header.props.fileModified = fileModified;
+    headerPlugin.widget.props.modified = fileModified;
   },
   onCursorChange: (x) => {
     footer.props.ln = x.ln;
@@ -179,7 +173,7 @@ const palette = new Palette({
 function resize(): void {
   const { columns, rows } = Deno.consoleSize();
 
-  header.resize(columns, 1, 0, 0);
+  headerPlugin.widget.resize(columns, 1, 0, 0);
   footer.resize(columns, 1, rows - 1, 0);
 
   if (zen) {
@@ -229,7 +223,6 @@ function render(): void {
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 
-  header.render();
   editor.render();
   footer.render();
   host.onRender();
@@ -248,7 +241,7 @@ async function loadFile(fileName: string): Promise<void> {
     }
 
     fileName0 = fileName;
-    header.props.fileName = fileName;
+    headerPlugin.widget.props.fileName = fileName;
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alert.open(err);
@@ -285,7 +278,7 @@ async function saveFileAs(): Promise<boolean> {
       await files.save(fileName, editor.read());
 
       fileName0 = fileName;
-      header.props.fileName = fileName;
+      headerPlugin.widget.props.fileName = fileName;
 
       return true;
     } catch (err) {

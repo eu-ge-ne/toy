@@ -18,7 +18,7 @@ export class CommandsPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         await this.host.handleZen();
-        return true;
+        return false;
 
       case "Exit":
         await this.host.handleExit();
