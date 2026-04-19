@@ -96,11 +96,11 @@ const debugPlugin = new DebugPlugin(host);
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
+  new CommandsPlugin(host),
   headerPlugin,
   footerPlugin,
   editorPlugin,
   debugPlugin,
-  new CommandsPlugin(host),
 );
 
 let zen = true;
