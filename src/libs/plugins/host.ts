@@ -14,7 +14,6 @@ export abstract class Host {
   abstract render(): void;
   abstract zen(): Promise<void>;
   abstract exit(): Promise<void>;
-  abstract palette(): Promise<void>;
   abstract save(): Promise<void>;
 
   emitStart(): void {
