@@ -7,13 +7,13 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
+import { EditorPlugin } from "@plugins/editor";
 import { ExitPlugin } from "@plugins/exit";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
-import { EditorWidget } from "@widgets/editor";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -39,14 +39,13 @@ const host = new class extends plugins.Host {
 
   async handleZen(): Promise<void> {
     zen = !zen;
-    editor.toggleIndex();
     resize();
   }
 
   async handleExit(): Promise<void> {
-    editor.setFocused(false);
+    editorPlugin.widget.setFocused(false);
 
-    if (editor.textChanged) {
+    if (editorPlugin.widget.textChanged) {
       if (await ask.open("Save changes?")) {
         await saveFile();
       }
@@ -56,11 +55,11 @@ const host = new class extends plugins.Host {
   }
 
   async handlePalette(): Promise<void> {
-    editor.setFocused(false);
+    editorPlugin.widget.setFocused(false);
 
     const cmd = await palette.open();
 
-    editor.setFocused(true);
+    editorPlugin.widget.setFocused(true);
 
     render();
 
@@ -70,13 +69,13 @@ const host = new class extends plugins.Host {
   }
 
   async handleSave(): Promise<void> {
-    editor.setFocused(false);
+    editorPlugin.widget.setFocused(false);
 
     if (await saveFile()) {
-      editor.resetChanges();
+      editorPlugin.widget.resetChanges();
     }
 
-    editor.setFocused(true);
+    editorPlugin.widget.setFocused(true);
 
     render();
   }
@@ -84,46 +83,46 @@ const host = new class extends plugins.Host {
   async handleTheme(theme: themes.Theme): Promise<void> {
     alert.setTheme(theme);
     ask.setTheme(theme);
-    editor.setTheme(theme);
     palette.setTheme(theme);
     save.setTheme(theme);
   }
 
   async handleWhitespace(): Promise<void> {
-    editor.toggleWhitespace();
+    editorPlugin.widget.toggleWhitespace();
   }
 
   async handleWrap(): Promise<void> {
-    editor.toggleWrapped();
+    editorPlugin.widget.toggleWrapped();
   }
 
   async handleCopy(): Promise<void> {
-    editor.copy();
+    editorPlugin.widget.copy();
   }
 
   async handleCut(): Promise<void> {
-    editor.cut();
+    editorPlugin.widget.cut();
   }
 
   async handlePaste(): Promise<void> {
-    editor.paste();
+    editorPlugin.widget.paste();
   }
 
   async handleUndo(): Promise<void> {
-    editor.undo();
+    editorPlugin.widget.undo();
   }
 
   async handleRedo(): Promise<void> {
-    editor.redo();
+    editorPlugin.widget.redo();
   }
 
   async handleSelectAll(): Promise<void> {
-    editor.selectAll();
+    editorPlugin.widget.selectAll();
   }
 }();
 
 const headerPlugin = new HeaderPlugin(host);
 const footerPlugin = new FooterPlugin(host);
+const editorPlugin = new EditorPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 
 host.register(
@@ -131,6 +130,7 @@ host.register(
   new ExitPlugin(host),
   headerPlugin,
   footerPlugin,
+  editorPlugin,
   debugPlugin,
   new CommandsPlugin(host),
 );
@@ -143,19 +143,19 @@ const alert = new Alert();
 const ask = new Ask();
 const save = new Save();
 
-const editor = new EditorWidget({
-  multiLine: true,
-  onTextChange: () => {
-    fileModified = editor.textChanged;
-    headerPlugin.widget.props.modified = fileModified;
-  },
-  onCursorChange: (x) => {
-    footerPlugin.widget.props.ln = x.ln;
-    footerPlugin.widget.props.col = x.col;
-    footerPlugin.widget.props.lnCount = x.lnCount;
-  },
-  onKeyHandle: (x) => debugPlugin.widget.props.inputTime = x,
-});
+editorPlugin.widget.props.onTextChange = () => {
+  fileModified = editorPlugin.widget.textChanged;
+  headerPlugin.widget.props.modified = fileModified;
+};
+
+editorPlugin.widget.props.onCursorChange = (x) => {
+  footerPlugin.widget.props.ln = x.ln;
+  footerPlugin.widget.props.col = x.col;
+  footerPlugin.widget.props.lnCount = x.lnCount;
+};
+
+editorPlugin.widget.props.onKeyHandle = (x) =>
+  debugPlugin.widget.props.inputTime = x;
 
 const palette = new Palette({
   onInvalidate: () => host.handleRefresh(),
@@ -168,10 +168,12 @@ function resize(): void {
   footerPlugin.widget.resize(columns, 1, rows - 1, 0);
 
   if (zen) {
-    editor.resize(columns, rows, 0, 0);
+    editorPlugin.widget.resize(columns, rows, 0, 0);
   } else {
-    editor.resize(columns, rows - 2, 1, 0);
+    editorPlugin.widget.resize(columns, rows - 2, 1, 0);
   }
+
+  const editor = editorPlugin.widget;
 
   {
     const w = std.clamp(30, 0, editor.width);
@@ -214,7 +216,6 @@ function render(): void {
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 
-  editor.render();
   host.onRender();
 
   vt.buf.write(vt.cursor.show);
@@ -227,7 +228,7 @@ function render(): void {
 async function loadFile(fileName: string): Promise<void> {
   try {
     for await (const text of files.load(fileName)) {
-      editor.append(text);
+      editorPlugin.widget.append(text);
     }
 
     fileName0 = fileName;
@@ -247,7 +248,7 @@ async function saveFile(): Promise<boolean> {
   }
 
   try {
-    await files.save(fileName0, editor.read());
+    await files.save(fileName0, editorPlugin.widget.read());
 
     return true;
   } catch (err) {
@@ -265,7 +266,7 @@ async function saveFileAs(): Promise<boolean> {
     }
 
     try {
-      await files.save(fileName, editor.read());
+      await files.save(fileName, editorPlugin.widget.read());
 
       fileName0 = fileName;
       headerPlugin.widget.props.fileName = fileName;
@@ -284,9 +285,9 @@ if (fileNameArg) {
   await loadFile(fileNameArg);
 }
 
-editor.setFocused(true);
-editor.resetChanges();
-editor.resetCursor();
+editorPlugin.widget.setFocused(true);
+editorPlugin.widget.resetChanges();
+editorPlugin.widget.resetCursor();
 
 await host.handleTheme(themes.Themes.Default);
 await host.onCommand({ name: "Theme", data: "Default" });
@@ -299,6 +300,6 @@ while (true) {
   const key = await vt.readKey();
 
   if (!await host.onKey(key)) {
-    editor.onKey(key);
+    editorPlugin.widget.onKey(key);
   }
 }
