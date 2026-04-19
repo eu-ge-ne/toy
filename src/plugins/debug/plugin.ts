@@ -11,11 +11,11 @@ export class DebugPlugin extends plugins.Plugin {
     inputTime: 0,
   });
 
-  override render(): void {
+  override onRender(): void {
     this.widget.render();
   }
 
-  override async handleCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Debug":
         this.widget.props.disabled = !this.widget.props.disabled;

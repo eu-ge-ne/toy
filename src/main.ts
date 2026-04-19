@@ -56,7 +56,7 @@ const host = new class extends plugins.Host {
       }
     }
 
-    host.exit();
+    host.onExit();
   }
 
   async handlePalette(): Promise<void> {
@@ -69,7 +69,7 @@ const host = new class extends plugins.Host {
     render();
 
     if (cmd) {
-      await host.handleCommand(cmd);
+      await host.onCommand(cmd);
     }
   }
 
@@ -232,7 +232,7 @@ function render(): void {
   header.render();
   editor.render();
   footer.render();
-  host.render();
+  host.onRender();
 
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
@@ -253,7 +253,7 @@ async function loadFile(fileName: string): Promise<void> {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alert.open(err);
 
-      host.exit();
+      host.onExit();
     }
   }
 }
@@ -294,7 +294,7 @@ async function saveFileAs(): Promise<boolean> {
   }
 }
 
-host.start();
+host.onStart();
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
@@ -306,7 +306,7 @@ editor.resetChanges();
 editor.resetCursor();
 
 await host.handleTheme(themes.Themes.Default);
-await host.handleCommand({ name: "Theme", data: "Default" });
+await host.onCommand({ name: "Theme", data: "Default" });
 
 resize();
 
@@ -315,7 +315,7 @@ while (true) {
 
   const key = await vt.readKey();
 
-  if (!await host.handleKey(key)) {
+  if (!await host.onKey(key)) {
     editor.onKey(key);
   }
 }

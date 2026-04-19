@@ -7,20 +7,20 @@ export abstract class Plugin {
   constructor(protected readonly host: Host) {
   }
 
-  start(): void {
+  onStart(): void {
   }
 
-  render(): void {
+  onRender(): void {
   }
 
-  exit(_?: PromiseRejectionEvent): void {
+  onExit(_?: PromiseRejectionEvent): void {
   }
 
-  async handleKey(_: kitty.Key): Promise<boolean> {
+  async onKey(_: kitty.Key): Promise<boolean> {
     return false;
   }
 
-  async handleCommand(_: commands.Command): Promise<boolean> {
+  async onCommand(_: commands.Command): Promise<boolean> {
     return false;
   }
 }

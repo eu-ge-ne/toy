@@ -1,11 +1,14 @@
 import * as plugins from "@libs/plugins";
 
 export class ExitPlugin extends plugins.Plugin {
-  override start(): void {
-    globalThis.addEventListener("unhandledrejection", (e) => this.host.exit(e));
+  override onStart(): void {
+    globalThis.addEventListener(
+      "unhandledrejection",
+      (e) => this.host.onExit(e),
+    );
   }
 
-  override exit(e?: PromiseRejectionEvent): void {
+  override onExit(e?: PromiseRejectionEvent): void {
     if (e) {
       console.log(e.reason);
     }

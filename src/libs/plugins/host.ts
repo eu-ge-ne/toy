@@ -26,21 +26,21 @@ export abstract class Host {
   abstract handleRedo(): Promise<void>;
   abstract handleSelectAll(): Promise<void>;
 
-  start(): void {
-    this.plugins.forEach((x) => x.start());
+  onStart(): void {
+    this.plugins.forEach((x) => x.onStart());
   }
 
-  render(): void {
-    this.plugins.forEach((x) => x.render());
+  onRender(): void {
+    this.plugins.forEach((x) => x.onRender());
   }
 
-  exit(e?: PromiseRejectionEvent): void {
-    this.plugins.forEach((x) => x.exit(e));
+  onExit(e?: PromiseRejectionEvent): void {
+    this.plugins.forEach((x) => x.onExit(e));
   }
 
-  async handleKey(key: kitty.Key): Promise<boolean> {
+  async onKey(key: kitty.Key): Promise<boolean> {
     for (const plugin of this.plugins) {
-      if (await plugin.handleKey(key)) {
+      if (await plugin.onKey(key)) {
         return true;
       }
     }
@@ -48,9 +48,9 @@ export abstract class Host {
     return false;
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
+  async onCommand(cmd: commands.Command): Promise<boolean> {
     for (const plugin of this.plugins) {
-      if (await plugin.handleCommand(cmd)) {
+      if (await plugin.onCommand(cmd)) {
         return true;
       }
     }
