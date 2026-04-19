@@ -1,12 +1,12 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as commands from "@libs/commands";
 import * as files from "@libs/files";
-import * as kitty from "@libs/kitty";
-import { Plugin } from "@libs/plugins";
+import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { Commands } from "@plugins/commands";
+import { Exit } from "@plugins/exit";
 import { VT } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
@@ -30,8 +30,6 @@ if (args.version) {
   console.log(`toy ${deno.version} (deno ${Deno.version.deno})`);
   Deno.exit();
 }
-
-const plugins: Plugin[] = [];
 
 let zen = true;
 let fileModified = false;
@@ -75,23 +73,8 @@ const debug = new Debug({
 });
 
 const palette = new Palette({
-  onInvalidate: refresh,
+  onInvalidate: () => host.handleRefresh(),
 });
-
-function exit(e?: PromiseRejectionEvent): void {
-  plugins.forEach((x) => x.stop());
-
-  if (e) {
-    console.log(e.reason);
-  }
-
-  Deno.exit(0);
-}
-
-function refresh(): void {
-  resize();
-  render();
-}
 
 function resize(): void {
   const { columns, rows } = Deno.consoleSize();
@@ -158,17 +141,6 @@ function render(): void {
   debug.props.renderTime = performance.now() - t0;
 }
 
-function setTheme(theme: themes.Theme): void {
-  alert.setTheme(theme);
-  ask.setTheme(theme);
-  debug.setTheme(theme);
-  editor.setTheme(theme);
-  footer.setTheme(theme);
-  header.setTheme(theme);
-  palette.setTheme(theme);
-  save.setTheme(theme);
-}
-
 async function loadFile(fileName: string): Promise<void> {
   try {
     for await (const text of files.load(fileName)) {
@@ -181,7 +153,7 @@ async function loadFile(fileName: string): Promise<void> {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alert.open(err);
 
-      exit();
+      host.exit();
     }
   }
 }
@@ -222,109 +194,115 @@ async function saveFileAs(): Promise<boolean> {
   }
 }
 
-async function handleCommand(cmd: commands.Command): Promise<void> {
-  switch (cmd.name) {
-    case "Zen":
-      handleZen();
-      break;
-    case "Exit":
-      await handleExit();
-      break;
-    case "Palette":
-      await handlePalette();
-      break;
-    case "Save":
-      await handleSave();
-      break;
-    case "Theme":
-      setTheme(themes.Themes[cmd.data]);
-      break;
-    case "Debug":
-      debug.props.disabled = !debug.props.disabled;
-      break;
-    case "Whitespace":
-      editor.toggleWhitespace();
-      break;
-    case "Wrap":
-      editor.toggleWrapped();
-      break;
-    case "Copy":
-      editor.copy();
-      break;
-    case "Cut":
-      editor.cut();
-      break;
-    case "Paste":
-      editor.paste();
-      break;
-    case "Undo":
-      editor.undo();
-      break;
-    case "Redo":
-      editor.redo();
-      break;
-    case "SelectAll":
-      editor.selectAll();
-      break;
+const host = new class extends plugins.Host {
+  handleRefresh(): void {
+    resize();
+    render();
   }
-}
 
-function handleZen(): void {
-  zen = !zen;
+  async handleZen(): Promise<void> {
+    zen = !zen;
 
-  header.props.disabled = zen;
-  footer.props.disabled = zen;
-  editor.toggleIndex();
+    header.props.disabled = zen;
+    footer.props.disabled = zen;
+    editor.toggleIndex();
 
-  resize();
-}
+    resize();
+  }
 
-async function handleExit(): Promise<void> {
-  editor.setFocused(false);
+  async handleExit(): Promise<void> {
+    editor.setFocused(false);
 
-  if (editor.textChanged) {
-    if (await ask.open("Save changes?")) {
-      await saveFile();
+    if (editor.textChanged) {
+      if (await ask.open("Save changes?")) {
+        await saveFile();
+      }
+    }
+
+    host.exit();
+  }
+
+  async handlePalette(): Promise<void> {
+    editor.setFocused(false);
+
+    const cmd = await palette.open();
+
+    editor.setFocused(true);
+
+    render();
+
+    if (cmd) {
+      await host.handleCommand(cmd);
     }
   }
 
-  exit();
-}
+  async handleSave(): Promise<void> {
+    editor.setFocused(false);
 
-async function handlePalette(): Promise<void> {
-  editor.setFocused(false);
+    if (await saveFile()) {
+      editor.resetChanges();
+    }
 
-  const cmd = await palette.open();
+    editor.setFocused(true);
 
-  editor.setFocused(true);
-
-  render();
-
-  if (cmd) {
-    await handleCommand(cmd);
-  }
-}
-
-async function handleSave(): Promise<void> {
-  editor.setFocused(false);
-
-  if (await saveFile()) {
-    editor.resetChanges();
+    render();
   }
 
-  editor.setFocused(true);
+  async handleTheme(theme: themes.Theme): Promise<void> {
+    alert.setTheme(theme);
+    ask.setTheme(theme);
+    debug.setTheme(theme);
+    editor.setTheme(theme);
+    footer.setTheme(theme);
+    header.setTheme(theme);
+    palette.setTheme(theme);
+    save.setTheme(theme);
+  }
 
-  render();
-}
+  async handleDebug(): Promise<void> {
+    debug.props.disabled = !debug.props.disabled;
+  }
 
-plugins.push(
-  new VT({
-    onExit: exit,
-    onRefresh: refresh,
-  }),
+  async handleWhitespace(): Promise<void> {
+    editor.toggleWhitespace();
+  }
+
+  async handleWrap(): Promise<void> {
+    editor.toggleWrapped();
+  }
+
+  async handleCopy(): Promise<void> {
+    editor.copy();
+  }
+
+  async handleCut(): Promise<void> {
+    editor.cut();
+  }
+
+  async handlePaste(): Promise<void> {
+    editor.paste();
+  }
+
+  async handleUndo(): Promise<void> {
+    editor.undo();
+  }
+
+  async handleRedo(): Promise<void> {
+    editor.redo();
+  }
+
+  async handleSelectAll(): Promise<void> {
+    editor.selectAll();
+  }
+}();
+
+host.register(
+  new VT(host),
+  new Exit(host),
+  new Commands(host),
 );
 
-plugins.forEach((x) => x.start());
+host.start();
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
@@ -335,7 +313,7 @@ editor.setFocused(true);
 editor.resetChanges();
 editor.resetCursor();
 
-setTheme(themes.Themes.Default);
+await host.handleTheme(themes.Themes.Default);
 
 resize();
 
@@ -344,11 +322,7 @@ while (true) {
 
   const key = await vt.readKey();
 
-  const cmdName = commands.ShortcutToCommand[kitty.shortcut(key)];
-  if (typeof cmdName !== "undefined") {
-    const cmd = { name: cmdName } as commands.Command;
-    await handleCommand(cmd);
-  } else {
+  if (!await host.handleKey(key)) {
     editor.onKey(key);
   }
 }

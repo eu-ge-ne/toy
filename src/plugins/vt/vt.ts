@@ -1,22 +1,14 @@
-import { Plugin } from "@libs/plugins";
+import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-export class VT extends Plugin {
-  start(): void {
-    const { onExit, onRefresh } = this.props;
-
+export class VT extends plugins.Plugin {
+  override start(): void {
     vt.init();
 
-    if (onExit) {
-      globalThis.addEventListener("unhandledrejection", onExit);
-    }
-
-    if (onRefresh) {
-      Deno.addSignalListener("SIGWINCH", onRefresh);
-    }
+    Deno.addSignalListener("SIGWINCH", () => this.host.handleRefresh());
   }
 
-  stop(): void {
+  override exit(): void {
     vt.restore();
   }
 }
