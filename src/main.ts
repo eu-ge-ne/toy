@@ -13,8 +13,8 @@ import { EditorPlugin } from "@plugins/editor";
 import { ExitPlugin } from "@plugins/exit";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
+import { PalettePlugin } from "@plugins/palette";
 import { VTPlugin } from "@plugins/vt";
-import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
 import deno from "../deno.json" with { type: "json" };
@@ -54,7 +54,12 @@ const host = new class extends plugins.Host {
       debugPlugin.widget.resize(w, h, y, x);
     }
 
-    palette.resize(editor.width, editor.height, editor.y, editor.x);
+    palettePlugin.widget.resize(
+      editor.width,
+      editor.height,
+      editor.y,
+      editor.x,
+    );
 
     {
       const w = std.clamp(60, 0, editor.width);
@@ -116,7 +121,7 @@ const host = new class extends plugins.Host {
   async palette(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
-    const cmd = await palette.open();
+    const cmd = await palettePlugin.widget.open();
 
     editorPlugin.widget.setFocused(true);
 
@@ -140,7 +145,6 @@ const host = new class extends plugins.Host {
   }
 
   async theme(theme: themes.Theme): Promise<void> {
-    palette.setTheme(theme);
     save.setTheme(theme);
   }
 }();
@@ -151,6 +155,7 @@ const editorPlugin = new EditorPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
 const alertPlugin = new AlertPlugin(host);
+const palettePlugin = new PalettePlugin(host);
 
 host.register(
   new VTPlugin(host),
@@ -162,6 +167,7 @@ host.register(
   debugPlugin,
   askPlugin,
   alertPlugin,
+  palettePlugin,
 );
 
 let zen = true;
@@ -184,12 +190,10 @@ editorPlugin.widget.props.onCursorChange = (x) => {
 editorPlugin.widget.props.onKeyHandle = (x) =>
   debugPlugin.widget.props.inputTime = x;
 
-const palette = new Palette({
-  onInvalidate: () => {
-    host.resize();
-    host.render();
-  },
-});
+palettePlugin.widget.props.onInvalidate = () => {
+  host.resize();
+  host.render();
+};
 
 async function loadFile(fileName: string): Promise<void> {
   try {
