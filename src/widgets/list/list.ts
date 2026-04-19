@@ -3,24 +3,24 @@ import * as widgets from "@libs/widgets";
 
 const encoder = new TextEncoder();
 
-interface ListItem<T> {
+interface ListWidgetItem<T> {
   value: T;
   string(width: number): string;
 }
 
-interface ListParams {
+interface ListWidgetProps {
   readonly emptyText: string;
 }
 
-export class List<T> extends widgets.Frame {
+export class ListWidget<T> extends widgets.Frame {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
-  values: ListItem<T>[] = [];
+  values: ListWidgetItem<T>[] = [];
   selectedIndex = 0;
 
   #scrollIndex = 0;
 
-  constructor(private readonly params: ListParams) {
+  constructor(private readonly props: ListWidgetProps) {
     super();
   }
 
@@ -36,7 +36,7 @@ export class List<T> extends widgets.Frame {
   #renderEmpty(): void {
     vt.buf.write(this.color);
     vt.cursor.set(vt.buf, this.y, this.x);
-    vt.buf.write(encoder.encode(this.params.emptyText.slice(0, this.width)));
+    vt.buf.write(encoder.encode(this.props.emptyText.slice(0, this.width)));
   }
 
   #scroll(): void {

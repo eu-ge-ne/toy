@@ -1,26 +1,26 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { Bg } from "@widgets/bg";
+import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
-import { Text } from "@widgets/text";
+import { TextWidget } from "@widgets/text";
 
 export class SaveWidget extends widgets.Modal<[string], string> {
   protected override children: {
-    bg: Bg;
-    header: Text;
+    bg: BgWidget;
+    header: TextWidget;
     editor: EditorWidget;
-    footer: Text;
+    footer: TextWidget;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new Bg(),
-      header: new Text({ align: "center" }),
+      bg: new BgWidget(),
+      header: new TextWidget({ align: "center" }),
       editor: new EditorWidget({ multiLine: false }),
-      footer: new Text({ align: "center" }),
+      footer: new TextWidget({ align: "center" }),
     };
 
     this.children.header.value = "Save As";

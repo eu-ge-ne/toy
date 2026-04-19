@@ -2,9 +2,9 @@ import { Command } from "@libs/commands";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { Bg } from "@widgets/bg";
+import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
-import { List } from "@widgets/list";
+import { ListWidget } from "@widgets/list";
 
 import { options } from "./options.ts";
 
@@ -16,18 +16,18 @@ interface PaletteWidgetProps {
 
 export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
   protected override children: {
-    bg: Bg;
+    bg: BgWidget;
     editor: EditorWidget;
-    list: List<Command>;
+    list: ListWidget<Command>;
   };
 
   constructor(readonly props: PaletteWidgetProps) {
     super();
 
     this.children = {
-      bg: new Bg(),
+      bg: new BgWidget(),
       editor: new EditorWidget({ multiLine: false }),
-      list: new List<Command>({ emptyText: "No matching commands" }),
+      list: new ListWidget<Command>({ emptyText: "No matching commands" }),
     };
 
     this.children.list.values = options;

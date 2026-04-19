@@ -1,7 +1,7 @@
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 
-export class Bg extends widgets.Frame {
+export class BgWidget extends widgets.Frame {
   color = new Uint8Array();
 
   render(): void {
