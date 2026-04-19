@@ -253,10 +253,6 @@ if (fileNameArg) {
   await loadFile(fileNameArg);
 }
 
-editorPlugin.widget.setFocused(true);
-editorPlugin.widget.resetChanges();
-editorPlugin.widget.resetCursor();
-
 await host.handleTheme(themes.Themes.Default);
 await host.onCommand({ name: "Theme", data: "Default" });
 

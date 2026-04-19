@@ -8,6 +8,12 @@ export class EditorPlugin extends plugins.Plugin {
     multiLine: true,
   });
 
+  override onStart(): void {
+    this.widget.setFocused(true);
+    this.widget.resetChanges();
+    this.widget.resetCursor();
+  }
+
   override onRender(): void {
     this.widget.render();
   }
