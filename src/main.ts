@@ -32,17 +32,76 @@ if (args.version) {
 }
 
 const host = new class extends plugins.Host {
-  handleRefresh(): void {
-    resize();
-    render();
+  resize(): void {
+    const { columns, rows } = Deno.consoleSize();
+
+    headerPlugin.widget.resize(columns, 1, 0, 0);
+    footerPlugin.widget.resize(columns, 1, rows - 1, 0);
+
+    if (zen) {
+      editorPlugin.widget.resize(columns, rows, 0, 0);
+    } else {
+      editorPlugin.widget.resize(columns, rows - 2, 1, 0);
+    }
+
+    const editor = editorPlugin.widget;
+
+    {
+      const w = std.clamp(30, 0, editor.width);
+      const h = std.clamp(7, 0, editor.height);
+      const y = editor.y + editor.height - h;
+      const x = editor.x + editor.width - w;
+      debugPlugin.widget.resize(w, h, y, x);
+    }
+
+    palette.resize(editor.width, editor.height, editor.y, editor.x);
+
+    {
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(10, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      alert.resize(w, h, y, x);
+    }
+
+    {
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(7, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      ask.resize(w, h, y, x);
+    }
+
+    {
+      const w = std.clamp(60, 0, editor.width);
+      const h = std.clamp(10, 0, editor.height);
+      const y = editor.y + Math.trunc((editor.height - h) / 2);
+      const x = editor.x + Math.trunc((editor.width - w) / 2);
+      save.resize(w, h, y, x);
+    }
   }
 
-  async handleZen(): Promise<void> {
+  render(): void {
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    host.emitRender();
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    debugPlugin.widget.props.renderTime = performance.now() - t0;
+  }
+
+  async zen(): Promise<void> {
     zen = !zen;
-    resize();
+    host.resize();
   }
 
-  async handleExit(): Promise<void> {
+  async exit(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
     if (editorPlugin.widget.textChanged) {
@@ -51,24 +110,24 @@ const host = new class extends plugins.Host {
       }
     }
 
-    host.onExit();
+    host.emitExit();
   }
 
-  async handlePalette(): Promise<void> {
+  async palette(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
     const cmd = await palette.open();
 
     editorPlugin.widget.setFocused(true);
 
-    render();
+    host.render();
 
     if (cmd) {
-      await host.onCommand(cmd);
+      await host.emitCommand(cmd);
     }
   }
 
-  async handleSave(): Promise<void> {
+  async save(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
     if (await saveFile()) {
@@ -77,10 +136,10 @@ const host = new class extends plugins.Host {
 
     editorPlugin.widget.setFocused(true);
 
-    render();
+    host.render();
   }
 
-  async handleTheme(theme: themes.Theme): Promise<void> {
+  async theme(theme: themes.Theme): Promise<void> {
     alert.setTheme(theme);
     ask.setTheme(theme);
     palette.setTheme(theme);
@@ -126,72 +185,11 @@ editorPlugin.widget.props.onKeyHandle = (x) =>
   debugPlugin.widget.props.inputTime = x;
 
 const palette = new Palette({
-  onInvalidate: () => host.handleRefresh(),
+  onInvalidate: () => {
+    host.resize();
+    host.render();
+  },
 });
-
-function resize(): void {
-  const { columns, rows } = Deno.consoleSize();
-
-  headerPlugin.widget.resize(columns, 1, 0, 0);
-  footerPlugin.widget.resize(columns, 1, rows - 1, 0);
-
-  if (zen) {
-    editorPlugin.widget.resize(columns, rows, 0, 0);
-  } else {
-    editorPlugin.widget.resize(columns, rows - 2, 1, 0);
-  }
-
-  const editor = editorPlugin.widget;
-
-  {
-    const w = std.clamp(30, 0, editor.width);
-    const h = std.clamp(7, 0, editor.height);
-    const y = editor.y + editor.height - h;
-    const x = editor.x + editor.width - w;
-    debugPlugin.widget.resize(w, h, y, x);
-  }
-
-  palette.resize(editor.width, editor.height, editor.y, editor.x);
-
-  {
-    const w = std.clamp(60, 0, editor.width);
-    const h = std.clamp(10, 0, editor.height);
-    const y = editor.y + Math.trunc((editor.height - h) / 2);
-    const x = editor.x + Math.trunc((editor.width - w) / 2);
-    alert.resize(w, h, y, x);
-  }
-
-  {
-    const w = std.clamp(60, 0, editor.width);
-    const h = std.clamp(7, 0, editor.height);
-    const y = editor.y + Math.trunc((editor.height - h) / 2);
-    const x = editor.x + Math.trunc((editor.width - w) / 2);
-    ask.resize(w, h, y, x);
-  }
-
-  {
-    const w = std.clamp(60, 0, editor.width);
-    const h = std.clamp(10, 0, editor.height);
-    const y = editor.y + Math.trunc((editor.height - h) / 2);
-    const x = editor.x + Math.trunc((editor.width - w) / 2);
-    save.resize(w, h, y, x);
-  }
-}
-
-function render(): void {
-  const t0 = performance.now();
-
-  vt.sync.bsu();
-  vt.buf.write(vt.cursor.hide);
-
-  host.onRender();
-
-  vt.buf.write(vt.cursor.show);
-  vt.buf.flush();
-  vt.sync.esu();
-
-  debugPlugin.widget.props.renderTime = performance.now() - t0;
-}
 
 async function loadFile(fileName: string): Promise<void> {
   try {
@@ -205,7 +203,7 @@ async function loadFile(fileName: string): Promise<void> {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alert.open(err);
 
-      host.onExit();
+      host.emitExit();
     }
   }
 }
@@ -246,22 +244,22 @@ async function saveFileAs(): Promise<boolean> {
   }
 }
 
-host.onStart();
+host.emitStart();
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
   await loadFile(fileNameArg);
 }
 
-await host.handleTheme(themes.Themes.Default);
-await host.onCommand({ name: "Theme", data: "Default" });
+await host.theme(themes.Themes.Default);
+await host.emitCommand({ name: "Theme", data: "Default" });
 
-resize();
+host.resize();
 
 while (true) {
-  render();
+  host.render();
 
   const key = await vt.readKey();
 
-  await host.onKey(key);
+  await host.emitKey(key);
 }

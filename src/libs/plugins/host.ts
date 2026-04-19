@@ -11,40 +11,39 @@ export abstract class Host {
     this.plugins.push(...plugins);
   }
 
-  abstract handleRefresh(): void;
-  abstract handleZen(): Promise<void>;
-  abstract handleExit(): Promise<void>;
-  abstract handlePalette(): Promise<void>;
-  abstract handleSave(): Promise<void>;
-  abstract handleTheme(_: themes.Theme): Promise<void>;
+  abstract resize(): void;
+  abstract render(): void;
+  abstract zen(): Promise<void>;
+  abstract exit(): Promise<void>;
+  abstract palette(): Promise<void>;
+  abstract save(): Promise<void>;
+  abstract theme(_: themes.Theme): Promise<void>;
 
-  onStart(): void {
+  emitStart(): void {
     this.plugins.forEach((x) => x.onStart());
   }
 
-  onExit(e?: PromiseRejectionEvent): void {
+  emitExit(e?: PromiseRejectionEvent): void {
     this.plugins.forEach((x) => x.onExit(e));
   }
 
-  onRender(): void {
+  emitRender(): void {
     this.plugins.forEach((x) => x.onRender());
   }
 
-  async onKey(key: kitty.Key): Promise<boolean> {
+  async emitKey(key: kitty.Key): Promise<void> {
     for (const plugin of this.plugins) {
       if (await plugin.onKey(key)) {
-        return true;
+        return;
       }
     }
-    return false;
   }
 
-  async onCommand(cmd: commands.Command): Promise<boolean> {
+  async emitCommand(cmd: commands.Command): Promise<void> {
     for (const plugin of this.plugins) {
       if (await plugin.onCommand(cmd)) {
-        return true;
+        return;
       }
     }
-    return false;
   }
 }

@@ -5,7 +5,10 @@ export class VTPlugin extends plugins.Plugin {
   override onStart(): void {
     vt.init();
 
-    Deno.addSignalListener("SIGWINCH", () => this.host.handleRefresh());
+    Deno.addSignalListener("SIGWINCH", () => {
+      this.host.resize();
+      this.host.render();
+    });
   }
 
   override onExit(): void {

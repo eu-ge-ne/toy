@@ -5,21 +5,26 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export class FooterPlugin extends plugins.Plugin {
+  #disabled = true;
+
   readonly widget = new FooterWidget({
-    disabled: false,
     ln: 0,
     col: 0,
     lnCount: 0,
   });
 
   override onRender(): void {
+    if (this.#disabled) {
+      return;
+    }
     this.widget.render();
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
-        this.widget.props.disabled = !this.widget.props.disabled;
+        this.#disabled = !this.#disabled;
+        this.host.resize();
         return false;
 
       case "Theme":

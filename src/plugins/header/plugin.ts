@@ -5,20 +5,25 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export class HeaderPlugin extends plugins.Plugin {
+  #disabled = true;
+
   readonly widget = new HeaderWidget({
-    disabled: true,
     fileName: "",
     modified: false,
   });
 
   override onRender(): void {
+    if (this.#disabled) {
+      return;
+    }
     this.widget.render();
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
-        this.widget.props.disabled = !this.widget.props.disabled;
+        this.#disabled = !this.#disabled;
+        this.host.resize();
         return false;
 
       case "Theme":
