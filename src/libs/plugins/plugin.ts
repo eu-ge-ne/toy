@@ -10,6 +10,9 @@ export abstract class Plugin {
   start(): void {
   }
 
+  render(): void {
+  }
+
   exit(_?: PromiseRejectionEvent): void {
   }
 

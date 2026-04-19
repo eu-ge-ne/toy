@@ -1,7 +1,7 @@
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-export class VT extends plugins.Plugin {
+export class VTPlugin extends plugins.Plugin {
   override start(): void {
     vt.init();
 

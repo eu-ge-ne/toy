@@ -1,6 +1,6 @@
 import * as plugins from "@libs/plugins";
 
-export class Exit extends plugins.Plugin {
+export class ExitPlugin extends plugins.Plugin {
   override start(): void {
     globalThis.addEventListener("unhandledrejection", (e) => this.host.exit(e));
   }
