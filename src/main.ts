@@ -139,7 +139,7 @@ host.register(
 
 let zen = true;
 let fileModified = false;
-let fileName9: string | undefined;
+let fileName0: string | undefined;
 
 const alert = new Alert();
 const ask = new Ask();
@@ -247,7 +247,7 @@ async function loadFile(fileName: string): Promise<void> {
       editor.append(text);
     }
 
-    fileName9 = fileName;
+    fileName0 = fileName;
     header.props.fileName = fileName;
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
@@ -259,12 +259,12 @@ async function loadFile(fileName: string): Promise<void> {
 }
 
 async function saveFile(): Promise<boolean> {
-  if (!fileName9) {
+  if (!fileName0) {
     return await saveFileAs();
   }
 
   try {
-    await files.save(fileName9, editor.read());
+    await files.save(fileName0, editor.read());
 
     return true;
   } catch (err) {
@@ -276,7 +276,7 @@ async function saveFile(): Promise<boolean> {
 
 async function saveFileAs(): Promise<boolean> {
   while (true) {
-    const fileName = await save.open(fileName9 ?? "");
+    const fileName = await save.open(fileName0 ?? "");
     if (!fileName) {
       return false;
     }
@@ -284,7 +284,7 @@ async function saveFileAs(): Promise<boolean> {
     try {
       await files.save(fileName, editor.read());
 
-      fileName9 = fileName;
+      fileName0 = fileName;
       header.props.fileName = fileName;
 
       return true;
