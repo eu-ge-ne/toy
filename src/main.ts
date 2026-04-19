@@ -5,10 +5,10 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
-import { Commands } from "@plugins/commands";
+import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
-import { Exit } from "@plugins/exit";
-import { VT } from "@plugins/vt";
+import { ExitPlugin } from "@plugins/exit";
+import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
 import { Editor } from "@widgets/editor";
@@ -131,9 +131,9 @@ const host = new class extends plugins.Host {
 const debugPlugin = new DebugPlugin(host);
 
 host.register(
-  new VT(host),
-  new Exit(host),
-  new Commands(host),
+  new VTPlugin(host),
+  new ExitPlugin(host),
+  new CommandsPlugin(host),
   debugPlugin,
 );
 

@@ -3,7 +3,7 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-export class Commands extends plugins.Plugin {
+export class CommandsPlugin extends plugins.Plugin {
   override async handleKey(key: kitty.Key): Promise<boolean> {
     const name = commands.ShortcutToCommand[kitty.shortcut(key)];
     if (!name) {
