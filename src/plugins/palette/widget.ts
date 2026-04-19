@@ -10,18 +10,18 @@ import { options } from "./options.ts";
 
 const maxListSize = 10;
 
-interface PaletteProps {
-  onInvalidate: () => void;
+interface PaletteWidgetProps {
+  onInvalidate?: () => void;
 }
 
-export class Palette extends widgets.Modal<[], Command | undefined> {
+export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
   protected override children: {
     bg: Bg;
     editor: EditorWidget;
     list: List<Command>;
   };
 
-  constructor(private readonly props: PaletteProps) {
+  constructor(readonly props: PaletteWidgetProps) {
     super();
 
     this.children = {
@@ -62,7 +62,7 @@ export class Palette extends widgets.Modal<[], Command | undefined> {
     editor.resetCursor();
 
     while (true) {
-      this.props.onInvalidate();
+      this.props.onInvalidate?.();
       this.render();
 
       const key = await vt.readKey();
