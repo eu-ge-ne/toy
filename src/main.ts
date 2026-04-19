@@ -31,114 +31,6 @@ if (args.version) {
   Deno.exit();
 }
 
-const host = new class extends plugins.Host {
-  handleRefresh(): void {
-    resize();
-    render();
-  }
-
-  async handleZen(): Promise<void> {
-    zen = !zen;
-
-    header.props.disabled = zen;
-    footer.props.disabled = zen;
-    editor.toggleIndex();
-
-    resize();
-  }
-
-  async handleExit(): Promise<void> {
-    editor.setFocused(false);
-
-    if (editor.textChanged) {
-      if (await ask.open("Save changes?")) {
-        await saveFile();
-      }
-    }
-
-    host.exit();
-  }
-
-  async handlePalette(): Promise<void> {
-    editor.setFocused(false);
-
-    const cmd = await palette.open();
-
-    editor.setFocused(true);
-
-    render();
-
-    if (cmd) {
-      await host.handleCommand(cmd);
-    }
-  }
-
-  async handleSave(): Promise<void> {
-    editor.setFocused(false);
-
-    if (await saveFile()) {
-      editor.resetChanges();
-    }
-
-    editor.setFocused(true);
-
-    render();
-  }
-
-  async handleTheme(theme: themes.Theme): Promise<void> {
-    alert.setTheme(theme);
-    ask.setTheme(theme);
-    debug.setTheme(theme);
-    editor.setTheme(theme);
-    footer.setTheme(theme);
-    header.setTheme(theme);
-    palette.setTheme(theme);
-    save.setTheme(theme);
-  }
-
-  async handleDebug(): Promise<void> {
-    debug.props.disabled = !debug.props.disabled;
-  }
-
-  async handleWhitespace(): Promise<void> {
-    editor.toggleWhitespace();
-  }
-
-  async handleWrap(): Promise<void> {
-    editor.toggleWrapped();
-  }
-
-  async handleCopy(): Promise<void> {
-    editor.copy();
-  }
-
-  async handleCut(): Promise<void> {
-    editor.cut();
-  }
-
-  async handlePaste(): Promise<void> {
-    editor.paste();
-  }
-
-  async handleUndo(): Promise<void> {
-    editor.undo();
-  }
-
-  async handleRedo(): Promise<void> {
-    editor.redo();
-  }
-
-  async handleSelectAll(): Promise<void> {
-    editor.selectAll();
-  }
-}();
-
-host.register(
-  new VT(host),
-  new Exit(host),
-  new Commands(host),
-);
-
 let zen = true;
 let fileModified = false;
 let fileName9: string | undefined;
@@ -301,6 +193,114 @@ async function saveFileAs(): Promise<boolean> {
     }
   }
 }
+
+const host = new class extends plugins.Host {
+  handleRefresh(): void {
+    resize();
+    render();
+  }
+
+  async handleZen(): Promise<void> {
+    zen = !zen;
+
+    header.props.disabled = zen;
+    footer.props.disabled = zen;
+    editor.toggleIndex();
+
+    resize();
+  }
+
+  async handleExit(): Promise<void> {
+    editor.setFocused(false);
+
+    if (editor.textChanged) {
+      if (await ask.open("Save changes?")) {
+        await saveFile();
+      }
+    }
+
+    host.exit();
+  }
+
+  async handlePalette(): Promise<void> {
+    editor.setFocused(false);
+
+    const cmd = await palette.open();
+
+    editor.setFocused(true);
+
+    render();
+
+    if (cmd) {
+      await host.handleCommand(cmd);
+    }
+  }
+
+  async handleSave(): Promise<void> {
+    editor.setFocused(false);
+
+    if (await saveFile()) {
+      editor.resetChanges();
+    }
+
+    editor.setFocused(true);
+
+    render();
+  }
+
+  async handleTheme(theme: themes.Theme): Promise<void> {
+    alert.setTheme(theme);
+    ask.setTheme(theme);
+    debug.setTheme(theme);
+    editor.setTheme(theme);
+    footer.setTheme(theme);
+    header.setTheme(theme);
+    palette.setTheme(theme);
+    save.setTheme(theme);
+  }
+
+  async handleDebug(): Promise<void> {
+    debug.props.disabled = !debug.props.disabled;
+  }
+
+  async handleWhitespace(): Promise<void> {
+    editor.toggleWhitespace();
+  }
+
+  async handleWrap(): Promise<void> {
+    editor.toggleWrapped();
+  }
+
+  async handleCopy(): Promise<void> {
+    editor.copy();
+  }
+
+  async handleCut(): Promise<void> {
+    editor.cut();
+  }
+
+  async handlePaste(): Promise<void> {
+    editor.paste();
+  }
+
+  async handleUndo(): Promise<void> {
+    editor.undo();
+  }
+
+  async handleRedo(): Promise<void> {
+    editor.redo();
+  }
+
+  async handleSelectAll(): Promise<void> {
+    editor.selectAll();
+  }
+}();
+
+host.register(
+  new VT(host),
+  new Exit(host),
+  new Commands(host),
+);
 
 host.start();
 
