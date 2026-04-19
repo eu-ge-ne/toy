@@ -1,14 +1,14 @@
-import { Plugin } from "@libs/plugins";
+import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-export class VT extends Plugin {
-  start(): void {
+export class VT extends plugins.Plugin {
+  override start(): void {
     vt.init();
 
-    Deno.addSignalListener("SIGWINCH", () => this.host.refresh());
+    Deno.addSignalListener("SIGWINCH", () => this.host.handleRefresh());
   }
 
-  exit(): void {
+  override exit(): void {
     vt.restore();
   }
 }

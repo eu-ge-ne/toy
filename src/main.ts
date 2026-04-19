@@ -1,12 +1,11 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as commands from "@libs/commands";
 import * as files from "@libs/files";
-import * as kitty from "@libs/kitty";
-import { PluginHost } from "@libs/plugins";
+import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { Commands } from "@plugins/commands";
 import { Exit } from "@plugins/exit";
 import { VT } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
@@ -32,16 +31,112 @@ if (args.version) {
   Deno.exit();
 }
 
-const host = new class extends PluginHost {
-  refresh(): void {
+const host = new class extends plugins.Host {
+  handleRefresh(): void {
     resize();
     render();
   }
+
+  async handleZen(): Promise<void> {
+    zen = !zen;
+
+    header.props.disabled = zen;
+    footer.props.disabled = zen;
+    editor.toggleIndex();
+
+    resize();
+  }
+
+  async handleExit(): Promise<void> {
+    editor.setFocused(false);
+
+    if (editor.textChanged) {
+      if (await ask.open("Save changes?")) {
+        await saveFile();
+      }
+    }
+
+    host.exit();
+  }
+
+  async handlePalette(): Promise<void> {
+    editor.setFocused(false);
+
+    const cmd = await palette.open();
+
+    editor.setFocused(true);
+
+    render();
+
+    if (cmd) {
+      await host.handleCommand(cmd);
+    }
+  }
+
+  async handleSave(): Promise<void> {
+    editor.setFocused(false);
+
+    if (await saveFile()) {
+      editor.resetChanges();
+    }
+
+    editor.setFocused(true);
+
+    render();
+  }
+
+  async handleTheme(theme: themes.Theme): Promise<void> {
+    alert.setTheme(theme);
+    ask.setTheme(theme);
+    debug.setTheme(theme);
+    editor.setTheme(theme);
+    footer.setTheme(theme);
+    header.setTheme(theme);
+    palette.setTheme(theme);
+    save.setTheme(theme);
+  }
+
+  async handleDebug(): Promise<void> {
+    debug.props.disabled = !debug.props.disabled;
+  }
+
+  async handleWhitespace(): Promise<void> {
+    editor.toggleWhitespace();
+  }
+
+  async handleWrap(): Promise<void> {
+    editor.toggleWrapped();
+  }
+
+  async handleCopy(): Promise<void> {
+    editor.copy();
+  }
+
+  async handleCut(): Promise<void> {
+    editor.cut();
+  }
+
+  async handlePaste(): Promise<void> {
+    editor.paste();
+  }
+
+  async handleUndo(): Promise<void> {
+    editor.undo();
+  }
+
+  async handleRedo(): Promise<void> {
+    editor.redo();
+  }
+
+  async handleSelectAll(): Promise<void> {
+    editor.selectAll();
+  }
 }();
 
-host.plugins.push(
+host.register(
   new VT(host),
   new Exit(host),
+  new Commands(host),
 );
 
 let zen = true;
@@ -86,7 +181,7 @@ const debug = new Debug({
 });
 
 const palette = new Palette({
-  onInvalidate: () => host.refresh(),
+  onInvalidate: () => host.handleRefresh(),
 });
 
 function resize(): void {
@@ -154,17 +249,6 @@ function render(): void {
   debug.props.renderTime = performance.now() - t0;
 }
 
-function setTheme(theme: themes.Theme): void {
-  alert.setTheme(theme);
-  ask.setTheme(theme);
-  debug.setTheme(theme);
-  editor.setTheme(theme);
-  footer.setTheme(theme);
-  header.setTheme(theme);
-  palette.setTheme(theme);
-  save.setTheme(theme);
-}
-
 async function loadFile(fileName: string): Promise<void> {
   try {
     for await (const text of files.load(fileName)) {
@@ -218,101 +302,6 @@ async function saveFileAs(): Promise<boolean> {
   }
 }
 
-async function handleCommand(cmd: commands.Command): Promise<void> {
-  switch (cmd.name) {
-    case "Zen":
-      handleZen();
-      break;
-    case "Exit":
-      await handleExit();
-      break;
-    case "Palette":
-      await handlePalette();
-      break;
-    case "Save":
-      await handleSave();
-      break;
-    case "Theme":
-      setTheme(themes.Themes[cmd.data]);
-      break;
-    case "Debug":
-      debug.props.disabled = !debug.props.disabled;
-      break;
-    case "Whitespace":
-      editor.toggleWhitespace();
-      break;
-    case "Wrap":
-      editor.toggleWrapped();
-      break;
-    case "Copy":
-      editor.copy();
-      break;
-    case "Cut":
-      editor.cut();
-      break;
-    case "Paste":
-      editor.paste();
-      break;
-    case "Undo":
-      editor.undo();
-      break;
-    case "Redo":
-      editor.redo();
-      break;
-    case "SelectAll":
-      editor.selectAll();
-      break;
-  }
-}
-
-function handleZen(): void {
-  zen = !zen;
-
-  header.props.disabled = zen;
-  footer.props.disabled = zen;
-  editor.toggleIndex();
-
-  resize();
-}
-
-async function handleExit(): Promise<void> {
-  editor.setFocused(false);
-
-  if (editor.textChanged) {
-    if (await ask.open("Save changes?")) {
-      await saveFile();
-    }
-  }
-
-  host.exit();
-}
-
-async function handlePalette(): Promise<void> {
-  editor.setFocused(false);
-
-  const cmd = await palette.open();
-
-  editor.setFocused(true);
-
-  render();
-
-  if (cmd) {
-    await handleCommand(cmd);
-  }
-}
-
-async function handleSave(): Promise<void> {
-  editor.setFocused(false);
-
-  if (await saveFile()) {
-    editor.resetChanges();
-  }
-
-  editor.setFocused(true);
-
-  render();
-}
-
 host.start();
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
@@ -324,7 +313,7 @@ editor.setFocused(true);
 editor.resetChanges();
 editor.resetCursor();
 
-setTheme(themes.Themes.Default);
+await host.handleTheme(themes.Themes.Default);
 
 resize();
 
@@ -333,13 +322,7 @@ while (true) {
 
   const key = await vt.readKey();
 
-  const name = commands.ShortcutToCommand[kitty.shortcut(key)];
-
-  if (typeof name !== "undefined") {
-    const cmd = { name } as commands.Command;
-
-    await handleCommand(cmd);
-  } else {
+  if (!await host.handleKey(key)) {
     editor.onKey(key);
   }
 }

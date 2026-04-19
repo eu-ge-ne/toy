@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/commands",
+  "exports": "./commands.ts"
+}
