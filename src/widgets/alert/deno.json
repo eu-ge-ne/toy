@@ -1,4 +1,0 @@
-{
-  "name": "@widgets/alert",
-  "exports": "./alert.ts"
-}

@@ -5,6 +5,7 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { AlertPlugin } from "@plugins/alert";
 import { AskPlugin } from "@plugins/ask";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
@@ -13,7 +14,6 @@ import { ExitPlugin } from "@plugins/exit";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
-import { Alert } from "@widgets/alert";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -61,7 +61,7 @@ const host = new class extends plugins.Host {
       const h = std.clamp(10, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
-      alert.resize(w, h, y, x);
+      alertPlugin.widget.resize(w, h, y, x);
     }
 
     {
@@ -140,7 +140,6 @@ const host = new class extends plugins.Host {
   }
 
   async theme(theme: themes.Theme): Promise<void> {
-    alert.setTheme(theme);
     palette.setTheme(theme);
     save.setTheme(theme);
   }
@@ -151,6 +150,7 @@ const footerPlugin = new FooterPlugin(host);
 const editorPlugin = new EditorPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
+const alertPlugin = new AlertPlugin(host);
 
 host.register(
   new VTPlugin(host),
@@ -161,13 +161,13 @@ host.register(
   editorPlugin,
   debugPlugin,
   askPlugin,
+  alertPlugin,
 );
 
 let zen = true;
 let fileModified = false;
 let fileName0: string | undefined;
 
-const alert = new Alert();
 const save = new Save();
 
 editorPlugin.widget.props.onTextChange = () => {
@@ -201,7 +201,7 @@ async function loadFile(fileName: string): Promise<void> {
     headerPlugin.widget.props.fileName = fileName;
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
-      await alert.open(err);
+      await alertPlugin.widget.open(err);
 
       host.emitExit();
     }
@@ -218,7 +218,7 @@ async function saveFile(): Promise<boolean> {
 
     return true;
   } catch (err) {
-    await alert.open(err);
+    await alertPlugin.widget.open(err);
 
     return await saveFileAs();
   }
@@ -239,7 +239,7 @@ async function saveFileAs(): Promise<boolean> {
 
       return true;
     } catch (err) {
-      await alert.open(err);
+      await alertPlugin.widget.open(err);
     }
   }
 }
