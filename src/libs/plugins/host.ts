@@ -1,6 +1,5 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
-import * as themes from "@libs/themes";
 
 import { Plugin } from "./plugin.ts";
 
@@ -17,7 +16,6 @@ export abstract class Host {
   abstract exit(): Promise<void>;
   abstract palette(): Promise<void>;
   abstract save(): Promise<void>;
-  abstract theme(_: themes.Theme): Promise<void>;
 
   emitStart(): void {
     this.plugins.forEach((x) => x.onStart());

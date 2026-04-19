@@ -1,7 +1,6 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
-import * as themes from "@libs/themes";
 
 export class CommandsPlugin extends plugins.Plugin {
   override async onKey(key: kitty.Key): Promise<boolean> {
@@ -31,10 +30,6 @@ export class CommandsPlugin extends plugins.Plugin {
       case "Save":
         await this.host.save();
         return true;
-
-      case "Theme":
-        await this.host.theme(themes.Themes[cmd.data]);
-        return false;
     }
 
     return false;
