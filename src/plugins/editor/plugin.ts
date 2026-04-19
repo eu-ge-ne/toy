@@ -1,6 +1,8 @@
 import * as commands from "@libs/commands";
+import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
+
 import { EditorWidget } from "@widgets/editor";
 
 export class EditorPlugin extends plugins.Plugin {
@@ -16,6 +18,15 @@ export class EditorPlugin extends plugins.Plugin {
 
   override onRender(): void {
     this.widget.render();
+  }
+
+  override async onKey(key: kitty.Key): Promise<boolean> {
+    const name = commands.ShortcutToCommand[kitty.shortcut(key)];
+    if (name) {
+      return await this.onCommand({ name } as commands.Command);
+    }
+
+    return this.widget.onKey(key);
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {

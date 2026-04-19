@@ -10,8 +10,7 @@ export class CommandsPlugin extends plugins.Plugin {
       return false;
     }
 
-    await this.host.onCommand({ name } as commands.Command);
-    return true;
+    return await this.onCommand({ name } as commands.Command);
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {

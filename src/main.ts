@@ -263,7 +263,5 @@ while (true) {
 
   const key = await vt.readKey();
 
-  if (!await host.onKey(key)) {
-    editorPlugin.widget.onKey(key);
-  }
+  await host.onKey(key);
 }

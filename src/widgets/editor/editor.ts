@@ -135,16 +135,23 @@ export class EditorWidget extends widgets.Frame {
     }
   }
 
-  onKey(key: kitty.Key): void {
+  onKey(key: kitty.Key): boolean {
     if (!this.#focused) {
-      return;
+      return false;
     }
 
     const t0 = performance.now();
 
-    this.#onKeyHandlers.find(([_, match]) => match(key))?.[0].call(this, key);
+    const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
+    if (!handler) {
+      return false;
+    }
+
+    handler[0].call(this, key);
 
     this.props.onKeyHandle?.(performance.now() - t0);
+
+    return true;
   }
 
   #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
