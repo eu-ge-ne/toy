@@ -12,8 +12,26 @@ export class PalettePlugin extends plugins.Plugin {
       case "Theme":
         this.widget.setTheme(themes.Themes[cmd.data]);
         return false;
+
+      case "Palette":
+        await this.#run();
+        return true;
     }
 
     return false;
+  }
+
+  async #run(): Promise<void> {
+    //editorPlugin.widget.setFocused(false);
+
+    const cmd = await this.widget.open();
+
+    //editorPlugin.widget.setFocused(true);
+
+    this.host.render();
+
+    if (cmd) {
+      await this.host.emitCommand(cmd);
+    }
   }
 }
