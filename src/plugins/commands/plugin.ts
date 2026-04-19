@@ -3,19 +3,18 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-export class Commands extends plugins.Plugin {
-  override async handleKey(key: kitty.Key): Promise<boolean> {
+export class CommandsPlugin extends plugins.Plugin {
+  override async onKey(key: kitty.Key): Promise<boolean> {
     const name = commands.ShortcutToCommand[kitty.shortcut(key)];
     if (!name) {
       return false;
     }
 
-    await this.host.handleCommand({ name } as commands.Command);
-
+    await this.host.onCommand({ name } as commands.Command);
     return true;
   }
 
-  override async handleCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
         await this.host.handleZen();
@@ -35,11 +34,7 @@ export class Commands extends plugins.Plugin {
 
       case "Theme":
         await this.host.handleTheme(themes.Themes[cmd.data]);
-        return true;
-
-      case "Debug":
-        await this.host.handleDebug();
-        return true;
+        return false;
 
       case "Whitespace":
         await this.host.handleWhitespace();

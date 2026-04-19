@@ -17,7 +17,6 @@ export abstract class Host {
   abstract handlePalette(): Promise<void>;
   abstract handleSave(): Promise<void>;
   abstract handleTheme(_: themes.Theme): Promise<void>;
-  abstract handleDebug(): Promise<void>;
   abstract handleWhitespace(): Promise<void>;
   abstract handleWrap(): Promise<void>;
   abstract handleCopy(): Promise<void>;
@@ -27,17 +26,21 @@ export abstract class Host {
   abstract handleRedo(): Promise<void>;
   abstract handleSelectAll(): Promise<void>;
 
-  start(): void {
-    this.plugins.forEach((x) => x.start());
+  onStart(): void {
+    this.plugins.forEach((x) => x.onStart());
   }
 
-  exit(e?: PromiseRejectionEvent): void {
-    this.plugins.forEach((x) => x.exit(e));
+  onRender(): void {
+    this.plugins.forEach((x) => x.onRender());
   }
 
-  async handleKey(key: kitty.Key): Promise<boolean> {
+  onExit(e?: PromiseRejectionEvent): void {
+    this.plugins.forEach((x) => x.onExit(e));
+  }
+
+  async onKey(key: kitty.Key): Promise<boolean> {
     for (const plugin of this.plugins) {
-      if (await plugin.handleKey(key)) {
+      if (await plugin.onKey(key)) {
         return true;
       }
     }
@@ -45,9 +48,9 @@ export abstract class Host {
     return false;
   }
 
-  async handleCommand(cmd: commands.Command): Promise<boolean> {
+  async onCommand(cmd: commands.Command): Promise<boolean> {
     for (const plugin of this.plugins) {
-      if (await plugin.handleCommand(cmd)) {
+      if (await plugin.onCommand(cmd)) {
         return true;
       }
     }

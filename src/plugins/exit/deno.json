@@ -1,4 +1,4 @@
 {
   "name": "@plugins/exit",
-  "exports": "./exit.ts"
+  "exports": "./plugin.ts"
 }
