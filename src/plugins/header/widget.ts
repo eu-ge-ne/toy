@@ -7,7 +7,7 @@ import { Text } from "@widgets/text";
 interface HeaderWidgetProps {
   disabled: boolean;
   fileName: string;
-  fileModified: boolean;
+  modified: boolean;
 }
 
 export class HeaderWidget extends widgets.Frame {
@@ -41,7 +41,7 @@ export class HeaderWidget extends widgets.Frame {
 
     this.children.bg.render();
 
-    const f = this.props.fileModified ? " +" : "";
+    const f = this.props.modified ? " +" : "";
     this.children.text.value = `${this.props.fileName}${f}`;
     this.children.text.render();
 

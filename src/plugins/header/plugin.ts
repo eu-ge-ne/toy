@@ -8,7 +8,7 @@ export class HeaderPlugin extends plugins.Plugin {
   readonly widget = new HeaderWidget({
     disabled: true,
     fileName: "",
-    fileModified: false,
+    modified: false,
   });
 
   override onRender(): void {

@@ -156,7 +156,7 @@ const editor = new Editor({
   multiLine: true,
   onTextChange: () => {
     fileModified = editor.textChanged;
-    headerPlugin.widget.props.fileModified = fileModified;
+    headerPlugin.widget.props.modified = fileModified;
   },
   onCursorChange: (x) => {
     footer.props.ln = x.ln;
