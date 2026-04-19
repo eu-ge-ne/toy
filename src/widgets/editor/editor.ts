@@ -10,16 +10,14 @@ import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
 
-interface EditorParams {
+interface EditorWidgetParams {
   readonly multiLine: boolean;
-  readonly onTextChange?: () => void;
-  readonly onCursorChange?: (
-    _: { ln: number; col: number; lnCount: number },
-  ) => void;
-  readonly onKeyHandle?: (_: number) => void;
+  onTextChange?: () => void;
+  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
+  onKeyHandle?: (_: number) => void;
 }
 
-export class Editor extends widgets.Frame {
+export class EditorWidget extends widgets.Frame {
   #focused = false;
 
   readonly #doc = new document.Document();
@@ -45,7 +43,7 @@ export class Editor extends widgets.Frame {
     content: Content;
   };
 
-  constructor(readonly params: EditorParams) {
+  constructor(readonly props: EditorWidgetParams) {
     super();
 
     this.children = {
@@ -53,10 +51,10 @@ export class Editor extends widgets.Frame {
       content: new Content(this.#doc, this.#gDoc, this.#cursor),
     };
 
-    this.#history.onChange = params.onTextChange;
+    this.#history.onChange = props.onTextChange;
 
     this.#cursor.onChange = () =>
-      params.onCursorChange?.({
+      props.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
         lnCount: this.#doc.lineCount,
@@ -130,7 +128,7 @@ export class Editor extends widgets.Frame {
   }
 
   resetCursor(): void {
-    if (this.params.multiLine) {
+    if (this.props.multiLine) {
       this.#cursor.set(0, 0, false);
     } else {
       this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
@@ -146,7 +144,7 @@ export class Editor extends widgets.Frame {
 
     this.#onKeyHandlers.find(([_, match]) => match(key))?.[0].call(this, key);
 
-    this.params.onKeyHandle?.(performance.now() - t0);
+    this.props.onKeyHandle?.(performance.now() - t0);
   }
 
   #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
@@ -160,7 +158,7 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyBottom,
-      (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
+      (x) => this.props.multiLine && x.name === "DOWN" && Boolean(x.super),
     ],
     [
       this.#onKeyCopy,
@@ -176,7 +174,7 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyDown,
-      (x) => this.params.multiLine && x.name === "DOWN",
+      (x) => this.props.multiLine && x.name === "DOWN",
     ],
     [
       this.#onKeyEnd,
@@ -192,7 +190,7 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyEnter,
-      (x) => this.params.multiLine && x.name === "ENTER",
+      (x) => this.props.multiLine && x.name === "ENTER",
     ],
     [
       this.#onKeyHome,
@@ -212,11 +210,11 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyPageDown,
-      (x) => this.params.multiLine && x.name === "PAGE_DOWN",
+      (x) => this.props.multiLine && x.name === "PAGE_DOWN",
     ],
     [
       this.#onKeyPageUp,
-      (x) => this.params.multiLine && x.name === "PAGE_UP",
+      (x) => this.props.multiLine && x.name === "PAGE_UP",
     ],
     [
       this.#onKeyPaste,
@@ -240,7 +238,7 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyTop,
-      (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super),
+      (x) => this.props.multiLine && x.name === "UP" && Boolean(x.super),
     ],
     [
       this.#onKeyUndo,
@@ -248,7 +246,7 @@ export class Editor extends widgets.Frame {
     ],
     [
       this.#onKeyUp,
-      (x) => this.params.multiLine && x.name === "UP",
+      (x) => this.props.multiLine && x.name === "UP",
     ],
   ];
 

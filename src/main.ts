@@ -13,7 +13,7 @@ import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
-import { Editor } from "@widgets/editor";
+import { EditorWidget } from "@widgets/editor";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -143,7 +143,7 @@ const alert = new Alert();
 const ask = new Ask();
 const save = new Save();
 
-const editor = new Editor({
+const editor = new EditorWidget({
   multiLine: true,
   onTextChange: () => {
     fileModified = editor.textChanged;
