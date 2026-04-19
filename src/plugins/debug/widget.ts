@@ -1,8 +1,8 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { Bg } from "@widgets/bg";
-import { Text } from "@widgets/text";
+import { BgWidget } from "@widgets/bg";
+import { TextWidget } from "@widgets/text";
 
 const MIB = Math.pow(1024, 2);
 
@@ -14,24 +14,24 @@ interface DebugWidgetProps {
 
 export class DebugWidget extends widgets.Frame {
   protected override children: {
-    bg: Bg;
-    line1: Text;
-    line2: Text;
-    line3: Text;
-    line4: Text;
-    line5: Text;
+    bg: BgWidget;
+    line1: TextWidget;
+    line2: TextWidget;
+    line3: TextWidget;
+    line4: TextWidget;
+    line5: TextWidget;
   };
 
   constructor(readonly props: DebugWidgetProps) {
     super();
 
     this.children = {
-      bg: new Bg(),
-      line1: new Text({ align: "left" }),
-      line2: new Text({ align: "left" }),
-      line3: new Text({ align: "left" }),
-      line4: new Text({ align: "left" }),
-      line5: new Text({ align: "left" }),
+      bg: new BgWidget(),
+      line1: new TextWidget({ align: "left" }),
+      line2: new TextWidget({ align: "left" }),
+      line3: new TextWidget({ align: "left" }),
+      line4: new TextWidget({ align: "left" }),
+      line5: new TextWidget({ align: "left" }),
     };
   }
 

@@ -1,23 +1,23 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { Bg } from "@widgets/bg";
-import { MultiLineText, Text } from "@widgets/text";
+import { BgWidget } from "@widgets/bg";
+import { MultiLineText, TextWidget } from "@widgets/text";
 
 export class AskWidget extends widgets.Modal<[string], boolean> {
   protected override children: {
-    bg: Bg;
+    bg: BgWidget;
     text: MultiLineText;
-    footer: Text;
+    footer: TextWidget;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new Bg(),
+      bg: new BgWidget(),
       text: new MultiLineText({ align: "center" }),
-      footer: new Text({ align: "center" }),
+      footer: new TextWidget({ align: "center" }),
     };
 
     this.children.footer.value = "ESC‧no    ENTER‧yes";

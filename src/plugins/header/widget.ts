@@ -1,8 +1,8 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { Bg } from "@widgets/bg";
-import { Text } from "@widgets/text";
+import { BgWidget } from "@widgets/bg";
+import { TextWidget } from "@widgets/text";
 
 interface HeaderWidgetProps {
   fileName: string;
@@ -11,16 +11,16 @@ interface HeaderWidgetProps {
 
 export class HeaderWidget extends widgets.Frame {
   protected override children: {
-    bg: Bg;
-    text: Text;
+    bg: BgWidget;
+    text: TextWidget;
   };
 
   constructor(readonly props: HeaderWidgetProps) {
     super();
 
     this.children = {
-      bg: new Bg(),
-      text: new Text({ align: "center" }),
+      bg: new BgWidget(),
+      text: new TextWidget({ align: "center" }),
     };
   }
 
