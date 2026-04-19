@@ -23,7 +23,7 @@ export class DebugPlugin extends plugins.Plugin {
 
       case "Theme":
         this.widget.setTheme(themes.Themes[cmd.data]);
-        return true;
+        return false;
     }
 
     return false;

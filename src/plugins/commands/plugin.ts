@@ -35,7 +35,7 @@ export class CommandsPlugin extends plugins.Plugin {
 
       case "Theme":
         await this.host.handleTheme(themes.Themes[cmd.data]);
-        return true;
+        return false;
 
       case "Whitespace":
         await this.host.handleWhitespace();
