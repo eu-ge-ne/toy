@@ -5,6 +5,7 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
+import { AskPlugin } from "@plugins/ask";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
@@ -13,7 +14,6 @@ import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
-import { Ask } from "@widgets/ask";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -69,7 +69,7 @@ const host = new class extends plugins.Host {
       const h = std.clamp(7, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
-      ask.resize(w, h, y, x);
+      askPlugin.widget.resize(w, h, y, x);
     }
 
     {
@@ -105,7 +105,7 @@ const host = new class extends plugins.Host {
     editorPlugin.widget.setFocused(false);
 
     if (editorPlugin.widget.textChanged) {
-      if (await ask.open("Save changes?")) {
+      if (await askPlugin.widget.open("Save changes?")) {
         await saveFile();
       }
     }
@@ -141,7 +141,6 @@ const host = new class extends plugins.Host {
 
   async theme(theme: themes.Theme): Promise<void> {
     alert.setTheme(theme);
-    ask.setTheme(theme);
     palette.setTheme(theme);
     save.setTheme(theme);
   }
@@ -151,6 +150,7 @@ const headerPlugin = new HeaderPlugin(host);
 const footerPlugin = new FooterPlugin(host);
 const editorPlugin = new EditorPlugin(host);
 const debugPlugin = new DebugPlugin(host);
+const askPlugin = new AskPlugin(host);
 
 host.register(
   new VTPlugin(host),
@@ -160,6 +160,7 @@ host.register(
   footerPlugin,
   editorPlugin,
   debugPlugin,
+  askPlugin,
 );
 
 let zen = true;
@@ -167,7 +168,6 @@ let fileModified = false;
 let fileName0: string | undefined;
 
 const alert = new Alert();
-const ask = new Ask();
 const save = new Save();
 
 editorPlugin.widget.props.onTextChange = () => {
