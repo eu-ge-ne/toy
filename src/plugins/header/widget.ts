@@ -5,7 +5,6 @@ import { Bg } from "@widgets/bg";
 import { Text } from "@widgets/text";
 
 interface HeaderWidgetProps {
-  disabled: boolean;
   fileName: string;
   modified: boolean;
 }
@@ -33,10 +32,6 @@ export class HeaderWidget extends widgets.Frame {
   }
 
   render(): void {
-    if (this.props.disabled) {
-      return;
-    }
-
     vt.buf.write(vt.cursor.save);
 
     this.children.bg.render();

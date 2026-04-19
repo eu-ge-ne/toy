@@ -5,7 +5,6 @@ import { Bg } from "@widgets/bg";
 import { Text } from "@widgets/text";
 
 interface FooterWidgetProps {
-  disabled: boolean;
   ln: number;
   col: number;
   lnCount: number;
@@ -34,10 +33,6 @@ export class FooterWidget extends widgets.Frame {
   }
 
   render(): void {
-    if (this.props.disabled) {
-      return;
-    }
-
     vt.buf.write(vt.cursor.save);
 
     this.children.bg.render();

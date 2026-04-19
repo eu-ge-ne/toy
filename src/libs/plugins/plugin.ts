@@ -10,10 +10,10 @@ export abstract class Plugin {
   onStart(): void {
   }
 
-  onRender(): void {
+  onExit(_?: PromiseRejectionEvent): void {
   }
 
-  onExit(_?: PromiseRejectionEvent): void {
+  onRender(): void {
   }
 
   async onKey(_: kitty.Key): Promise<boolean> {

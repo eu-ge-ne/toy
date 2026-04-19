@@ -10,29 +10,30 @@ export class CommandsPlugin extends plugins.Plugin {
       return false;
     }
 
-    return await this.onCommand({ name } as commands.Command);
+    await this.host.emitCommand({ name } as commands.Command);
+    return true;
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
-        await this.host.handleZen();
+        await this.host.zen();
         return false;
 
       case "Exit":
-        await this.host.handleExit();
+        await this.host.exit();
         return true;
 
       case "Palette":
-        await this.host.handlePalette();
+        await this.host.palette();
         return true;
 
       case "Save":
-        await this.host.handleSave();
+        await this.host.save();
         return true;
 
       case "Theme":
-        await this.host.handleTheme(themes.Themes[cmd.data]);
+        await this.host.theme(themes.Themes[cmd.data]);
         return false;
     }
 
