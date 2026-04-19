@@ -17,14 +17,6 @@ export abstract class Host {
   abstract handlePalette(): Promise<void>;
   abstract handleSave(): Promise<void>;
   abstract handleTheme(_: themes.Theme): Promise<void>;
-  abstract handleWhitespace(): Promise<void>;
-  abstract handleWrap(): Promise<void>;
-  abstract handleCopy(): Promise<void>;
-  abstract handleCut(): Promise<void>;
-  abstract handlePaste(): Promise<void>;
-  abstract handleUndo(): Promise<void>;
-  abstract handleRedo(): Promise<void>;
-  abstract handleSelectAll(): Promise<void>;
 
   onStart(): void {
     this.plugins.forEach((x) => x.onStart());

@@ -35,38 +35,6 @@ export class CommandsPlugin extends plugins.Plugin {
       case "Theme":
         await this.host.handleTheme(themes.Themes[cmd.data]);
         return false;
-
-      case "Whitespace":
-        await this.host.handleWhitespace();
-        return true;
-
-      case "Wrap":
-        await this.host.handleWrap();
-        return true;
-
-      case "Copy":
-        await this.host.handleCopy();
-        return true;
-
-      case "Cut":
-        await this.host.handleCut();
-        return true;
-
-      case "Paste":
-        await this.host.handlePaste();
-        return true;
-
-      case "Undo":
-        await this.host.handleUndo();
-        return true;
-
-      case "Redo":
-        await this.host.handleRedo();
-        return true;
-
-      case "SelectAll":
-        await this.host.handleSelectAll();
-        return true;
     }
 
     return false;

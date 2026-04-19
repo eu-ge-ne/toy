@@ -86,38 +86,6 @@ const host = new class extends plugins.Host {
     palette.setTheme(theme);
     save.setTheme(theme);
   }
-
-  async handleWhitespace(): Promise<void> {
-    editorPlugin.widget.toggleWhitespace();
-  }
-
-  async handleWrap(): Promise<void> {
-    editorPlugin.widget.toggleWrapped();
-  }
-
-  async handleCopy(): Promise<void> {
-    editorPlugin.widget.copy();
-  }
-
-  async handleCut(): Promise<void> {
-    editorPlugin.widget.cut();
-  }
-
-  async handlePaste(): Promise<void> {
-    editorPlugin.widget.paste();
-  }
-
-  async handleUndo(): Promise<void> {
-    editorPlugin.widget.undo();
-  }
-
-  async handleRedo(): Promise<void> {
-    editorPlugin.widget.redo();
-  }
-
-  async handleSelectAll(): Promise<void> {
-    editorPlugin.widget.selectAll();
-  }
 }();
 
 const headerPlugin = new HeaderPlugin(host);
