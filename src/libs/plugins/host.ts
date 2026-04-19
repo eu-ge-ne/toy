@@ -30,6 +30,10 @@ export abstract class Host {
     this.plugins.forEach((x) => x.start());
   }
 
+  render(): void {
+    this.plugins.forEach((x) => x.render());
+  }
+
   exit(e?: PromiseRejectionEvent): void {
     this.plugins.forEach((x) => x.exit(e));
   }

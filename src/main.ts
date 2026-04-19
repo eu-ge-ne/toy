@@ -88,7 +88,6 @@ const host = new class extends plugins.Host {
   async handleTheme(theme: themes.Theme): Promise<void> {
     alert.setTheme(theme);
     ask.setTheme(theme);
-    debugPlugin.widget.setTheme(theme);
     editor.setTheme(theme);
     footer.setTheme(theme);
     header.setTheme(theme);
@@ -233,7 +232,7 @@ function render(): void {
   header.render();
   editor.render();
   footer.render();
-  debugPlugin.widget.render();
+  host.render();
 
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();

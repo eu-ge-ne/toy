@@ -1,5 +1,7 @@
 import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
+import * as themes from "@libs/themes";
+
 import { DebugWidget } from "./widget.ts";
 
 export class DebugPlugin extends plugins.Plugin {
@@ -9,10 +11,19 @@ export class DebugPlugin extends plugins.Plugin {
     inputTime: 0,
   });
 
+  override render(): void {
+    this.widget.render();
+  }
+
   override async handleCommand(cmd: commands.Command): Promise<boolean> {
-    if (cmd.name === "Debug") {
-      this.widget.props.disabled = !this.widget.props.disabled;
-      return true;
+    switch (cmd.name) {
+      case "Debug":
+        this.widget.props.disabled = !this.widget.props.disabled;
+        return true;
+
+      case "Theme":
+        this.widget.setTheme(themes.Themes[cmd.data]);
+        return true;
     }
 
     return false;
