@@ -22,12 +22,12 @@ export abstract class Host {
     this.plugins.forEach((x) => x.onStart());
   }
 
-  onRender(): void {
-    this.plugins.forEach((x) => x.onRender());
-  }
-
   onExit(e?: PromiseRejectionEvent): void {
     this.plugins.forEach((x) => x.onExit(e));
+  }
+
+  onRender(): void {
+    this.plugins.forEach((x) => x.onRender());
   }
 
   async onKey(key: kitty.Key): Promise<boolean> {
