@@ -3,7 +3,6 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
-import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import { AlertPlugin } from "@plugins/alert";
 import { AskPlugin } from "@plugins/ask";
@@ -14,8 +13,8 @@ import { ExitPlugin } from "@plugins/exit";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
+import { SavePlugin } from "@plugins/save";
 import { VTPlugin } from "@plugins/vt";
-import { Save } from "@widgets/save";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -82,7 +81,7 @@ const host = new class extends plugins.Host {
       const h = std.clamp(10, 0, editor.height);
       const y = editor.y + Math.trunc((editor.height - h) / 2);
       const x = editor.x + Math.trunc((editor.width - w) / 2);
-      save.resize(w, h, y, x);
+      savePlugin.widget.resize(w, h, y, x);
     }
   }
 
@@ -143,10 +142,6 @@ const host = new class extends plugins.Host {
 
     host.render();
   }
-
-  async theme(theme: themes.Theme): Promise<void> {
-    save.setTheme(theme);
-  }
 }();
 
 const headerPlugin = new HeaderPlugin(host);
@@ -156,6 +151,7 @@ const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
 const alertPlugin = new AlertPlugin(host);
 const palettePlugin = new PalettePlugin(host);
+const savePlugin = new SavePlugin(host);
 
 host.register(
   new VTPlugin(host),
@@ -168,13 +164,12 @@ host.register(
   askPlugin,
   alertPlugin,
   palettePlugin,
+  savePlugin,
 );
 
 let zen = true;
 let fileModified = false;
 let fileName0: string | undefined;
-
-const save = new Save();
 
 editorPlugin.widget.props.onTextChange = () => {
   fileModified = editorPlugin.widget.textChanged;
@@ -230,7 +225,7 @@ async function saveFile(): Promise<boolean> {
 
 async function saveFileAs(): Promise<boolean> {
   while (true) {
-    const fileName = await save.open(fileName0 ?? "");
+    const fileName = await savePlugin.widget.open(fileName0 ?? "");
     if (!fileName) {
       return false;
     }
@@ -255,7 +250,6 @@ if (fileNameArg) {
   await loadFile(fileNameArg);
 }
 
-await host.theme(themes.Themes.Default);
 await host.emitCommand({ name: "Theme", data: "Default" });
 
 host.resize();

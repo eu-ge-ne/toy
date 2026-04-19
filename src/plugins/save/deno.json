@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/save",
+  "exports": "./plugin.ts"
+}
