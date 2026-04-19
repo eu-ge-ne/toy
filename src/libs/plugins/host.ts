@@ -17,7 +17,6 @@ export abstract class Host {
   abstract handlePalette(): Promise<void>;
   abstract handleSave(): Promise<void>;
   abstract handleTheme(_: themes.Theme): Promise<void>;
-  abstract handleDebug(): Promise<void>;
   abstract handleWhitespace(): Promise<void>;
   abstract handleWrap(): Promise<void>;
   abstract handleCopy(): Promise<void>;
