@@ -21,9 +21,8 @@ export class EditorPlugin extends plugins.Plugin {
   }
 
   override async onKey(key: kitty.Key): Promise<boolean> {
-    const name = commands.ShortcutToCommand[kitty.shortcut(key)];
-    if (name) {
-      return await this.onCommand({ name } as commands.Command);
+    if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
+      return false;
     }
 
     return this.widget.onKey(key);
