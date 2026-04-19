@@ -36,7 +36,6 @@ export abstract class Host {
         return true;
       }
     }
-
     return false;
   }
 
@@ -46,7 +45,6 @@ export abstract class Host {
         return true;
       }
     }
-
     return false;
   }
 }
