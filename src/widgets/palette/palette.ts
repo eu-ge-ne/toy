@@ -3,7 +3,7 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 import { Bg } from "@widgets/bg";
-import { Editor } from "@widgets/editor";
+import { EditorWidget } from "@widgets/editor";
 import { List } from "@widgets/list";
 
 import { options } from "./options.ts";
@@ -17,7 +17,7 @@ interface PaletteProps {
 export class Palette extends widgets.Modal<[], Command | undefined> {
   protected override children: {
     bg: Bg;
-    editor: Editor;
+    editor: EditorWidget;
     list: List<Command>;
   };
 
@@ -26,7 +26,7 @@ export class Palette extends widgets.Modal<[], Command | undefined> {
 
     this.children = {
       bg: new Bg(),
-      editor: new Editor({ multiLine: false }),
+      editor: new EditorWidget({ multiLine: false }),
       list: new List<Command>({ emptyText: "No matching commands" }),
     };
 

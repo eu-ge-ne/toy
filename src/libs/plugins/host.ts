@@ -17,25 +17,17 @@ export abstract class Host {
   abstract handlePalette(): Promise<void>;
   abstract handleSave(): Promise<void>;
   abstract handleTheme(_: themes.Theme): Promise<void>;
-  abstract handleWhitespace(): Promise<void>;
-  abstract handleWrap(): Promise<void>;
-  abstract handleCopy(): Promise<void>;
-  abstract handleCut(): Promise<void>;
-  abstract handlePaste(): Promise<void>;
-  abstract handleUndo(): Promise<void>;
-  abstract handleRedo(): Promise<void>;
-  abstract handleSelectAll(): Promise<void>;
 
   onStart(): void {
     this.plugins.forEach((x) => x.onStart());
   }
 
-  onRender(): void {
-    this.plugins.forEach((x) => x.onRender());
-  }
-
   onExit(e?: PromiseRejectionEvent): void {
     this.plugins.forEach((x) => x.onExit(e));
+  }
+
+  onRender(): void {
+    this.plugins.forEach((x) => x.onRender());
   }
 
   async onKey(key: kitty.Key): Promise<boolean> {
@@ -44,7 +36,6 @@ export abstract class Host {
         return true;
       }
     }
-
     return false;
   }
 
@@ -54,7 +45,6 @@ export abstract class Host {
         return true;
       }
     }
-
     return false;
   }
 }

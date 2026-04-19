@@ -2,14 +2,14 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 import { Bg } from "@widgets/bg";
-import { Editor } from "@widgets/editor";
+import { EditorWidget } from "@widgets/editor";
 import { Text } from "@widgets/text";
 
 export class Save extends widgets.Modal<[string], string> {
   protected override children: {
     bg: Bg;
     header: Text;
-    editor: Editor;
+    editor: EditorWidget;
     footer: Text;
   };
 
@@ -19,7 +19,7 @@ export class Save extends widgets.Modal<[string], string> {
     this.children = {
       bg: new Bg(),
       header: new Text({ align: "center" }),
-      editor: new Editor({ multiLine: false }),
+      editor: new EditorWidget({ multiLine: false }),
       footer: new Text({ align: "center" }),
     };
 
