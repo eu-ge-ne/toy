@@ -306,6 +306,7 @@ editor.resetChanges();
 editor.resetCursor();
 
 await host.handleTheme(themes.Themes.Default);
+await host.handleCommand({ name: "Theme", data: "Default" });
 
 resize();
 
