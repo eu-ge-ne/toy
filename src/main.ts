@@ -8,12 +8,12 @@ import * as vt from "@libs/vt";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { ExitPlugin } from "@plugins/exit";
+import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { VTPlugin } from "@plugins/vt";
 import { Alert } from "@widgets/alert";
 import { Ask } from "@widgets/ask";
 import { Editor } from "@widgets/editor";
-import { Footer } from "@widgets/footer";
 import { Palette } from "@widgets/palette";
 import { Save } from "@widgets/save";
 
@@ -39,10 +39,7 @@ const host = new class extends plugins.Host {
 
   async handleZen(): Promise<void> {
     zen = !zen;
-
-    footer.props.disabled = zen;
     editor.toggleIndex();
-
     resize();
   }
 
@@ -88,7 +85,6 @@ const host = new class extends plugins.Host {
     alert.setTheme(theme);
     ask.setTheme(theme);
     editor.setTheme(theme);
-    footer.setTheme(theme);
     palette.setTheme(theme);
     save.setTheme(theme);
   }
@@ -127,12 +123,14 @@ const host = new class extends plugins.Host {
 }();
 
 const headerPlugin = new HeaderPlugin(host);
+const footerPlugin = new FooterPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
   headerPlugin,
+  footerPlugin,
   debugPlugin,
   new CommandsPlugin(host),
 );
@@ -145,13 +143,6 @@ const alert = new Alert();
 const ask = new Ask();
 const save = new Save();
 
-const footer = new Footer({
-  disabled: zen,
-  ln: 0,
-  col: 0,
-  lnCount: 0,
-});
-
 const editor = new Editor({
   multiLine: true,
   onTextChange: () => {
@@ -159,9 +150,9 @@ const editor = new Editor({
     headerPlugin.widget.props.modified = fileModified;
   },
   onCursorChange: (x) => {
-    footer.props.ln = x.ln;
-    footer.props.col = x.col;
-    footer.props.lnCount = x.lnCount;
+    footerPlugin.widget.props.ln = x.ln;
+    footerPlugin.widget.props.col = x.col;
+    footerPlugin.widget.props.lnCount = x.lnCount;
   },
   onKeyHandle: (x) => debugPlugin.widget.props.inputTime = x,
 });
@@ -174,7 +165,7 @@ function resize(): void {
   const { columns, rows } = Deno.consoleSize();
 
   headerPlugin.widget.resize(columns, 1, 0, 0);
-  footer.resize(columns, 1, rows - 1, 0);
+  footerPlugin.widget.resize(columns, 1, rows - 1, 0);
 
   if (zen) {
     editor.resize(columns, rows, 0, 0);
@@ -224,7 +215,6 @@ function render(): void {
   vt.buf.write(vt.cursor.hide);
 
   editor.render();
-  footer.render();
   host.onRender();
 
   vt.buf.write(vt.cursor.show);

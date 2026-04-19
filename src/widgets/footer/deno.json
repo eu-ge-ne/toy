@@ -1,4 +1,0 @@
-{
-  "name": "@widgets/footer",
-  "exports": "./footer.ts"
-}
