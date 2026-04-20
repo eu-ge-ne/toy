@@ -159,7 +159,11 @@ let fileName0: string | undefined;
 
 editorPlugin.widget.props.onTextChange = () => {
   fileModified = editorPlugin.widget.textChanged;
-  headerPlugin.widget.props.modified = fileModified;
+  if (fileModified) {
+    host.emitDocumentContentChange();
+  } else {
+    host.emitDocumentContentReset();
+  }
 };
 
 editorPlugin.widget.props.onCursorChange = (x) => {
@@ -178,7 +182,7 @@ async function loadFile(fileName: string): Promise<void> {
     }
 
     fileName0 = fileName;
-    headerPlugin.widget.props.fileName = fileName;
+    host.emitDocumentNameChange(fileName);
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alertPlugin.widget.open(err);
@@ -215,7 +219,7 @@ async function saveFileAs(): Promise<boolean> {
       await files.save(fileName, editorPlugin.widget.read());
 
       fileName0 = fileName;
-      headerPlugin.widget.props.fileName = fileName;
+      host.emitDocumentNameChange(fileName);
 
       return true;
     } catch (err) {
