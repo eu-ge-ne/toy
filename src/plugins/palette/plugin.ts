@@ -7,10 +7,16 @@ import { PaletteWidget } from "./widget.ts";
 export class PalettePlugin extends plugins.Plugin {
   readonly widget = new PaletteWidget({
     onInvalidate: () => {
-      this.host.resize();
+      this.host.emitResize();
       this.host.render();
     },
   });
+
+  override onResize(): void {
+    const { columns, rows } = Deno.consoleSize();
+
+    this.widget.resize(columns, rows, 0, 0);
+  }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {

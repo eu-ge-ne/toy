@@ -12,6 +12,12 @@ export class HeaderPlugin extends plugins.Plugin {
     modified: false,
   });
 
+  override onResize(): void {
+    const { columns } = Deno.consoleSize();
+
+    this.widget.resize(columns, 1, 0, 0);
+  }
+
   override onRender(): void {
     if (this.#disabled) {
       return;
@@ -23,7 +29,7 @@ export class HeaderPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.resize();
+        this.host.emitResize();
         return false;
 
       case "Theme":

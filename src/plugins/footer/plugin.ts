@@ -13,6 +13,12 @@ export class FooterPlugin extends plugins.Plugin {
     lnCount: 0,
   });
 
+  override onResize(): void {
+    const { columns, rows } = Deno.consoleSize();
+
+    this.widget.resize(columns, 1, rows - 1, 0);
+  }
+
   override onRender(): void {
     if (this.#disabled) {
       return;
@@ -24,7 +30,7 @@ export class FooterPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.resize();
+        this.host.emitResize();
         return false;
 
       case "Theme":

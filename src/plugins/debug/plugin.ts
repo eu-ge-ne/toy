@@ -1,5 +1,6 @@
 import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
+import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { DebugWidget } from "./widget.ts";
@@ -10,6 +11,17 @@ export class DebugPlugin extends plugins.Plugin {
     renderTime: 0,
     inputTime: 0,
   });
+
+  override onResize(): void {
+    const { columns, rows } = Deno.consoleSize();
+
+    const w = std.clamp(30, 0, columns);
+    const h = std.clamp(7, 0, rows);
+    const y = rows - h;
+    const x = columns - w;
+
+    this.widget.resize(w, h, y, x);
+  }
 
   override onRender(): void {
     this.widget.render();

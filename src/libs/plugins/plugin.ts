@@ -13,6 +13,9 @@ export abstract class Plugin {
   onExit(_?: PromiseRejectionEvent): void {
   }
 
+  onResize(): void {
+  }
+
   onRender(): void {
   }
 

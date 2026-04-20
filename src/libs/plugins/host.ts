@@ -10,9 +10,7 @@ export abstract class Host {
     this.plugins.push(...plugins);
   }
 
-  abstract resize(): void;
   abstract render(): void;
-  abstract zen(): Promise<void>;
   abstract exit(): Promise<void>;
   abstract save(): Promise<void>;
 
@@ -24,8 +22,16 @@ export abstract class Host {
     this.plugins.forEach((x) => x.onExit(e));
   }
 
+  emitResize(): void {
+    for (const x of this.plugins) {
+      x.onResize();
+    }
+  }
+
   emitRender(): void {
-    this.plugins.forEach((x) => x.onRender());
+    for (const x of this.plugins) {
+      x.onRender();
+    }
   }
 
   async emitKey(key: kitty.Key): Promise<void> {
