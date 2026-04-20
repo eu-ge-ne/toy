@@ -1,4 +1,4 @@
-import * as document from "@libs/document";
+import * as documents from "@libs/documents";
 import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 
@@ -17,7 +17,7 @@ export class Cursor {
   onChange?: () => void;
 
   constructor(
-    private readonly doc: document.Document,
+    private readonly doc: documents.Document,
     private readonly gDoc: graphemes.Document,
   ) {
   }

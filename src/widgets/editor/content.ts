@@ -1,4 +1,4 @@
-import { Document } from "@libs/document";
+import * as documents from "@libs/documents";
 import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -47,7 +47,7 @@ export class Content extends widgets.Frame {
   #cursorX = 0;
 
   constructor(
-    private readonly doc: Document,
+    private readonly doc: documents.Document,
     private readonly gDoc: graphemes.Document,
     private readonly cursor: Cursor,
   ) {

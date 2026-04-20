@@ -1,10 +1,10 @@
-import * as document from "@libs/document";
+import * as documents from "@libs/documents";
 
 import { Cursor } from "./cursor.ts";
 
 export class History {
   #index = 0;
-  #entries: { ln: number; col: number; snapshot: document.Node }[] = [];
+  #entries: { ln: number; col: number; snapshot: documents.Node }[] = [];
 
   onChange?: () => void;
 
@@ -13,7 +13,7 @@ export class History {
   }
 
   constructor(
-    private readonly doc: document.Document,
+    private readonly doc: documents.Document,
     private readonly cursor: Cursor,
   ) {
     this.reset();
