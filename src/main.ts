@@ -97,7 +97,7 @@ const host = new class extends plugins.Host {
     vt.buf.flush();
     vt.sync.esu();
 
-    debugPlugin.widget.props.renderTime = performance.now() - t0;
+    host.emitRendered(performance.now() - t0);
   }
 
   async zen(): Promise<void> {

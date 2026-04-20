@@ -62,15 +62,21 @@ export abstract class Host {
     }
   }
 
-  emitOnCursorChange(data: { ln: number; col: number; lnCount: number }): void {
+  emitCursorChange(data: { ln: number; col: number; lnCount: number }): void {
     for (const x of this.plugins) {
       x.onCursorChange(data);
     }
   }
 
-  emitOnKeyHandled(elapsed: number): void {
+  emitKeyHandled(elapsed: number): void {
     for (const x of this.plugins) {
       x.onKeyHandled(elapsed);
+    }
+  }
+
+  emitRendered(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onRendered(elapsed);
     }
   }
 }

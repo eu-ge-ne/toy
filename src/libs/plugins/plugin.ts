@@ -38,4 +38,7 @@ export abstract class Plugin {
 
   onKeyHandled(_: number): void {
   }
+
+  onRendered(_: number): void {
+  }
 }
