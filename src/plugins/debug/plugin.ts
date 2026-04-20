@@ -6,6 +6,8 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 export class DebugPlugin extends plugins.Plugin {
+  #zen = false;
+
   readonly widget = new DebugWidget({
     disabled: true,
     renderTime: 0,
@@ -17,7 +19,7 @@ export class DebugPlugin extends plugins.Plugin {
 
     const w = std.clamp(30, 0, columns);
     const h = std.clamp(7, 0, rows);
-    const y = rows - h;
+    const y = this.#zen ? rows - h : rows - 1 - h;
     const x = columns - w;
 
     this.widget.resize(w, h, y, x);
@@ -29,6 +31,10 @@ export class DebugPlugin extends plugins.Plugin {
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
+      case "Zen":
+        this.#zen = !this.#zen;
+        return false;
+
       case "Debug":
         this.widget.props.disabled = !this.widget.props.disabled;
         return true;
