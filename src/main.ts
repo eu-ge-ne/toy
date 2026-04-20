@@ -55,8 +55,6 @@ const host = new class extends plugins.Host {
   }
 }();
 
-const headerPlugin = new HeaderPlugin(host);
-const footerPlugin = new FooterPlugin(host);
 const editorPlugin = new EditorPlugin(host);
 const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
@@ -68,8 +66,8 @@ host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
   new CommandsPlugin(host),
-  headerPlugin,
-  footerPlugin,
+  new HeaderPlugin(host),
+  new FooterPlugin(host),
   editorPlugin,
   debugPlugin,
   askPlugin,
