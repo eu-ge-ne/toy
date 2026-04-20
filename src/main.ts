@@ -171,11 +171,6 @@ editorPlugin.widget.props.onCursorChange = (x) => {
 editorPlugin.widget.props.onKeyHandle = (x) =>
   debugPlugin.widget.props.inputTime = x;
 
-palettePlugin.widget.props.onInvalidate = () => {
-  host.resize();
-  host.render();
-};
-
 async function loadFile(fileName: string): Promise<void> {
   try {
     for await (const text of files.load(fileName)) {

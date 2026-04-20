@@ -1,4 +1,4 @@
-import { Command } from "@libs/commands";
+import * as commands from "@libs/commands";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
@@ -11,14 +11,15 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 interface PaletteWidgetProps {
-  onInvalidate?: () => void;
+  onInvalidate: () => void;
 }
 
-export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
+export class PaletteWidget
+  extends widgets.Modal<[], commands.Command | undefined> {
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
-    list: ListWidget<Command>;
+    list: ListWidget<commands.Command>;
   };
 
   constructor(readonly props: PaletteWidgetProps) {
@@ -27,10 +28,10 @@ export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
     this.children = {
       bg: new BgWidget(),
       editor: new EditorWidget({ multiLine: false }),
-      list: new ListWidget<Command>({ emptyText: "No matching commands" }),
+      list: new ListWidget<commands.Command>({
+        emptyText: "No matching commands",
+      }),
     };
-
-    this.children.list.values = options;
   }
 
   override resizeChildren(): void {
@@ -53,7 +54,7 @@ export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
     this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
-  async open(): Promise<Command | undefined> {
+  async open(): Promise<commands.Command | undefined> {
     const { list, editor } = this.children;
 
     editor.setFocused(true);
@@ -61,8 +62,10 @@ export class PaletteWidget extends widgets.Modal<[], Command | undefined> {
     editor.resetChanges();
     editor.resetCursor();
 
+    this.children.list.values = options;
+
     while (true) {
-      this.props.onInvalidate?.();
+      this.props.onInvalidate();
       this.render();
 
       const key = await vt.readKey();
