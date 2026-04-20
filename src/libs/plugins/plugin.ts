@@ -35,4 +35,10 @@ export abstract class Plugin {
 
   onCursorChange(_: { ln: number; col: number; lnCount: number }): void {
   }
+
+  onKeyHandled(_: number): void {
+  }
+
+  onRendered(_: number): void {
+  }
 }
