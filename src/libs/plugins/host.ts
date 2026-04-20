@@ -10,9 +10,6 @@ export abstract class Host {
     this.plugins.push(...plugins);
   }
 
-  abstract resize(): void;
-  abstract render(): void;
-  abstract zen(): Promise<void>;
   abstract exit(): Promise<void>;
   abstract save(): Promise<void>;
 
@@ -24,8 +21,30 @@ export abstract class Host {
     this.plugins.forEach((x) => x.onExit(e));
   }
 
+  emitResize(): void {
+    for (const x of this.plugins) {
+      x.onResize();
+    }
+  }
+
   emitRender(): void {
-    this.plugins.forEach((x) => x.onRender());
+    for (const x of this.plugins) {
+      x.onPreRender();
+    }
+
+    for (const x of this.plugins) {
+      x.onRender();
+    }
+
+    for (const x of this.plugins) {
+      x.onPostRender();
+    }
+  }
+
+  emitRendered(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onRendered(elapsed);
+    }
   }
 
   async emitKey(key: kitty.Key): Promise<void> {
@@ -33,6 +52,12 @@ export abstract class Host {
       if (await x.onKey(key)) {
         return;
       }
+    }
+  }
+
+  emitKeyHandled(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onKeyHandled(elapsed);
     }
   }
 
@@ -65,18 +90,6 @@ export abstract class Host {
   emitCursorChange(data: { ln: number; col: number; lnCount: number }): void {
     for (const x of this.plugins) {
       x.onCursorChange(data);
-    }
-  }
-
-  emitKeyHandled(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onKeyHandled(elapsed);
-    }
-  }
-
-  emitRendered(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onRendered(elapsed);
     }
   }
 }

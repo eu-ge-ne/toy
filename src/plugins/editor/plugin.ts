@@ -6,6 +6,8 @@ import * as themes from "@libs/themes";
 import { EditorWidget } from "@widgets/editor";
 
 export class EditorPlugin extends plugins.Plugin {
+  #zen = false;
+
   readonly widget = new EditorWidget({
     multiLine: true,
     onCursorChange: (x) => this.host.emitCursorChange(x),
@@ -16,6 +18,16 @@ export class EditorPlugin extends plugins.Plugin {
     this.widget.setFocused(true);
     this.widget.resetChanges();
     this.widget.resetCursor();
+  }
+
+  override onResize(): void {
+    const { columns, rows } = Deno.consoleSize();
+
+    if (this.#zen) {
+      this.widget.resize(columns, rows, 0, 0);
+    } else {
+      this.widget.resize(columns, rows - 2, 1, 0);
+    }
   }
 
   override onRender(): void {
@@ -34,6 +46,7 @@ export class EditorPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.widget.toggleIndex();
+        this.#zen = !this.#zen;
         return false;
 
       case "Theme":

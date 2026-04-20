@@ -2,7 +2,6 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
-import * as std from "@libs/std";
 import * as vt from "@libs/vt";
 import { AlertPlugin } from "@plugins/alert";
 import { AskPlugin } from "@plugins/ask";
@@ -31,80 +30,6 @@ if (args.version) {
 }
 
 const host = new class extends plugins.Host {
-  resize(): void {
-    const { columns, rows } = Deno.consoleSize();
-
-    headerPlugin.widget.resize(columns, 1, 0, 0);
-    footerPlugin.widget.resize(columns, 1, rows - 1, 0);
-
-    if (zen) {
-      editorPlugin.widget.resize(columns, rows, 0, 0);
-    } else {
-      editorPlugin.widget.resize(columns, rows - 2, 1, 0);
-    }
-
-    const editor = editorPlugin.widget;
-
-    {
-      const w = std.clamp(30, 0, editor.width);
-      const h = std.clamp(7, 0, editor.height);
-      const y = editor.y + editor.height - h;
-      const x = editor.x + editor.width - w;
-      debugPlugin.widget.resize(w, h, y, x);
-    }
-
-    palettePlugin.widget.resize(
-      editor.width,
-      editor.height,
-      editor.y,
-      editor.x,
-    );
-
-    {
-      const w = std.clamp(60, 0, editor.width);
-      const h = std.clamp(10, 0, editor.height);
-      const y = editor.y + Math.trunc((editor.height - h) / 2);
-      const x = editor.x + Math.trunc((editor.width - w) / 2);
-      alertPlugin.widget.resize(w, h, y, x);
-    }
-
-    {
-      const w = std.clamp(60, 0, editor.width);
-      const h = std.clamp(7, 0, editor.height);
-      const y = editor.y + Math.trunc((editor.height - h) / 2);
-      const x = editor.x + Math.trunc((editor.width - w) / 2);
-      askPlugin.widget.resize(w, h, y, x);
-    }
-
-    {
-      const w = std.clamp(60, 0, editor.width);
-      const h = std.clamp(10, 0, editor.height);
-      const y = editor.y + Math.trunc((editor.height - h) / 2);
-      const x = editor.x + Math.trunc((editor.width - w) / 2);
-      savePlugin.widget.resize(w, h, y, x);
-    }
-  }
-
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    host.emitRender();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    host.emitRendered(performance.now() - t0);
-  }
-
-  async zen(): Promise<void> {
-    zen = !zen;
-    host.resize();
-  }
-
   async exit(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
@@ -126,34 +51,29 @@ const host = new class extends plugins.Host {
 
     editorPlugin.widget.setFocused(true);
 
-    host.render();
+    host.emitRender();
   }
 }();
 
-const headerPlugin = new HeaderPlugin(host);
-const footerPlugin = new FooterPlugin(host);
 const editorPlugin = new EditorPlugin(host);
-const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
 const alertPlugin = new AlertPlugin(host);
-const palettePlugin = new PalettePlugin(host);
 const savePlugin = new SavePlugin(host);
 
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
   new CommandsPlugin(host),
-  headerPlugin,
-  footerPlugin,
+  new HeaderPlugin(host),
+  new FooterPlugin(host),
   editorPlugin,
-  debugPlugin,
+  new DebugPlugin(host),
   askPlugin,
   alertPlugin,
-  palettePlugin,
+  new PalettePlugin(host),
   savePlugin,
 );
 
-let zen = true;
 let fileModified = false;
 let fileName0: string | undefined;
 
@@ -220,7 +140,7 @@ async function saveFileAs(): Promise<boolean> {
 }
 
 host.emitStart();
-host.resize();
+host.emitResize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
 
@@ -230,7 +150,7 @@ if (fileNameArg) {
 }
 
 while (true) {
-  host.render();
+  host.emitRender();
 
   const key = await vt.readKey();
 
