@@ -80,9 +80,9 @@ let fileName0: string | undefined;
 editorPlugin.widget.props.onTextChange = () => {
   fileModified = editorPlugin.widget.textChanged;
   if (fileModified) {
-    host.emitDocContentChange();
+    host.emitDocChange();
   } else {
-    host.emitDocContentReset();
+    host.emitDocReset();
   }
 };
 

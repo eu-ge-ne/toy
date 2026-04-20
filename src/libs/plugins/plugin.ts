@@ -11,7 +11,6 @@ export abstract class Plugin {
   onStop(_?: PromiseRejectionEvent): void {}
 
   onResize(): void {}
-
   onRender(): void {}
   onPreRender(): void {}
   onPostRender(): void {}
@@ -27,8 +26,8 @@ export abstract class Plugin {
   }
 
   onDocNameChange(_: string): void {}
-  onDocContentChange(): void {}
-  onDocContentReset(): void {}
+  onDocChange(): void {}
+  onDocReset(): void {}
 
   onCursorChange(_: { ln: number; col: number; lnCount: number }): void {}
 }

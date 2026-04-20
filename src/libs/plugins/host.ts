@@ -79,15 +79,15 @@ export abstract class Host {
     }
   }
 
-  emitDocContentChange(): void {
+  emitDocChange(): void {
     for (const x of this.plugins) {
-      x.onDocContentChange();
+      x.onDocChange();
     }
   }
 
-  emitDocContentReset(): void {
+  emitDocReset(): void {
     for (const x of this.plugins) {
-      x.onDocContentReset();
+      x.onDocReset();
     }
   }
 

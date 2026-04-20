@@ -44,11 +44,11 @@ export class HeaderPlugin extends plugins.Plugin {
     this.widget.props.fileName = docName;
   }
 
-  override async onDocContentChange(): Promise<void> {
+  override async onDocChange(): Promise<void> {
     this.widget.props.modified = true;
   }
 
-  override async onDocContentReset(): Promise<void> {
+  override async onDocReset(): Promise<void> {
     this.widget.props.modified = false;
   }
 }
