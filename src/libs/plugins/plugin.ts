@@ -19,6 +19,12 @@ export abstract class Plugin {
   onRender(): void {
   }
 
+  onPreRender(): void {
+  }
+
+  onPostRender(): void {
+  }
+
   async onKey(_: kitty.Key): Promise<boolean> {
     return false;
   }

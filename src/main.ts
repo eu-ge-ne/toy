@@ -30,21 +30,6 @@ if (args.version) {
 }
 
 const host = new class extends plugins.Host {
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    host.emitRender();
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    host.emitRendered(performance.now() - t0);
-  }
-
   async exit(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
@@ -66,7 +51,7 @@ const host = new class extends plugins.Host {
 
     editorPlugin.widget.setFocused(true);
 
-    host.render();
+    host.emitRender();
   }
 }();
 
@@ -169,7 +154,7 @@ if (fileNameArg) {
 }
 
 while (true) {
-  host.render();
+  host.emitRender();
 
   const key = await vt.readKey();
 

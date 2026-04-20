@@ -10,7 +10,6 @@ export abstract class Host {
     this.plugins.push(...plugins);
   }
 
-  abstract render(): void;
   abstract exit(): Promise<void>;
   abstract save(): Promise<void>;
 
@@ -30,7 +29,15 @@ export abstract class Host {
 
   emitRender(): void {
     for (const x of this.plugins) {
+      x.onPreRender();
+    }
+
+    for (const x of this.plugins) {
       x.onRender();
+    }
+
+    for (const x of this.plugins) {
+      x.onPostRender();
     }
   }
 
