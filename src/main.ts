@@ -56,7 +56,6 @@ const host = new class extends plugins.Host {
 }();
 
 const editorPlugin = new EditorPlugin(host);
-const debugPlugin = new DebugPlugin(host);
 const askPlugin = new AskPlugin(host);
 const alertPlugin = new AlertPlugin(host);
 const palettePlugin = new PalettePlugin(host);
@@ -69,7 +68,7 @@ host.register(
   new HeaderPlugin(host),
   new FooterPlugin(host),
   editorPlugin,
-  debugPlugin,
+  new DebugPlugin(host),
   askPlugin,
   alertPlugin,
   palettePlugin,
