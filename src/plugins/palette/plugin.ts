@@ -5,7 +5,12 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 export class PalettePlugin extends plugins.Plugin {
-  readonly widget = new PaletteWidget({});
+  readonly widget = new PaletteWidget({
+    onInvalidate: () => {
+      this.host.resize();
+      this.host.render();
+    },
+  });
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
@@ -22,11 +27,7 @@ export class PalettePlugin extends plugins.Plugin {
   }
 
   async #run(): Promise<void> {
-    //editorPlugin.widget.setFocused(false);
-
     const cmd = await this.widget.open();
-
-    //editorPlugin.widget.setFocused(true);
 
     this.host.render();
 
