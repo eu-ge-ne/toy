@@ -23,4 +23,13 @@ export abstract class Plugin {
   async onCommand(_: commands.Command): Promise<boolean> {
     return false;
   }
+
+  onDocNameChange(_: string): void {
+  }
+
+  onDocContentChange(): void {
+  }
+
+  onDocContentReset(): void {
+  }
 }

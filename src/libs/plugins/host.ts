@@ -29,18 +29,36 @@ export abstract class Host {
   }
 
   async emitKey(key: kitty.Key): Promise<void> {
-    for (const plugin of this.plugins) {
-      if (await plugin.onKey(key)) {
+    for (const x of this.plugins) {
+      if (await x.onKey(key)) {
         return;
       }
     }
   }
 
   async emitCommand(cmd: commands.Command): Promise<void> {
-    for (const plugin of this.plugins) {
-      if (await plugin.onCommand(cmd)) {
+    for (const x of this.plugins) {
+      if (await x.onCommand(cmd)) {
         return;
       }
+    }
+  }
+
+  emitDocNameChange(docName: string): void {
+    for (const x of this.plugins) {
+      x.onDocNameChange(docName);
+    }
+  }
+
+  emitDocContentChange(): void {
+    for (const x of this.plugins) {
+      x.onDocContentChange();
+    }
+  }
+
+  emitDocContentReset(): void {
+    for (const x of this.plugins) {
+      x.onDocContentReset();
     }
   }
 }
