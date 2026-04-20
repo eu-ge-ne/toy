@@ -166,9 +166,6 @@ editorPlugin.widget.props.onTextChange = () => {
   }
 };
 
-editorPlugin.widget.props.onKeyHandle = (x) =>
-  debugPlugin.widget.props.inputTime = x;
-
 async function loadFile(fileName: string): Promise<void> {
   try {
     for await (const text of files.load(fileName)) {
@@ -223,15 +220,14 @@ async function saveFileAs(): Promise<boolean> {
 }
 
 host.emitStart();
+host.resize();
+
+await host.emitCommand({ name: "Theme", data: "Default" });
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
   await loadFile(fileNameArg);
 }
-
-await host.emitCommand({ name: "Theme", data: "Default" });
-
-host.resize();
 
 while (true) {
   host.render();

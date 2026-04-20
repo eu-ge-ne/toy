@@ -67,4 +67,10 @@ export abstract class Host {
       x.onCursorChange(data);
     }
   }
+
+  emitOnKeyHandled(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onKeyHandled(elapsed);
+    }
+  }
 }

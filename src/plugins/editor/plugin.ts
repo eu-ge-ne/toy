@@ -9,6 +9,7 @@ export class EditorPlugin extends plugins.Plugin {
   readonly widget = new EditorWidget({
     multiLine: true,
     onCursorChange: (x) => this.host.emitOnCursorChange(x),
+    onKeyHandle: (x) => this.host.emitOnKeyHandled(x),
   });
 
   override onStart(): void {

@@ -28,4 +28,8 @@ export class DebugPlugin extends plugins.Plugin {
 
     return false;
   }
+
+  override onKeyHandled(elapsed: number): void {
+    this.widget.props.inputTime = elapsed;
+  }
 }
