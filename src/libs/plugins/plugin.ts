@@ -32,4 +32,7 @@ export abstract class Plugin {
 
   onDocContentReset(): void {
   }
+
+  onCursorChange(_: { ln: number; col: number; lnCount: number }): void {
+  }
 }

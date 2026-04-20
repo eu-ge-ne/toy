@@ -61,4 +61,10 @@ export abstract class Host {
       x.onDocContentReset();
     }
   }
+
+  emitOnCursorChange(data: { ln: number; col: number; lnCount: number }): void {
+    for (const x of this.plugins) {
+      x.onCursorChange(data);
+    }
+  }
 }

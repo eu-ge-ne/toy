@@ -166,12 +166,6 @@ editorPlugin.widget.props.onTextChange = () => {
   }
 };
 
-editorPlugin.widget.props.onCursorChange = (x) => {
-  footerPlugin.widget.props.ln = x.ln;
-  footerPlugin.widget.props.col = x.col;
-  footerPlugin.widget.props.lnCount = x.lnCount;
-};
-
 editorPlugin.widget.props.onKeyHandle = (x) =>
   debugPlugin.widget.props.inputTime = x;
 

@@ -8,6 +8,7 @@ import { EditorWidget } from "@widgets/editor";
 export class EditorPlugin extends plugins.Plugin {
   readonly widget = new EditorWidget({
     multiLine: true,
+    onCursorChange: (x) => this.host.emitOnCursorChange(x),
   });
 
   override onStart(): void {
