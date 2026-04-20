@@ -8,7 +8,7 @@ export abstract class Plugin {
   }
 
   onStart(): void {}
-  onExit(_?: PromiseRejectionEvent): void {}
+  onStop(_?: PromiseRejectionEvent): void {}
 
   onResize(): void {}
 

@@ -13,6 +13,10 @@ export class VTPlugin extends plugins.Plugin {
     });
   }
 
+  override onStop(): void {
+    vt.restore();
+  }
+
   override onPreRender(): void {
     this.#t0 = performance.now();
 
@@ -26,9 +30,5 @@ export class VTPlugin extends plugins.Plugin {
     vt.sync.esu();
 
     this.host.emitRendered(performance.now() - this.#t0);
-  }
-
-  override onExit(): void {
-    vt.restore();
   }
 }

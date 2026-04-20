@@ -4,11 +4,11 @@ export class ExitPlugin extends plugins.Plugin {
   override onStart(): void {
     globalThis.addEventListener(
       "unhandledrejection",
-      (e) => this.host.emitExit(e),
+      (e) => this.host.emitStop(e),
     );
   }
 
-  override onExit(e?: PromiseRejectionEvent): void {
+  override onStop(e?: PromiseRejectionEvent): void {
     if (e) {
       console.log(e.reason);
     }
