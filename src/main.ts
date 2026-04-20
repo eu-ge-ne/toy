@@ -39,7 +39,7 @@ const host = new class extends plugins.Host {
       }
     }
 
-    host.emitExit();
+    host.emitStop();
   }
 
   async save(): Promise<void> {
@@ -98,7 +98,7 @@ async function loadFile(fileName: string): Promise<void> {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alertPlugin.widget.open(err);
 
-      host.emitExit();
+      host.emitStop();
     }
   }
 }

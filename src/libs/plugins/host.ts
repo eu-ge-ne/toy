@@ -14,11 +14,15 @@ export abstract class Host {
   abstract save(): Promise<void>;
 
   emitStart(): void {
-    this.plugins.forEach((x) => x.onStart());
+    for (const x of this.plugins) {
+      x.onStart();
+    }
   }
 
-  emitExit(e?: PromiseRejectionEvent): void {
-    this.plugins.forEach((x) => x.onExit(e));
+  emitStop(e?: PromiseRejectionEvent): void {
+    for (const x of this.plugins) {
+      x.onStop(e);
+    }
   }
 
   emitResize(): void {
