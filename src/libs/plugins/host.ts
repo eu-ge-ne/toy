@@ -41,11 +41,23 @@ export abstract class Host {
     }
   }
 
+  emitRendered(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onRendered(elapsed);
+    }
+  }
+
   async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onKey(key)) {
         return;
       }
+    }
+  }
+
+  emitKeyHandled(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onKeyHandled(elapsed);
     }
   }
 
@@ -78,18 +90,6 @@ export abstract class Host {
   emitCursorChange(data: { ln: number; col: number; lnCount: number }): void {
     for (const x of this.plugins) {
       x.onCursorChange(data);
-    }
-  }
-
-  emitKeyHandled(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onKeyHandled(elapsed);
-    }
-  }
-
-  emitRendered(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onRendered(elapsed);
     }
   }
 }
