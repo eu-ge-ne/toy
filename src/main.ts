@@ -160,9 +160,9 @@ let fileName0: string | undefined;
 editorPlugin.widget.props.onTextChange = () => {
   fileModified = editorPlugin.widget.textChanged;
   if (fileModified) {
-    host.emitDocumentContentChange();
+    host.emitDocContentChange();
   } else {
-    host.emitDocumentContentReset();
+    host.emitDocContentReset();
   }
 };
 
@@ -182,7 +182,7 @@ async function loadFile(fileName: string): Promise<void> {
     }
 
     fileName0 = fileName;
-    host.emitDocumentNameChange(fileName);
+    host.emitDocNameChange(fileName);
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
       await alertPlugin.widget.open(err);
@@ -219,7 +219,7 @@ async function saveFileAs(): Promise<boolean> {
       await files.save(fileName, editorPlugin.widget.read());
 
       fileName0 = fileName;
-      host.emitDocumentNameChange(fileName);
+      host.emitDocNameChange(fileName);
 
       return true;
     } catch (err) {

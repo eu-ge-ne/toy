@@ -44,21 +44,21 @@ export abstract class Host {
     }
   }
 
-  emitDocumentNameChange(docName: string): void {
+  emitDocNameChange(docName: string): void {
     for (const x of this.plugins) {
-      x.onDocumentNameChange(docName);
+      x.onDocNameChange(docName);
     }
   }
 
-  emitDocumentContentChange(): void {
+  emitDocContentChange(): void {
     for (const x of this.plugins) {
-      x.onDocumentContentChange();
+      x.onDocContentChange();
     }
   }
 
-  emitDocumentContentReset(): void {
+  emitDocContentReset(): void {
     for (const x of this.plugins) {
-      x.onDocumentContentReset();
+      x.onDocContentReset();
     }
   }
 }

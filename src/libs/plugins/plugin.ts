@@ -24,12 +24,12 @@ export abstract class Plugin {
     return false;
   }
 
-  onDocumentNameChange(_: string): void {
+  onDocNameChange(_: string): void {
   }
 
-  onDocumentContentChange(): void {
+  onDocContentChange(): void {
   }
 
-  onDocumentContentReset(): void {
+  onDocContentReset(): void {
   }
 }
