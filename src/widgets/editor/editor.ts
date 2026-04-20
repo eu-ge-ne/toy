@@ -1,4 +1,4 @@
-import * as document from "@libs/document";
+import * as documents from "@libs/documents";
 import * as graphemes from "@libs/graphemes";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
@@ -20,7 +20,7 @@ interface EditorWidgetParams {
 export class EditorWidget extends widgets.Frame {
   #focused = false;
 
-  readonly #doc = new document.Document();
+  readonly #doc = new documents.Document();
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #cursor = new Cursor(this.#doc, this.#gDoc);
   readonly #history = new History(this.#doc, this.#cursor);
