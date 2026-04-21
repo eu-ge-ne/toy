@@ -5,6 +5,8 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 export class PalettePlugin extends plugins.Plugin {
+  #zen = true;
+
   readonly widget = new PaletteWidget({
     onInvalidate: () => {
       this.host.emitResize();
@@ -15,11 +17,20 @@ export class PalettePlugin extends plugins.Plugin {
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
-    this.widget.resize(columns, rows, 0, 0);
+    if (this.#zen) {
+      this.widget.resize(columns, rows, 0, 0);
+    } else {
+      this.widget.resize(columns, rows - 2, 1, 0);
+    }
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
+      case "Zen":
+        this.#zen = !this.#zen;
+        this.host.emitResize();
+        return false;
+
       case "Theme":
         this.widget.setTheme(themes.Themes[cmd.data]);
         return false;

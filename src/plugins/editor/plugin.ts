@@ -6,7 +6,7 @@ import * as themes from "@libs/themes";
 import { EditorWidget } from "@widgets/editor";
 
 export class EditorPlugin extends plugins.Plugin {
-  #zen = false;
+  #zen = true;
 
   readonly widget = new EditorWidget({
     multiLine: true,
@@ -48,6 +48,7 @@ export class EditorPlugin extends plugins.Plugin {
       case "Zen":
         this.widget.toggleIndex();
         this.#zen = !this.#zen;
+        this.host.emitResize();
         return false;
 
       case "Theme":
