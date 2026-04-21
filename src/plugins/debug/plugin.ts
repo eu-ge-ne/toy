@@ -6,7 +6,7 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 export class DebugPlugin extends plugins.Plugin {
-  #zen = false;
+  #zen = true;
 
   readonly widget = new DebugWidget({
     disabled: true,
@@ -33,6 +33,7 @@ export class DebugPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
+        this.host.emitResize();
         return false;
 
       case "Debug":
