@@ -7,7 +7,7 @@ import { FooterWidget } from "./widget.ts";
 export class FooterPlugin extends plugins.Plugin {
   #disabled = true;
 
-  readonly widget = new FooterWidget({
+  readonly #widget = new FooterWidget({
     ln: 0,
     col: 0,
     lnCount: 0,
@@ -16,14 +16,14 @@ export class FooterPlugin extends plugins.Plugin {
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
-    this.widget.resize(columns, 1, rows - 1, 0);
+    this.#widget.resize(columns, 1, rows - 1, 0);
   }
 
   override onRender(): void {
     if (this.#disabled) {
       return;
     }
-    this.widget.render();
+    this.#widget.render();
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
@@ -34,7 +34,7 @@ export class FooterPlugin extends plugins.Plugin {
         return false;
 
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
     }
 
@@ -42,8 +42,8 @@ export class FooterPlugin extends plugins.Plugin {
   }
 
   override onDocCursorChange(ln: number, col: number, lnCount: number): void {
-    this.widget.props.ln = ln;
-    this.widget.props.col = col;
-    this.widget.props.lnCount = lnCount;
+    this.#widget.props.ln = ln;
+    this.#widget.props.col = col;
+    this.#widget.props.lnCount = lnCount;
   }
 }

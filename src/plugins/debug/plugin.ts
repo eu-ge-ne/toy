@@ -8,7 +8,7 @@ import { DebugWidget } from "./widget.ts";
 export class DebugPlugin extends plugins.Plugin {
   #zen = true;
 
-  readonly widget = new DebugWidget({
+  readonly #widget = new DebugWidget({
     disabled: true,
     renderTime: 0,
     inputTime: 0,
@@ -22,11 +22,11 @@ export class DebugPlugin extends plugins.Plugin {
     const y = this.#zen ? rows - h : rows - 1 - h;
     const x = columns - w;
 
-    this.widget.resize(w, h, y, x);
+    this.#widget.resize(w, h, y, x);
   }
 
   override onRender(): void {
-    this.widget.render();
+    this.#widget.render();
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
@@ -37,11 +37,11 @@ export class DebugPlugin extends plugins.Plugin {
         return false;
 
       case "Debug":
-        this.widget.props.disabled = !this.widget.props.disabled;
+        this.#widget.props.disabled = !this.#widget.props.disabled;
         return true;
 
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
     }
 
@@ -49,10 +49,10 @@ export class DebugPlugin extends plugins.Plugin {
   }
 
   override onKeyHandled(elapsed: number): void {
-    this.widget.props.inputTime = elapsed;
+    this.#widget.props.inputTime = elapsed;
   }
 
   override onRendered(elapsed: number): void {
-    this.widget.props.renderTime = elapsed;
+    this.#widget.props.renderTime = elapsed;
   }
 }

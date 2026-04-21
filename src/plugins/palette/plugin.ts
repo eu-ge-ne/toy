@@ -7,7 +7,7 @@ import { PaletteWidget } from "./widget.ts";
 export class PalettePlugin extends plugins.Plugin {
   #zen = true;
 
-  readonly widget = new PaletteWidget({
+  readonly #widget = new PaletteWidget({
     onInvalidate: () => {
       this.host.emitResize();
       this.host.emitRender();
@@ -18,9 +18,9 @@ export class PalettePlugin extends plugins.Plugin {
     const { columns, rows } = Deno.consoleSize();
 
     if (this.#zen) {
-      this.widget.resize(columns, rows, 0, 0);
+      this.#widget.resize(columns, rows, 0, 0);
     } else {
-      this.widget.resize(columns, rows - 2, 1, 0);
+      this.#widget.resize(columns, rows - 2, 1, 0);
     }
   }
 
@@ -32,7 +32,7 @@ export class PalettePlugin extends plugins.Plugin {
         return false;
 
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
 
       case "Palette":
@@ -44,7 +44,7 @@ export class PalettePlugin extends plugins.Plugin {
   }
 
   async #run(): Promise<void> {
-    const cmd = await this.widget.open();
+    const cmd = await this.#widget.open();
 
     this.host.emitRender();
 
