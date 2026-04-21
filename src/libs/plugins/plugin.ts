@@ -7,23 +7,19 @@ export abstract class Plugin {
   constructor(protected readonly host: Host) {
   }
 
-  onStart(): void {}
-  onStop(_?: PromiseRejectionEvent): void {}
+  onStart?(): void;
+  onStop?(_?: PromiseRejectionEvent): void;
 
-  onResize(): void {}
-  onRender(): void {}
-  onPreRender(): void {}
-  onPostRender(): void {}
-  onRendered(_: number): void {}
+  onResize?(): void;
+  onRender?(): void;
+  onPreRender?(): void;
+  onPostRender?(): void;
+  onRendered?(_: number): void;
 
-  async onKey(_: kitty.Key): Promise<boolean> {
-    return false;
-  }
-  onKeyHandled(_: number): void {}
+  async onKey?(_: kitty.Key): Promise<boolean>;
+  onKeyHandled?(_: number): void;
 
-  async onCommand(_: commands.Command): Promise<boolean> {
-    return false;
-  }
+  async onCommand?(_: commands.Command): Promise<boolean>;
 
   onDocNameChange(_: string): void {}
   onDocChange(): void {}

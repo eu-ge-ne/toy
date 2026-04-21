@@ -15,45 +15,45 @@ export abstract class Host {
 
   emitStart(): void {
     for (const x of this.plugins) {
-      x.onStart();
+      x.onStart?.();
     }
   }
 
   emitStop(e?: PromiseRejectionEvent): void {
     for (const x of this.plugins) {
-      x.onStop(e);
+      x.onStop?.(e);
     }
   }
 
   emitResize(): void {
     for (const x of this.plugins) {
-      x.onResize();
+      x.onResize?.();
     }
   }
 
   emitRender(): void {
     for (const x of this.plugins) {
-      x.onPreRender();
+      x.onPreRender?.();
     }
 
     for (const x of this.plugins) {
-      x.onRender();
+      x.onRender?.();
     }
 
     for (const x of this.plugins) {
-      x.onPostRender();
+      x.onPostRender?.();
     }
   }
 
   emitRendered(elapsed: number): void {
     for (const x of this.plugins) {
-      x.onRendered(elapsed);
+      x.onRendered?.(elapsed);
     }
   }
 
   async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onKey(key)) {
+      if (await x.onKey?.(key)) {
         return;
       }
     }
@@ -61,13 +61,13 @@ export abstract class Host {
 
   emitKeyHandled(elapsed: number): void {
     for (const x of this.plugins) {
-      x.onKeyHandled(elapsed);
+      x.onKeyHandled?.(elapsed);
     }
   }
 
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onCommand(cmd)) {
+      if (await x.onCommand?.(cmd)) {
         return;
       }
     }
