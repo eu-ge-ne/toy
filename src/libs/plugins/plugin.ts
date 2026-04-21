@@ -16,14 +16,13 @@ export abstract class Plugin {
   onPostRender?(): void;
   onRendered?(_: number): void;
 
+  async onCommand?(_: commands.Command): Promise<boolean>;
+
   async onKey?(_: kitty.Key): Promise<boolean>;
   onKeyHandled?(_: number): void;
 
-  async onCommand?(_: commands.Command): Promise<boolean>;
-
-  onDocNameChange(_: string): void {}
-  onDocChange(): void {}
-  onDocReset(): void {}
-
-  onCursorChange(_: { ln: number; col: number; lnCount: number }): void {}
+  onDocReset?(): void;
+  onDocChange?(): void;
+  onDocNameChange?(_: string): void;
+  onDocCursorChange?(ln: number, col: number, lnCount: number): void;
 }

@@ -10,7 +10,8 @@ export class EditorPlugin extends plugins.Plugin {
 
   readonly widget = new EditorWidget({
     multiLine: true,
-    onCursorChange: (x) => this.host.emitCursorChange(x),
+    onCursorChange: (x) =>
+      this.host.emitDocCursorChange?.(x.ln, x.col, x.lnCount),
     onKeyHandle: (x) => this.host.emitKeyHandled(x),
   });
 

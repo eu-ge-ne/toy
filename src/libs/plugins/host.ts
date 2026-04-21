@@ -51,6 +51,14 @@ export abstract class Host {
     }
   }
 
+  async emitCommand(cmd: commands.Command): Promise<void> {
+    for (const x of this.plugins) {
+      if (await x.onCommand?.(cmd)) {
+        return;
+      }
+    }
+  }
+
   async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onKey?.(key)) {
@@ -65,35 +73,27 @@ export abstract class Host {
     }
   }
 
-  async emitCommand(cmd: commands.Command): Promise<void> {
+  emitDocReset(): void {
     for (const x of this.plugins) {
-      if (await x.onCommand?.(cmd)) {
-        return;
-      }
-    }
-  }
-
-  emitDocNameChange(docName: string): void {
-    for (const x of this.plugins) {
-      x.onDocNameChange(docName);
+      x.onDocReset?.();
     }
   }
 
   emitDocChange(): void {
     for (const x of this.plugins) {
-      x.onDocChange();
+      x.onDocChange?.();
     }
   }
 
-  emitDocReset(): void {
+  emitDocNameChange(docName: string): void {
     for (const x of this.plugins) {
-      x.onDocReset();
+      x.onDocNameChange?.(docName);
     }
   }
 
-  emitCursorChange(data: { ln: number; col: number; lnCount: number }): void {
+  emitDocCursorChange(ln: number, col: number, lnCount: number): void {
     for (const x of this.plugins) {
-      x.onCursorChange(data);
+      x.onDocCursorChange?.(ln, col, lnCount);
     }
   }
 }
