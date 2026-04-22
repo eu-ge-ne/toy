@@ -66,6 +66,15 @@ export abstract class Host {
     return false;
   }
 
+  async emitOpenFile(fileName: string): Promise<boolean> {
+    for (const x of this.plugins) {
+      if (await x.onOpenFile?.(fileName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {
@@ -85,6 +94,12 @@ export abstract class Host {
   emitKeyHandled(elapsed: number): void {
     for (const x of this.plugins) {
       x.onKeyHandled?.(elapsed);
+    }
+  }
+
+  emitDocAppend(chunk: string): void {
+    for (const x of this.plugins) {
+      x.onDocAppend?.(chunk);
     }
   }
 

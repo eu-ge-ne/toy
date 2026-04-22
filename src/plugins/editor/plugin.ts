@@ -90,4 +90,8 @@ export class EditorPlugin extends plugins.Plugin {
 
     return false;
   }
+
+  override onDocAppend(chunk: string): void {
+    this.widget.append(chunk);
+  }
 }
