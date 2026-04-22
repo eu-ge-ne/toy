@@ -97,12 +97,6 @@ export abstract class Host {
     }
   }
 
-  emitDocAppend(chunk: string): void {
-    for (const x of this.plugins) {
-      x.onDocAppend?.(chunk);
-    }
-  }
-
   emitDocReset(): void {
     for (const x of this.plugins) {
       x.onDocReset?.();
@@ -124,6 +118,12 @@ export abstract class Host {
   emitDocCursorChange(ln: number, col: number, lnCount: number): void {
     for (const x of this.plugins) {
       x.onDocCursorChange?.(ln, col, lnCount);
+    }
+  }
+
+  emitDocLoadChunk(chunk: string): void {
+    for (const x of this.plugins) {
+      x.onDocLoadChunk?.(chunk);
     }
   }
 }
