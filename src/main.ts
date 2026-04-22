@@ -34,7 +34,7 @@ const host = new class extends plugins.Host {
     editorPlugin.widget.setFocused(false);
 
     if (editorPlugin.widget.textChanged) {
-      if (await askPlugin.widget.open("Save changes?")) {
+      if (await host.emitAsk("Save changes?")) {
         await saveFile();
       }
     }
@@ -56,7 +56,6 @@ const host = new class extends plugins.Host {
 }();
 
 const editorPlugin = new EditorPlugin(host);
-const askPlugin = new AskPlugin(host);
 const savePlugin = new SavePlugin(host);
 
 host.register(
@@ -67,7 +66,7 @@ host.register(
   new FooterPlugin(host),
   editorPlugin,
   new DebugPlugin(host),
-  askPlugin,
+  new AskPlugin(host),
   new AlertPlugin(host),
   new PalettePlugin(host),
   savePlugin,

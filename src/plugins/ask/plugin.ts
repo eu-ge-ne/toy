@@ -6,7 +6,7 @@ import * as themes from "@libs/themes";
 import { AskWidget } from "./widget.ts";
 
 export class AskPlugin extends plugins.Plugin {
-  readonly widget = new AskWidget();
+  readonly #widget = new AskWidget();
 
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
@@ -16,16 +16,20 @@ export class AskPlugin extends plugins.Plugin {
     const y = Math.trunc((rows - h) / 2);
     const x = Math.trunc((columns - w) / 2);
 
-    this.widget.resize(w, h, y, x);
+    this.#widget.resize(w, h, y, x);
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
     }
 
     return false;
+  }
+
+  override async onAsk(message: string): Promise<boolean> {
+    return await this.#widget.open(message);
   }
 }
