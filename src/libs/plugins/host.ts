@@ -57,6 +57,15 @@ export abstract class Host {
     }
   }
 
+  async emitAsk(message: string): Promise<boolean> {
+    for (const x of this.plugins) {
+      if (await x.onAsk?.(message)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {
