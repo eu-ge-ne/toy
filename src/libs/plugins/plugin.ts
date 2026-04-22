@@ -27,8 +27,8 @@ export abstract class Plugin {
   onKeyHandled?(_: number): void;
 
   onDocAppend?(_: string): void;
-  onDocReset?(): void;
-  onDocChange?(): void;
-  onDocNameChange?(_: string): void;
-  onDocCursorChange?(ln: number, col: number, lnCount: number): void;
+  onDocReset?(): void; // TODO
+  onDocChange?(): void; // TODO
+  onDocNameChange?(_: string): void; // TODO
+  onDocCursorChange?(ln: number, col: number, lnCount: number): void; // TODO
 }
