@@ -51,6 +51,12 @@ export abstract class Host {
     }
   }
 
+  async emitAlert(message: string): Promise<void> {
+    for (const x of this.plugins) {
+      await x.onAlert?.(message);
+    }
+  }
+
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {

@@ -57,7 +57,6 @@ const host = new class extends plugins.Host {
 
 const editorPlugin = new EditorPlugin(host);
 const askPlugin = new AskPlugin(host);
-const alertPlugin = new AlertPlugin(host);
 const savePlugin = new SavePlugin(host);
 
 host.register(
@@ -69,7 +68,7 @@ host.register(
   editorPlugin,
   new DebugPlugin(host),
   askPlugin,
-  alertPlugin,
+  new AlertPlugin(host),
   new PalettePlugin(host),
   savePlugin,
 );
@@ -96,7 +95,8 @@ async function loadFile(fileName: string): Promise<void> {
     host.emitDocNameChange(fileName);
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
-      await alertPlugin.widget.open(err);
+      const message = Error.isError(err) ? err.message : Deno.inspect(err);
+      await host.emitAlert(message);
 
       host.emitStop();
     }
@@ -113,7 +113,8 @@ async function saveFile(): Promise<boolean> {
 
     return true;
   } catch (err) {
-    await alertPlugin.widget.open(err);
+    const message = Error.isError(err) ? err.message : Deno.inspect(err);
+    await host.emitAlert(message);
 
     return await saveFileAs();
   }
@@ -134,7 +135,8 @@ async function saveFileAs(): Promise<boolean> {
 
       return true;
     } catch (err) {
-      await alertPlugin.widget.open(err);
+      const message = Error.isError(err) ? err.message : Deno.inspect(err);
+      await host.emitAlert(message);
     }
   }
 }

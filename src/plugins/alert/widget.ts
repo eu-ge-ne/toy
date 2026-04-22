@@ -31,10 +31,8 @@ export class AlertWidget extends widgets.Modal<[unknown]> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async open(err: unknown): Promise<void> {
-    this.children.text.value = Error.isError(err)
-      ? err.message
-      : Deno.inspect(err);
+  async open(message: string): Promise<void> {
+    this.children.text.value = message;
 
     while (true) {
       this.render();

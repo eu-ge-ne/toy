@@ -16,6 +16,8 @@ export abstract class Plugin {
   onPostRender?(): void;
   onRendered?(_: number): void;
 
+  async onAlert?(_: string): Promise<void>;
+
   async onCommand?(_: commands.Command): Promise<boolean>;
 
   async onKey?(_: kitty.Key): Promise<boolean>;
