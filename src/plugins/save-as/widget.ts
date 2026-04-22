@@ -5,7 +5,7 @@ import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
-export class SaveWidget extends widgets.Modal<[string], string> {
+export class SaveAsWidget extends widgets.Modal<[string], string> {
   protected override children: {
     bg: BgWidget;
     header: TextWidget;

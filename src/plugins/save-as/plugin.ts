@@ -3,10 +3,10 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { SaveWidget } from "./widget.ts";
+import { SaveAsWidget } from "./widget.ts";
 
-export class SavePlugin extends plugins.Plugin {
-  readonly widget = new SaveWidget();
+export class SaveAsPlugin extends plugins.Plugin {
+  readonly #widget = new SaveAsWidget();
 
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
@@ -16,13 +16,13 @@ export class SavePlugin extends plugins.Plugin {
     const y = Math.trunc((rows - h) / 2);
     const x = Math.trunc((columns - w) / 2);
 
-    this.widget.resize(w, h, y, x);
+    this.#widget.resize(w, h, y, x);
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
     }
 
