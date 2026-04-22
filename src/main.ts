@@ -9,6 +9,7 @@ import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
 import { ExitPlugin } from "@plugins/exit";
+import { FilePlugin } from "@plugins/file";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
@@ -61,6 +62,7 @@ const savePlugin = new SavePlugin(host);
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
+  new FilePlugin(host),
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
@@ -83,24 +85,6 @@ editorPlugin.widget.props.onTextChange = () => {
     host.emitDocReset();
   }
 };
-
-async function loadFile(fileName: string): Promise<void> {
-  try {
-    for await (const text of files.load(fileName)) {
-      editorPlugin.widget.append(text);
-    }
-
-    fileName0 = fileName;
-    host.emitDocNameChange(fileName);
-  } catch (err) {
-    if (!(err instanceof Deno.errors.NotFound)) {
-      const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await host.emitAlert(message);
-
-      host.emitStop();
-    }
-  }
-}
 
 async function saveFile(): Promise<boolean> {
   if (!fileName0) {
@@ -147,7 +131,7 @@ await host.emitCommand({ name: "Theme", data: "Default" });
 
 const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
 if (fileNameArg) {
-  await loadFile(fileNameArg);
+  await host.emitOpenFile(fileNameArg);
 }
 
 while (true) {

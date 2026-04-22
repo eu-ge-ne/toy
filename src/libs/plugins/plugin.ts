@@ -19,11 +19,14 @@ export abstract class Plugin {
   async onAlert?(_: string): Promise<void>;
   async onAsk?(_: string): Promise<boolean>;
 
+  async onOpenFile?(_: string): Promise<void>;
+
   async onCommand?(_: commands.Command): Promise<boolean>;
 
   async onKey?(_: kitty.Key): Promise<boolean>;
   onKeyHandled?(_: number): void;
 
+  onDocAppend?(_: string): void;
   onDocReset?(): void;
   onDocChange?(): void;
   onDocNameChange?(_: string): void;
