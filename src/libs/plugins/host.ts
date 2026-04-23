@@ -66,6 +66,15 @@ export abstract class Host {
     return false;
   }
 
+  async emitAskFileName(fileName: string): Promise<string | undefined> {
+    for (const x of this.plugins) {
+      const newFileName = await x.onAskFileName?.(fileName);
+      if (newFileName) {
+        return newFileName;
+      }
+    }
+  }
+
   async emitOpenFile(fileName: string): Promise<boolean> {
     for (const x of this.plugins) {
       if (await x.onOpenFile?.(fileName)) {

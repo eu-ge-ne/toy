@@ -5,7 +5,8 @@ import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
-export class SaveWidget extends widgets.Modal<[string], string> {
+export class AskFileNameWidget
+  extends widgets.Modal<[string], string | undefined> {
   protected override children: {
     bg: BgWidget;
     header: TextWidget;
@@ -36,7 +37,7 @@ export class SaveWidget extends widgets.Modal<[string], string> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async open(path: string): Promise<string> {
+  async open(path: string): Promise<string | undefined> {
     const { editor } = this.children;
 
     editor.setFocused(true);
@@ -51,7 +52,7 @@ export class SaveWidget extends widgets.Modal<[string], string> {
 
       switch (key.name) {
         case "ESC":
-          return "";
+          return;
         case "ENTER": {
           const path = editor.text;
           if (path) {
