@@ -75,13 +75,12 @@ export abstract class Host {
     }
   }
 
-  async emitOpenFile(fileName: string): Promise<boolean> {
+  async emitFileOpen(fileName: string): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onOpenFile?.(fileName)) {
-        return true;
+      if (await x.onFileOpen?.(fileName)) {
+        return;
       }
     }
-    return false;
   }
 
   async emitCommand(cmd: commands.Command): Promise<void> {
