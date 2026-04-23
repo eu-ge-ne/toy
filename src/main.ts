@@ -91,7 +91,7 @@ async function saveFile(): Promise<boolean> {
   }
 
   try {
-    await files.save(fileName0, editorPlugin.widget.read());
+    await files.save(fileName0, host.emitDocRead());
 
     return true;
   } catch (err) {
@@ -110,7 +110,7 @@ async function saveFileAs(): Promise<boolean> {
     }
 
     try {
-      await files.save(newFileName, editorPlugin.widget.read());
+      await files.save(newFileName, host.emitDocRead());
 
       fileName0 = newFileName;
       host.emitDocNameChange(newFileName);

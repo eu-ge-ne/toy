@@ -105,6 +105,21 @@ export abstract class Host {
     }
   }
 
+  emitDocWrite(chunk: string): void {
+    for (const x of this.plugins) {
+      x.onDocWrite?.(chunk);
+    }
+  }
+
+  emitDocRead(): Iterable<string> {
+    for (const x of this.plugins) {
+      if (x.onDocRead) {
+        return x.onDocRead();
+      }
+    }
+    return Iterator.from([]);
+  }
+
   emitDocReset(): void {
     for (const x of this.plugins) {
       x.onDocReset?.();
@@ -126,12 +141,6 @@ export abstract class Host {
   emitDocCursorChange(ln: number, col: number, lnCount: number): void {
     for (const x of this.plugins) {
       x.onDocCursorChange?.(ln, col, lnCount);
-    }
-  }
-
-  emitDocLoadChunk(chunk: string): void {
-    for (const x of this.plugins) {
-      x.onDocLoadChunk?.(chunk);
     }
   }
 }

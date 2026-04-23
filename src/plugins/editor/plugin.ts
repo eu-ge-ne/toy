@@ -91,7 +91,11 @@ export class EditorPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onDocLoadChunk(chunk: string): void {
+  override onDocWrite(chunk: string): void {
     this.widget.append(chunk);
+  }
+
+  override onDocRead(): Iterable<string> {
+    return this.widget.read();
   }
 }
