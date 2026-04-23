@@ -73,17 +73,7 @@ host.register(
   new AskFileNamePlugin(host),
 );
 
-let fileModified = false;
 let fileName0: string | undefined;
-
-editorPlugin.widget.props.onTextChange = () => {
-  fileModified = editorPlugin.widget.textChanged;
-  if (fileModified) {
-    host.emitDocChange();
-  } else {
-    host.emitDocReset();
-  }
-};
 
 async function saveFile(): Promise<boolean> {
   if (!fileName0) {
