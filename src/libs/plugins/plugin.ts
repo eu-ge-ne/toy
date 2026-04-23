@@ -27,9 +27,10 @@ export abstract class Plugin {
   async onKey?(_: kitty.Key): Promise<boolean>;
   onKeyHandled?(_: number): void;
 
+  onDocWrite?(_: string): void;
+  onDocRead?(): Iterable<string>;
   onDocReset?(): void; // TODO
   onDocChange?(): void; // TODO
   onDocNameChange?(_: string): void; // TODO
   onDocCursorChange?(ln: number, col: number, lnCount: number): void; // TODO
-  onDocLoadChunk?(_: string): void;
 }

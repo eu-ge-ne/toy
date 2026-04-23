@@ -8,7 +8,7 @@ export class FilesPlugin extends plugins.Plugin {
   override async onFileOpen(fileName: string): Promise<void> {
     try {
       for await (const chunk of loadFile(fileName)) {
-        this.host.emitDocLoadChunk(chunk);
+        this.host.emitDocWrite(chunk);
       }
 
       this.host.emitDocNameChange(fileName);
