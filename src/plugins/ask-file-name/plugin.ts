@@ -3,10 +3,10 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { SaveAsWidget } from "./widget.ts";
+import { AskFileNameWidget } from "./widget.ts";
 
-export class SaveAsPlugin extends plugins.Plugin {
-  readonly #widget = new SaveAsWidget();
+export class AskFileNamePlugin extends plugins.Plugin {
+  readonly #widget = new AskFileNameWidget();
 
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
@@ -27,5 +27,9 @@ export class SaveAsPlugin extends plugins.Plugin {
     }
 
     return false;
+  }
+
+  override async onAskFileName(fileName: string): Promise<string | undefined> {
+    return await this.#widget.open(fileName);
   }
 }

@@ -18,6 +18,7 @@ export abstract class Plugin {
 
   async onAlert?(_: string): Promise<void>;
   async onAsk?(_: string): Promise<boolean>;
+  async onAskFileName?(_: string): Promise<string | undefined>;
 
   async onOpenFile?(_: string): Promise<void>;
 

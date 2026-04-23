@@ -5,6 +5,7 @@ import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 import { AlertPlugin } from "@plugins/alert";
 import { AskPlugin } from "@plugins/ask";
+import { AskFileNamePlugin } from "@plugins/ask-file-name";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
@@ -13,7 +14,6 @@ import { FilePlugin } from "@plugins/file";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
-import { SavePlugin } from "@plugins/save";
 import { VTPlugin } from "@plugins/vt";
 
 import deno from "../deno.json" with { type: "json" };
@@ -57,7 +57,6 @@ const host = new class extends plugins.Host {
 }();
 
 const editorPlugin = new EditorPlugin(host);
-const savePlugin = new SavePlugin(host);
 
 host.register(
   new VTPlugin(host),
@@ -71,7 +70,7 @@ host.register(
   new AskPlugin(host),
   new AlertPlugin(host),
   new PalettePlugin(host),
-  savePlugin,
+  new AskFileNamePlugin(host),
 );
 
 let fileModified = false;
@@ -105,16 +104,16 @@ async function saveFile(): Promise<boolean> {
 
 async function saveFileAs(): Promise<boolean> {
   while (true) {
-    const fileName = await savePlugin.widget.open(fileName0 ?? "");
-    if (!fileName) {
+    const newFileName = await host.emitAskFileName(fileName0 ?? "");
+    if (!newFileName) {
       return false;
     }
 
     try {
-      await files.save(fileName, editorPlugin.widget.read());
+      await files.save(newFileName, editorPlugin.widget.read());
 
-      fileName0 = fileName;
-      host.emitDocNameChange(fileName);
+      fileName0 = newFileName;
+      host.emitDocNameChange(newFileName);
 
       return true;
     } catch (err) {
