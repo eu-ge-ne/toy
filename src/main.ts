@@ -10,7 +10,7 @@ import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
 import { ExitPlugin } from "@plugins/exit";
-import { FilePlugin } from "@plugins/file";
+import { FilesPlugin } from "@plugins/files";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
@@ -61,7 +61,7 @@ const editorPlugin = new EditorPlugin(host);
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
-  new FilePlugin(host),
+  new FilesPlugin(host),
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
@@ -128,9 +128,8 @@ host.emitResize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
 
-const fileNameArg = typeof args._[0] === "string" ? args._[0] : undefined;
-if (fileNameArg) {
-  await host.emitOpenFile(fileNameArg);
+if (typeof args._[0] === "string") {
+  await host.emitFileOpen(args._[0]);
 }
 
 while (true) {

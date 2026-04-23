@@ -20,7 +20,7 @@ export abstract class Plugin {
   async onAsk?(_: string): Promise<boolean>;
   async onAskFileName?(_: string): Promise<string | undefined>;
 
-  async onOpenFile?(_: string): Promise<void>;
+  async onFileOpen?(_: string): Promise<void>;
 
   async onCommand?(_: commands.Command): Promise<boolean>;
 
