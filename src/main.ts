@@ -1,6 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 import { AlertPlugin } from "@plugins/alert";
@@ -36,7 +35,7 @@ const host = new class extends plugins.Host {
 
     if (editorPlugin.widget.textChanged) {
       if (await host.emitAsk("Save changes?")) {
-        await saveFile();
+        await host.emitFileSave();
       }
     }
 
@@ -46,7 +45,7 @@ const host = new class extends plugins.Host {
   async save(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
-    if (await saveFile()) {
+    if (await host.emitFileSave()) {
       editorPlugin.widget.resetChanges();
     }
 
@@ -72,46 +71,6 @@ host.register(
   new PalettePlugin(host),
   new AskFileNamePlugin(host),
 );
-
-let fileName0: string | undefined;
-
-async function saveFile(): Promise<boolean> {
-  if (!fileName0) {
-    return await saveFileAs();
-  }
-
-  try {
-    await files.save(fileName0, host.emitDocRead());
-
-    return true;
-  } catch (err) {
-    const message = Error.isError(err) ? err.message : Deno.inspect(err);
-    await host.emitAlert(message);
-
-    return await saveFileAs();
-  }
-}
-
-async function saveFileAs(): Promise<boolean> {
-  while (true) {
-    const newFileName = await host.emitAskFileName(fileName0 ?? "");
-    if (!newFileName) {
-      return false;
-    }
-
-    try {
-      await files.save(newFileName, host.emitDocRead());
-
-      fileName0 = newFileName;
-      host.emitDocNameChange(newFileName);
-
-      return true;
-    } catch (err) {
-      const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await host.emitAlert(message);
-    }
-  }
-}
 
 host.emitStart();
 host.emitResize();

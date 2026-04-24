@@ -1,5 +1,3 @@
-const decoder = new TextDecoder();
-
 export async function* loadFile(fileName: string): AsyncGenerator<string> {
   using file = await Deno.open(fileName, { read: true });
 
@@ -9,6 +7,7 @@ export async function* loadFile(fileName: string): AsyncGenerator<string> {
   }
 
   const bytes = new Uint8Array(1024 ** 2 * 64);
+  const decoder = new TextDecoder();
 
   while (true) {
     const n = await file.read(bytes);
@@ -25,5 +24,25 @@ export async function* loadFile(fileName: string): AsyncGenerator<string> {
   const text = decoder.decode();
   if (text.length > 0) {
     yield text;
+  }
+}
+
+export async function saveFile(
+  fileName: string,
+  text: Iterable<string>,
+): Promise<void> {
+  using file = await Deno.open(fileName, {
+    create: true,
+    write: true,
+    truncate: true,
+  });
+
+  const encoder = new TextEncoderStream();
+  const writer = encoder.writable.getWriter();
+
+  encoder.readable.pipeTo(file.writable);
+
+  for (const t of text) {
+    await writer.write(t);
   }
 }

@@ -83,6 +83,24 @@ export abstract class Host {
     }
   }
 
+  async emitFileSave(): Promise<boolean> {
+    for (const x of this.plugins) {
+      if (await x.onFileSave?.()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async emitFileSaveAs(): Promise<boolean> {
+    for (const x of this.plugins) {
+      if (await x.onFileSaveAs?.()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {

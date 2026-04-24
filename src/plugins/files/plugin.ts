@@ -1,6 +1,6 @@
 import * as plugins from "@libs/plugins";
 
-import { loadFile } from "./files.ts";
+import { loadFile, saveFile } from "./files.ts";
 
 export class FilesPlugin extends plugins.Plugin {
   #fileName?: string;
@@ -20,6 +20,44 @@ export class FilesPlugin extends plugins.Plugin {
         await this.host.emitAlert(message);
 
         this.host.emitStop();
+      }
+    }
+  }
+
+  override async onFileSave(): Promise<boolean> {
+    if (!this.#fileName) {
+      return await this.host.emitFileSaveAs();
+    }
+
+    try {
+      await saveFile(this.#fileName, this.host.emitDocRead());
+
+      return true;
+    } catch (err) {
+      const message = Error.isError(err) ? err.message : Deno.inspect(err);
+      await this.host.emitAlert(message);
+
+      return await this.host.emitFileSaveAs();
+    }
+  }
+
+  override async onFileSaveAs(): Promise<boolean> {
+    while (true) {
+      const newFileName = await this.host.emitAskFileName(this.#fileName ?? "");
+      if (!newFileName) {
+        return false;
+      }
+
+      try {
+        await saveFile(newFileName, this.host.emitDocRead());
+
+        this.#fileName = newFileName;
+        this.host.emitDocNameChange(newFileName);
+
+        return true;
+      } catch (err) {
+        const message = Error.isError(err) ? err.message : Deno.inspect(err);
+        await this.host.emitAlert(message);
       }
     }
   }
