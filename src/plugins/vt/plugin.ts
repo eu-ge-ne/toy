@@ -4,7 +4,7 @@ import * as vt from "@libs/vt";
 export class VTPlugin extends plugins.Plugin {
   #t0 = 0;
 
-  override onStart(): void {
+  override async onStart(): Promise<void> {
     vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
@@ -13,7 +13,7 @@ export class VTPlugin extends plugins.Plugin {
     });
   }
 
-  override onStop(): void {
+  override async onStop(): Promise<void> {
     vt.restore();
   }
 
