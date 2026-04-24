@@ -30,18 +30,6 @@ if (args.version) {
 }
 
 const host = new class extends plugins.Host {
-  async exit(): Promise<void> {
-    editorPlugin.widget.setFocused(false);
-
-    if (editorPlugin.widget.textChanged) {
-      if (await host.emitAsk("Save changes?")) {
-        await host.emitFileSave();
-      }
-    }
-
-    host.emitStop();
-  }
-
   async save(): Promise<void> {
     editorPlugin.widget.setFocused(false);
 
@@ -72,7 +60,7 @@ host.register(
   new AskFileNamePlugin(host),
 );
 
-host.emitStart();
+await host.emitStart();
 host.emitResize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });

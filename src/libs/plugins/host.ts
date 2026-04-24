@@ -10,18 +10,21 @@ export abstract class Host {
     this.plugins.push(...plugins);
   }
 
-  abstract exit(): Promise<void>;
   abstract save(): Promise<void>;
 
-  emitStart(): void {
+  async emitStart(): Promise<void> {
     for (const x of this.plugins) {
-      x.onStart?.();
+      await x.onStart?.();
     }
   }
 
-  emitStop(e?: PromiseRejectionEvent): void {
+  async emitStop2(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
-      x.onStop?.(e);
+      await x.onPreStop?.();
+    }
+
+    for (const x of this.plugins) {
+      await x.onStop?.(e);
     }
   }
 

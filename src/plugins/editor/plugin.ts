@@ -22,10 +22,22 @@ export class EditorPlugin extends plugins.Plugin {
     onKeyHandle: (x) => this.host.emitKeyHandled(x),
   });
 
-  override onStart(): void {
+  override async onStart(): Promise<void> {
     this.widget.setFocused(true);
     this.widget.resetChanges();
     this.widget.resetCursor();
+  }
+
+  override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
+    if (e) {
+      return;
+    }
+
+    if (this.widget.textChanged) {
+      if (await this.host.emitAsk("Save changes?")) {
+        await this.host.emitFileSave();
+      }
+    }
   }
 
   override onResize(): void {
