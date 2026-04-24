@@ -21,6 +21,8 @@ export abstract class Plugin {
   async onAskFileName?(_: string): Promise<string | undefined>;
 
   async onFileOpen?(_: string): Promise<void>;
+  async onFileSave?(): Promise<boolean>;
+  async onFileSaveAs?(): Promise<boolean>;
 
   async onCommand?(_: commands.Command): Promise<boolean>;
 
