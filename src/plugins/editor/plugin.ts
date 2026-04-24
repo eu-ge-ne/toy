@@ -8,10 +8,10 @@ import { EditorWidget } from "@widgets/editor";
 export class EditorPlugin extends plugins.Plugin {
   #zen = true;
 
-  readonly widget = new EditorWidget({
+  readonly #widget = new EditorWidget({
     multiLine: true,
     onTextChange: () => {
-      if (this.widget.textChanged) {
+      if (this.#widget.textChanged) {
         this.host.emitDocChange();
       } else {
         this.host.emitDocReset();
@@ -23,9 +23,9 @@ export class EditorPlugin extends plugins.Plugin {
   });
 
   override async onStart(): Promise<void> {
-    this.widget.setFocused(true);
-    this.widget.resetChanges();
-    this.widget.resetCursor();
+    this.#widget.setFocused(true);
+    this.#widget.resetChanges();
+    this.#widget.resetCursor();
   }
 
   override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
@@ -33,7 +33,7 @@ export class EditorPlugin extends plugins.Plugin {
       return;
     }
 
-    if (this.widget.textChanged) {
+    if (this.#widget.textChanged) {
       if (await this.host.emitAsk("Save changes?")) {
         await this.host.emitFileSave();
       }
@@ -44,14 +44,14 @@ export class EditorPlugin extends plugins.Plugin {
     const { columns, rows } = Deno.consoleSize();
 
     if (this.#zen) {
-      this.widget.resize(columns, rows, 0, 0);
+      this.#widget.resize(columns, rows, 0, 0);
     } else {
-      this.widget.resize(columns, rows - 2, 1, 0);
+      this.#widget.resize(columns, rows - 2, 1, 0);
     }
   }
 
   override onRender(): void {
-    this.widget.render();
+    this.#widget.render();
   }
 
   override async onKey(key: kitty.Key): Promise<boolean> {
@@ -59,51 +59,51 @@ export class EditorPlugin extends plugins.Plugin {
       return false;
     }
 
-    return this.widget.onKey(key);
+    return this.#widget.onKey(key);
   }
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
-        this.widget.toggleIndex();
+        this.#widget.toggleIndex();
         this.#zen = !this.#zen;
         this.host.emitResize();
         return false;
 
       case "Theme":
-        this.widget.setTheme(themes.Themes[cmd.data]);
+        this.#widget.setTheme(themes.Themes[cmd.data]);
         return false;
 
       case "Whitespace":
-        this.widget.toggleWhitespace();
+        this.#widget.toggleWhitespace();
         return true;
 
       case "Wrap":
-        this.widget.toggleWrapped();
+        this.#widget.toggleWrapped();
         return true;
 
       case "Copy":
-        this.widget.copy();
+        this.#widget.copy();
         return true;
 
       case "Cut":
-        this.widget.cut();
+        this.#widget.cut();
         return true;
 
       case "Paste":
-        this.widget.paste();
+        this.#widget.paste();
         return true;
 
       case "Undo":
-        this.widget.undo();
+        this.#widget.undo();
         return true;
 
       case "Redo":
-        this.widget.redo();
+        this.#widget.redo();
         return true;
 
       case "SelectAll":
-        this.widget.selectAll();
+        this.#widget.selectAll();
         return true;
     }
 
@@ -111,10 +111,22 @@ export class EditorPlugin extends plugins.Plugin {
   }
 
   override onDocWrite(chunk: string): void {
-    this.widget.append(chunk);
+    this.#widget.append(chunk);
   }
 
   override onDocRead(): Iterable<string> {
-    return this.widget.read();
+    return this.#widget.read();
+  }
+
+  override async onDocSave(): Promise<void> {
+    //editorPlugin.widget.setFocused(false);
+
+    if (await this.host.emitFileSave()) {
+      this.#widget.resetChanges();
+    }
+
+    //editorPlugin.widget.setFocused(true);
+
+    //host.emitRender();
   }
 }

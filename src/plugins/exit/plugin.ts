@@ -4,7 +4,7 @@ export class ExitPlugin extends plugins.Plugin {
   override async onStart(): Promise<void> {
     globalThis.addEventListener(
       "unhandledrejection",
-      (e) => this.host.emitStop2(e),
+      (e) => this.host.emitStop(e),
     );
   }
 

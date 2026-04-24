@@ -32,6 +32,7 @@ export abstract class Plugin {
 
   onDocWrite?(_: string): void;
   onDocRead?(): Iterable<string>;
+  onDocSave?(): Promise<void>;
   onDocReset?(): void; // TODO
   onDocChange?(): void; // TODO
   onDocNameChange?(_: string): void; // TODO

@@ -3,14 +3,12 @@ import * as kitty from "@libs/kitty";
 
 import { Plugin } from "./plugin.ts";
 
-export abstract class Host {
+export class Host {
   protected readonly plugins: Plugin[] = [];
 
   register(...plugins: Plugin[]): void {
     this.plugins.push(...plugins);
   }
-
-  abstract save(): Promise<void>;
 
   async emitStart(): Promise<void> {
     for (const x of this.plugins) {
@@ -18,7 +16,7 @@ export abstract class Host {
     }
   }
 
-  async emitStop2(e?: PromiseRejectionEvent): Promise<void> {
+  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
       await x.onPreStop?.();
     }
@@ -139,6 +137,12 @@ export abstract class Host {
       }
     }
     return Iterator.from([]);
+  }
+
+  async emitDocSave(): Promise<void> {
+    for (const x of this.plugins) {
+      x.onDocSave?.();
+    }
   }
 
   emitDocReset(): void {
