@@ -16,11 +16,11 @@ export class CommandsPlugin extends plugins.Plugin {
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Exit":
-        await this.host.emitStop2();
+        await this.host.emitStop();
         return true;
 
       case "Save":
-        await this.host.save();
+        await this.host.emitDocSave();
         return true;
     }
 

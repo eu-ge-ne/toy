@@ -29,21 +29,7 @@ if (args.version) {
   Deno.exit();
 }
 
-const host = new class extends plugins.Host {
-  async save(): Promise<void> {
-    editorPlugin.widget.setFocused(false);
-
-    if (await host.emitFileSave()) {
-      editorPlugin.widget.resetChanges();
-    }
-
-    editorPlugin.widget.setFocused(true);
-
-    host.emitRender();
-  }
-}();
-
-const editorPlugin = new EditorPlugin(host);
+const host = new plugins.Host();
 
 host.register(
   new VTPlugin(host),
@@ -52,7 +38,7 @@ host.register(
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
-  editorPlugin,
+  new EditorPlugin(host),
   new DebugPlugin(host),
   new AskPlugin(host),
   new AlertPlugin(host),
