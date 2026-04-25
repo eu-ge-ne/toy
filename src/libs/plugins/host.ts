@@ -18,8 +18,8 @@ const states = {
 type States = typeof states;
 type StateName = keyof States;
 type State = {
-  outs: StateName[];
-  default?: StateName;
+  outs?: StateName[];
+  defaultOut?: StateName;
 };
 
 type FSM = Record<StateName, State>;
@@ -40,13 +40,13 @@ export class Host {
 
   #fsm: FSM = {
     0: { outs: ["Starting"] },
-    Starting: { outs: [], default: "Started" },
-    Started: { outs: [], default: "Running" },
+    Starting: { defaultOut: "Started" },
+    Started: { defaultOut: "Running" },
     Running: { outs: ["Stopping"] },
-    Stopping: { outs: ["Alerting"], default: "Stopped" },
-    Stopped: { outs: [], default: "Exit" },
-    Alerting: { outs: [] },
-    Exit: { outs: [] },
+    Stopping: { outs: ["Alerting"], defaultOut: "Stopped" },
+    Stopped: { defaultOut: "Exit" },
+    Alerting: {},
+    Exit: {},
   };
 
   #state: StateName[] = ["0"];
@@ -67,7 +67,7 @@ export class Host {
     ...data: Parameters<States[S]>
   ): Promise<void> {
     const outs = this.#fsm[this.#state[0]!].outs;
-    if (!outs.includes(newState)) {
+    if (!outs?.includes(newState)) {
       await std.log.error(
         { state: this.#state[0], newState },
         "Invalid state transition",
@@ -107,7 +107,7 @@ export class Host {
 
   async #transitionDefaults(): Promise<void> {
     while (true) {
-      const defaultState = this.#fsm[this.#state[0]!].default;
+      const defaultState = this.#fsm[this.#state[0]!].defaultOut;
       if (!defaultState) {
         break;
       }
