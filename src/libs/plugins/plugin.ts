@@ -17,6 +17,7 @@ export abstract class Plugin {
   onPostRender?(): void;
   onRendered?(_: number): void;
 
+  async alert?(_: string): Promise<void>;
   async onAsk?(_: string): Promise<boolean>;
   async onAskFileName?(_: string): Promise<string | undefined>;
 

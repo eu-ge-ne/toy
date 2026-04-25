@@ -9,7 +9,6 @@ const states = {
   Starting: async () => {},
   Started: async () => {},
   Running: async () => {},
-  Alerting: async (_: string) => {},
   Stopping: async () => {},
   Stopped: async () => {},
   Exit: async () => {},
@@ -43,9 +42,8 @@ export class Host {
     Starting: { defaultOut: "Started" },
     Started: { defaultOut: "Running" },
     Running: { outs: ["Stopping"] },
-    Stopping: { outs: ["Alerting"], defaultOut: "Stopped" },
+    Stopping: { defaultOut: "Stopped" },
     Stopped: { defaultOut: "Exit" },
-    Alerting: {},
     Exit: {},
   };
 
@@ -56,7 +54,6 @@ export class Host {
     Starting: [],
     Started: [],
     Running: [],
-    Alerting: [],
     Stopping: [],
     Stopped: [],
     Exit: [],
@@ -149,6 +146,12 @@ export class Host {
   emitRendered(elapsed: number): void {
     for (const x of this.plugins) {
       x.onRendered?.(elapsed);
+    }
+  }
+
+  async alert(message: string): Promise<void> {
+    for (const x of this.plugins) {
+      await x.alert?.(message);
     }
   }
 

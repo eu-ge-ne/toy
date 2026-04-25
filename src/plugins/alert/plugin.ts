@@ -10,13 +10,6 @@ export class AlertPlugin extends plugins.Plugin {
 
   readonly #widget = new AlertWidget();
 
-  override register(): void {
-    this.host.onEntry("Alerting", this.name, async (message) => {
-      await this.#widget.open(message);
-      this.host.return();
-    });
-  }
-
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
@@ -36,5 +29,9 @@ export class AlertPlugin extends plugins.Plugin {
     }
 
     return false;
+  }
+
+  override async alert(message: string): Promise<void> {
+    await this.#widget.open(message);
   }
 }
