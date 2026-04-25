@@ -1,30 +1,109 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
+import * as std from "@libs/std";
 
 import { Plugin } from "./plugin.ts";
+
+type State = "0" | "Starting" | "Started" | "Stopping" | "Stopped" | "Exit";
+
+type TAction<T> = { name: T };
+type Start = TAction<"Start">;
+type Stop = TAction<"Stop">;
+type Action = Start | Stop;
+
+type FSM = Record<
+  State,
+  | { [_ in Action["name"]]?: State }
+  | State
+>;
 
 export class Host {
   protected readonly plugins: Plugin[] = [];
 
   register(...plugins: Plugin[]): void {
+    for (const x of plugins) {
+      x.register?.();
+    }
     this.plugins.push(...plugins);
   }
 
-  async emitStart(): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onStart?.();
+  //
+
+  #fsm: FSM = {
+    0: {
+      Start: "Starting",
+    },
+    Starting: "Started",
+    Started: {
+      Stop: "Stopping",
+    },
+    Stopping: "Stopped",
+    Stopped: "Exit",
+    Exit: {},
+  };
+
+  #state: State = "0";
+
+  #stateListeners: Record<State, { name: string; fn: () => Promise<void> }[]> =
+    {
+      0: [],
+      Starting: [],
+      Started: [],
+      Stopping: [],
+      Stopped: [],
+      Exit: [],
+    };
+
+  async action(act: Action["name"]): Promise<void> {
+    const currentState = this.#fsm[this.#state];
+
+    if (typeof currentState === "object") {
+      const newState = currentState[act];
+      if (!newState) {
+        std.log.error({ state: this.#state, act }, "Invalid state/action");
+        return;
+      }
+
+      std.log.info(
+        { oldState: this.#state, act, newState },
+        "State transition",
+      );
+      this.#state = newState;
+
+      await this.#runStateListeners();
+    }
+
+    while (true) {
+      const state = this.#fsm[this.#state];
+      if (typeof state !== "string") {
+        break;
+      }
+
+      std.log.info(
+        { oldState: this.#state, newState: state },
+        "State transition",
+      );
+      this.#state = state;
+
+      await this.#runStateListeners();
     }
   }
 
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onPreStop?.();
-    }
+  onState(state: State, name: string, fn: () => Promise<void>): void {
+    this.#stateListeners[state].push({ name, fn });
+  }
 
-    for (const x of this.plugins) {
-      await x.onStop?.(e);
+  async #runStateListeners(): Promise<void> {
+    for (const x of this.#stateListeners[this.#state]) {
+      std.log.info(
+        { state: this.#state, listener: x.name },
+        "Running state listener",
+      );
+      await x.fn();
     }
   }
+
+  //
 
   emitResize(): void {
     for (const x of this.plugins) {

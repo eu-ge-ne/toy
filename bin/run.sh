@@ -1,3 +1,3 @@
 #!/bin/bash
 
-deno -A --deny-write src/main.ts "$1"
+deno -A src/main.ts "$1"

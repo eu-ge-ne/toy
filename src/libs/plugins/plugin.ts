@@ -4,12 +4,18 @@ import * as kitty from "@libs/kitty";
 import { Host } from "./host.ts";
 
 export abstract class Plugin {
+  protected abstract name: string;
+
   constructor(protected readonly host: Host) {
   }
 
+  register?(): void;
+
+  /*
   async onStart?(): Promise<void>;
   async onStop?(_?: PromiseRejectionEvent): Promise<void>;
   async onPreStop?(_?: PromiseRejectionEvent): Promise<void>;
+  */
 
   onResize?(): void;
   onRender?(): void;

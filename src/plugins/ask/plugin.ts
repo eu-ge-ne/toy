@@ -6,6 +6,8 @@ import * as themes from "@libs/themes";
 import { AskWidget } from "./widget.ts";
 
 export class AskPlugin extends plugins.Plugin {
+  protected name = "Ask";
+
   readonly #widget = new AskWidget();
 
   override onResize(): void {

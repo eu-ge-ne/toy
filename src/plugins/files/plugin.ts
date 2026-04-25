@@ -3,6 +3,8 @@ import * as plugins from "@libs/plugins";
 import { loadFile, saveFile } from "./files.ts";
 
 export class FilesPlugin extends plugins.Plugin {
+  protected name = "Files";
+
   #fileName?: string;
 
   override async onFileOpen(fileName: string): Promise<void> {
@@ -19,7 +21,7 @@ export class FilesPlugin extends plugins.Plugin {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.host.emitAlert(message);
 
-        await this.host.emitStop();
+        await this.host.action("Stop");
       }
     }
   }

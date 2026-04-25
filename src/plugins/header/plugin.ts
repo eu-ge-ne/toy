@@ -5,6 +5,8 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export class HeaderPlugin extends plugins.Plugin {
+  protected name = "Header";
+
   #disabled = true;
 
   readonly #widget = new HeaderWidget({

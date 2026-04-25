@@ -2,19 +2,23 @@ import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
 export class VTPlugin extends plugins.Plugin {
+  protected name = "VT";
+
   #t0 = 0;
 
-  override async onStart(): Promise<void> {
-    vt.init();
+  override register(): void {
+    this.host.onState("Starting", this.name, async () => {
+      vt.init();
 
-    Deno.addSignalListener("SIGWINCH", () => {
-      this.host.emitResize();
-      this.host.emitRender();
+      Deno.addSignalListener("SIGWINCH", () => {
+        this.host.emitResize();
+        this.host.emitRender();
+      });
     });
-  }
 
-  override async onStop(): Promise<void> {
-    vt.restore();
+    this.host.onState("Stopped", this.name, async () => {
+      vt.restore();
+    });
   }
 
   override onPreRender(): void {

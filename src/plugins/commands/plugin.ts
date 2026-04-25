@@ -3,6 +3,8 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
 export class CommandsPlugin extends plugins.Plugin {
+  protected name = "Commands";
+
   override async onKey(key: kitty.Key): Promise<boolean> {
     const name = commands.ShortcutToCommand[kitty.shortcut(key)];
     if (!name) {
@@ -16,7 +18,7 @@ export class CommandsPlugin extends plugins.Plugin {
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Exit":
-        await this.host.emitStop();
+        await this.host.action("Stop");
         return true;
 
       case "Save":

@@ -46,7 +46,7 @@ host.register(
   new AskFileNamePlugin(host),
 );
 
-await host.emitStart();
+await host.action("Start");
 host.emitResize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
