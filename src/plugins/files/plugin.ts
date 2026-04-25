@@ -19,9 +19,9 @@ export class FilesPlugin extends plugins.Plugin {
     } catch (err) {
       if (!(err instanceof Deno.errors.NotFound)) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.goTo("Alerting", message);
+        await this.host.transition("Alerting", message);
 
-        await this.host.goTo("Stopping");
+        await this.host.transition("Stopping");
       }
     }
   }
@@ -37,7 +37,7 @@ export class FilesPlugin extends plugins.Plugin {
       return true;
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await this.host.goTo("Alerting", message);
+      await this.host.transition("Alerting", message);
 
       return await this.host.emitFileSaveAs();
     }
@@ -59,7 +59,7 @@ export class FilesPlugin extends plugins.Plugin {
         return true;
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.goTo("Alerting", message);
+        await this.host.transition("Alerting", message);
       }
     }
   }

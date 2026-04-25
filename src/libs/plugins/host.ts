@@ -62,17 +62,15 @@ export class Host {
     Exit: [],
   };
 
-  async goTo<S extends StateName>(
+  async transition<S extends StateName>(
     newState: S,
     ...data: Parameters<States[S]>
   ): Promise<void> {
-    await std.log.info({ state: this.#state[0], newState }, "goTo");
-
     const outs = this.#fsm[this.#state[0]!].outs;
     if (!outs.includes(newState)) {
       await std.log.error(
         { state: this.#state[0], newState },
-        "Invalid state->newState",
+        "Invalid state transition",
       );
       return;
     }
@@ -86,8 +84,11 @@ export class Host {
   }
 
   async return(): Promise<void> {
+    await std.log.info(
+      { state: this.#state[0], return: this.#state[1] },
+      "State return",
+    );
     this.#state.shift();
-
     await this.#transitionDefaults();
   }
 
@@ -116,7 +117,10 @@ export class Host {
 
   async #runStateListeners(data: unknown[]): Promise<void> {
     for (const x of this.#stateListeners[this.#state[0]!]) {
-      await std.log.info({ state: this.#state[0], listener: x.name }, "Running");
+      await std.log.info(
+        { state: this.#state[0], listener: x.name },
+        "Running",
+      );
       const fn = x.fn as (..._: unknown[]) => Promise<void>;
       await fn(...data);
     }
