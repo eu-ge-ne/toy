@@ -17,8 +17,12 @@ const states = {
 
 type States = typeof states;
 type StateName = keyof States;
+type State = {
+  outs: StateName[];
+  default?: StateName;
+};
 
-type FSM = Record<StateName, StateName[] | StateName>;
+type FSM = Record<StateName, State>;
 
 type StateListeners = {
   [Prop in StateName]: { name: string; fn: States[Prop] }[];
@@ -35,17 +39,17 @@ export class Host {
   }
 
   #fsm: FSM = {
-    0: ["Starting"],
-    Starting: "Started",
-    Started: "Running",
-    Running: ["Alerting", "Stopping"],
-    Alerting: "Running",
-    Stopping: "Stopped",
-    Stopped: "Exit",
-    Exit: [],
+    0: { outs: ["Starting"] },
+    Starting: { outs: [], default: "Started" },
+    Started: { outs: [], default: "Running" },
+    Running: { outs: ["Stopping"] },
+    Stopping: { outs: ["Alerting"], default: "Stopped" },
+    Stopped: { outs: [], default: "Exit" },
+    Alerting: { outs: [] },
+    Exit: { outs: [] },
   };
 
-  #state: StateName = "0";
+  #state: StateName[] = ["0"];
 
   #stateListeners: StateListeners = {
     0: [],
@@ -58,50 +62,61 @@ export class Host {
     Exit: [],
   };
 
-  async action<S extends StateName>(
+  async goTo<S extends StateName>(
     newState: S,
     ...data: Parameters<States[S]>
   ): Promise<void> {
-    const newStates = this.#fsm[this.#state];
+    await std.log.info({ state: this.#state[0], newState }, "goTo");
 
-    if (Array.isArray(newStates)) {
-      if (!newStates.includes(newState)) {
-        await std.log.error(
-          { state: this.#state, newState },
-          "Invalid state->newState",
-        );
-        return;
-      }
-
-      await std.log.info({ state: this.#state, newState }, "Transition");
-      this.#state = newState;
-
-      await this.#runStateListeners(data);
-    }
-
-    while (true) {
-      const newStates = this.#fsm[this.#state];
-      if (typeof newStates !== "string") {
-        break;
-      }
-
-      await std.log.info(
-        { state: this.#state, newState: newStates },
-        "Transition",
+    const outs = this.#fsm[this.#state[0]!].outs;
+    if (!outs.includes(newState)) {
+      await std.log.error(
+        { state: this.#state[0], newState },
+        "Invalid state->newState",
       );
-      this.#state = newStates;
-
-      await this.#runStateListeners(data);
+      return;
     }
+
+    await this.#transition(newState, data);
+    if (this.#state[0] !== newState) {
+      return;
+    }
+
+    await this.#transitionDefaults();
+  }
+
+  async return(): Promise<void> {
+    this.#state.shift();
+
+    await this.#transitionDefaults();
   }
 
   onState<S extends StateName>(state: S, name: string, fn: States[S]): void {
     this.#stateListeners[state].push({ name, fn });
   }
 
+  async #transition<S extends StateName>(
+    newState: S,
+    data: Parameters<States[S]>,
+  ): Promise<void> {
+    await std.log.info({ state: this.#state[0], newState }, "State transition");
+    this.#state.unshift(newState);
+    await this.#runStateListeners(data);
+  }
+
+  async #transitionDefaults(): Promise<void> {
+    while (true) {
+      const defaultState = this.#fsm[this.#state[0]!].default;
+      if (!defaultState) {
+        break;
+      }
+      await this.#transition(defaultState, []);
+    }
+  }
+
   async #runStateListeners(data: unknown[]): Promise<void> {
-    for (const x of this.#stateListeners[this.#state]) {
-      await std.log.info({ state: this.#state, listener: x.name }, "Running");
+    for (const x of this.#stateListeners[this.#state[0]!]) {
+      await std.log.info({ state: this.#state[0], listener: x.name }, "Running");
       const fn = x.fn as (..._: unknown[]) => Promise<void>;
       await fn(...data);
     }
@@ -132,12 +147,6 @@ export class Host {
   emitRendered(elapsed: number): void {
     for (const x of this.plugins) {
       x.onRendered?.(elapsed);
-    }
-  }
-
-  async emitAlert(message: string): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onAlert?.(message);
     }
   }
 

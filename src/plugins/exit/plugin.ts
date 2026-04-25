@@ -8,7 +8,7 @@ export class ExitPlugin extends plugins.Plugin {
       globalThis.addEventListener(
         "unhandledrejection",
         //(e) => this.host.emitStop(e),
-        () => this.host.action("Stopping"),
+        () => this.host.goTo("Stopping"),
       );
     });
 
