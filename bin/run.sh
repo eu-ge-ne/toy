@@ -1,3 +1,7 @@
 #!/bin/bash
 
-deno -A src/main.ts "$1"
+deno --allow-env \
+    --allow-read=./ \
+    --deny-write \
+    --allow-write=./tmp/toy.log \
+    src/main.ts "$1"
