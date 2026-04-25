@@ -11,12 +11,6 @@ export abstract class Plugin {
 
   register?(): void;
 
-  /*
-  async onStart?(): Promise<void>;
-  async onStop?(_?: PromiseRejectionEvent): Promise<void>;
-  async onPreStop?(_?: PromiseRejectionEvent): Promise<void>;
-  */
-
   onResize?(): void;
   onRender?(): void;
   onPreRender?(): void;

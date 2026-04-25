@@ -21,6 +21,8 @@ async function log(
   while (i < bytes.byteLength) {
     i += await file.write(bytes.subarray(i));
   }
+
+  await file.sync();
 }
 
 export async function info(data: unknown, message?: string): Promise<void> {

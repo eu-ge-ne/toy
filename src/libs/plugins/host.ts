@@ -4,18 +4,25 @@ import * as std from "@libs/std";
 
 import { Plugin } from "./plugin.ts";
 
-type State = "0" | "Starting" | "Started" | "Stopping" | "Stopped" | "Exit";
+const states = {
+  "0": async () => {},
+  Starting: async () => {},
+  Started: async () => {},
+  Running: async () => {},
+  Alerting: async (_: string) => {},
+  Stopping: async () => {},
+  Stopped: async () => {},
+  Exit: async () => {},
+} as const;
 
-type TAction<T> = { name: T };
-type Start = TAction<"Start">;
-type Stop = TAction<"Stop">;
-type Action = Start | Stop;
+type States = typeof states;
+type StateName = keyof States;
 
-type FSM = Record<
-  State,
-  | { [_ in Action["name"]]?: State }
-  | State
->;
+type FSM = Record<StateName, StateName[] | StateName>;
+
+type StateListeners = {
+  [Prop in StateName]: { name: string; fn: States[Prop] }[];
+};
 
 export class Host {
   protected readonly plugins: Plugin[] = [];
@@ -27,79 +34,76 @@ export class Host {
     this.plugins.push(...plugins);
   }
 
-  //
-
   #fsm: FSM = {
-    0: {
-      Start: "Starting",
-    },
+    0: ["Starting"],
     Starting: "Started",
-    Started: {
-      Stop: "Stopping",
-    },
+    Started: "Running",
+    Running: ["Alerting", "Stopping"],
+    Alerting: "Running",
     Stopping: "Stopped",
     Stopped: "Exit",
-    Exit: {},
+    Exit: [],
   };
 
-  #state: State = "0";
+  #state: StateName = "0";
 
-  #stateListeners: Record<State, { name: string; fn: () => Promise<void> }[]> =
-    {
-      0: [],
-      Starting: [],
-      Started: [],
-      Stopping: [],
-      Stopped: [],
-      Exit: [],
-    };
+  #stateListeners: StateListeners = {
+    0: [],
+    Starting: [],
+    Started: [],
+    Running: [],
+    Alerting: [],
+    Stopping: [],
+    Stopped: [],
+    Exit: [],
+  };
 
-  async action(act: Action["name"]): Promise<void> {
-    const currentState = this.#fsm[this.#state];
+  async action<S extends StateName>(
+    newState: S,
+    ...data: Parameters<States[S]>
+  ): Promise<void> {
+    const newStates = this.#fsm[this.#state];
 
-    if (typeof currentState === "object") {
-      const newState = currentState[act];
-      if (!newState) {
-        std.log.error({ state: this.#state, act }, "Invalid state/action");
+    if (Array.isArray(newStates)) {
+      if (!newStates.includes(newState)) {
+        await std.log.error(
+          { state: this.#state, newState },
+          "Invalid state->newState",
+        );
         return;
       }
 
-      std.log.info(
-        { oldState: this.#state, act, newState },
-        "State transition",
-      );
+      await std.log.info({ state: this.#state, newState }, "Transition");
       this.#state = newState;
 
-      await this.#runStateListeners();
+      await this.#runStateListeners(data);
     }
 
     while (true) {
-      const state = this.#fsm[this.#state];
-      if (typeof state !== "string") {
+      const newStates = this.#fsm[this.#state];
+      if (typeof newStates !== "string") {
         break;
       }
 
-      std.log.info(
-        { oldState: this.#state, newState: state },
-        "State transition",
+      await std.log.info(
+        { state: this.#state, newState: newStates },
+        "Transition",
       );
-      this.#state = state;
+      this.#state = newStates;
 
-      await this.#runStateListeners();
+      await this.#runStateListeners(data);
     }
   }
 
-  onState(state: State, name: string, fn: () => Promise<void>): void {
+  onState<S extends StateName>(state: S, name: string, fn: States[S]): void {
     this.#stateListeners[state].push({ name, fn });
   }
 
-  async #runStateListeners(): Promise<void> {
+  async #runStateListeners(data: unknown[]): Promise<void> {
     for (const x of this.#stateListeners[this.#state]) {
-      std.log.info(
-        { state: this.#state, listener: x.name },
-        "Running state listener",
-      );
-      await x.fn();
+      await std.log.info({ state: this.#state, listener: x.name }, "Running");
+      const fn = x.fn as (..._: unknown[]) => Promise<void>;
+      await fn(...data);
     }
   }
 
