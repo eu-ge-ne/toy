@@ -11,7 +11,7 @@ export class AlertPlugin extends plugins.Plugin {
   readonly #widget = new AlertWidget();
 
   override register(): void {
-    this.host.onState("Alerting", this.name, async (message) => {
+    this.host.onEntry("Alerting", this.name, async (message) => {
       await this.#widget.open(message);
       this.host.return();
     });

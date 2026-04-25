@@ -25,13 +25,13 @@ export class EditorPlugin extends plugins.Plugin {
   });
 
   override register(): void {
-    this.host.onState("Started", this.name, async () => {
+    this.host.onEntry("Started", this.name, async () => {
       this.#widget.setFocused(true);
       this.#widget.resetChanges();
       this.#widget.resetCursor();
     });
 
-    this.host.onState("Stopping", this.name, async () => {
+    this.host.onEntry("Stopping", this.name, async () => {
       /*
       override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
       if (e) {

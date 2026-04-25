@@ -4,7 +4,7 @@ export class ExitPlugin extends plugins.Plugin {
   protected name = "Exit";
 
   override register(): void {
-    this.host.onState("Starting", this.name, async () => {
+    this.host.onEntry("Starting", this.name, async () => {
       globalThis.addEventListener(
         "unhandledrejection",
         //(e) => this.host.emitStop(e),
@@ -12,7 +12,7 @@ export class ExitPlugin extends plugins.Plugin {
       );
     });
 
-    this.host.onState("Exit", this.name, async () => {
+    this.host.onEntry("Exit", this.name, async () => {
       /*
       override async onStop(e?: PromiseRejectionEvent): Promise<void> {
       if (e) {

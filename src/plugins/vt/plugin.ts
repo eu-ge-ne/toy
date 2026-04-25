@@ -7,7 +7,7 @@ export class VTPlugin extends plugins.Plugin {
   #t0 = 0;
 
   override register(): void {
-    this.host.onState("Starting", this.name, async () => {
+    this.host.onEntry("Starting", this.name, async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
@@ -16,7 +16,7 @@ export class VTPlugin extends plugins.Plugin {
       });
     });
 
-    this.host.onState("Stopped", this.name, async () => {
+    this.host.onEntry("Stopped", this.name, async () => {
       vt.restore();
     });
   }

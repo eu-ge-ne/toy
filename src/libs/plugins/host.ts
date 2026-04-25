@@ -24,7 +24,7 @@ type State = {
 
 type FSM = Record<StateName, State>;
 
-type StateListeners = {
+type EntryActions = {
   [Prop in StateName]: { name: string; fn: States[Prop] }[];
 };
 
@@ -51,7 +51,7 @@ export class Host {
 
   #state: StateName[] = ["0"];
 
-  #stateListeners: StateListeners = {
+  #actions: EntryActions = {
     0: [],
     Starting: [],
     Started: [],
@@ -92,8 +92,8 @@ export class Host {
     await this.#transitionDefaults();
   }
 
-  onState<S extends StateName>(state: S, name: string, fn: States[S]): void {
-    this.#stateListeners[state].push({ name, fn });
+  onEntry<S extends StateName>(state: S, name: string, fn: States[S]): void {
+    this.#actions[state].push({ name, fn });
   }
 
   async #transition<S extends StateName>(
@@ -102,7 +102,7 @@ export class Host {
   ): Promise<void> {
     await std.log.info({ state: this.#state[0], newState }, "State transition");
     this.#state.unshift(newState);
-    await this.#runStateListeners(data);
+    await this.#runEntryActions(data);
   }
 
   async #transitionDefaults(): Promise<void> {
@@ -115,8 +115,8 @@ export class Host {
     }
   }
 
-  async #runStateListeners(data: unknown[]): Promise<void> {
-    for (const x of this.#stateListeners[this.#state[0]!]) {
+  async #runEntryActions(data: unknown[]): Promise<void> {
+    for (const x of this.#actions[this.#state[0]!]) {
       await std.log.info(
         { state: this.#state[0], listener: x.name },
         "Running",
@@ -125,8 +125,6 @@ export class Host {
       await fn(...data);
     }
   }
-
-  //
 
   emitResize(): void {
     for (const x of this.plugins) {
