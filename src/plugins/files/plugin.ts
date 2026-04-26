@@ -7,7 +7,13 @@ export class FilesPlugin extends plugins.Plugin {
 
   #fileName?: string;
 
-  override async onFileOpen(fileName: string): Promise<void> {
+  override register(params: plugins.RegisterParams): void {
+    params.setFileOpenHandler(this.onFileOpen.bind(this));
+    params.setFileSaveHandler(this.onFileSave.bind(this));
+    params.setFileSaveAsHandler(this.onFileSaveAs.bind(this));
+  }
+
+  async onFileOpen(fileName: string): Promise<void> {
     try {
       for await (const chunk of loadFile(fileName)) {
         this.host.emitDocWrite(chunk);
@@ -26,9 +32,9 @@ export class FilesPlugin extends plugins.Plugin {
     }
   }
 
-  override async onFileSave(): Promise<boolean> {
+  async onFileSave(): Promise<boolean> {
     if (!this.#fileName) {
-      return await this.host.emitFileSaveAs();
+      return await this.host.fileSaveAs();
     }
 
     try {
@@ -39,11 +45,11 @@ export class FilesPlugin extends plugins.Plugin {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
       await this.host.alert(message);
 
-      return await this.host.emitFileSaveAs();
+      return await this.host.fileSaveAs();
     }
   }
 
-  override async onFileSaveAs(): Promise<boolean> {
+  async onFileSaveAs(): Promise<boolean> {
     while (true) {
       const newFileName = await this.host.askFileName(this.#fileName ?? "");
       if (!newFileName) {

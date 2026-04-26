@@ -41,7 +41,7 @@ export class EditorPlugin extends plugins.Plugin {
 
       if (this.#widget.textChanged) {
         if (await this.host.ask("Save changes?")) {
-          await this.host.emitFileSave();
+          await this.host.fileSave();
         }
       }
     });
@@ -128,7 +128,7 @@ export class EditorPlugin extends plugins.Plugin {
   override async onDocSave(): Promise<void> {
     //editorPlugin.widget.setFocused(false);
 
-    if (await this.host.emitFileSave()) {
+    if (await this.host.fileSave()) {
       this.#widget.resetChanges();
     }
 

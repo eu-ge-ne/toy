@@ -7,6 +7,9 @@ export interface RegisterParams {
   setAlertHandler(_: (_: string) => Promise<void>): void;
   setAskHandler(_: (_: string) => Promise<boolean>): void;
   setAskFileNameHandler(_: (_: string) => Promise<string | undefined>): void;
+  setFileOpenHandler(_: (_: string) => Promise<void>): void;
+  setFileSaveHandler(_: () => Promise<boolean>): void;
+  setFileSaveAsHandler(_: () => Promise<boolean>): void;
 }
 
 export abstract class Plugin {
@@ -22,10 +25,6 @@ export abstract class Plugin {
   onPreRender?(): void;
   onPostRender?(): void;
   onRendered?(_: number): void;
-
-  async onFileOpen?(_: string): Promise<void>;
-  async onFileSave?(): Promise<boolean>;
-  async onFileSaveAs?(): Promise<boolean>;
 
   async onCommand?(_: commands.Command): Promise<boolean>;
 

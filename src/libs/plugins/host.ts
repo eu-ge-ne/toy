@@ -36,8 +36,12 @@ export class Host {
         setAlertHandler: (x) => this.#alert = x,
         setAskHandler: (x) => this.#ask = x,
         setAskFileNameHandler: (x) => this.#askFileName = x,
+        setFileOpenHandler: (x) => this.#fileOpen = x,
+        setFileSaveHandler: (x) => this.#fileSave = x,
+        setFileSaveAsHandler: (x) => this.#fileSaveAs = x,
       });
     }
+
     this.plugins.push(...plugins);
   }
 
@@ -156,6 +160,9 @@ export class Host {
   #alert?: (_: string) => Promise<void>;
   #ask?: (_: string) => Promise<boolean>;
   #askFileName?: (_: string) => Promise<string | undefined>;
+  #fileOpen?: (_: string) => Promise<void>;
+  #fileSave?: () => Promise<boolean>;
+  #fileSaveAs?: () => Promise<boolean>;
 
   async alert(message: string): Promise<void> {
     await this.#alert?.(message);
@@ -169,30 +176,16 @@ export class Host {
     return await this.#askFileName?.(fileName);
   }
 
-  async emitFileOpen(fileName: string): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onFileOpen?.(fileName)) {
-        return;
-      }
-    }
+  async fileOpen(fileName: string): Promise<void> {
+    await this.#fileOpen?.(fileName);
   }
 
-  async emitFileSave(): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onFileSave?.()) {
-        return true;
-      }
-    }
-    return false;
+  async fileSave(): Promise<boolean> {
+    return await this.#fileSave?.() ?? false;
   }
 
-  async emitFileSaveAs(): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onFileSaveAs?.()) {
-        return true;
-      }
-    }
-    return false;
+  async fileSaveAs(): Promise<boolean> {
+    return await this.#fileSaveAs?.() ?? false;
   }
 
   async emitCommand(cmd: commands.Command): Promise<void> {

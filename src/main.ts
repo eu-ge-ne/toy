@@ -52,7 +52,7 @@ host.emitResize();
 await host.emitCommand({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
-  await host.emitFileOpen(args._[0]);
+  await host.fileOpen(args._[0]);
 }
 
 while (true) {
