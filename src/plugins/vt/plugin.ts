@@ -8,8 +8,8 @@ export class VTPlugin extends plugins.Plugin {
     vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
-      this.host.emitResize();
-      this.host.emitRender();
+      this.host.resize();
+      this.host.render();
     });
   }
 

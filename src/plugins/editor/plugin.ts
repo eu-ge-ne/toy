@@ -67,7 +67,7 @@ export class EditorPlugin extends plugins.Plugin {
       case "Zen":
         this.#widget.toggleIndex();
         this.#zen = !this.#zen;
-        this.host.emitResize();
+        this.host.resize();
         return false;
 
       case "Theme":

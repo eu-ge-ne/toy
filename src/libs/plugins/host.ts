@@ -36,13 +36,13 @@ export class Host {
     this.plugins.push(...plugins);
   }
 
-  async emitStart(): Promise<void> {
+  async start(): Promise<void> {
     for (const x of this.plugins) {
       await x.onStart?.();
     }
   }
 
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
+  async stop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
       await x.onPreStop?.(e);
     }
@@ -56,13 +56,13 @@ export class Host {
     }
   }
 
-  emitResize(): void {
+  resize(): void {
     for (const x of this.plugins) {
       x.onResize?.();
     }
   }
 
-  emitRender(): void {
+  render(): void {
     for (const x of this.plugins) {
       x.onPreRender?.();
     }

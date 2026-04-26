@@ -9,8 +9,8 @@ export class PalettePlugin extends plugins.Plugin {
 
   readonly #widget = new PaletteWidget({
     onInvalidate: () => {
-      this.host.emitResize();
-      this.host.emitRender();
+      this.host.resize();
+      this.host.render();
     },
   });
 
@@ -28,7 +28,7 @@ export class PalettePlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emitResize();
+        this.host.resize();
         return false;
 
       case "Theme":
@@ -46,7 +46,7 @@ export class PalettePlugin extends plugins.Plugin {
   async #run(): Promise<void> {
     const cmd = await this.#widget.open();
 
-    this.host.emitRender();
+    this.host.render();
 
     if (cmd) {
       await this.host.emitCommand(cmd);

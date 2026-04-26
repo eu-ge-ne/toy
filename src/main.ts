@@ -46,8 +46,8 @@ host.register(
   new AskFileNamePlugin(host),
 );
 
-await host.emitStart();
-host.emitResize();
+await host.start();
+host.resize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
 
@@ -56,7 +56,7 @@ if (typeof args._[0] === "string") {
 }
 
 while (true) {
-  host.emitRender();
+  host.render();
 
   const key = await vt.readKey();
 
