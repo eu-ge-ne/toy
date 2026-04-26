@@ -85,6 +85,9 @@ export class Host {
   #alert?: (_: string) => Promise<void>;
   #ask?: (_: string) => Promise<boolean>;
   #askFileName?: (_: string) => Promise<string | undefined>;
+  #fileOpen?: (_: string) => Promise<void>;
+  #fileSave?: () => Promise<boolean>;
+  #fileSaveAs?: () => Promise<boolean>;
 
   async alert(message: string): Promise<void> {
     await this.#alert?.(message);
@@ -97,10 +100,6 @@ export class Host {
   async askFileName(fileName: string): Promise<string | undefined> {
     return await this.#askFileName?.(fileName);
   }
-
-  #fileOpen?: (_: string) => Promise<void>;
-  #fileSave?: () => Promise<boolean>;
-  #fileSaveAs?: () => Promise<boolean>;
 
   async fileOpen(fileName: string): Promise<void> {
     await this.#fileOpen?.(fileName);
