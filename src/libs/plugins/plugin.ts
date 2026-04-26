@@ -13,18 +13,23 @@ export interface RegisterParams {
 }
 
 export abstract class Plugin {
-  protected abstract name: string;
-
   constructor(protected readonly host: Host) {
   }
 
   register?(params: RegisterParams): void;
+
+  async onStart?(): Promise<void>;
+  async onPreStop?(e?: PromiseRejectionEvent): Promise<void>;
+  async onStop?(e?: PromiseRejectionEvent): Promise<void>;
+  async onPostStop?(e?: PromiseRejectionEvent): Promise<void>;
 
   onResize?(): void;
   onRender?(): void;
   onPreRender?(): void;
   onPostRender?(): void;
   onRendered?(_: number): void;
+
+  //
 
   async onCommand?(_: commands.Command): Promise<boolean>;
 

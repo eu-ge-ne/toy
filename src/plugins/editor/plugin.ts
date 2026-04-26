@@ -6,8 +6,6 @@ import * as themes from "@libs/themes";
 import { EditorWidget } from "@widgets/editor";
 
 export class EditorPlugin extends plugins.Plugin {
-  protected name = "Editor";
-
   #zen = true;
 
   readonly #widget = new EditorWidget({
@@ -24,27 +22,22 @@ export class EditorPlugin extends plugins.Plugin {
     onKeyHandle: (x) => this.host.emitKeyHandled(x),
   });
 
-  override register(): void {
-    this.host.onEntry("Started", this.name, async () => {
-      this.#widget.setFocused(true);
-      this.#widget.resetChanges();
-      this.#widget.resetCursor();
-    });
+  override async onStart(): Promise<void> {
+    this.#widget.setFocused(true);
+    this.#widget.resetChanges();
+    this.#widget.resetCursor();
+  }
 
-    this.host.onEntry("Stopping", this.name, async () => {
-      /*
-      override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
-      if (e) {
-        return;
-      }
-      */
+  override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
+    if (e) {
+      return;
+    }
 
-      if (this.#widget.textChanged) {
-        if (await this.host.ask("Save changes?")) {
-          await this.host.fileSave();
-        }
+    if (this.#widget.textChanged) {
+      if (await this.host.ask("Save changes?")) {
+        await this.host.fileSave();
       }
-    });
+    }
   }
 
   override onResize(): void {

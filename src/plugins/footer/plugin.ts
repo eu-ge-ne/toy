@@ -5,8 +5,6 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export class FooterPlugin extends plugins.Plugin {
-  protected name = "Footer";
-
   #disabled = true;
 
   readonly #widget = new FooterWidget({

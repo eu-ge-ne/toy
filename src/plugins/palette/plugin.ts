@@ -5,8 +5,6 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 export class PalettePlugin extends plugins.Plugin {
-  protected name = "Palette";
-
   #zen = true;
 
   readonly #widget = new PaletteWidget({

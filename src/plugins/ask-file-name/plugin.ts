@@ -6,8 +6,6 @@ import * as themes from "@libs/themes";
 import { AskFileNameWidget } from "./widget.ts";
 
 export class AskFileNamePlugin extends plugins.Plugin {
-  protected name = "Ask";
-
   readonly #widget = new AskFileNameWidget();
 
   override register(params: plugins.RegisterParams): void {

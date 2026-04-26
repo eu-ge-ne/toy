@@ -6,8 +6,6 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 export class DebugPlugin extends plugins.Plugin {
-  protected name = "Debug";
-
   #zen = true;
 
   readonly #widget = new DebugWidget({

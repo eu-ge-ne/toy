@@ -1,31 +1,7 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
-import * as std from "@libs/std";
 
 import { Plugin } from "./plugin.ts";
-
-const states = {
-  "0": async () => {},
-  Starting: async () => {},
-  Started: async () => {},
-  Running: async () => {},
-  Stopping: async () => {},
-  Stopped: async () => {},
-  Exit: async () => {},
-} as const;
-
-type States = typeof states;
-type StateName = keyof States;
-type State = {
-  outs?: StateName[];
-  defaultOut?: StateName;
-};
-
-type FSM = Record<StateName, State>;
-
-type EntryActions = {
-  [Prop in StateName]: { name: string; fn: States[Prop] }[];
-};
 
 export class Host {
   protected readonly plugins: Plugin[] = [];
@@ -45,89 +21,23 @@ export class Host {
     this.plugins.push(...plugins);
   }
 
-  #fsm: FSM = {
-    0: { outs: ["Starting"] },
-    Starting: { defaultOut: "Started" },
-    Started: { defaultOut: "Running" },
-    Running: { outs: ["Stopping"] },
-    Stopping: { defaultOut: "Stopped" },
-    Stopped: { defaultOut: "Exit" },
-    Exit: {},
-  };
-
-  #state: StateName[] = ["0"];
-
-  #actions: EntryActions = {
-    0: [],
-    Starting: [],
-    Started: [],
-    Running: [],
-    Stopping: [],
-    Stopped: [],
-    Exit: [],
-  };
-
-  async transition<S extends StateName>(
-    newState: S,
-    ...data: Parameters<States[S]>
-  ): Promise<void> {
-    const outs = this.#fsm[this.#state[0]!].outs;
-    if (!outs?.includes(newState)) {
-      await std.log.error(
-        { state: this.#state[0], newState },
-        "Invalid state transition",
-      );
-      return;
-    }
-
-    await this.#transition(newState, data);
-    if (this.#state[0] !== newState) {
-      return;
-    }
-
-    await this.#transitionDefaults();
-  }
-
-  async return(): Promise<void> {
-    await std.log.info(
-      { state: this.#state[0], return: this.#state[1] },
-      "State return",
-    );
-    this.#state.shift();
-    await this.#transitionDefaults();
-  }
-
-  onEntry<S extends StateName>(state: S, name: string, fn: States[S]): void {
-    this.#actions[state].push({ name, fn });
-  }
-
-  async #transition<S extends StateName>(
-    newState: S,
-    data: Parameters<States[S]>,
-  ): Promise<void> {
-    await std.log.info({ state: this.#state[0], newState }, "State transition");
-    this.#state.unshift(newState);
-    await this.#runEntryActions(data);
-  }
-
-  async #transitionDefaults(): Promise<void> {
-    while (true) {
-      const defaultState = this.#fsm[this.#state[0]!].defaultOut;
-      if (!defaultState) {
-        break;
-      }
-      await this.#transition(defaultState, []);
+  async emitStart(): Promise<void> {
+    for (const x of this.plugins) {
+      await x.onStart?.();
     }
   }
 
-  async #runEntryActions(data: unknown[]): Promise<void> {
-    for (const x of this.#actions[this.#state[0]!]) {
-      await std.log.info(
-        { state: this.#state[0], plugin: x.name },
-        "Running",
-      );
-      const fn = x.fn as (..._: unknown[]) => Promise<void>;
-      await fn(...data);
+  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
+    for (const x of this.plugins) {
+      await x.onPreStop?.(e);
+    }
+
+    for (const x of this.plugins) {
+      await x.onStop?.(e);
+    }
+
+    for (const x of this.plugins) {
+      await x.onPostStop?.(e);
     }
   }
 

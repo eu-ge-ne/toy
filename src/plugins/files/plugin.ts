@@ -3,8 +3,6 @@ import * as plugins from "@libs/plugins";
 import { loadFile, saveFile } from "./files.ts";
 
 export class FilesPlugin extends plugins.Plugin {
-  protected name = "Files";
-
   #fileName?: string;
 
   override register(params: plugins.RegisterParams): void {
@@ -27,7 +25,7 @@ export class FilesPlugin extends plugins.Plugin {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.host.alert(message);
 
-        await this.host.transition("Stopping");
+        await this.host.emitStop();
       }
     }
   }

@@ -6,8 +6,6 @@ import * as themes from "@libs/themes";
 import { AlertWidget } from "./widget.ts";
 
 export class AlertPlugin extends plugins.Plugin {
-  protected name = "Alert";
-
   readonly #widget = new AlertWidget();
 
   override register(params: plugins.RegisterParams): void {
