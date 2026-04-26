@@ -3,17 +3,9 @@ import * as kitty from "@libs/kitty";
 
 import { Host } from "./host.ts";
 
-export interface RegisterParams {
-  setFileOpenHandler(_: (_: string) => Promise<void>): void;
-  setFileSaveHandler(_: () => Promise<boolean>): void;
-  setFileSaveAsHandler(_: () => Promise<boolean>): void;
-}
-
 export abstract class Plugin {
   constructor(protected readonly host: Host) {
   }
-
-  register?(params: RegisterParams): void;
 
   async onStart?(): Promise<void>;
   async onPreStop?(e?: PromiseRejectionEvent): Promise<void>;
@@ -26,9 +18,13 @@ export abstract class Plugin {
   onPostRender?(): void;
   onRendered?(_: number): void;
 
-  alert?(_: string): Promise<void>;
-  ask?(_: string): Promise<boolean>;
-  askFileName?(_: string): Promise<string | undefined>;
+  async alert?(_: string): Promise<void>;
+  async ask?(_: string): Promise<boolean>;
+  async askFileName?(_: string): Promise<string | undefined>;
+
+  async fileOpen?(_: string): Promise<void>;
+  async fileSave?(): Promise<boolean>;
+  async fileSaveAs?(): Promise<boolean>;
 
   //
 

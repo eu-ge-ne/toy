@@ -20,11 +20,17 @@ export class Host {
         this.#askFileName = x.askFileName.bind(x);
       }
 
-      x.register?.({
-        setFileOpenHandler: (x) => this.#fileOpen = x,
-        setFileSaveHandler: (x) => this.#fileSave = x,
-        setFileSaveAsHandler: (x) => this.#fileSaveAs = x,
-      });
+      if (x.fileOpen) {
+        this.#fileOpen = x.fileOpen.bind(x);
+      }
+
+      if (x.fileSave) {
+        this.#fileSave = x.fileSave.bind(x);
+      }
+
+      if (x.fileSaveAs) {
+        this.#fileSaveAs = x.fileSaveAs.bind(x);
+      }
     }
 
     this.plugins.push(...plugins);
@@ -77,18 +83,16 @@ export class Host {
   }
 
   #alert?: (_: string) => Promise<void>;
+  #ask?: (_: string) => Promise<boolean>;
+  #askFileName?: (_: string) => Promise<string | undefined>;
 
   async alert(message: string): Promise<void> {
     await this.#alert?.(message);
   }
 
-  #ask?: (_: string) => Promise<boolean>;
-
   async ask(message: string): Promise<boolean> {
     return this.#ask?.(message) ?? false;
   }
-
-  #askFileName?: (_: string) => Promise<string | undefined>;
 
   async askFileName(fileName: string): Promise<string | undefined> {
     return await this.#askFileName?.(fileName);

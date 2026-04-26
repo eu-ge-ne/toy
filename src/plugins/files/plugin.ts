@@ -5,13 +5,7 @@ import { loadFile, saveFile } from "./files.ts";
 export class FilesPlugin extends plugins.Plugin {
   #fileName?: string;
 
-  override register(params: plugins.RegisterParams): void {
-    params.setFileOpenHandler(this.onFileOpen.bind(this));
-    params.setFileSaveHandler(this.onFileSave.bind(this));
-    params.setFileSaveAsHandler(this.onFileSaveAs.bind(this));
-  }
-
-  async onFileOpen(fileName: string): Promise<void> {
+  override async fileOpen(fileName: string): Promise<void> {
     try {
       for await (const chunk of loadFile(fileName)) {
         this.host.emitDocWrite(chunk);
@@ -30,7 +24,7 @@ export class FilesPlugin extends plugins.Plugin {
     }
   }
 
-  async onFileSave(): Promise<boolean> {
+  override async fileSave(): Promise<boolean> {
     if (!this.#fileName) {
       return await this.host.fileSaveAs();
     }
@@ -47,7 +41,7 @@ export class FilesPlugin extends plugins.Plugin {
     }
   }
 
-  async onFileSaveAs(): Promise<boolean> {
+  override async fileSaveAs(): Promise<boolean> {
     while (true) {
       const newFileName = await this.host.askFileName(this.#fileName ?? "");
       if (!newFileName) {
