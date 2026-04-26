@@ -8,10 +8,6 @@ import { AlertWidget } from "./widget.ts";
 export class AlertPlugin extends plugins.Plugin {
   readonly #widget = new AlertWidget();
 
-  override register(params: plugins.RegisterParams): void {
-    params.setAlertHandler(this.onAlert.bind(this));
-  }
-
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
@@ -33,7 +29,7 @@ export class AlertPlugin extends plugins.Plugin {
     return false;
   }
 
-  async onAlert(message: string): Promise<void> {
+  override async alert(message: string): Promise<void> {
     await this.#widget.open(message);
   }
 }

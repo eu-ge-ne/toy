@@ -8,10 +8,6 @@ import { AskWidget } from "./widget.ts";
 export class AskPlugin extends plugins.Plugin {
   readonly #widget = new AskWidget();
 
-  override register(params: plugins.RegisterParams): void {
-    params.setAskHandler(this.onAsk.bind(this));
-  }
-
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
@@ -33,7 +29,7 @@ export class AskPlugin extends plugins.Plugin {
     return false;
   }
 
-  async onAsk(message: string): Promise<boolean> {
+  override async ask(message: string): Promise<boolean> {
     return await this.#widget.open(message);
   }
 }

@@ -8,10 +8,19 @@ export class Host {
 
   register(...plugins: Plugin[]): void {
     for (const x of plugins) {
+      if (x.alert) {
+        this.#alert = x.alert.bind(x);
+      }
+
+      if (x.ask) {
+        this.#ask = x.ask.bind(x);
+      }
+
+      if (x.askFileName) {
+        this.#askFileName = x.askFileName.bind(x);
+      }
+
       x.register?.({
-        setAlertHandler: (x) => this.#alert = x,
-        setAskHandler: (x) => this.#ask = x,
-        setAskFileNameHandler: (x) => this.#askFileName = x,
         setFileOpenHandler: (x) => this.#fileOpen = x,
         setFileSaveHandler: (x) => this.#fileSave = x,
         setFileSaveAsHandler: (x) => this.#fileSaveAs = x,
@@ -68,23 +77,26 @@ export class Host {
   }
 
   #alert?: (_: string) => Promise<void>;
-  #ask?: (_: string) => Promise<boolean>;
-  #askFileName?: (_: string) => Promise<string | undefined>;
-  #fileOpen?: (_: string) => Promise<void>;
-  #fileSave?: () => Promise<boolean>;
-  #fileSaveAs?: () => Promise<boolean>;
 
   async alert(message: string): Promise<void> {
     await this.#alert?.(message);
   }
 
+  #ask?: (_: string) => Promise<boolean>;
+
   async ask(message: string): Promise<boolean> {
     return this.#ask?.(message) ?? false;
   }
 
+  #askFileName?: (_: string) => Promise<string | undefined>;
+
   async askFileName(fileName: string): Promise<string | undefined> {
     return await this.#askFileName?.(fileName);
   }
+
+  #fileOpen?: (_: string) => Promise<void>;
+  #fileSave?: () => Promise<boolean>;
+  #fileSaveAs?: () => Promise<boolean>;
 
   async fileOpen(fileName: string): Promise<void> {
     await this.#fileOpen?.(fileName);
