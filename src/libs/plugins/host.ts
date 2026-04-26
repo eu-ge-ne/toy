@@ -115,7 +115,7 @@ export class Host {
   async #runEntryActions(data: unknown[]): Promise<void> {
     for (const x of this.#actions[this.#state[0]!]) {
       await std.log.info(
-        { state: this.#state[0], listener: x.name },
+        { state: this.#state[0], plugin: x.name },
         "Running",
       );
       const fn = x.fn as (..._: unknown[]) => Promise<void>;
