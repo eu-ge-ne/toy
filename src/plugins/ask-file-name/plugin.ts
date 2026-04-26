@@ -10,6 +10,10 @@ export class AskFileNamePlugin extends plugins.Plugin {
 
   readonly #widget = new AskFileNameWidget();
 
+  override register(params: plugins.RegisterParams): void {
+    params.setAskFileNameHandler(this.onAskFileName.bind(this));
+  }
+
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
@@ -31,7 +35,7 @@ export class AskFileNamePlugin extends plugins.Plugin {
     return false;
   }
 
-  override async onAskFileName(fileName: string): Promise<string | undefined> {
+  async onAskFileName(fileName: string): Promise<string | undefined> {
     return await this.#widget.open(fileName);
   }
 }

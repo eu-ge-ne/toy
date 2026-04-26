@@ -40,7 +40,7 @@ export class EditorPlugin extends plugins.Plugin {
       */
 
       if (this.#widget.textChanged) {
-        if (await this.host.emitAsk("Save changes?")) {
+        if (await this.host.ask("Save changes?")) {
           await this.host.emitFileSave();
         }
       }

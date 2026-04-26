@@ -10,6 +10,10 @@ export class AskPlugin extends plugins.Plugin {
 
   readonly #widget = new AskWidget();
 
+  override register(params: plugins.RegisterParams): void {
+    params.setAskHandler(this.onAsk.bind(this));
+  }
+
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
@@ -31,7 +35,7 @@ export class AskPlugin extends plugins.Plugin {
     return false;
   }
 
-  override async onAsk(message: string): Promise<boolean> {
+  async onAsk(message: string): Promise<boolean> {
     return await this.#widget.open(message);
   }
 }

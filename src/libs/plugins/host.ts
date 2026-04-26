@@ -32,7 +32,11 @@ export class Host {
 
   register(...plugins: Plugin[]): void {
     for (const x of plugins) {
-      x.register?.();
+      x.register?.({
+        setAlertHandler: (x) => this.#alert = x,
+        setAskHandler: (x) => this.#ask = x,
+        setAskFileNameHandler: (x) => this.#askFileName = x,
+      });
     }
     this.plugins.push(...plugins);
   }
@@ -149,28 +153,20 @@ export class Host {
     }
   }
 
+  #alert?: (_: string) => Promise<void>;
+  #ask?: (_: string) => Promise<boolean>;
+  #askFileName?: (_: string) => Promise<string | undefined>;
+
   async alert(message: string): Promise<void> {
-    for (const x of this.plugins) {
-      await x.alert?.(message);
-    }
+    await this.#alert?.(message);
   }
 
-  async emitAsk(message: string): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onAsk?.(message)) {
-        return true;
-      }
-    }
-    return false;
+  async ask(message: string): Promise<boolean> {
+    return this.#ask?.(message) ?? false;
   }
 
-  async emitAskFileName(fileName: string): Promise<string | undefined> {
-    for (const x of this.plugins) {
-      const newFileName = await x.onAskFileName?.(fileName);
-      if (newFileName) {
-        return newFileName;
-      }
-    }
+  async askFileName(fileName: string): Promise<string | undefined> {
+    return await this.#askFileName?.(fileName);
   }
 
   async emitFileOpen(fileName: string): Promise<void> {
