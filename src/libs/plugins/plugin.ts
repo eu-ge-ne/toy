@@ -8,19 +8,21 @@ export abstract class Plugin {
   }
 
   async onStart?(): Promise<void>;
-  async onPreStop?(e?: PromiseRejectionEvent): Promise<void>;
+
+  async onBeforeStop?(e?: PromiseRejectionEvent): Promise<void>;
   async onStop?(e?: PromiseRejectionEvent): Promise<void>;
-  async onPostStop?(e?: PromiseRejectionEvent): Promise<void>;
+  async onAfterStop?(e?: PromiseRejectionEvent): Promise<void>;
 
   onResize?(): void;
-  onPreRender?(): void;
+
+  onBeforeRender?(): void;
   onRender?(): void;
-  onPostRender?(): void;
+  onAfterRender?(): void;
 
   onDebugRender?(_: number): void;
   onDebugKey?(_: number): void;
 
-  async onKeyPress?(_: kitty.Key): Promise<boolean>;
+  async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
   async alert?(_: string): Promise<void>;

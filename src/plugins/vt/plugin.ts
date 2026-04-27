@@ -8,8 +8,8 @@ export class VTPlugin extends plugins.Plugin {
     vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
-      this.host.resize();
-      this.host.render();
+      this.host.emitResize();
+      this.host.emitRender();
     });
   }
 
@@ -17,18 +17,18 @@ export class VTPlugin extends plugins.Plugin {
     vt.restore();
   }
 
-  override onPreRender(): void {
+  override onBeforeRender(): void {
     this.#t0 = performance.now();
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
   }
 
-  override onPostRender(): void {
+  override onAfterRender(): void {
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
     vt.sync.esu();
 
-    this.host.debugRender(performance.now() - this.#t0);
+    this.host.emitDebugRender(performance.now() - this.#t0);
   }
 }

@@ -29,7 +29,7 @@ export class HeaderPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.resize();
+        this.host.emitResize();
         return false;
 
       case "Theme":

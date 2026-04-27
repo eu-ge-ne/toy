@@ -46,19 +46,19 @@ host.register(
   new AskFileNamePlugin(host),
 );
 
-await host.start();
-host.resize();
+await host.emitStart();
+host.emitResize();
 
-await host.command({ name: "Theme", data: "Default" });
+await host.emitCommand({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.fileOpen(args._[0]);
 }
 
 while (true) {
-  host.render();
+  host.emitRender();
 
   const key = await vt.readKey();
 
-  await host.keyPress(key);
+  await host.emitKey(key);
 }

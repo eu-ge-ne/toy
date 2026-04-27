@@ -19,7 +19,7 @@ export class EditorPlugin extends plugins.Plugin {
     },
     onCursorChange: (x) =>
       this.host.emitDocCursorChange?.(x.ln, x.col, x.lnCount),
-    onKeyHandle: (x) => this.host.debugKey(x),
+    onKeyHandle: (x) => this.host.emitDebugKey(x),
   });
 
   override async onStart(): Promise<void> {
@@ -28,7 +28,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.resetCursor();
   }
 
-  override async onPreStop?(e?: PromiseRejectionEvent): Promise<void> {
+  override async onBeforeStop?(e?: PromiseRejectionEvent): Promise<void> {
     if (e) {
       return;
     }
@@ -54,7 +54,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.render();
   }
 
-  override async onKeyPress(key: kitty.Key): Promise<boolean> {
+  override async onKey(key: kitty.Key): Promise<boolean> {
     if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
       return false;
     }
@@ -67,7 +67,7 @@ export class EditorPlugin extends plugins.Plugin {
       case "Zen":
         this.#widget.toggleIndex();
         this.#zen = !this.#zen;
-        this.host.resize();
+        this.host.emitResize();
         return false;
 
       case "Theme":

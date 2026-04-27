@@ -36,15 +36,15 @@ export class Host {
     this.plugins.push(...plugins);
   }
 
-  async start(): Promise<void> {
+  async emitStart(): Promise<void> {
     for (const x of this.plugins) {
       await x.onStart?.();
     }
   }
 
-  async stop(e?: PromiseRejectionEvent): Promise<void> {
+  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
-      await x.onPreStop?.(e);
+      await x.onBeforeStop?.(e);
     }
 
     for (const x of this.plugins) {
@@ -52,19 +52,19 @@ export class Host {
     }
 
     for (const x of this.plugins) {
-      await x.onPostStop?.(e);
+      await x.onAfterStop?.(e);
     }
   }
 
-  resize(): void {
+  emitResize(): void {
     for (const x of this.plugins) {
       x.onResize?.();
     }
   }
 
-  render(): void {
+  emitRender(): void {
     for (const x of this.plugins) {
-      x.onPreRender?.();
+      x.onBeforeRender?.();
     }
 
     for (const x of this.plugins) {
@@ -72,31 +72,31 @@ export class Host {
     }
 
     for (const x of this.plugins) {
-      x.onPostRender?.();
+      x.onAfterRender?.();
     }
   }
 
-  debugRender(elapsed: number): void {
+  emitDebugRender(elapsed: number): void {
     for (const x of this.plugins) {
       x.onDebugRender?.(elapsed);
     }
   }
 
-  debugKey(elapsed: number): void {
+  emitDebugKey(elapsed: number): void {
     for (const x of this.plugins) {
       x.onDebugKey?.(elapsed);
     }
   }
 
-  async keyPress(key: kitty.Key): Promise<void> {
+  async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onKeyPress?.(key)) {
+      if (await x.onKey?.(key)) {
         return;
       }
     }
   }
 
-  async command(cmd: commands.Command): Promise<void> {
+  async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {
         return;
