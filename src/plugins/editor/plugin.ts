@@ -110,11 +110,11 @@ export class EditorPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onDocWrite(chunk: string): void {
+  write(chunk: string): void {
     this.#widget.append(chunk);
   }
 
-  override onDocRead(): Iterable<string> {
+  read(): Iterable<string> {
     return this.#widget.read();
   }
 

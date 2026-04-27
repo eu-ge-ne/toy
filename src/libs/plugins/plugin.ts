@@ -25,8 +25,6 @@ export abstract class Plugin {
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
-  onDocWrite?(_: string): void;
-  onDocRead?(): Iterable<string>;
   onDocSave?(): Promise<void>;
   onDocReset?(): void; // TODO
   onDocChange?(): void; // TODO

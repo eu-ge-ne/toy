@@ -37,7 +37,6 @@ host.register(
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
-  new EditorPlugin(host),
   new DebugPlugin(host),
   new PalettePlugin(host),
 );
@@ -46,6 +45,7 @@ host.registerAlert(new AlertPlugin(host));
 host.registerAsk(new AskPlugin(host));
 host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
+host.registerDoc(new EditorPlugin(host));
 
 await host.emitStart();
 host.emitResize();

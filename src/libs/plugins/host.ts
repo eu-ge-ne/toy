@@ -10,6 +10,7 @@ export class Host {
   ask!: Ask;
   askFileName!: AskFileName;
   files!: Files;
+  doc!: Doc;
 
   register(...plugins: Plugin[]): void {
     this.plugins.push(...plugins);
@@ -32,6 +33,11 @@ export class Host {
 
   registerFiles(plugin: Plugin & Files): void {
     this.files = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerDoc(plugin: Plugin & Doc): void {
+    this.doc = plugin;
     this.plugins.push(plugin);
   }
 
@@ -103,21 +109,6 @@ export class Host {
     }
   }
 
-  emitDocWrite(chunk: string): void {
-    for (const x of this.plugins) {
-      x.onDocWrite?.(chunk);
-    }
-  }
-
-  emitDocRead(): Iterable<string> {
-    for (const x of this.plugins) {
-      if (x.onDocRead) {
-        return x.onDocRead();
-      }
-    }
-    return Iterator.from([]);
-  }
-
   async emitDocSave(): Promise<void> {
     for (const x of this.plugins) {
       x.onDocSave?.();
@@ -165,4 +156,9 @@ export interface Files {
   open(_: string): Promise<void>;
   save(): Promise<boolean>;
   saveAs(): Promise<boolean>;
+}
+
+export interface Doc {
+  write(_: string): void;
+  read(): Iterable<string>;
 }

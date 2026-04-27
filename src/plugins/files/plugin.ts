@@ -7,7 +7,7 @@ export class FilesPlugin extends plugins.Plugin {
   async open(fileName: string): Promise<void> {
     try {
       for await (const chunk of files.load(fileName)) {
-        this.host.emitDocWrite(chunk);
+        this.host.doc.write(chunk);
       }
 
       this.host.emitDocNameChange(fileName);
@@ -29,7 +29,7 @@ export class FilesPlugin extends plugins.Plugin {
     }
 
     try {
-      await files.save(this.#fileName, this.host.emitDocRead());
+      await files.save(this.#fileName, this.host.doc.read());
 
       return true;
     } catch (err) {
@@ -50,7 +50,7 @@ export class FilesPlugin extends plugins.Plugin {
       }
 
       try {
-        await files.save(newFileName, this.host.emitDocRead());
+        await files.save(newFileName, this.host.doc.read());
 
         this.#fileName = newFileName;
         this.host.emitDocNameChange(newFileName);
