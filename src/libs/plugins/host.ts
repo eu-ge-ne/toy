@@ -9,22 +9,9 @@ export class Host {
   alert!: Alert;
   ask!: Ask;
   askFileName!: AskFileName;
+  files!: Files;
 
   register(...plugins: Plugin[]): void {
-    for (const x of plugins) {
-      if (x.fileOpen) {
-        this.#fileOpen = x.fileOpen.bind(x);
-      }
-
-      if (x.fileSave) {
-        this.#fileSave = x.fileSave.bind(x);
-      }
-
-      if (x.fileSaveAs) {
-        this.#fileSaveAs = x.fileSaveAs.bind(x);
-      }
-    }
-
     this.plugins.push(...plugins);
   }
 
@@ -40,6 +27,11 @@ export class Host {
 
   registerAskFileName(plugin: Plugin & AskFileName): void {
     this.askFileName = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerFiles(plugin: Plugin & Files): void {
+    this.files = plugin;
     this.plugins.push(plugin);
   }
 
@@ -111,22 +103,6 @@ export class Host {
     }
   }
 
-  #fileOpen?: (_: string) => Promise<void>;
-  #fileSave?: () => Promise<boolean>;
-  #fileSaveAs?: () => Promise<boolean>;
-
-  async fileOpen(fileName: string): Promise<void> {
-    await this.#fileOpen?.(fileName);
-  }
-
-  async fileSave(): Promise<boolean> {
-    return await this.#fileSave?.() ?? false;
-  }
-
-  async fileSaveAs(): Promise<boolean> {
-    return await this.#fileSaveAs?.() ?? false;
-  }
-
   emitDocWrite(chunk: string): void {
     for (const x of this.plugins) {
       x.onDocWrite?.(chunk);
@@ -183,4 +159,10 @@ export interface Ask {
 
 export interface AskFileName {
   open(_: string): Promise<string | undefined>;
+}
+
+export interface Files {
+  open(_: string): Promise<void>;
+  save(): Promise<boolean>;
+  saveAs(): Promise<boolean>;
 }

@@ -34,7 +34,6 @@ const host = new plugins.Host();
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
-  new FilesPlugin(host),
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
@@ -46,6 +45,7 @@ host.register(
 host.registerAlert(new AlertPlugin(host));
 host.registerAsk(new AskPlugin(host));
 host.registerAskFileName(new AskFileNamePlugin(host));
+host.registerFiles(new FilesPlugin(host));
 
 await host.emitStart();
 host.emitResize();
@@ -53,7 +53,7 @@ host.emitResize();
 await host.emitCommand({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
-  await host.fileOpen(args._[0]);
+  await host.files.open(args._[0]);
 }
 
 while (true) {

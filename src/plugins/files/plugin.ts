@@ -5,7 +5,7 @@ import { loadFile, saveFile } from "./files.ts";
 export class FilesPlugin extends plugins.Plugin {
   #fileName?: string;
 
-  override async fileOpen(fileName: string): Promise<void> {
+  async open(fileName: string): Promise<void> {
     try {
       for await (const chunk of loadFile(fileName)) {
         this.host.emitDocWrite(chunk);
@@ -24,9 +24,9 @@ export class FilesPlugin extends plugins.Plugin {
     }
   }
 
-  override async fileSave(): Promise<boolean> {
+  async save(): Promise<boolean> {
     if (!this.#fileName) {
-      return await this.host.fileSaveAs();
+      return await this.host.files.saveAs();
     }
 
     try {
@@ -37,11 +37,11 @@ export class FilesPlugin extends plugins.Plugin {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
       await this.host.alert.open(message);
 
-      return await this.host.fileSaveAs();
+      return await this.host.files.saveAs();
     }
   }
 
-  override async fileSaveAs(): Promise<boolean> {
+  async saveAs(): Promise<boolean> {
     while (true) {
       const newFileName = await this.host.askFileName.open(
         this.#fileName ?? "",

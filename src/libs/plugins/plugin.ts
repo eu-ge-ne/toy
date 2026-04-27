@@ -25,10 +25,6 @@ export abstract class Plugin {
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
-  async fileOpen?(_: string): Promise<void>;
-  async fileSave?(): Promise<boolean>;
-  async fileSaveAs?(): Promise<boolean>;
-
   onDocWrite?(_: string): void;
   onDocRead?(): Iterable<string>;
   onDocSave?(): Promise<void>;
