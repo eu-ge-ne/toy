@@ -29,6 +29,6 @@ export class VTPlugin extends plugins.Plugin {
     vt.buf.flush();
     vt.sync.esu();
 
-    this.host.emitRendered(performance.now() - this.#t0);
+    this.host.debugRender(performance.now() - this.#t0);
   }
 }

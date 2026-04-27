@@ -76,9 +76,15 @@ export class Host {
     }
   }
 
-  emitRendered(elapsed: number): void {
+  debugRender(elapsed: number): void {
     for (const x of this.plugins) {
-      x.onRendered?.(elapsed);
+      x.onDebugRender?.(elapsed);
+    }
+  }
+
+  debugKey(elapsed: number): void {
+    for (const x of this.plugins) {
+      x.onDebugKey?.(elapsed);
     }
   }
 
@@ -126,12 +132,6 @@ export class Host {
       if (await x.onKey?.(key)) {
         return;
       }
-    }
-  }
-
-  emitKeyHandled(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onKeyHandled?.(elapsed);
     }
   }
 

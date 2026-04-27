@@ -19,7 +19,7 @@ export class EditorPlugin extends plugins.Plugin {
     },
     onCursorChange: (x) =>
       this.host.emitDocCursorChange?.(x.ln, x.col, x.lnCount),
-    onKeyHandle: (x) => this.host.emitKeyHandled(x),
+    onKeyHandle: (x) => this.host.debugKey(x),
   });
 
   override async onStart(): Promise<void> {

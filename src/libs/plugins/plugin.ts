@@ -16,7 +16,9 @@ export abstract class Plugin {
   onPreRender?(): void;
   onRender?(): void;
   onPostRender?(): void;
-  onRendered?(_: number): void;
+
+  onDebugRender?(_: number): void;
+  onDebugKey?(_: number): void;
 
   async alert?(_: string): Promise<void>;
   async ask?(_: string): Promise<boolean>;
@@ -28,7 +30,6 @@ export abstract class Plugin {
   async onCommand?(_: commands.Command): Promise<boolean>;
 
   async onKey?(_: kitty.Key): Promise<boolean>;
-  onKeyHandled?(_: number): void;
 
   onDocWrite?(_: string): void;
   onDocRead?(): Iterable<string>;
