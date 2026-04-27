@@ -3,13 +3,13 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
 export class CommandsPlugin extends plugins.Plugin {
-  override async onKey(key: kitty.Key): Promise<boolean> {
+  override async onKeyPress(key: kitty.Key): Promise<boolean> {
     const name = commands.ShortcutToCommand[kitty.shortcut(key)];
     if (!name) {
       return false;
     }
 
-    await this.host.emitCommand({ name } as commands.Command);
+    await this.host.command({ name } as commands.Command);
     return true;
   }
 

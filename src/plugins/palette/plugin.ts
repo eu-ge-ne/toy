@@ -49,7 +49,7 @@ export class PalettePlugin extends plugins.Plugin {
     this.host.render();
 
     if (cmd) {
-      await this.host.emitCommand(cmd);
+      await this.host.command(cmd);
     }
   }
 }

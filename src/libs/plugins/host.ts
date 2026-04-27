@@ -88,15 +88,15 @@ export class Host {
     }
   }
 
-  async emitKey(key: kitty.Key): Promise<void> {
+  async keyPress(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onKey?.(key)) {
+      if (await x.onKeyPress?.(key)) {
         return;
       }
     }
   }
 
-  async emitCommand(cmd: commands.Command): Promise<void> {
+  async command(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onCommand?.(cmd)) {
         return;

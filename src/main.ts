@@ -49,7 +49,7 @@ host.register(
 await host.start();
 host.resize();
 
-await host.emitCommand({ name: "Theme", data: "Default" });
+await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.fileOpen(args._[0]);
@@ -60,5 +60,5 @@ while (true) {
 
   const key = await vt.readKey();
 
-  await host.emitKey(key);
+  await host.keyPress(key);
 }

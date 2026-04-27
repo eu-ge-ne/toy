@@ -20,7 +20,7 @@ export abstract class Plugin {
   onDebugRender?(_: number): void;
   onDebugKey?(_: number): void;
 
-  async onKey?(_: kitty.Key): Promise<boolean>;
+  async onKeyPress?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
   async alert?(_: string): Promise<void>;

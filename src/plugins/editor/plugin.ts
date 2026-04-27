@@ -54,7 +54,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.render();
   }
 
-  override async onKey(key: kitty.Key): Promise<boolean> {
+  override async onKeyPress(key: kitty.Key): Promise<boolean> {
     if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
       return false;
     }
