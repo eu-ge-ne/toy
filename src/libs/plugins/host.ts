@@ -88,6 +88,22 @@ export class Host {
     }
   }
 
+  async emitKey(key: kitty.Key): Promise<void> {
+    for (const x of this.plugins) {
+      if (await x.onKey?.(key)) {
+        return;
+      }
+    }
+  }
+
+  async emitCommand(cmd: commands.Command): Promise<void> {
+    for (const x of this.plugins) {
+      if (await x.onCommand?.(cmd)) {
+        return;
+      }
+    }
+  }
+
   #alert?: (_: string) => Promise<void>;
   #ask?: (_: string) => Promise<boolean>;
   #askFileName?: (_: string) => Promise<string | undefined>;
@@ -117,22 +133,6 @@ export class Host {
 
   async fileSaveAs(): Promise<boolean> {
     return await this.#fileSaveAs?.() ?? false;
-  }
-
-  async emitCommand(cmd: commands.Command): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onCommand?.(cmd)) {
-        return;
-      }
-    }
-  }
-
-  async emitKey(key: kitty.Key): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onKey?.(key)) {
-        return;
-      }
-    }
   }
 
   emitDocWrite(chunk: string): void {
