@@ -43,7 +43,9 @@ export class FilesPlugin extends plugins.Plugin {
 
   override async fileSaveAs(): Promise<boolean> {
     while (true) {
-      const newFileName = await this.host.askFileName(this.#fileName ?? "");
+      const newFileName = await this.host.askFileName.open(
+        this.#fileName ?? "",
+      );
       if (!newFileName) {
         return false;
       }

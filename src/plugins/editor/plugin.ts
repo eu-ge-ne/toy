@@ -34,7 +34,7 @@ export class EditorPlugin extends plugins.Plugin {
     }
 
     if (this.#widget.textChanged) {
-      if (await this.host.ask("Save changes?")) {
+      if (await this.host.ask.open("Save changes?")) {
         await this.host.fileSave();
       }
     }

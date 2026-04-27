@@ -40,12 +40,12 @@ host.register(
   new FooterPlugin(host),
   new EditorPlugin(host),
   new DebugPlugin(host),
-  new AskPlugin(host),
   new PalettePlugin(host),
-  new AskFileNamePlugin(host),
 );
 
 host.registerAlert(new AlertPlugin(host));
+host.registerAsk(new AskPlugin(host));
+host.registerAskFileName(new AskFileNamePlugin(host));
 
 await host.emitStart();
 host.emitResize();

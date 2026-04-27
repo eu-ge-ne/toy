@@ -25,8 +25,6 @@ export abstract class Plugin {
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
-  async ask?(_: string): Promise<boolean>;
-  async askFileName?(_: string): Promise<string | undefined>;
   async fileOpen?(_: string): Promise<void>;
   async fileSave?(): Promise<boolean>;
   async fileSaveAs?(): Promise<boolean>;

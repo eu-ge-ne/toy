@@ -29,7 +29,7 @@ export class AskFileNamePlugin extends plugins.Plugin {
     return false;
   }
 
-  override async askFileName(fileName: string): Promise<string | undefined> {
+  async open(fileName: string): Promise<string | undefined> {
     return await this.#widget.open(fileName);
   }
 }

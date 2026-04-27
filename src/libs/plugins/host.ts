@@ -7,17 +7,11 @@ export class Host {
   readonly plugins: Plugin[] = [];
 
   alert!: Alert;
+  ask!: Ask;
+  askFileName!: AskFileName;
 
   register(...plugins: Plugin[]): void {
     for (const x of plugins) {
-      if (x.ask) {
-        this.#ask = x.ask.bind(x);
-      }
-
-      if (x.askFileName) {
-        this.#askFileName = x.askFileName.bind(x);
-      }
-
       if (x.fileOpen) {
         this.#fileOpen = x.fileOpen.bind(x);
       }
@@ -36,7 +30,16 @@ export class Host {
 
   registerAlert(plugin: Plugin & Alert): void {
     this.alert = plugin;
+    this.plugins.push(plugin);
+  }
 
+  registerAsk(plugin: Plugin & Ask): void {
+    this.ask = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerAskFileName(plugin: Plugin & AskFileName): void {
+    this.askFileName = plugin;
     this.plugins.push(plugin);
   }
 
@@ -108,19 +111,9 @@ export class Host {
     }
   }
 
-  #ask?: (_: string) => Promise<boolean>;
-  #askFileName?: (_: string) => Promise<string | undefined>;
   #fileOpen?: (_: string) => Promise<void>;
   #fileSave?: () => Promise<boolean>;
   #fileSaveAs?: () => Promise<boolean>;
-
-  async ask(message: string): Promise<boolean> {
-    return this.#ask?.(message) ?? false;
-  }
-
-  async askFileName(fileName: string): Promise<string | undefined> {
-    return await this.#askFileName?.(fileName);
-  }
 
   async fileOpen(fileName: string): Promise<void> {
     await this.#fileOpen?.(fileName);
@@ -181,5 +174,13 @@ export class Host {
 }
 
 export interface Alert {
-  open(message: string): Promise<void>;
+  open(_: string): Promise<void>;
+}
+
+export interface Ask {
+  open(_: string): Promise<boolean>;
+}
+
+export interface AskFileName {
+  open(_: string): Promise<string | undefined>;
 }
