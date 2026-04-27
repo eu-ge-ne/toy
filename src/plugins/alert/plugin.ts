@@ -29,7 +29,7 @@ export class AlertPlugin extends plugins.Plugin {
     return false;
   }
 
-  override async alert(message: string): Promise<void> {
+  async open(message: string): Promise<void> {
     await this.#widget.open(message);
   }
 }

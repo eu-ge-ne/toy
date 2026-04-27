@@ -41,10 +41,11 @@ host.register(
   new EditorPlugin(host),
   new DebugPlugin(host),
   new AskPlugin(host),
-  new AlertPlugin(host),
   new PalettePlugin(host),
   new AskFileNamePlugin(host),
 );
+
+host.registerAlert(new AlertPlugin(host));
 
 await host.emitStart();
 host.emitResize();

@@ -4,14 +4,12 @@ import * as kitty from "@libs/kitty";
 import { Plugin } from "./plugin.ts";
 
 export class Host {
-  protected readonly plugins: Plugin[] = [];
+  readonly plugins: Plugin[] = [];
+
+  alert!: Alert;
 
   register(...plugins: Plugin[]): void {
     for (const x of plugins) {
-      if (x.alert) {
-        this.#alert = x.alert.bind(x);
-      }
-
       if (x.ask) {
         this.#ask = x.ask.bind(x);
       }
@@ -34,6 +32,12 @@ export class Host {
     }
 
     this.plugins.push(...plugins);
+  }
+
+  registerAlert(plugin: Plugin & Alert): void {
+    this.alert = plugin;
+
+    this.plugins.push(plugin);
   }
 
   async emitStart(): Promise<void> {
@@ -104,16 +108,11 @@ export class Host {
     }
   }
 
-  #alert?: (_: string) => Promise<void>;
   #ask?: (_: string) => Promise<boolean>;
   #askFileName?: (_: string) => Promise<string | undefined>;
   #fileOpen?: (_: string) => Promise<void>;
   #fileSave?: () => Promise<boolean>;
   #fileSaveAs?: () => Promise<boolean>;
-
-  async alert(message: string): Promise<void> {
-    await this.#alert?.(message);
-  }
 
   async ask(message: string): Promise<boolean> {
     return this.#ask?.(message) ?? false;
@@ -179,4 +178,8 @@ export class Host {
       x.onDocCursorChange?.(ln, col, lnCount);
     }
   }
+}
+
+export interface Alert {
+  open(message: string): Promise<void>;
 }
