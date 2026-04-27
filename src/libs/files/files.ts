@@ -1,4 +1,4 @@
-export async function* loadFile(fileName: string): AsyncGenerator<string> {
+export async function* load(fileName: string): AsyncGenerator<string> {
   using file = await Deno.open(fileName, { read: true });
 
   const info = await file.stat();
@@ -27,7 +27,7 @@ export async function* loadFile(fileName: string): AsyncGenerator<string> {
   }
 }
 
-export async function saveFile(
+export async function save(
   fileName: string,
   text: Iterable<string>,
 ): Promise<void> {

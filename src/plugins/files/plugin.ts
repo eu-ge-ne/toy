@@ -1,13 +1,12 @@
+import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
-
-import { loadFile, saveFile } from "./files.ts";
 
 export class FilesPlugin extends plugins.Plugin {
   #fileName?: string;
 
   async open(fileName: string): Promise<void> {
     try {
-      for await (const chunk of loadFile(fileName)) {
+      for await (const chunk of files.load(fileName)) {
         this.host.emitDocWrite(chunk);
       }
 
@@ -30,7 +29,7 @@ export class FilesPlugin extends plugins.Plugin {
     }
 
     try {
-      await saveFile(this.#fileName, this.host.emitDocRead());
+      await files.save(this.#fileName, this.host.emitDocRead());
 
       return true;
     } catch (err) {
@@ -51,7 +50,7 @@ export class FilesPlugin extends plugins.Plugin {
       }
 
       try {
-        await saveFile(newFileName, this.host.emitDocRead());
+        await files.save(newFileName, this.host.emitDocRead());
 
         this.#fileName = newFileName;
         this.host.emitDocNameChange(newFileName);
