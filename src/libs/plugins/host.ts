@@ -109,12 +109,6 @@ export class Host {
     }
   }
 
-  async emitDocSave(): Promise<void> {
-    for (const x of this.plugins) {
-      x.onDocSave?.();
-    }
-  }
-
   emitDocReset(): void {
     for (const x of this.plugins) {
       x.onDocReset?.();
@@ -154,11 +148,12 @@ export interface AskFileName {
 
 export interface Files {
   open(_: string): Promise<void>;
-  save(): Promise<boolean>;
-  saveAs(): Promise<boolean>;
+  save(): Promise<void>;
+  saveAs(): Promise<void>;
 }
 
 export interface Doc {
+  reset(): void;
   write(_: string): void;
   read(): Iterable<string>;
 }

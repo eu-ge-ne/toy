@@ -110,17 +110,16 @@ export class EditorPlugin extends plugins.Plugin {
     return false;
   }
 
+  reset(): void {
+    this.#widget.resetChanges();
+    this.#widget.resetCursor();
+  }
+
   write(chunk: string): void {
     this.#widget.append(chunk);
   }
 
   read(): Iterable<string> {
     return this.#widget.read();
-  }
-
-  override async onDocSave(): Promise<void> {
-    if (await this.host.files.save()) {
-      this.#widget.resetChanges();
-    }
   }
 }

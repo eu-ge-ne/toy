@@ -23,30 +23,31 @@ export class FilesPlugin extends plugins.Plugin {
     }
   }
 
-  async save(): Promise<boolean> {
+  async save(): Promise<void> {
     if (!this.#fileName) {
-      return await this.host.files.saveAs();
+      await this.host.files.saveAs();
+      return;
     }
 
     try {
       await files.save(this.#fileName, this.host.doc.read());
 
-      return true;
+      this.host.doc.reset();
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
       await this.host.alert.open(message);
 
-      return await this.host.files.saveAs();
+      await this.host.files.saveAs();
     }
   }
 
-  async saveAs(): Promise<boolean> {
+  async saveAs(): Promise<void> {
     while (true) {
       const newFileName = await this.host.askFileName.open(
         this.#fileName ?? "",
       );
       if (!newFileName) {
-        return false;
+        return;
       }
 
       try {
@@ -55,7 +56,7 @@ export class FilesPlugin extends plugins.Plugin {
         this.#fileName = newFileName;
         this.host.emitDocNameChange(newFileName);
 
-        return true;
+        this.host.doc.reset();
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.host.alert.open(message);
