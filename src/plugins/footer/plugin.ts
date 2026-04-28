@@ -42,13 +42,13 @@ export class FooterPlugin extends plugins.Plugin {
   }
 
   override onStatus(data: plugins.StatusData): void {
-    if (data.docCursorChanged) {
-      this.#widget.props.ln = data.docCursorChanged.ln;
-      this.#widget.props.col = data.docCursorChanged.col;
+    if (data.doc?.cursor) {
+      this.#widget.props.ln = data.doc.cursor.ln;
+      this.#widget.props.col = data.doc.cursor.col;
     }
 
-    if (data.docContent) {
-      this.#widget.props.lnCount = data.docContent.lineCount;
+    if (data.doc?.content) {
+      this.#widget.props.lnCount = data.doc.content.lineCount;
     }
   }
 }

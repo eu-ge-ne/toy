@@ -12,14 +12,23 @@ export class EditorPlugin extends plugins.Plugin {
     multiLine: true,
     onTextChange: () => {
       this.host.emitStatus({
-        docContent: {
-          modified: this.#widget.modified,
-          lineCount: this.#widget.lineCount,
+        doc: {
+          content: {
+            modified: this.#widget.modified,
+            lineCount: this.#widget.lineCount,
+          },
         },
       });
     },
     onCursorChange: (x) =>
-      this.host.emitStatus({ docCursorChanged: { ln: x.ln, col: x.col } }),
+      this.host.emitStatus({
+        doc: {
+          cursor: {
+            ln: x.ln,
+            col: x.col,
+          },
+        },
+      }),
     onKeyHandle: (x) => this.host.emitDebug({ keyElapsed: x }),
   });
 

@@ -9,14 +9,16 @@ export interface DebugData {
 }
 
 export interface StatusData {
-  docFileName?: string;
-  docContent?: {
-    modified: boolean;
-    lineCount: number;
-  };
-  docCursorChanged?: {
-    ln: number;
-    col: number;
+  doc?: {
+    fileName?: string;
+    content?: {
+      modified: boolean;
+      lineCount: number;
+    };
+    cursor?: {
+      ln: number;
+      col: number;
+    };
   };
 }
 

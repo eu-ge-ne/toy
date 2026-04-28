@@ -41,12 +41,12 @@ export class HeaderPlugin extends plugins.Plugin {
   }
 
   override onStatus(data: plugins.StatusData): void {
-    if (data.docFileName) {
-      this.#widget.props.fileName = data.docFileName;
+    if (data.doc?.fileName) {
+      this.#widget.props.fileName = data.doc?.fileName;
     }
 
-    if (data.docContent) {
-      this.#widget.props.modified = data.docContent.modified;
+    if (data.doc?.content) {
+      this.#widget.props.modified = data.doc.content.modified;
     }
   }
 }
