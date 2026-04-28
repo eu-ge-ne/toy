@@ -1,7 +1,31 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 
-import { Plugin } from "./plugin.ts";
+import { DebugData, Plugin, StatusData } from "./plugin.ts";
+
+export interface Alert {
+  open(_: string): Promise<void>;
+}
+
+export interface Ask {
+  open(_: string): Promise<boolean>;
+}
+
+export interface AskFileName {
+  open(_: string): Promise<string | undefined>;
+}
+
+export interface Files {
+  open(_: string): Promise<void>;
+  save(): Promise<void>;
+  saveAs(): Promise<void>;
+}
+
+export interface Doc {
+  reset(): void;
+  write(_: string): void;
+  read(): Iterable<string>;
+}
 
 export class Host {
   readonly plugins: Plugin[] = [];
@@ -49,7 +73,7 @@ export class Host {
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
-      await x.onBeforeStop?.(e);
+      await x.onStopBefore?.(e);
     }
 
     for (const x of this.plugins) {
@@ -57,7 +81,7 @@ export class Host {
     }
 
     for (const x of this.plugins) {
-      await x.onAfterStop?.(e);
+      await x.onStopAfter?.(e);
     }
   }
 
@@ -69,7 +93,7 @@ export class Host {
 
   emitRender(): void {
     for (const x of this.plugins) {
-      x.onBeforeRender?.();
+      x.onRenderBefore?.();
     }
 
     for (const x of this.plugins) {
@@ -77,19 +101,7 @@ export class Host {
     }
 
     for (const x of this.plugins) {
-      x.onAfterRender?.();
-    }
-  }
-
-  emitDebugRender(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onDebugRender?.(elapsed);
-    }
-  }
-
-  emitDebugKey(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onDebugKey?.(elapsed);
+      x.onRenderAfter?.();
     }
   }
 
@@ -109,51 +121,15 @@ export class Host {
     }
   }
 
-  emitDocReset(): void {
+  emitDebug(data: DebugData): void {
     for (const x of this.plugins) {
-      x.onDocReset?.();
+      x.onDebug?.(data);
     }
   }
 
-  emitDocChange(): void {
+  emitStatus(data: StatusData): void {
     for (const x of this.plugins) {
-      x.onDocChange?.();
+      x.onStatus?.(data);
     }
   }
-
-  emitDocNameChange(docName: string): void {
-    for (const x of this.plugins) {
-      x.onDocNameChange?.(docName);
-    }
-  }
-
-  emitDocCursorChange(ln: number, col: number, lnCount: number): void {
-    for (const x of this.plugins) {
-      x.onDocCursorChange?.(ln, col, lnCount);
-    }
-  }
-}
-
-export interface Alert {
-  open(_: string): Promise<void>;
-}
-
-export interface Ask {
-  open(_: string): Promise<boolean>;
-}
-
-export interface AskFileName {
-  open(_: string): Promise<string | undefined>;
-}
-
-export interface Files {
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-}
-
-export interface Doc {
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
 }

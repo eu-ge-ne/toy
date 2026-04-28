@@ -11,15 +11,16 @@ export class EditorPlugin extends plugins.Plugin {
   readonly #widget = new EditorWidget({
     multiLine: true,
     onTextChange: () => {
-      if (this.#widget.textChanged) {
-        this.host.emitDocChange();
-      } else {
-        this.host.emitDocReset();
-      }
+      this.host.emitStatus({
+        docContent: {
+          modified: this.#widget.modified,
+          lineCount: this.#widget.lineCount,
+        },
+      });
     },
     onCursorChange: (x) =>
-      this.host.emitDocCursorChange?.(x.ln, x.col, x.lnCount),
-    onKeyHandle: (x) => this.host.emitDebugKey(x),
+      this.host.emitStatus({ docCursorChanged: { ln: x.ln, col: x.col } }),
+    onKeyHandle: (x) => this.host.emitDebug({ keyElapsed: x }),
   });
 
   override async onStart(): Promise<void> {
@@ -28,12 +29,12 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.resetCursor();
   }
 
-  override async onBeforeStop?(e?: PromiseRejectionEvent): Promise<void> {
+  override async onStopBefore?(e?: PromiseRejectionEvent): Promise<void> {
     if (e) {
       return;
     }
 
-    if (this.#widget.textChanged) {
+    if (this.#widget.modified) {
       if (await this.host.ask.open("Save changes?")) {
         await this.host.files.save();
       }

@@ -10,7 +10,7 @@ export class FilesPlugin extends plugins.Plugin {
         this.host.doc.write(chunk);
       }
 
-      this.host.emitDocNameChange(fileName);
+      this.host.emitStatus({ docFileName: fileName });
 
       this.#fileName = fileName;
     } catch (err) {
@@ -54,7 +54,7 @@ export class FilesPlugin extends plugins.Plugin {
         await files.save(newFileName, this.host.doc.read());
 
         this.#fileName = newFileName;
-        this.host.emitDocNameChange(newFileName);
+        this.host.emitStatus({ docFileName: newFileName });
 
         this.host.doc.reset();
       } catch (err) {

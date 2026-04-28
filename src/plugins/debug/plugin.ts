@@ -48,11 +48,13 @@ export class DebugPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onDebugRender(elapsed: number): void {
-    this.#widget.props.renderTime = elapsed;
-  }
+  override onDebug(data: plugins.DebugData): void {
+    if (typeof data.renderElapsed === "number") {
+      this.#widget.props.renderTime = data.renderElapsed;
+    }
 
-  override onDebugKey(elapsed: number): void {
-    this.#widget.props.inputTime = elapsed;
+    if (typeof data.keyElapsed === "number") {
+      this.#widget.props.inputTime = data.keyElapsed;
+    }
   }
 }

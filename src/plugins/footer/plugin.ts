@@ -41,9 +41,14 @@ export class FooterPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onDocCursorChange(ln: number, col: number, lnCount: number): void {
-    this.#widget.props.ln = ln;
-    this.#widget.props.col = col;
-    this.#widget.props.lnCount = lnCount;
+  override onStatus(data: plugins.StatusData): void {
+    if (data.docCursorChanged) {
+      this.#widget.props.ln = data.docCursorChanged.ln;
+      this.#widget.props.col = data.docCursorChanged.col;
+    }
+
+    if (data.docContent) {
+      this.#widget.props.lnCount = data.docContent.lineCount;
+    }
   }
 }
