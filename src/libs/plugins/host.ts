@@ -1,13 +1,68 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 
-import { Plugin } from "./plugin.ts";
+import { DebugData, Plugin, StatusData } from "./plugin.ts";
+
+export interface Alert {
+  open(_: string): Promise<void>;
+}
+
+export interface Ask {
+  open(_: string): Promise<boolean>;
+}
+
+export interface AskFileName {
+  open(_: string): Promise<string | undefined>;
+}
+
+export interface Files {
+  open(_: string): Promise<void>;
+  save(): Promise<void>;
+  saveAs(): Promise<void>;
+}
+
+export interface Doc {
+  reset(): void;
+  write(_: string): void;
+  read(): Iterable<string>;
+}
 
 export class Host {
-  protected readonly plugins: Plugin[] = [];
+  readonly plugins: Plugin[] = [];
+
+  alert!: Alert;
+  ask!: Ask;
+  askFileName!: AskFileName;
+  files!: Files;
+  doc!: Doc;
 
   register(...plugins: Plugin[]): void {
     this.plugins.push(...plugins);
+  }
+
+  registerAlert(plugin: Plugin & Alert): void {
+    this.alert = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerAsk(plugin: Plugin & Ask): void {
+    this.ask = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerAskFileName(plugin: Plugin & AskFileName): void {
+    this.askFileName = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerFiles(plugin: Plugin & Files): void {
+    this.files = plugin;
+    this.plugins.push(plugin);
+  }
+
+  registerDoc(plugin: Plugin & Doc): void {
+    this.doc = plugin;
+    this.plugins.push(plugin);
   }
 
   async emitStart(): Promise<void> {
@@ -18,11 +73,15 @@ export class Host {
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
-      await x.onPreStop?.();
+      await x.onStopBefore?.(e);
     }
 
     for (const x of this.plugins) {
       await x.onStop?.(e);
+    }
+
+    for (const x of this.plugins) {
+      await x.onStopAfter?.(e);
     }
   }
 
@@ -34,7 +93,7 @@ export class Host {
 
   emitRender(): void {
     for (const x of this.plugins) {
-      x.onPreRender?.();
+      x.onRenderBefore?.();
     }
 
     for (const x of this.plugins) {
@@ -42,71 +101,7 @@ export class Host {
     }
 
     for (const x of this.plugins) {
-      x.onPostRender?.();
-    }
-  }
-
-  emitRendered(elapsed: number): void {
-    for (const x of this.plugins) {
-      x.onRendered?.(elapsed);
-    }
-  }
-
-  async emitAlert(message: string): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onAlert?.(message);
-    }
-  }
-
-  async emitAsk(message: string): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onAsk?.(message)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async emitAskFileName(fileName: string): Promise<string | undefined> {
-    for (const x of this.plugins) {
-      const newFileName = await x.onAskFileName?.(fileName);
-      if (newFileName) {
-        return newFileName;
-      }
-    }
-  }
-
-  async emitFileOpen(fileName: string): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onFileOpen?.(fileName)) {
-        return;
-      }
-    }
-  }
-
-  async emitFileSave(): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onFileSave?.()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async emitFileSaveAs(): Promise<boolean> {
-    for (const x of this.plugins) {
-      if (await x.onFileSaveAs?.()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async emitCommand(cmd: commands.Command): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onCommand?.(cmd)) {
-        return;
-      }
+      x.onRenderAfter?.();
     }
   }
 
@@ -118,54 +113,23 @@ export class Host {
     }
   }
 
-  emitKeyHandled(elapsed: number): void {
+  async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
-      x.onKeyHandled?.(elapsed);
-    }
-  }
-
-  emitDocWrite(chunk: string): void {
-    for (const x of this.plugins) {
-      x.onDocWrite?.(chunk);
-    }
-  }
-
-  emitDocRead(): Iterable<string> {
-    for (const x of this.plugins) {
-      if (x.onDocRead) {
-        return x.onDocRead();
+      if (await x.onCommand?.(cmd)) {
+        return;
       }
     }
-    return Iterator.from([]);
   }
 
-  async emitDocSave(): Promise<void> {
+  emitDebug(data: DebugData): void {
     for (const x of this.plugins) {
-      x.onDocSave?.();
+      x.onDebug?.(data);
     }
   }
 
-  emitDocReset(): void {
+  emitStatus(data: StatusData): void {
     for (const x of this.plugins) {
-      x.onDocReset?.();
-    }
-  }
-
-  emitDocChange(): void {
-    for (const x of this.plugins) {
-      x.onDocChange?.();
-    }
-  }
-
-  emitDocNameChange(docName: string): void {
-    for (const x of this.plugins) {
-      x.onDocNameChange?.(docName);
-    }
-  }
-
-  emitDocCursorChange(ln: number, col: number, lnCount: number): void {
-    for (const x of this.plugins) {
-      x.onDocCursorChange?.(ln, col, lnCount);
+      x.onStatus?.(data);
     }
   }
 }

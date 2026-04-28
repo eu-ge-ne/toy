@@ -29,7 +29,7 @@ export class AskPlugin extends plugins.Plugin {
     return false;
   }
 
-  override async onAsk(message: string): Promise<boolean> {
+  async open(message: string): Promise<boolean> {
     return await this.#widget.open(message);
   }
 }

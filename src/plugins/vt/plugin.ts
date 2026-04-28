@@ -17,18 +17,18 @@ export class VTPlugin extends plugins.Plugin {
     vt.restore();
   }
 
-  override onPreRender(): void {
+  override onRenderBefore(): void {
     this.#t0 = performance.now();
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
   }
 
-  override onPostRender(): void {
+  override onRenderAfter(): void {
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
     vt.sync.esu();
 
-    this.host.emitRendered(performance.now() - this.#t0);
+    this.host.emitDebug({ renderElapsed: performance.now() - this.#t0 });
   }
 }

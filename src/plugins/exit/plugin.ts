@@ -8,7 +8,7 @@ export class ExitPlugin extends plugins.Plugin {
     );
   }
 
-  override async onStop(e?: PromiseRejectionEvent): Promise<void> {
+  override async onStopAfter(e?: PromiseRejectionEvent): Promise<void> {
     if (e) {
       console.log(e.reason);
     }

@@ -1,63 +1,73 @@
+import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
-
-import { loadFile, saveFile } from "./files.ts";
 
 export class FilesPlugin extends plugins.Plugin {
   #fileName?: string;
 
-  override async onFileOpen(fileName: string): Promise<void> {
+  async open(fileName: string): Promise<void> {
     try {
-      for await (const chunk of loadFile(fileName)) {
-        this.host.emitDocWrite(chunk);
+      for await (const chunk of files.load(fileName)) {
+        this.host.doc.write(chunk);
       }
 
-      this.host.emitDocNameChange(fileName);
+      this.host.emitStatus({
+        doc: {
+          fileName: fileName,
+        },
+      });
 
       this.#fileName = fileName;
     } catch (err) {
       if (!(err instanceof Deno.errors.NotFound)) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.emitAlert(message);
+        await this.host.alert.open(message);
 
         await this.host.emitStop();
       }
     }
   }
 
-  override async onFileSave(): Promise<boolean> {
+  async save(): Promise<void> {
     if (!this.#fileName) {
-      return await this.host.emitFileSaveAs();
+      await this.host.files.saveAs();
+      return;
     }
 
     try {
-      await saveFile(this.#fileName, this.host.emitDocRead());
+      await files.save(this.#fileName, this.host.doc.read());
 
-      return true;
+      this.host.doc.reset();
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await this.host.emitAlert(message);
+      await this.host.alert.open(message);
 
-      return await this.host.emitFileSaveAs();
+      await this.host.files.saveAs();
     }
   }
 
-  override async onFileSaveAs(): Promise<boolean> {
+  async saveAs(): Promise<void> {
     while (true) {
-      const newFileName = await this.host.emitAskFileName(this.#fileName ?? "");
+      const newFileName = await this.host.askFileName.open(
+        this.#fileName ?? "",
+      );
       if (!newFileName) {
-        return false;
+        return;
       }
 
       try {
-        await saveFile(newFileName, this.host.emitDocRead());
+        await files.save(newFileName, this.host.doc.read());
 
         this.#fileName = newFileName;
-        this.host.emitDocNameChange(newFileName);
+        this.host.emitStatus({
+          doc: {
+            fileName: newFileName,
+          },
+        });
 
-        return true;
+        this.host.doc.reset();
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.emitAlert(message);
+        await this.host.alert.open(message);
       }
     }
   }

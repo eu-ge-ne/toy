@@ -34,17 +34,19 @@ const host = new plugins.Host();
 host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
-  new FilesPlugin(host),
   new CommandsPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
-  new EditorPlugin(host),
-  new DebugPlugin(host),
-  new AskPlugin(host),
-  new AlertPlugin(host),
   new PalettePlugin(host),
-  new AskFileNamePlugin(host),
 );
+
+host.registerAlert(new AlertPlugin(host));
+host.registerAsk(new AskPlugin(host));
+host.registerAskFileName(new AskFileNamePlugin(host));
+host.registerFiles(new FilesPlugin(host));
+host.registerDoc(new EditorPlugin(host));
+
+host.register(new DebugPlugin(host));
 
 await host.emitStart();
 host.emitResize();
@@ -52,7 +54,7 @@ host.emitResize();
 await host.emitCommand({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
-  await host.emitFileOpen(args._[0]);
+  await host.files.open(args._[0]);
 }
 
 while (true) {

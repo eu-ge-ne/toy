@@ -40,15 +40,13 @@ export class HeaderPlugin extends plugins.Plugin {
     return false;
   }
 
-  override async onDocNameChange(docName: string): Promise<void> {
-    this.#widget.props.fileName = docName;
-  }
+  override onStatus(data: plugins.StatusData): void {
+    if (data.doc?.fileName) {
+      this.#widget.props.fileName = data.doc?.fileName;
+    }
 
-  override async onDocChange(): Promise<void> {
-    this.#widget.props.modified = true;
-  }
-
-  override async onDocReset(): Promise<void> {
-    this.#widget.props.modified = false;
+    if (data.doc?.content) {
+      this.#widget.props.modified = data.doc.content.modified;
+    }
   }
 }

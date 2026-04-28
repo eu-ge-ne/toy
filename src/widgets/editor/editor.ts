@@ -13,7 +13,7 @@ import { History } from "./history.ts";
 interface EditorWidgetParams {
   readonly multiLine: boolean;
   onTextChange?: () => void;
-  onCursorChange?: (_: { ln: number; col: number; lnCount: number }) => void;
+  onCursorChange?: (_: { ln: number; col: number }) => void;
   onKeyHandle?: (_: number) => void;
 }
 
@@ -26,7 +26,11 @@ export class EditorWidget extends widgets.Frame {
   readonly #history = new History(this.#doc, this.#cursor);
   #clipboard = "";
 
-  get textChanged(): boolean {
+  get lineCount(): number {
+    return this.#doc.lineCount;
+  }
+
+  get modified(): boolean {
     return this.#history.changed;
   }
 
@@ -57,7 +61,6 @@ export class EditorWidget extends widgets.Frame {
       props.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
-        lnCount: this.#doc.lineCount,
       });
   }
 

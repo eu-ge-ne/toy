@@ -20,7 +20,7 @@ export class CommandsPlugin extends plugins.Plugin {
         return true;
 
       case "Save":
-        await this.host.emitDocSave();
+        await this.host.files.save();
         return true;
     }
 

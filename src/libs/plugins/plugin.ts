@@ -3,38 +3,44 @@ import * as kitty from "@libs/kitty";
 
 import { Host } from "./host.ts";
 
+export interface DebugData {
+  renderElapsed?: number;
+  keyElapsed?: number;
+}
+
+export interface StatusData {
+  doc?: {
+    fileName?: string;
+    content?: {
+      modified: boolean;
+      lineCount: number;
+    };
+    cursor?: {
+      ln: number;
+      col: number;
+    };
+  };
+}
+
 export abstract class Plugin {
   constructor(protected readonly host: Host) {
   }
 
   async onStart?(): Promise<void>;
-  async onStop?(_?: PromiseRejectionEvent): Promise<void>;
-  async onPreStop?(_?: PromiseRejectionEvent): Promise<void>;
+
+  async onStopBefore?(e?: PromiseRejectionEvent): Promise<void>;
+  async onStop?(e?: PromiseRejectionEvent): Promise<void>;
+  async onStopAfter?(e?: PromiseRejectionEvent): Promise<void>;
 
   onResize?(): void;
+
+  onRenderBefore?(): void;
   onRender?(): void;
-  onPreRender?(): void;
-  onPostRender?(): void;
-  onRendered?(_: number): void;
-
-  async onAlert?(_: string): Promise<void>;
-  async onAsk?(_: string): Promise<boolean>;
-  async onAskFileName?(_: string): Promise<string | undefined>;
-
-  async onFileOpen?(_: string): Promise<void>;
-  async onFileSave?(): Promise<boolean>;
-  async onFileSaveAs?(): Promise<boolean>;
-
-  async onCommand?(_: commands.Command): Promise<boolean>;
+  onRenderAfter?(): void;
 
   async onKey?(_: kitty.Key): Promise<boolean>;
-  onKeyHandled?(_: number): void;
+  async onCommand?(_: commands.Command): Promise<boolean>;
 
-  onDocWrite?(_: string): void;
-  onDocRead?(): Iterable<string>;
-  onDocSave?(): Promise<void>;
-  onDocReset?(): void; // TODO
-  onDocChange?(): void; // TODO
-  onDocNameChange?(_: string): void; // TODO
-  onDocCursorChange?(ln: number, col: number, lnCount: number): void; // TODO
+  onDebug?(_: DebugData): void;
+  onStatus?(_: StatusData): void;
 }
