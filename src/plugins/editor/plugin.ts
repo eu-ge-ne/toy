@@ -20,20 +20,13 @@ export class EditorPlugin extends plugins.Plugin {
         },
       });
     },
-    onCursorChange: (x) =>
-      this.host.emitStatus({
-        doc: {
-          cursor: {
-            ln: x.ln,
-            col: x.col,
-          },
-        },
-      }),
-    onKeyHandle: (x) => this.host.emitDebug({ keyElapsed: x }),
+    onCursorChange: (x) => this.host.emitStatus({ doc: { cursor: x } }),
+    onKeyHandle: (x) => this.host.emitDebug({ inputElapsed: x }),
   });
 
   override async onStart(): Promise<void> {
     this.#widget.setFocused(true);
+
     this.#widget.resetChanges();
     this.#widget.resetCursor();
   }

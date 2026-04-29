@@ -10,15 +10,16 @@ export class DebugPlugin extends plugins.Plugin {
 
   readonly #widget = new DebugWidget({
     disabled: true,
-    renderTime: 0,
-    inputTime: 0,
+    version: "",
+    renderElapsed: 0,
+    inputElapsed: 0,
   });
 
   override onResize(): void {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
-    const h = std.clamp(7, 0, rows);
+    const h = std.clamp(10, 0, rows);
     const y = this.#zen ? rows - h : rows - 1 - h;
     const x = columns - w;
 
@@ -53,12 +54,18 @@ export class DebugPlugin extends plugins.Plugin {
   }
 
   override onDebug(data: plugins.DebugData): void {
-    if (typeof data.renderElapsed === "number") {
-      this.#widget.props.renderTime = data.renderElapsed;
+    const { version, renderElapsed, inputElapsed } = data;
+
+    if (typeof version === "string") {
+      this.#widget.props.version = version;
     }
 
-    if (typeof data.keyElapsed === "number") {
-      this.#widget.props.inputTime = data.keyElapsed;
+    if (typeof renderElapsed === "number") {
+      this.#widget.props.renderElapsed = renderElapsed;
+    }
+
+    if (typeof inputElapsed === "number") {
+      this.#widget.props.inputElapsed = inputElapsed;
     }
   }
 }

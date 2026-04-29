@@ -17,6 +17,8 @@ import { VTPlugin } from "@plugins/vt";
 
 import deno from "../deno.json" with { type: "json" };
 
+const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
+
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],
   alias: {
@@ -25,7 +27,7 @@ export const args = parseArgs(Deno.args, {
 });
 
 if (args.version) {
-  console.log(`toy ${deno.version} (deno ${Deno.version.deno})`);
+  console.log(version);
   Deno.exit();
 }
 
@@ -53,6 +55,8 @@ await host.emitStart();
 host.emitResize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
+
+host.emitDebug({ version });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);

@@ -10,11 +10,9 @@ export class FilesPlugin extends plugins.Plugin {
         this.host.doc.write(chunk);
       }
 
-      this.host.emitStatus({
-        doc: {
-          fileName: fileName,
-        },
-      });
+      this.host.doc.reset();
+
+      this.host.emitStatus({ doc: { fileName } });
 
       this.#fileName = fileName;
     } catch (err) {

@@ -4,8 +4,9 @@ import * as kitty from "@libs/kitty";
 import { Host } from "./host.ts";
 
 export interface DebugData {
+  version?: string;
   renderElapsed?: number;
-  keyElapsed?: number;
+  inputElapsed?: number;
 }
 
 export interface StatusData {

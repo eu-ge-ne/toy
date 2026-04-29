@@ -10,7 +10,7 @@ export class FooterPlugin extends plugins.Plugin {
   readonly #widget = new FooterWidget({
     ln: 0,
     col: 0,
-    lnCount: 0,
+    lineCount: 0,
   });
 
   override onResize(): void {
@@ -43,12 +43,14 @@ export class FooterPlugin extends plugins.Plugin {
 
   override onStatus(data: plugins.StatusData): void {
     if (data.doc?.cursor) {
-      this.#widget.props.ln = data.doc.cursor.ln;
-      this.#widget.props.col = data.doc.cursor.col;
+      const { ln, col } = data.doc.cursor;
+
+      this.#widget.props.ln = ln;
+      this.#widget.props.col = col;
     }
 
     if (data.doc?.content) {
-      this.#widget.props.lnCount = data.doc.content.lineCount;
+      this.#widget.props.lineCount = data.doc.content.lineCount;
     }
   }
 }
