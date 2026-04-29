@@ -35,6 +35,7 @@ host.register(
   new VTPlugin(host),
   new ExitPlugin(host),
   new CommandsPlugin(host),
+  new DebugPlugin(host),
   new HeaderPlugin(host),
   new FooterPlugin(host),
   new PalettePlugin(host),
@@ -46,7 +47,7 @@ host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
 
-host.register(new DebugPlugin(host));
+host.build();
 
 await host.emitStart();
 host.emitResize();
