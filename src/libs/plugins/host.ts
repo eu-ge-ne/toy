@@ -65,6 +65,28 @@ export class Host {
     this.plugins.push(plugin);
   }
 
+  #rendersBefore!: Plugin[];
+  #renders!: Plugin[];
+  #rendersAfter!: Plugin[];
+
+  build(): void {
+    this.#rendersBefore = this.plugins.filter((x) =>
+      typeof x.onRenderBefore !== "undefined"
+    );
+
+    this.#rendersAfter = this.plugins.filter((x) =>
+      typeof x.onRenderAfter !== "undefined"
+    );
+
+    this.#renders = this.plugins.filter((x) =>
+      typeof x.onRender !== "undefined"
+    );
+
+    this.#renders.sort((a, b) =>
+      (a.renderOrder?.() ?? 0) - (b.renderOrder?.() ?? 0)
+    );
+  }
+
   async emitStart(): Promise<void> {
     for (const x of this.plugins) {
       await x.onStart?.();
@@ -92,16 +114,16 @@ export class Host {
   }
 
   emitRender(): void {
-    for (const x of this.plugins) {
-      x.onRenderBefore?.();
+    for (const x of this.#rendersBefore) {
+      x.onRenderBefore!();
     }
 
-    for (const x of this.plugins) {
-      x.onRender?.();
+    for (const x of this.#renders) {
+      x.onRender!();
     }
 
-    for (const x of this.plugins) {
-      x.onRenderAfter?.();
+    for (const x of this.#rendersAfter) {
+      x.onRenderAfter!();
     }
   }
 

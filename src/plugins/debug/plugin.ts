@@ -25,6 +25,10 @@ export class DebugPlugin extends plugins.Plugin {
     this.#widget.resize(w, h, y, x);
   }
 
+  override renderOrder(): number {
+    return 1000;
+  }
+
   override onRender(): void {
     this.#widget.render();
   }

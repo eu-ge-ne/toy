@@ -37,6 +37,7 @@ export abstract class Plugin {
   onRenderBefore?(): void;
   onRender?(): void;
   onRenderAfter?(): void;
+  renderOrder?(): number;
 
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
