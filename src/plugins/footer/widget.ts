@@ -7,7 +7,7 @@ import { TextWidget } from "@widgets/text";
 interface FooterWidgetProps {
   ln: number;
   col: number;
-  lnCount: number;
+  lineCount: number;
 }
 
 export class FooterWidget extends widgets.Frame {
@@ -39,10 +39,12 @@ export class FooterWidget extends widgets.Frame {
 
     const ln = this.props.ln + 1;
     const col = this.props.col + 1;
-    const pct = this.props.lnCount === 0
+    const pct = this.props.lineCount === 0
       ? 0
-      : ((ln / this.props.lnCount) * 100).toFixed(0);
+      : ((this.props.ln / this.props.lineCount) * 100).toFixed(0);
+
     this.children.text.value = `${ln} ${col}  ${pct}% `;
+
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);
