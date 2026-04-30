@@ -3,17 +3,13 @@ import * as widgets from "@libs/widgets";
 
 const encoder = new TextEncoder();
 
-interface TextWidgetProps {
+interface Props {
   readonly align: "left" | "center" | "right";
 }
 
-export class TextWidget extends widgets.Frame {
+export class TextWidget extends widgets.Frame<Props> {
   color = new Uint8Array();
   value = "";
-
-  constructor(private readonly props: TextWidgetProps) {
-    super();
-  }
 
   render(): void {
     vt.buf.write(this.color);
@@ -40,13 +36,9 @@ export class TextWidget extends widgets.Frame {
   }
 }
 
-export class MultiLineText extends widgets.Frame {
+export class MultiLineText extends widgets.Frame<Props> {
   color = new Uint8Array();
   value = "";
-
-  constructor(private readonly params: TextWidgetProps) {
-    super();
-  }
 
   render(): void {
     vt.buf.write(this.color);
@@ -63,7 +55,7 @@ export class MultiLineText extends widgets.Frame {
 
       vt.cursor.set(vt.buf, this.y + y, this.x);
 
-      switch (this.params.align) {
+      switch (this.props.align) {
         case "center": {
           const n = Math.trunc((this.width - t.length) / 2);
           vt.writeSpaces(vt.buf, n);

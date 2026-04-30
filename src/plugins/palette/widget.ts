@@ -10,20 +10,20 @@ import { options } from "./options.ts";
 
 const maxListSize = 10;
 
-interface PaletteWidgetProps {
+interface Props {
   onRender: () => void;
 }
 
 export class PaletteWidget
-  extends widgets.Modal<[], commands.Command | undefined> {
+  extends widgets.Modal<Props, [], commands.Command | undefined> {
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
     list: ListWidget<commands.Command>;
   };
 
-  constructor(readonly props: PaletteWidgetProps) {
-    super();
+  constructor(props: Props) {
+    super(props);
 
     this.children = {
       bg: new BgWidget(),

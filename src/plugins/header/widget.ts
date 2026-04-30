@@ -4,19 +4,19 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { TextWidget } from "@widgets/text";
 
-interface HeaderWidgetProps {
+interface Props {
   fileName: string;
   modified: boolean;
 }
 
-export class HeaderWidget extends widgets.Frame {
+export class HeaderWidget extends widgets.Frame<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;
   };
 
-  constructor(readonly props: HeaderWidgetProps) {
-    super();
+  constructor(props: Props) {
+    super(props);
 
     this.children = {
       bg: new BgWidget(),

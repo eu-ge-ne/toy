@@ -6,7 +6,7 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget
-  extends widgets.Modal<[string], string | undefined> {
+  extends widgets.Modal<void, [string], string | undefined> {
   protected override children: {
     bg: BgWidget;
     header: TextWidget;

@@ -4,7 +4,7 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AskWidget extends widgets.Modal<[string], boolean> {
+export class AskWidget extends widgets.Modal<void, [string], boolean> {
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;

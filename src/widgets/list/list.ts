@@ -8,21 +8,17 @@ interface ListWidgetItem<T> {
   string(width: number): string;
 }
 
-interface ListWidgetProps {
+interface Props {
   readonly emptyText: string;
 }
 
-export class ListWidget<T> extends widgets.Frame {
+export class ListWidget<T> extends widgets.Frame<Props> {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
   values: ListWidgetItem<T>[] = [];
   selectedIndex = 0;
 
   #scrollIndex = 0;
-
-  constructor(private readonly props: ListWidgetProps) {
-    super();
-  }
 
   render(): void {
     if (this.values.length === 0) {

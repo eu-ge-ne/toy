@@ -6,14 +6,14 @@ import { TextWidget } from "@widgets/text";
 
 const MIB = Math.pow(1024, 2);
 
-interface DebugWidgetProps {
+interface Props {
   disabled: boolean;
   version: string;
   renderElapsed: number;
   inputElapsed: number;
 }
 
-export class DebugWidget extends widgets.Frame {
+export class DebugWidget extends widgets.Frame<Props> {
   protected override children: {
     bg: BgWidget;
     line1: TextWidget;
@@ -24,8 +24,8 @@ export class DebugWidget extends widgets.Frame {
     line6: TextWidget;
   };
 
-  constructor(readonly props: DebugWidgetProps) {
-    super();
+  constructor(props: Props) {
+    super(props);
 
     this.children = {
       bg: new BgWidget(),

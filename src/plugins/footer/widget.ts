@@ -4,20 +4,20 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { TextWidget } from "@widgets/text";
 
-interface FooterWidgetProps {
+interface Props {
   ln: number;
   col: number;
   lineCount: number;
 }
 
-export class FooterWidget extends widgets.Frame {
+export class FooterWidget extends widgets.Frame<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;
   };
 
-  constructor(readonly props: FooterWidgetProps) {
-    super();
+  constructor(props: Props) {
+    super(props);
 
     this.children = {
       bg: new BgWidget(),
