@@ -1,5 +1,5 @@
+import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
-import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
@@ -37,32 +37,34 @@ export class AskFileNameWidget
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async open(path: string): Promise<string | undefined> {
+  protected override async openBefore(path: string): Promise<void> {
     const { editor } = this.children;
 
     editor.setFocused(true);
     editor.text = path;
     editor.resetChanges();
     editor.resetCursor();
+  }
 
-    while (true) {
-      this.render();
+  protected override async handleKey(
+    key: kitty.Key,
+  ): Promise<[] | [string | undefined]> {
+    const { editor } = this.children;
 
-      const key = await vt.readKey();
-
-      switch (key.name) {
-        case "ESC":
-          return;
-        case "ENTER": {
-          const path = editor.text;
-          if (path) {
-            return path;
-          }
+    switch (key.name) {
+      case "ESC":
+        return [undefined];
+      case "ENTER": {
+        const path = editor.text;
+        if (path) {
+          return [path];
         }
       }
-
-      editor.onKey(key);
     }
+
+    editor.onKey(key);
+
+    return [];
   }
 
   setTheme(theme: themes.Theme): void {
