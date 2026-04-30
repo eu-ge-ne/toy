@@ -10,14 +10,14 @@ import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
 
-interface EditorWidgetParams {
+interface Props {
   readonly multiLine: boolean;
   onTextChange?: () => void;
   onCursorChange?: (_: { ln: number; col: number }) => void;
   onKeyHandle?: (_: number) => void;
 }
 
-export class EditorWidget extends widgets.Frame {
+export class EditorWidget extends widgets.Frame<Props> {
   #focused = false;
 
   readonly #doc = new documents.Document();
@@ -47,8 +47,8 @@ export class EditorWidget extends widgets.Frame {
     content: Content;
   };
 
-  constructor(readonly props: EditorWidgetParams) {
-    super();
+  constructor(props: Props) {
+    super(props);
 
     this.children = {
       bg: new BgWidget(),

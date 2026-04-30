@@ -4,8 +4,12 @@ import * as vt from "@libs/vt";
 import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
-export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
-  async open(...params: P): Promise<R> {
+export abstract class Modal<
+  Props = void,
+  Params extends unknown[] = [],
+  Result = void,
+> extends Widget<Props> {
+  async open(...params: Params): Promise<Result> {
     await this.openBefore(...params);
 
     while (true) {
@@ -20,7 +24,7 @@ export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
     }
   }
 
-  protected abstract openBefore(..._: P): Promise<void>;
+  protected abstract openBefore(..._: Params): Promise<void>;
 
   protected render(): void {
     vt.sync.bsu();
@@ -37,5 +41,5 @@ export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
     vt.sync.esu();
   }
 
-  protected abstract handleKey(key: kitty.Key): Promise<[] | [R]>;
+  protected abstract handleKey(key: kitty.Key): Promise<[] | [Result]>;
 }
