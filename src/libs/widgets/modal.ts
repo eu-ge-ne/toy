@@ -1,10 +1,26 @@
+import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
 import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
 export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
-  abstract open(..._: P): Promise<R>;
+  async open(...params: P): Promise<R> {
+    await this.openBefore(...params);
+
+    while (true) {
+      this.render();
+
+      const key = await vt.readKey();
+
+      const result = await this.handleKey(key);
+      if (result.length === 1) {
+        return result[0];
+      }
+    }
+  }
+
+  protected abstract openBefore(..._: P): Promise<void>;
 
   protected render(): void {
     vt.sync.bsu();
@@ -20,4 +36,6 @@ export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
     vt.buf.flush();
     vt.sync.esu();
   }
+
+  protected abstract handleKey(key: kitty.Key): Promise<[] | [R]>;
 }

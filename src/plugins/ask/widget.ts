@@ -1,5 +1,5 @@
+import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
-import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
@@ -31,21 +31,19 @@ export class AskWidget extends widgets.Modal<[string], boolean> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  async open(text: string): Promise<boolean> {
+  protected override async openBefore(text: string): Promise<void> {
     this.children.text.value = text;
+  }
 
-    while (true) {
-      this.render();
-
-      const key = await vt.readKey();
-
-      switch (key.name) {
-        case "ESC":
-          return false;
-        case "ENTER":
-          return true;
-      }
+  protected override async handleKey(key: kitty.Key): Promise<[] | [boolean]> {
+    switch (key.name) {
+      case "ESC":
+        return [false];
+      case "ENTER":
+        return [true];
     }
+
+    return [];
   }
 
   setTheme(theme: themes.Theme): void {

@@ -1,6 +1,6 @@
 import * as commands from "@libs/commands";
+import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
-import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
@@ -11,7 +11,7 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 interface PaletteWidgetProps {
-  onInvalidate: () => void;
+  onRender: () => void;
 }
 
 export class PaletteWidget
@@ -54,45 +54,52 @@ export class PaletteWidget
     this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
-  async open(): Promise<commands.Command | undefined> {
-    const { list, editor } = this.children;
+  protected override async openBefore(): Promise<void> {
+    const { editor, list } = this.children;
 
     editor.setFocused(true);
     editor.text = "";
     editor.resetChanges();
     editor.resetCursor();
 
-    this.children.list.values = options;
+    list.values = options;
+  }
 
-    while (true) {
-      this.props.onInvalidate();
-      this.render();
+  protected override render(): void {
+    this.props.onRender();
 
-      const key = await vt.readKey();
+    super.render();
+  }
 
-      switch (key.name) {
-        case "ESC":
-          return;
-        case "ENTER":
-          return list.values[list.selectedIndex]?.value;
-        case "UP":
-          if (list.values.length > 0) {
-            list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
-          }
-          continue;
-        case "DOWN":
-          if (list.values.length > 0) {
-            list.selectedIndex = Math.min(
-              list.selectedIndex + 1,
-              list.values.length - 1,
-            );
-          }
-          continue;
-      }
+  protected override async handleKey(
+    key: kitty.Key,
+  ): Promise<[] | [commands.Command | undefined]> {
+    const { list, editor } = this.children;
 
-      editor.onKey(key);
-      this.#filter();
+    switch (key.name) {
+      case "ESC":
+        return [undefined];
+      case "ENTER":
+        return [list.values[list.selectedIndex]?.value];
+      case "UP":
+        if (list.values.length > 0) {
+          list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
+        }
+        return [];
+      case "DOWN":
+        if (list.values.length > 0) {
+          list.selectedIndex = Math.min(
+            list.selectedIndex + 1,
+            list.values.length - 1,
+          );
+        }
+        return [];
     }
+
+    editor.onKey(key);
+    this.#filter();
+
+    return [];
   }
 
   setTheme(theme: themes.Theme): void {
