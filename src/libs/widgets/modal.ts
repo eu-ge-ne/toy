@@ -23,8 +23,6 @@ export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
   protected abstract openBefore(..._: P): Promise<void>;
 
   protected render(): void {
-    this.renderBefore();
-
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
 
@@ -37,9 +35,6 @@ export abstract class Modal<P extends unknown[] = [], R = void> extends Widget {
     vt.buf.write(vt.cursor.show);
     vt.buf.flush();
     vt.sync.esu();
-  }
-
-  protected renderBefore(): void {
   }
 
   protected abstract handleKey(key: kitty.Key): Promise<[] | [R]>;

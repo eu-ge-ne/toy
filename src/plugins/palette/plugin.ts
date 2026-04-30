@@ -8,7 +8,7 @@ export class PalettePlugin extends plugins.Plugin {
   #zen = true;
 
   readonly #widget = new PaletteWidget({
-    onInvalidate: () => {
+    onRender: () => {
       this.host.emitResize();
       this.host.emitRender();
     },
