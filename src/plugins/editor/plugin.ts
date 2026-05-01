@@ -21,7 +21,7 @@ export class EditorPlugin extends plugins.Plugin {
       });
     },
     onCursorChange: (x) => this.host.emitStatus({ doc: { cursor: x } }),
-    onKeyHandle: (x) => this.host.emitDebug({ inputElapsed: x }),
+    onKeyHandle: (x) => this.host.debugInput(x),
   });
 
   constructor(host: plugins.Host) {

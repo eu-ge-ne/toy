@@ -42,7 +42,7 @@ host.on("start", () => {
   });
 });
 
-host.on("afterStop", (e) => {
+host.on("stop.after", (e) => {
   vt.restore();
 
   if (e) {
@@ -54,19 +54,19 @@ host.on("afterStop", (e) => {
 
 let renderStarted = 0;
 
-host.on("beforeRender", () => {
+host.on("render.before", () => {
   renderStarted = performance.now();
 
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 });
 
-host.on("afterRender", () => {
+host.on("render.after", () => {
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
   vt.sync.esu();
 
-  host.emitDebug({ renderElapsed: performance.now() - renderStarted });
+  host.debugRender(performance.now() - renderStarted);
 });
 
 host.register(
@@ -85,10 +85,9 @@ host.registerDoc(new EditorPlugin(host));
 
 host.start();
 host.resize();
+host.debugVersion(version);
 
 await host.emitCommand({ name: "Theme", data: "Default" });
-
-host.emitDebug({ version });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);

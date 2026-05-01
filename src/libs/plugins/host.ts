@@ -2,7 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { DebugData, Plugin, StatusData } from "./plugin.ts";
+import { Plugin, StatusData } from "./plugin.ts";
 
 export interface Alert {
   open(_: string): Promise<void>;
@@ -29,13 +29,16 @@ export interface Doc {
 }
 
 type HostEvents = {
-  start: () => void;
-  stop: (e?: PromiseRejectionEvent) => void;
-  afterStop: (e?: PromiseRejectionEvent) => void;
-  resize: () => void;
-  beforeRender: () => void;
-  render: () => void;
-  afterRender: () => void;
+  "start": () => void;
+  "stop": (e?: PromiseRejectionEvent) => void;
+  "stop.after": (e?: PromiseRejectionEvent) => void;
+  "resize": () => void;
+  "render.before": () => void;
+  "render": () => void;
+  "render.after": () => void;
+  "debug.version": (_: string) => void;
+  "debug.render": (_: number) => void;
+  "debug.input": (_: number) => void;
 };
 
 export class Host extends events.Listener<HostEvents> {
@@ -101,12 +104,6 @@ export class Host extends events.Listener<HostEvents> {
     }
   }
 
-  emitDebug(data: DebugData): void {
-    for (const x of this.plugins) {
-      x.onDebug?.(data);
-    }
-  }
-
   emitStatus(data: StatusData): void {
     for (const x of this.plugins) {
       x.onStatus?.(data);
@@ -119,7 +116,7 @@ export class Host extends events.Listener<HostEvents> {
 
   stop(e?: PromiseRejectionEvent): void {
     this.#emitter.emit("stop", e);
-    this.#emitter.emit("afterStop", e);
+    this.#emitter.emit("stop.after", e);
   }
 
   resize(): void {
@@ -127,8 +124,20 @@ export class Host extends events.Listener<HostEvents> {
   }
 
   render(): void {
-    this.#emitter.emit("beforeRender");
+    this.#emitter.emit("render.before");
     this.#emitter.emit("render");
-    this.#emitter.emit("afterRender");
+    this.#emitter.emit("render.after");
+  }
+
+  debugVersion(version: string): void {
+    this.#emitter.emit("debug.version", version);
+  }
+
+  debugRender(elapsed: number): void {
+    this.#emitter.emit("debug.render", elapsed);
+  }
+
+  debugInput(elapsed: number): void {
+    this.#emitter.emit("debug.input", elapsed);
   }
 }

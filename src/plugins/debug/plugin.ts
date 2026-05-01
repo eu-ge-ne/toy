@@ -20,6 +20,9 @@ export class DebugPlugin extends plugins.Plugin {
 
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
+    host.on("debug.version", this.onDebugVersion);
+    host.on("debug.render", this.onDebugRender);
+    host.on("debug.input", this.onDebugInput);
   }
 
   onResize = () => {
@@ -56,19 +59,15 @@ export class DebugPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onDebug(data: plugins.DebugData): void {
-    const { version, renderElapsed, inputElapsed } = data;
+  onDebugVersion = (version: string) => {
+    this.#widget.props.version = version;
+  };
 
-    if (typeof version === "string") {
-      this.#widget.props.version = version;
-    }
+  onDebugRender = (elapsed: number) => {
+    this.#widget.props.renderElapsed = elapsed;
+  };
 
-    if (typeof renderElapsed === "number") {
-      this.#widget.props.renderElapsed = renderElapsed;
-    }
-
-    if (typeof inputElapsed === "number") {
-      this.#widget.props.inputElapsed = inputElapsed;
-    }
-  }
+  onDebugInput = (elapsed: number) => {
+    this.#widget.props.inputElapsed = elapsed;
+  };
 }

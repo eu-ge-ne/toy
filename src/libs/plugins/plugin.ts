@@ -3,12 +3,6 @@ import * as kitty from "@libs/kitty";
 
 import { Host } from "./host.ts";
 
-export interface DebugData {
-  version?: string;
-  renderElapsed?: number;
-  inputElapsed?: number;
-}
-
 export interface StatusData {
   doc?: {
     fileName?: string;
@@ -30,6 +24,5 @@ export abstract class Plugin {
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
-  onDebug?(_: DebugData): void;
   onStatus?(_: StatusData): void;
 }
