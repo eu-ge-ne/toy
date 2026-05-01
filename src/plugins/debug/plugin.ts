@@ -15,7 +15,13 @@ export class DebugPlugin extends plugins.Plugin {
     inputElapsed: 0,
   });
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+  }
+
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
@@ -24,7 +30,7 @@ export class DebugPlugin extends plugins.Plugin {
     const x = columns - w;
 
     this.#widget.resize(w, h, y, x);
-  }
+  };
 
   override renderOrder(): number {
     return 1000;
@@ -38,7 +44,7 @@ export class DebugPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emitResize();
+        this.host.emit("resize");
         return false;
 
       case "Debug":

@@ -24,6 +24,12 @@ export class EditorPlugin extends plugins.Plugin {
     onKeyHandle: (x) => this.host.emitDebug({ inputElapsed: x }),
   });
 
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+  }
+
   override async onStart(): Promise<void> {
     this.#widget.setFocused(true);
 
@@ -43,7 +49,7 @@ export class EditorPlugin extends plugins.Plugin {
     }
   }
 
-  override onResize(): void {
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     if (this.#zen) {
@@ -51,7 +57,7 @@ export class EditorPlugin extends plugins.Plugin {
     } else {
       this.#widget.resize(columns, rows - 2, 1, 0);
     }
-  }
+  };
 
   override onRender(): void {
     this.#widget.render();
@@ -70,7 +76,7 @@ export class EditorPlugin extends plugins.Plugin {
       case "Zen":
         this.#widget.toggleIndex();
         this.#zen = !this.#zen;
-        this.host.emitResize();
+        this.host.emit("resize");
         return false;
 
       case "Theme":

@@ -1,4 +1,5 @@
 import * as commands from "@libs/commands";
+import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
 import { DebugData, Plugin, StatusData } from "./plugin.ts";
@@ -27,7 +28,11 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host {
+type HostEvents = {
+  resize: () => void;
+};
+
+export class Host extends events.EventEmitter<HostEvents> {
   readonly plugins: Plugin[] = [];
 
   alert!: Alert;
@@ -104,12 +109,6 @@ export class Host {
 
     for (const x of this.plugins) {
       await x.onStopAfter?.(e);
-    }
-  }
-
-  emitResize(): void {
-    for (const x of this.plugins) {
-      x.onResize?.();
     }
   }
 

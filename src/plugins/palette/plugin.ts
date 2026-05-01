@@ -9,12 +9,18 @@ export class PalettePlugin extends plugins.Plugin {
 
   readonly #widget = new PaletteWidget({
     onRender: () => {
-      this.host.emitResize();
+      this.host.emit("resize");
       this.host.emitRender();
     },
   });
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+  }
+
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     if (this.#zen) {
@@ -22,13 +28,13 @@ export class PalettePlugin extends plugins.Plugin {
     } else {
       this.#widget.resize(columns, rows - 2, 1, 0);
     }
-  }
+  };
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emitResize();
+        this.host.emit("resize");
         return false;
 
       case "Theme":

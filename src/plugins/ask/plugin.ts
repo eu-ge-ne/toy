@@ -8,7 +8,13 @@ import { AskWidget } from "./widget.ts";
 export class AskPlugin extends plugins.Plugin {
   readonly #widget = new AskWidget();
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+  }
+
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(60, 0, columns);
@@ -17,7 +23,7 @@ export class AskPlugin extends plugins.Plugin {
     const x = Math.trunc((columns - w) / 2);
 
     this.#widget.resize(w, h, y, x);
-  }
+  };
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {

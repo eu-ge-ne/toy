@@ -33,8 +33,6 @@ export abstract class Plugin {
   async onStop?(e?: PromiseRejectionEvent): Promise<void>;
   async onStopAfter?(e?: PromiseRejectionEvent): Promise<void>;
 
-  onResize?(): void;
-
   onRenderBefore?(): void;
   onRender?(): void;
   onRenderAfter?(): void;
