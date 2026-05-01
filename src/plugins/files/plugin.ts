@@ -12,7 +12,7 @@ export class FilesPlugin extends plugins.Plugin {
 
       this.host.doc.reset();
 
-      this.host.statusDocFileName(fileName);
+      this.host.statusDocName(fileName);
 
       this.#fileName = fileName;
     } catch (err) {
@@ -56,7 +56,7 @@ export class FilesPlugin extends plugins.Plugin {
         await files.save(newFileName, this.host.doc.read());
 
         this.#fileName = newFileName;
-        this.host.statusDocFileName(newFileName);
+        this.host.statusDocName(newFileName);
 
         this.host.doc.reset();
       } catch (err) {

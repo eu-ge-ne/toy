@@ -18,6 +18,8 @@ export class FooterPlugin extends plugins.Plugin {
 
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
+    host.on("status.doc.cursor", this.onStatusDocCursor);
+    host.on("status.doc.modified", this.onStatusDocModified);
   }
 
   onResize = () => {
@@ -48,16 +50,12 @@ export class FooterPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onStatus(data: plugins.StatusData): void {
-    if (data.doc?.cursor) {
-      const { ln, col } = data.doc.cursor;
+  onStatusDocCursor = (ln: number, col: number) => {
+    this.#widget.props.ln = ln;
+    this.#widget.props.col = col;
+  };
 
-      this.#widget.props.ln = ln;
-      this.#widget.props.col = col;
-    }
-
-    if (data.doc?.content) {
-      this.#widget.props.lineCount = data.doc.content.lineCount;
-    }
-  }
+  onStatusDocModified = (_: boolean, lineCount: number) => {
+    this.#widget.props.lineCount = lineCount;
+  };
 }

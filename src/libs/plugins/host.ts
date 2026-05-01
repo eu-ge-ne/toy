@@ -2,7 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { Plugin, StatusData } from "./plugin.ts";
+import { Plugin } from "./plugin.ts";
 
 export interface Alert {
   open(_: string): Promise<void>;
@@ -39,7 +39,9 @@ type HostEvents = {
   "debug.version": (_: string) => void;
   "debug.render": (_: number) => void;
   "debug.input": (_: number) => void;
-  "status.doc.file-name": (_: string) => void;
+  "status.doc.name": (_: string) => void;
+  "status.doc.modified": (modified: boolean, lineCount: number) => void;
+  "status.doc.cursor": (ln: number, col: number) => void;
 };
 
 export class Host extends events.Listener<HostEvents> {
@@ -105,12 +107,6 @@ export class Host extends events.Listener<HostEvents> {
     }
   }
 
-  emitStatus(data: StatusData): void {
-    for (const x of this.plugins) {
-      x.onStatus?.(data);
-    }
-  }
-
   start(): void {
     this.#emitter.emit("start");
   }
@@ -142,7 +138,15 @@ export class Host extends events.Listener<HostEvents> {
     this.#emitter.emit("debug.input", elapsed);
   }
 
-  statusDocFileName(fileName: string): void {
-    this.#emitter.emit("status.doc.file-name", fileName);
+  statusDocName(name: string): void {
+    this.#emitter.emit("status.doc.name", name);
+  }
+
+  statusDocModified(modified: boolean, lineCount: number): void {
+    this.#emitter.emit("status.doc.modified", modified, lineCount);
+  }
+
+  statusDocCursor(ln: number, col: number): void {
+    this.#emitter.emit("status.doc.cursor", ln, col);
   }
 }

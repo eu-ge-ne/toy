@@ -11,16 +11,12 @@ export class EditorPlugin extends plugins.Plugin {
   readonly #widget = new EditorWidget({
     multiLine: true,
     onTextChange: () => {
-      this.host.emitStatus({
-        doc: {
-          content: {
-            modified: this.#widget.modified,
-            lineCount: this.#widget.lineCount,
-          },
-        },
-      });
+      this.host.statusDocModified(
+        this.#widget.modified,
+        this.#widget.lineCount,
+      );
     },
-    onCursorChange: (x) => this.host.emitStatus({ doc: { cursor: x } }),
+    onCursorChange: (x) => this.host.statusDocCursor(x.ln, x.col),
     onKeyHandle: (x) => this.host.debugInput(x),
   });
 
