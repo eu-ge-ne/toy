@@ -5,20 +5,21 @@ export class ExitPlugin extends plugins.Plugin {
     super(host);
 
     host.on("start", this.onStart);
+    host.on("afterStop", this.onStopAfter);
   }
 
   onStart(): void {
     globalThis.addEventListener(
       "unhandledrejection",
-      (e) => this.host.emitStop(e),
+      (e) => this.host.stop(e),
     );
   }
 
-  override async onStopAfter(e?: PromiseRejectionEvent): Promise<void> {
+  onStopAfter = async (e?: PromiseRejectionEvent) => {
     if (e) {
       console.log(e.reason);
     }
 
     Deno.exit(0);
-  }
+  };
 }

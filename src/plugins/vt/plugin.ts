@@ -8,6 +8,7 @@ export class VTPlugin extends plugins.Plugin {
     super(host);
 
     host.on("start", this.onStart);
+    host.on("stop", this.onStop);
     host.on("beforeRender", this.onRenderBefore);
     host.on("afterRender", this.onRenderAfter);
   }
@@ -21,9 +22,9 @@ export class VTPlugin extends plugins.Plugin {
     });
   };
 
-  override async onStop(): Promise<void> {
+  onStop = async () => {
     vt.restore();
-  }
+  };
 
   onRenderBefore = () => {
     this.#t0 = performance.now();

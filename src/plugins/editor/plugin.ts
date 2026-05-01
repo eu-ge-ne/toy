@@ -28,6 +28,7 @@ export class EditorPlugin extends plugins.Plugin {
     super(host);
 
     host.on("start", this.onStart);
+    host.on("beforeStop", this.onStopBefore);
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
   }
@@ -39,7 +40,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.resetCursor();
   };
 
-  override async onStopBefore?(e?: PromiseRejectionEvent): Promise<void> {
+  onStopBefore = async (e?: PromiseRejectionEvent) => {
     if (e) {
       return;
     }
@@ -49,7 +50,7 @@ export class EditorPlugin extends plugins.Plugin {
         await this.host.files.save();
       }
     }
-  }
+  };
 
   onResize = () => {
     const { columns, rows } = Deno.consoleSize();

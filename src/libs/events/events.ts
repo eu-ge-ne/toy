@@ -1,5 +1,6 @@
 type Events = {
-  [_: string]: (..._: unknown[]) => void;
+  // deno-lint-ignore no-explicit-any
+  [_: string]: (..._: any[]) => void;
 };
 
 export type Clients<A extends Events> = { [E in keyof A]?: A[E][] };

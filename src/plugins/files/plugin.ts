@@ -20,7 +20,7 @@ export class FilesPlugin extends plugins.Plugin {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.host.alert.open(message);
 
-        await this.host.emitStop();
+        this.host.stop();
       }
     }
   }

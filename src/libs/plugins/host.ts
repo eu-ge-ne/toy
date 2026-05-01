@@ -30,6 +30,9 @@ export interface Doc {
 
 type HostEvents = {
   start: () => void;
+  beforeStop: (e?: PromiseRejectionEvent) => void;
+  stop: (e?: PromiseRejectionEvent) => void;
+  afterStop: (e?: PromiseRejectionEvent) => void;
   resize: () => void;
   beforeRender: () => void;
   render: () => void;
@@ -83,20 +86,6 @@ export class Host extends events.Listener<HostEvents> {
     this.plugins.push(plugin);
   }
 
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onStopBefore?.(e);
-    }
-
-    for (const x of this.plugins) {
-      await x.onStop?.(e);
-    }
-
-    for (const x of this.plugins) {
-      await x.onStopAfter?.(e);
-    }
-  }
-
   async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onKey?.(key)) {
@@ -127,6 +116,12 @@ export class Host extends events.Listener<HostEvents> {
 
   start(): void {
     this.#emitter.emit("start");
+  }
+
+  stop(e?: PromiseRejectionEvent): void {
+    this.#emitter.emit("beforeStop", e);
+    this.#emitter.emit("stop", e);
+    this.#emitter.emit("afterStop", e);
   }
 
   resize(): void {

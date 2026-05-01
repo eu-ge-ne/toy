@@ -27,10 +27,6 @@ export abstract class Plugin {
   constructor(protected readonly host: Host) {
   }
 
-  async onStopBefore?(e?: PromiseRejectionEvent): Promise<void>;
-  async onStop?(e?: PromiseRejectionEvent): Promise<void>;
-  async onStopAfter?(e?: PromiseRejectionEvent): Promise<void>;
-
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 
