@@ -28,7 +28,7 @@ export class EditorPlugin extends plugins.Plugin {
     super(host);
 
     host.on("start", this.onStart);
-    host.on("beforeStop", this.onStopBefore);
+    host.on("stop", this.onStop);
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
   }
@@ -40,7 +40,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.resetCursor();
   };
 
-  onStopBefore = async (e?: PromiseRejectionEvent) => {
+  onStop = async (e?: PromiseRejectionEvent) => {
     if (e) {
       return;
     }

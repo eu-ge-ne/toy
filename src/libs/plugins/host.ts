@@ -30,7 +30,6 @@ export interface Doc {
 
 type HostEvents = {
   start: () => void;
-  beforeStop: (e?: PromiseRejectionEvent) => void;
   stop: (e?: PromiseRejectionEvent) => void;
   afterStop: (e?: PromiseRejectionEvent) => void;
   resize: () => void;
@@ -119,7 +118,6 @@ export class Host extends events.Listener<HostEvents> {
   }
 
   stop(e?: PromiseRejectionEvent): void {
-    this.#emitter.emit("beforeStop", e);
     this.#emitter.emit("stop", e);
     this.#emitter.emit("afterStop", e);
   }
