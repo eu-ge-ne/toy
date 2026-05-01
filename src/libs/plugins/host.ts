@@ -39,6 +39,7 @@ type HostEvents = {
   "debug.version": (_: string) => void;
   "debug.render": (_: number) => void;
   "debug.input": (_: number) => void;
+  "status.doc.file-name": (_: string) => void;
 };
 
 export class Host extends events.Listener<HostEvents> {
@@ -139,5 +140,9 @@ export class Host extends events.Listener<HostEvents> {
 
   debugInput(elapsed: number): void {
     this.#emitter.emit("debug.input", elapsed);
+  }
+
+  statusDocFileName(fileName: string): void {
+    this.#emitter.emit("status.doc.file-name", fileName);
   }
 }

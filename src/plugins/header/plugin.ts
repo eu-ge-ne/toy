@@ -17,6 +17,7 @@ export class HeaderPlugin extends plugins.Plugin {
 
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
+    host.on("status.doc.file-name", this.onStatusDocFileName);
   }
 
   onResize = () => {
@@ -47,11 +48,11 @@ export class HeaderPlugin extends plugins.Plugin {
     return false;
   }
 
-  override onStatus(data: plugins.StatusData): void {
-    if (data.doc?.fileName) {
-      this.#widget.props.fileName = data.doc?.fileName;
-    }
+  onStatusDocFileName = (fileName: string) => {
+    this.#widget.props.fileName = fileName;
+  };
 
+  override onStatus(data: plugins.StatusData): void {
     if (data.doc?.content) {
       this.#widget.props.modified = data.doc.content.modified;
     }

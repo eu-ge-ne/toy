@@ -5,7 +5,6 @@ import { Host } from "./host.ts";
 
 export interface StatusData {
   doc?: {
-    fileName?: string;
     content?: {
       modified: boolean;
       lineCount: number;
