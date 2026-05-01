@@ -9,7 +9,7 @@ export class PalettePlugin extends plugins.Plugin {
 
   readonly #widget = new PaletteWidget({
     onRender: () => {
-      this.host.emit("resize");
+      this.host.resize();
       this.host.emitRender();
     },
   });
@@ -34,7 +34,7 @@ export class PalettePlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emit("resize");
+        this.host.resize();
         return false;
 
       case "Theme":

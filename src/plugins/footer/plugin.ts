@@ -36,7 +36,7 @@ export class FooterPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.emit("resize");
+        this.host.resize();
         return false;
 
       case "Theme":

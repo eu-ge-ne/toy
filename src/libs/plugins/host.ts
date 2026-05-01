@@ -32,7 +32,9 @@ type HostEvents = {
   resize: () => void;
 };
 
-export class Host extends events.EventEmitter<HostEvents> {
+export class Host extends events.Listener<HostEvents> {
+  readonly #emitter: events.Emitter<HostEvents>;
+
   readonly plugins: Plugin[] = [];
 
   alert!: Alert;
@@ -40,6 +42,13 @@ export class Host extends events.EventEmitter<HostEvents> {
   askFileName!: AskFileName;
   files!: Files;
   doc!: Doc;
+
+  constructor() {
+    const listeners: events.Clients<HostEvents> = {};
+    super(listeners);
+
+    this.#emitter = new events.Emitter<HostEvents>(listeners);
+  }
 
   register(...plugins: Plugin[]): void {
     this.plugins.push(...plugins);
@@ -152,5 +161,9 @@ export class Host extends events.EventEmitter<HostEvents> {
     for (const x of this.plugins) {
       x.onStatus?.(data);
     }
+  }
+
+  resize(): void {
+    this.#emitter.emit("resize");
   }
 }

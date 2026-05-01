@@ -52,7 +52,7 @@ host.registerDoc(new EditorPlugin(host));
 host.build();
 
 await host.emitStart();
-host.emit("resize");
+host.resize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });
 

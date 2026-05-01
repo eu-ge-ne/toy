@@ -44,7 +44,7 @@ export class DebugPlugin extends plugins.Plugin {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emit("resize");
+        this.host.resize();
         return false;
 
       case "Debug":
