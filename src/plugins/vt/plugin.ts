@@ -7,18 +7,19 @@ export class VTPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
+    host.on("start", this.onStart);
     host.on("beforeRender", this.onRenderBefore);
     host.on("afterRender", this.onRenderAfter);
   }
 
-  override async onStart(): Promise<void> {
+  onStart = () => {
     vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
       this.host.resize();
       this.host.render();
     });
-  }
+  };
 
   override async onStop(): Promise<void> {
     vt.restore();

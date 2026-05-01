@@ -1,7 +1,13 @@
 import * as plugins from "@libs/plugins";
 
 export class ExitPlugin extends plugins.Plugin {
-  override async onStart(): Promise<void> {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("start", this.onStart);
+  }
+
+  onStart(): void {
     globalThis.addEventListener(
       "unhandledrejection",
       (e) => this.host.emitStop(e),

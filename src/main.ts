@@ -49,7 +49,7 @@ host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
 
-await host.emitStart();
+host.start();
 host.resize();
 
 await host.emitCommand({ name: "Theme", data: "Default" });

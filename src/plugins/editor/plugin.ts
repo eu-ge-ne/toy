@@ -27,16 +27,17 @@ export class EditorPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
+    host.on("start", this.onStart);
     host.on("resize", this.onResize);
     host.on("render", this.onRender);
   }
 
-  override async onStart(): Promise<void> {
+  onStart = () => {
     this.#widget.setFocused(true);
 
     this.#widget.resetChanges();
     this.#widget.resetCursor();
-  }
+  };
 
   override async onStopBefore?(e?: PromiseRejectionEvent): Promise<void> {
     if (e) {

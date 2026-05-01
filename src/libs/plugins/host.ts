@@ -29,6 +29,7 @@ export interface Doc {
 }
 
 type HostEvents = {
+  start: () => void;
   resize: () => void;
   beforeRender: () => void;
   render: () => void;
@@ -82,12 +83,6 @@ export class Host extends events.Listener<HostEvents> {
     this.plugins.push(plugin);
   }
 
-  async emitStart(): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onStart?.();
-    }
-  }
-
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     for (const x of this.plugins) {
       await x.onStopBefore?.(e);
@@ -128,6 +123,10 @@ export class Host extends events.Listener<HostEvents> {
     for (const x of this.plugins) {
       x.onStatus?.(data);
     }
+  }
+
+  start(): void {
+    this.#emitter.emit("start");
   }
 
   resize(): void {
