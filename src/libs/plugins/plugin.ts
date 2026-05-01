@@ -33,11 +33,6 @@ export abstract class Plugin {
   async onStop?(e?: PromiseRejectionEvent): Promise<void>;
   async onStopAfter?(e?: PromiseRejectionEvent): Promise<void>;
 
-  onRenderBefore?(): void;
-  onRender?(): void;
-  onRenderAfter?(): void;
-  renderOrder?(): number;
-
   async onKey?(_: kitty.Key): Promise<boolean>;
   async onCommand?(_: commands.Command): Promise<boolean>;
 

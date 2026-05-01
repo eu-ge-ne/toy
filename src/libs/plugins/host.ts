@@ -30,6 +30,9 @@ export interface Doc {
 
 type HostEvents = {
   resize: () => void;
+  beforeRender: () => void;
+  render: () => void;
+  afterRender: () => void;
 };
 
 export class Host extends events.Listener<HostEvents> {
@@ -79,28 +82,6 @@ export class Host extends events.Listener<HostEvents> {
     this.plugins.push(plugin);
   }
 
-  #rendersBefore!: Plugin[];
-  #renders!: Plugin[];
-  #rendersAfter!: Plugin[];
-
-  build(): void {
-    this.#rendersBefore = this.plugins.filter((x) =>
-      typeof x.onRenderBefore !== "undefined"
-    );
-
-    this.#rendersAfter = this.plugins.filter((x) =>
-      typeof x.onRenderAfter !== "undefined"
-    );
-
-    this.#renders = this.plugins.filter((x) =>
-      typeof x.onRender !== "undefined"
-    );
-
-    this.#renders.sort((a, b) =>
-      (a.renderOrder?.() ?? 0) - (b.renderOrder?.() ?? 0)
-    );
-  }
-
   async emitStart(): Promise<void> {
     for (const x of this.plugins) {
       await x.onStart?.();
@@ -118,20 +99,6 @@ export class Host extends events.Listener<HostEvents> {
 
     for (const x of this.plugins) {
       await x.onStopAfter?.(e);
-    }
-  }
-
-  emitRender(): void {
-    for (const x of this.#rendersBefore) {
-      x.onRenderBefore!();
-    }
-
-    for (const x of this.#renders) {
-      x.onRender!();
-    }
-
-    for (const x of this.#rendersAfter) {
-      x.onRenderAfter!();
     }
   }
 
@@ -165,5 +132,11 @@ export class Host extends events.Listener<HostEvents> {
 
   resize(): void {
     this.#emitter.emit("resize");
+  }
+
+  render(): void {
+    this.#emitter.emit("beforeRender");
+    this.#emitter.emit("render");
+    this.#emitter.emit("afterRender");
   }
 }

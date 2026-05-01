@@ -49,8 +49,6 @@ host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
 
-host.build();
-
 await host.emitStart();
 host.resize();
 
@@ -63,7 +61,7 @@ if (typeof args._[0] === "string") {
 }
 
 while (true) {
-  host.emitRender();
+  host.render();
 
   const key = await vt.readKey();
 

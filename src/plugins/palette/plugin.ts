@@ -10,7 +10,7 @@ export class PalettePlugin extends plugins.Plugin {
   readonly #widget = new PaletteWidget({
     onRender: () => {
       this.host.resize();
-      this.host.emitRender();
+      this.host.render();
     },
   });
 
@@ -52,7 +52,7 @@ export class PalettePlugin extends plugins.Plugin {
   async #run(): Promise<void> {
     const cmd = await this.#widget.open();
 
-    this.host.emitRender();
+    this.host.render();
 
     if (cmd) {
       await this.host.emitCommand(cmd);

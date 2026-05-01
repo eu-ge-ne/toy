@@ -16,6 +16,7 @@ export class HeaderPlugin extends plugins.Plugin {
     super(host);
 
     host.on("resize", this.onResize);
+    host.on("render", this.onRender);
   }
 
   onResize = () => {
@@ -24,12 +25,12 @@ export class HeaderPlugin extends plugins.Plugin {
     this.#widget.resize(columns, 1, 0, 0);
   };
 
-  override onRender(): void {
+  onRender = () => {
     if (this.#disabled) {
       return;
     }
     this.#widget.render();
-  }
+  };
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {

@@ -28,6 +28,7 @@ export class EditorPlugin extends plugins.Plugin {
     super(host);
 
     host.on("resize", this.onResize);
+    host.on("render", this.onRender);
   }
 
   override async onStart(): Promise<void> {
@@ -59,9 +60,9 @@ export class EditorPlugin extends plugins.Plugin {
     }
   };
 
-  override onRender(): void {
+  onRender = () => {
     this.#widget.render();
-  }
+  };
 
   override async onKey(key: kitty.Key): Promise<boolean> {
     if (commands.ShortcutToCommand[kitty.shortcut(key)]) {

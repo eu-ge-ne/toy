@@ -19,6 +19,7 @@ export class DebugPlugin extends plugins.Plugin {
     super(host);
 
     host.on("resize", this.onResize);
+    host.on("render", this.onRender);
   }
 
   onResize = () => {
@@ -32,13 +33,9 @@ export class DebugPlugin extends plugins.Plugin {
     this.#widget.resize(w, h, y, x);
   };
 
-  override renderOrder(): number {
-    return 1000;
-  }
-
-  override onRender(): void {
+  onRender = () => {
     this.#widget.render();
-  }
+  };
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {
     switch (cmd.name) {
