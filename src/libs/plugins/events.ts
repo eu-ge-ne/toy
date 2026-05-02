@@ -1,7 +1,10 @@
 export type Events = {
-  "start": () => void;
+  "start": () => Promise<void>;
   "stop": (e?: PromiseRejectionEvent) => Promise<void>;
   "stop.after": (e?: PromiseRejectionEvent) => Promise<void>;
+};
+
+export type SyncEvents = {
   "resize": () => void;
   "render.before": () => void;
   "render": () => void;

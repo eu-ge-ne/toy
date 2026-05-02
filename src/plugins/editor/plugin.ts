@@ -25,11 +25,11 @@ export class EditorPlugin extends plugins.Plugin {
 
     host.on("start", this.onStart);
     host.on("stop", this.onStop);
-    host.on("resize", this.onResize);
-    host.on("render", this.onRender);
+    host.onSync("resize", this.onResize);
+    host.onSync("render", this.onRender);
   }
 
-  onStart = () => {
+  onStart = async () => {
     this.#widget.setFocused(true);
 
     this.#widget.resetChanges();

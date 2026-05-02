@@ -17,7 +17,7 @@ export class PalettePlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.on("resize", this.onResize);
+    host.onSync("resize", this.onResize);
   }
 
   onResize = () => {

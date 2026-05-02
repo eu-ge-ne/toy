@@ -2,7 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { Events } from "./events.ts";
+import { Events, SyncEvents } from "./events.ts";
 import { Plugin } from "./plugin.ts";
 
 export interface Alert {
@@ -29,8 +29,8 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host extends events.Listener<Events> {
-  readonly #emitter: events.Emitter<Events>;
+export class Host extends events.Listener<Events, SyncEvents> {
+  readonly #emitter: events.Emitter<Events, SyncEvents>;
 
   readonly plugins: Plugin[] = [];
 
@@ -41,10 +41,14 @@ export class Host extends events.Listener<Events> {
   doc!: Doc;
 
   constructor() {
-    const listeners: events.Clients<Events> = {};
-    super(listeners);
+    const clients: events.Clients<Events> = {};
+    const syncClients: events.Clients<SyncEvents> = {};
+    super(clients, syncClients);
 
-    this.#emitter = new events.Emitter<Events>(listeners);
+    this.#emitter = new events.Emitter<Events, SyncEvents>(
+      clients,
+      syncClients,
+    );
   }
 
   register(...plugins: Plugin[]): void {
@@ -109,27 +113,27 @@ export class Host extends events.Listener<Events> {
     this.#emitter.emitSync("render.after");
   }
 
-  async debugVersion(version: string): Promise<void> {
-    await this.#emitter.emit("debug.version", version);
+  debugVersion(version: string): void {
+    this.#emitter.emitSync("debug.version", version);
   }
 
-  async debugRender(elapsed: number): Promise<void> {
-    await this.#emitter.emit("debug.render", elapsed);
+  debugRender(elapsed: number): void {
+    this.#emitter.emitSync("debug.render", elapsed);
   }
 
-  async debugInput(elapsed: number): Promise<void> {
-    await this.#emitter.emit("debug.input", elapsed);
+  debugInput(elapsed: number): void {
+    this.#emitter.emitSync("debug.input", elapsed);
   }
 
-  async statusDocName(name: string): Promise<void> {
-    await this.#emitter.emit("status.doc.name", name);
+  statusDocName(name: string): void {
+    this.#emitter.emitSync("status.doc.name", name);
   }
 
-  async statusDocModified(modified: boolean, lineCount: number): Promise<void> {
-    await this.#emitter.emit("status.doc.modified", modified, lineCount);
+  statusDocModified(modified: boolean, lineCount: number): void {
+    this.#emitter.emitSync("status.doc.modified", modified, lineCount);
   }
 
-  async statusDocCursor(ln: number, col: number): Promise<void> {
-    await this.#emitter.emit("status.doc.cursor", ln, col);
+  statusDocCursor(ln: number, col: number): void {
+    this.#emitter.emitSync("status.doc.cursor", ln, col);
   }
 }

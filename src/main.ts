@@ -31,7 +31,7 @@ if (args.version) {
 
 const host = new plugins.Host();
 
-host.on("start", () => {
+host.on("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
   vt.init();
@@ -54,14 +54,14 @@ host.on("stop.after", (e) => {
 
 let renderStarted = 0;
 
-host.on("render.before", () => {
+host.onSync("render.before", () => {
   renderStarted = performance.now();
 
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 });
 
-host.on("render.after", () => {
+host.onSync("render.after", () => {
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
   vt.sync.esu();

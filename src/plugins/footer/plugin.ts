@@ -16,10 +16,10 @@ export class FooterPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.on("resize", this.onResize);
-    host.on("render", this.onRender);
-    host.on("status.doc.cursor", this.onStatusDocCursor);
-    host.on("status.doc.modified", this.onStatusDocModified);
+    host.onSync("resize", this.onResize);
+    host.onSync("render", this.onRender);
+    host.onSync("status.doc.cursor", this.onStatusDocCursor);
+    host.onSync("status.doc.modified", this.onStatusDocModified);
   }
 
   onResize = () => {

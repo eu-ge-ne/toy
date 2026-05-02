@@ -15,10 +15,10 @@ export class HeaderPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.on("resize", this.onResize);
-    host.on("render", this.onRender);
-    host.on("status.doc.name", this.onStatusDocName);
-    host.on("status.doc.modified", this.onStatusDocModified);
+    host.onSync("resize", this.onResize);
+    host.onSync("render", this.onRender);
+    host.onSync("status.doc.name", this.onStatusDocName);
+    host.onSync("status.doc.modified", this.onStatusDocModified);
   }
 
   onResize = () => {
