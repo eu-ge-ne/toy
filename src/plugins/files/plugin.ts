@@ -12,7 +12,7 @@ export class FilesPlugin extends plugins.Plugin {
 
       this.host.doc.reset();
 
-      this.host.emitStatus({ doc: { fileName } });
+      this.host.statusDocName(fileName);
 
       this.#fileName = fileName;
     } catch (err) {
@@ -20,7 +20,7 @@ export class FilesPlugin extends plugins.Plugin {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.host.alert.open(message);
 
-        await this.host.emitStop();
+        await this.host.stop();
       }
     }
   }
@@ -56,11 +56,7 @@ export class FilesPlugin extends plugins.Plugin {
         await files.save(newFileName, this.host.doc.read());
 
         this.#fileName = newFileName;
-        this.host.emitStatus({
-          doc: {
-            fileName: newFileName,
-          },
-        });
+        this.host.statusDocName(newFileName);
 
         this.host.doc.reset();
       } catch (err) {

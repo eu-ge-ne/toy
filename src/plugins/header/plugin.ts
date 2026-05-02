@@ -12,41 +12,46 @@ export class HeaderPlugin extends plugins.Plugin {
     modified: false,
   });
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.onSync("resize", this.onResize);
+    host.onSync("render", this.onRender);
+    host.onSync("status.doc.name", this.onStatusDocName);
+    host.onSync("status.doc.modified", this.onStatusDocModified);
+  }
+
+  onResize = () => {
     const { columns } = Deno.consoleSize();
 
     this.#widget.resize(columns, 1, 0, 0);
-  }
+  };
 
-  override onRender(): void {
+  onRender = () => {
     if (this.#disabled) {
       return;
     }
     this.#widget.render();
-  }
+  };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.emitResize();
-        return false;
+        this.host.resize();
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
-    }
-
-    return false;
-  }
-
-  override onStatus(data: plugins.StatusData): void {
-    if (data.doc?.fileName) {
-      this.#widget.props.fileName = data.doc?.fileName;
-    }
-
-    if (data.doc?.content) {
-      this.#widget.props.modified = data.doc.content.modified;
+        return;
     }
   }
+
+  onStatusDocName = (fileName: string) => {
+    this.#widget.props.fileName = fileName;
+  };
+
+  onStatusDocModified = (modified: boolean) => {
+    this.#widget.props.modified = modified;
+  };
 }
