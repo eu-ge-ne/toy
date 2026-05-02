@@ -15,7 +15,17 @@ export class DebugPlugin extends plugins.Plugin {
     inputElapsed: 0,
   });
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+    host.on("render", () => this.#widget.render(), 1000);
+    host.on("debug.version", this.onDebugVersion);
+    host.on("debug.render", this.onDebugRender);
+    host.on("debug.input", this.onDebugInput);
+  }
+
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
@@ -24,48 +34,34 @@ export class DebugPlugin extends plugins.Plugin {
     const x = columns - w;
 
     this.#widget.resize(w, h, y, x);
-  }
+  };
 
-  override renderOrder(): number {
-    return 1000;
-  }
-
-  override onRender(): void {
-    this.#widget.render();
-  }
-
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
-        this.host.emitResize();
-        return false;
+        this.host.resize();
+        return;
 
       case "Debug":
         this.#widget.props.disabled = !this.#widget.props.disabled;
-        return true;
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
-    }
-
-    return false;
-  }
-
-  override onDebug(data: plugins.DebugData): void {
-    const { version, renderElapsed, inputElapsed } = data;
-
-    if (typeof version === "string") {
-      this.#widget.props.version = version;
-    }
-
-    if (typeof renderElapsed === "number") {
-      this.#widget.props.renderElapsed = renderElapsed;
-    }
-
-    if (typeof inputElapsed === "number") {
-      this.#widget.props.inputElapsed = inputElapsed;
+        return;
     }
   }
+
+  onDebugVersion = (version: string) => {
+    this.#widget.props.version = version;
+  };
+
+  onDebugRender = (elapsed: number) => {
+    this.#widget.props.renderElapsed = elapsed;
+  };
+
+  onDebugInput = (elapsed: number) => {
+    this.#widget.props.inputElapsed = elapsed;
+  };
 }

@@ -1,7 +1,9 @@
 import * as commands from "@libs/commands";
+import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { DebugData, Plugin, StatusData } from "./plugin.ts";
+import { Events } from "./events.ts";
+import { Plugin } from "./plugin.ts";
 
 export interface Alert {
   open(_: string): Promise<void>;
@@ -27,7 +29,9 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host {
+export class Host extends events.Listener<Events> {
+  readonly #emitter: events.Emitter<Events>;
+
   readonly plugins: Plugin[] = [];
 
   alert!: Alert;
@@ -35,6 +39,13 @@ export class Host {
   askFileName!: AskFileName;
   files!: Files;
   doc!: Doc;
+
+  constructor() {
+    const listeners: events.Clients<Events> = {};
+    super(listeners);
+
+    this.#emitter = new events.Emitter<Events>(listeners);
+  }
 
   register(...plugins: Plugin[]): void {
     this.plugins.push(...plugins);
@@ -65,68 +76,6 @@ export class Host {
     this.plugins.push(plugin);
   }
 
-  #rendersBefore!: Plugin[];
-  #renders!: Plugin[];
-  #rendersAfter!: Plugin[];
-
-  build(): void {
-    this.#rendersBefore = this.plugins.filter((x) =>
-      typeof x.onRenderBefore !== "undefined"
-    );
-
-    this.#rendersAfter = this.plugins.filter((x) =>
-      typeof x.onRenderAfter !== "undefined"
-    );
-
-    this.#renders = this.plugins.filter((x) =>
-      typeof x.onRender !== "undefined"
-    );
-
-    this.#renders.sort((a, b) =>
-      (a.renderOrder?.() ?? 0) - (b.renderOrder?.() ?? 0)
-    );
-  }
-
-  async emitStart(): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onStart?.();
-    }
-  }
-
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onStopBefore?.(e);
-    }
-
-    for (const x of this.plugins) {
-      await x.onStop?.(e);
-    }
-
-    for (const x of this.plugins) {
-      await x.onStopAfter?.(e);
-    }
-  }
-
-  emitResize(): void {
-    for (const x of this.plugins) {
-      x.onResize?.();
-    }
-  }
-
-  emitRender(): void {
-    for (const x of this.#rendersBefore) {
-      x.onRenderBefore!();
-    }
-
-    for (const x of this.#renders) {
-      x.onRender!();
-    }
-
-    for (const x of this.#rendersAfter) {
-      x.onRenderAfter!();
-    }
-  }
-
   async emitKey(key: kitty.Key): Promise<void> {
     for (const x of this.plugins) {
       if (await x.onKey?.(key)) {
@@ -137,21 +86,50 @@ export class Host {
 
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onCommand?.(cmd)) {
-        return;
-      }
+      await x.onCommand?.(cmd);
     }
   }
 
-  emitDebug(data: DebugData): void {
-    for (const x of this.plugins) {
-      x.onDebug?.(data);
-    }
+  async start(): Promise<void> {
+    await this.#emitter.emit("start");
   }
 
-  emitStatus(data: StatusData): void {
-    for (const x of this.plugins) {
-      x.onStatus?.(data);
-    }
+  async stop(e?: PromiseRejectionEvent): Promise<void> {
+    await this.#emitter.emit("stop", e);
+    await this.#emitter.emit("stop.after", e);
+  }
+
+  resize(): void {
+    this.#emitter.emitSync("resize");
+  }
+
+  render(): void {
+    this.#emitter.emitSync("render.before");
+    this.#emitter.emitSync("render");
+    this.#emitter.emitSync("render.after");
+  }
+
+  async debugVersion(version: string): Promise<void> {
+    await this.#emitter.emit("debug.version", version);
+  }
+
+  async debugRender(elapsed: number): Promise<void> {
+    await this.#emitter.emit("debug.render", elapsed);
+  }
+
+  async debugInput(elapsed: number): Promise<void> {
+    await this.#emitter.emit("debug.input", elapsed);
+  }
+
+  async statusDocName(name: string): Promise<void> {
+    await this.#emitter.emit("status.doc.name", name);
+  }
+
+  async statusDocModified(modified: boolean, lineCount: number): Promise<void> {
+    await this.#emitter.emit("status.doc.modified", modified, lineCount);
+  }
+
+  async statusDocCursor(ln: number, col: number): Promise<void> {
+    await this.#emitter.emit("status.doc.cursor", ln, col);
   }
 }

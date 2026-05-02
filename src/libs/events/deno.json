@@ -1,0 +1,4 @@
+{
+  "name": "@libs/events",
+  "exports": "./events.ts"
+}

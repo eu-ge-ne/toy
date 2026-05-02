@@ -11,27 +11,32 @@ export class EditorPlugin extends plugins.Plugin {
   readonly #widget = new EditorWidget({
     multiLine: true,
     onTextChange: () => {
-      this.host.emitStatus({
-        doc: {
-          content: {
-            modified: this.#widget.modified,
-            lineCount: this.#widget.lineCount,
-          },
-        },
-      });
+      this.host.statusDocModified(
+        this.#widget.modified,
+        this.#widget.lineCount,
+      );
     },
-    onCursorChange: (x) => this.host.emitStatus({ doc: { cursor: x } }),
-    onKeyHandle: (x) => this.host.emitDebug({ inputElapsed: x }),
+    onCursorChange: (x) => this.host.statusDocCursor(x.ln, x.col),
+    onKeyHandle: (x) => this.host.debugInput(x),
   });
 
-  override async onStart(): Promise<void> {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("start", this.onStart);
+    host.on("stop", this.onStop);
+    host.on("resize", this.onResize);
+    host.on("render", this.onRender);
+  }
+
+  onStart = () => {
     this.#widget.setFocused(true);
 
     this.#widget.resetChanges();
     this.#widget.resetCursor();
-  }
+  };
 
-  override async onStopBefore?(e?: PromiseRejectionEvent): Promise<void> {
+  onStop = async (e?: PromiseRejectionEvent) => {
     if (e) {
       return;
     }
@@ -41,9 +46,9 @@ export class EditorPlugin extends plugins.Plugin {
         await this.host.files.save();
       }
     }
-  }
+  };
 
-  override onResize(): void {
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     if (this.#zen) {
@@ -51,11 +56,11 @@ export class EditorPlugin extends plugins.Plugin {
     } else {
       this.#widget.resize(columns, rows - 2, 1, 0);
     }
-  }
+  };
 
-  override onRender(): void {
+  onRender = () => {
     this.#widget.render();
-  }
+  };
 
   override async onKey(key: kitty.Key): Promise<boolean> {
     if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
@@ -65,52 +70,50 @@ export class EditorPlugin extends plugins.Plugin {
     return this.#widget.onKey(key);
   }
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#widget.toggleIndex();
         this.#zen = !this.#zen;
-        this.host.emitResize();
-        return false;
+        this.host.resize();
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
 
       case "Whitespace":
         this.#widget.toggleWhitespace();
-        return true;
+        return;
 
       case "Wrap":
         this.#widget.toggleWrapped();
-        return true;
+        return;
 
       case "Copy":
         this.#widget.copy();
-        return true;
+        return;
 
       case "Cut":
         this.#widget.cut();
-        return true;
+        return;
 
       case "Paste":
         this.#widget.paste();
-        return true;
+        return;
 
       case "Undo":
         this.#widget.undo();
-        return true;
+        return;
 
       case "Redo":
         this.#widget.redo();
-        return true;
+        return;
 
       case "SelectAll":
         this.#widget.selectAll();
-        return true;
+        return;
     }
-
-    return false;
   }
 
   reset(): void {

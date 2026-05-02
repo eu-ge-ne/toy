@@ -8,12 +8,10 @@ import { AskFileNamePlugin } from "@plugins/ask-file-name";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
-import { ExitPlugin } from "@plugins/exit";
 import { FilesPlugin } from "@plugins/files";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
-import { VTPlugin } from "@plugins/vt";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -33,9 +31,45 @@ if (args.version) {
 
 const host = new plugins.Host();
 
+host.on("start", () => {
+  globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
+
+  vt.init();
+
+  Deno.addSignalListener("SIGWINCH", () => {
+    host.resize();
+    host.render();
+  });
+});
+
+host.on("stop.after", (e) => {
+  vt.restore();
+
+  if (e) {
+    console.log(e.reason);
+  }
+
+  Deno.exit(0);
+});
+
+let renderStarted = 0;
+
+host.on("render.before", () => {
+  renderStarted = performance.now();
+
+  vt.sync.bsu();
+  vt.buf.write(vt.cursor.hide);
+});
+
+host.on("render.after", () => {
+  vt.buf.write(vt.cursor.show);
+  vt.buf.flush();
+  vt.sync.esu();
+
+  host.debugRender(performance.now() - renderStarted);
+});
+
 host.register(
-  new VTPlugin(host),
-  new ExitPlugin(host),
   new CommandsPlugin(host),
   new DebugPlugin(host),
   new HeaderPlugin(host),
@@ -49,21 +83,18 @@ host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
 
-host.build();
-
-await host.emitStart();
-host.emitResize();
+host.start();
+host.resize();
+host.debugVersion(version);
 
 await host.emitCommand({ name: "Theme", data: "Default" });
-
-host.emitDebug({ version });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
 while (true) {
-  host.emitRender();
+  host.render();
 
   const key = await vt.readKey();
 

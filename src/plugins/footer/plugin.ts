@@ -13,44 +13,47 @@ export class FooterPlugin extends plugins.Plugin {
     lineCount: 0,
   });
 
-  override onResize(): void {
+  constructor(host: plugins.Host) {
+    super(host);
+
+    host.on("resize", this.onResize);
+    host.on("render", this.onRender);
+    host.on("status.doc.cursor", this.onStatusDocCursor);
+    host.on("status.doc.modified", this.onStatusDocModified);
+  }
+
+  onResize = () => {
     const { columns, rows } = Deno.consoleSize();
 
     this.#widget.resize(columns, 1, rows - 1, 0);
-  }
+  };
 
-  override onRender(): void {
+  onRender = () => {
     if (this.#disabled) {
       return;
     }
     this.#widget.render();
-  }
+  };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
-        this.host.emitResize();
-        return false;
+        this.host.resize();
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
-    }
-
-    return false;
-  }
-
-  override onStatus(data: plugins.StatusData): void {
-    if (data.doc?.cursor) {
-      const { ln, col } = data.doc.cursor;
-
-      this.#widget.props.ln = ln;
-      this.#widget.props.col = col;
-    }
-
-    if (data.doc?.content) {
-      this.#widget.props.lineCount = data.doc.content.lineCount;
+        return;
     }
   }
+
+  onStatusDocCursor = (ln: number, col: number) => {
+    this.#widget.props.ln = ln;
+    this.#widget.props.col = col;
+  };
+
+  onStatusDocModified = (_: boolean, lineCount: number) => {
+    this.#widget.props.lineCount = lineCount;
+  };
 }
