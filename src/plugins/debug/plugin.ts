@@ -19,7 +19,7 @@ export class DebugPlugin extends plugins.Plugin {
     super(host);
 
     host.on("resize", this.onResize);
-    host.on("render", this.onRender);
+    host.on("render", () => this.#widget.render(), 1000);
     host.on("debug.version", this.onDebugVersion);
     host.on("debug.render", this.onDebugRender);
     host.on("debug.input", this.onDebugInput);
@@ -34,10 +34,6 @@ export class DebugPlugin extends plugins.Plugin {
     const x = columns - w;
 
     this.#widget.resize(w, h, y, x);
-  };
-
-  onRender = () => {
-    this.#widget.render();
   };
 
   override async onCommand(cmd: commands.Command): Promise<boolean> {

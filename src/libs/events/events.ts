@@ -3,7 +3,12 @@ type Events = {
   [_: string]: (..._: any[]) => any;
 };
 
-export type Clients<A extends Events> = { [E in keyof A]?: A[E][] };
+export type Clients<A extends Events> = {
+  [E in keyof A]?: {
+    fn: A[E];
+    order: number;
+  }[];
+};
 
 export class Emitter<A extends Events> {
   constructor(private readonly clients: Clients<A>) {
@@ -13,8 +18,8 @@ export class Emitter<A extends Events> {
     event: E,
     ...args: Parameters<A[E]>
   ): Promise<void> {
-    for (const x of this.clients[event] ?? []) {
-      await x(...args);
+    for (const { fn } of this.clients[event] ?? []) {
+      await fn(...args);
     }
   }
 
@@ -22,8 +27,8 @@ export class Emitter<A extends Events> {
     event: E,
     ...args: Parameters<A[E]>
   ): void {
-    for (const x of this.clients[event] ?? []) {
-      x(...args);
+    for (const { fn } of this.clients[event] ?? []) {
+      fn(...args);
     }
   }
 }
@@ -32,18 +37,19 @@ export class Listener<A extends Events> {
   constructor(private readonly clients: Clients<A>) {
   }
 
-  on<E extends keyof A>(event: E, listener: A[E]): void {
+  on<E extends keyof A>(event: E, fn: A[E], order = 0): void {
     let clients = this.clients[event];
     if (!clients) {
       clients = this.clients[event] = [];
     }
-    clients.push(listener);
+    clients.push({ fn, order });
+    clients.sort((a, b) => a.order - b.order);
   }
 
-  off<E extends keyof A>(event: E, listener: A[E]): void {
+  off<E extends keyof A>(event: E, fn: A[E]): void {
     const clients = this.clients[event];
     if (clients) {
-      const i = clients.indexOf(listener);
+      const i = clients.findIndex((x) => x.fn === fn);
       if (i >= 0) {
         clients.splice(i, 1);
       }
