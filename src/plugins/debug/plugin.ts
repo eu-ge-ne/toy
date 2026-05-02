@@ -36,23 +36,21 @@ export class DebugPlugin extends plugins.Plugin {
     this.#widget.resize(w, h, y, x);
   };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
         this.host.resize();
-        return false;
+        return;
 
       case "Debug":
         this.#widget.props.disabled = !this.#widget.props.disabled;
-        return true;
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
     }
-
-    return false;
   }
 
   onDebugVersion = (version: string) => {

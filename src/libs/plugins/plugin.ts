@@ -8,5 +8,5 @@ export abstract class Plugin {
   }
 
   async onKey?(_: kitty.Key): Promise<boolean>;
-  async onCommand?(_: commands.Command): Promise<boolean>;
+  async onCommand?(_: commands.Command): Promise<void>;
 }

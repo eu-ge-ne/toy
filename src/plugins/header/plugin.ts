@@ -34,19 +34,17 @@ export class HeaderPlugin extends plugins.Plugin {
     this.#widget.render();
   };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
         this.host.resize();
-        return false;
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
     }
-
-    return false;
   }
 
   onStatusDocName = (fileName: string) => {

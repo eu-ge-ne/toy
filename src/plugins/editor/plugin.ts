@@ -70,52 +70,50 @@ export class EditorPlugin extends plugins.Plugin {
     return this.#widget.onKey(key);
   }
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#widget.toggleIndex();
         this.#zen = !this.#zen;
         this.host.resize();
-        return false;
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
 
       case "Whitespace":
         this.#widget.toggleWhitespace();
-        return true;
+        return;
 
       case "Wrap":
         this.#widget.toggleWrapped();
-        return true;
+        return;
 
       case "Copy":
         this.#widget.copy();
-        return true;
+        return;
 
       case "Cut":
         this.#widget.cut();
-        return true;
+        return;
 
       case "Paste":
         this.#widget.paste();
-        return true;
+        return;
 
       case "Undo":
         this.#widget.undo();
-        return true;
+        return;
 
       case "Redo":
         this.#widget.redo();
-        return true;
+        return;
 
       case "SelectAll":
         this.#widget.selectAll();
-        return true;
+        return;
     }
-
-    return false;
   }
 
   reset(): void {

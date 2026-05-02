@@ -25,14 +25,12 @@ export class AskPlugin extends plugins.Plugin {
     this.#widget.resize(w, h, y, x);
   };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
     }
-
-    return false;
   }
 
   async open(message: string): Promise<boolean> {

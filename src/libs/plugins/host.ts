@@ -86,9 +86,7 @@ export class Host extends events.Listener<Events> {
 
   async emitCommand(cmd: commands.Command): Promise<void> {
     for (const x of this.plugins) {
-      if (await x.onCommand?.(cmd)) {
-        return;
-      }
+      await x.onCommand?.(cmd);
     }
   }
 

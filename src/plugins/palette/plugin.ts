@@ -30,23 +30,21 @@ export class PalettePlugin extends plugins.Plugin {
     }
   };
 
-  override async onCommand(cmd: commands.Command): Promise<boolean> {
+  override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
         this.host.resize();
-        return false;
+        return;
 
       case "Theme":
         this.#widget.setTheme(themes.Themes[cmd.data]);
-        return false;
+        return;
 
       case "Palette":
         await this.#run();
-        return true;
+        return;
     }
-
-    return false;
   }
 
   async #run(): Promise<void> {
