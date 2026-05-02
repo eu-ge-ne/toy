@@ -93,45 +93,45 @@ export class Host extends events.Listener<Events> {
   }
 
   start(): void {
-    this.#emitter.emit("start");
+    this.#emitter.emitSync("start");
   }
 
-  stop(e?: PromiseRejectionEvent): void {
-    this.#emitter.emit("stop", e);
-    this.#emitter.emit("stop.after", e);
+  async stop(e?: PromiseRejectionEvent): Promise<void> {
+    await this.#emitter.emitAsync("stop", e);
+    await this.#emitter.emitAsync("stop.after", e);
   }
 
   resize(): void {
-    this.#emitter.emit("resize");
+    this.#emitter.emitSync("resize");
   }
 
   render(): void {
-    this.#emitter.emit("render.before");
-    this.#emitter.emit("render");
-    this.#emitter.emit("render.after");
+    this.#emitter.emitSync("render.before");
+    this.#emitter.emitSync("render");
+    this.#emitter.emitSync("render.after");
   }
 
   debugVersion(version: string): void {
-    this.#emitter.emit("debug.version", version);
+    this.#emitter.emitSync("debug.version", version);
   }
 
   debugRender(elapsed: number): void {
-    this.#emitter.emit("debug.render", elapsed);
+    this.#emitter.emitSync("debug.render", elapsed);
   }
 
   debugInput(elapsed: number): void {
-    this.#emitter.emit("debug.input", elapsed);
+    this.#emitter.emitSync("debug.input", elapsed);
   }
 
   statusDocName(name: string): void {
-    this.#emitter.emit("status.doc.name", name);
+    this.#emitter.emitSync("status.doc.name", name);
   }
 
   statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.emit("status.doc.modified", modified, lineCount);
+    this.#emitter.emitSync("status.doc.modified", modified, lineCount);
   }
 
   statusDocCursor(ln: number, col: number): void {
-    this.#emitter.emit("status.doc.cursor", ln, col);
+    this.#emitter.emitSync("status.doc.cursor", ln, col);
   }
 }
