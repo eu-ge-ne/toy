@@ -9,21 +9,21 @@ export class Emitter<A extends Events> {
   constructor(private readonly clients: Clients<A>) {
   }
 
+  async emit<E extends keyof A>(
+    event: E,
+    ...args: Parameters<A[E]>
+  ): Promise<void> {
+    for (const x of this.clients[event] ?? []) {
+      await x(...args);
+    }
+  }
+
   emitSync<E extends keyof A>(
     event: E,
     ...args: Parameters<A[E]>
   ): void {
     for (const x of this.clients[event] ?? []) {
       x(...args);
-    }
-  }
-
-  async emitAsync<E extends keyof A>(
-    event: E,
-    ...args: Parameters<A[E]>
-  ): Promise<void> {
-    for (const x of this.clients[event] ?? []) {
-      await x(...args);
     }
   }
 }

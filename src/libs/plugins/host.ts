@@ -97,8 +97,8 @@ export class Host extends events.Listener<Events> {
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.emitAsync("stop", e);
-    await this.#emitter.emitAsync("stop.after", e);
+    await this.#emitter.emit("stop", e);
+    await this.#emitter.emit("stop.after", e);
   }
 
   resize(): void {
