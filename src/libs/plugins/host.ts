@@ -92,8 +92,8 @@ export class Host extends events.Listener<Events> {
     }
   }
 
-  start(): void {
-    this.#emitter.emitSync("start");
+  async start(): Promise<void> {
+    await this.#emitter.emit("start");
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
@@ -111,27 +111,27 @@ export class Host extends events.Listener<Events> {
     this.#emitter.emitSync("render.after");
   }
 
-  debugVersion(version: string): void {
-    this.#emitter.emitSync("debug.version", version);
+  async debugVersion(version: string): Promise<void> {
+    await this.#emitter.emit("debug.version", version);
   }
 
-  debugRender(elapsed: number): void {
-    this.#emitter.emitSync("debug.render", elapsed);
+  async debugRender(elapsed: number): Promise<void> {
+    await this.#emitter.emit("debug.render", elapsed);
   }
 
-  debugInput(elapsed: number): void {
-    this.#emitter.emitSync("debug.input", elapsed);
+  async debugInput(elapsed: number): Promise<void> {
+    await this.#emitter.emit("debug.input", elapsed);
   }
 
-  statusDocName(name: string): void {
-    this.#emitter.emitSync("status.doc.name", name);
+  async statusDocName(name: string): Promise<void> {
+    await this.#emitter.emit("status.doc.name", name);
   }
 
-  statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.emitSync("status.doc.modified", modified, lineCount);
+  async statusDocModified(modified: boolean, lineCount: number): Promise<void> {
+    await this.#emitter.emit("status.doc.modified", modified, lineCount);
   }
 
-  statusDocCursor(ln: number, col: number): void {
-    this.#emitter.emitSync("status.doc.cursor", ln, col);
+  async statusDocCursor(ln: number, col: number): Promise<void> {
+    await this.#emitter.emit("status.doc.cursor", ln, col);
   }
 }
