@@ -2,6 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
+import { Events } from "./events.ts";
 import { Plugin } from "./plugin.ts";
 
 export interface Alert {
@@ -28,24 +29,8 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-type HostEvents = {
-  "start": () => void;
-  "stop": (e?: PromiseRejectionEvent) => void;
-  "stop.after": (e?: PromiseRejectionEvent) => void;
-  "resize": () => void;
-  "render.before": () => void;
-  "render": () => void;
-  "render.after": () => void;
-  "debug.version": (_: string) => void;
-  "debug.render": (_: number) => void;
-  "debug.input": (_: number) => void;
-  "status.doc.name": (_: string) => void;
-  "status.doc.modified": (modified: boolean, lineCount: number) => void;
-  "status.doc.cursor": (ln: number, col: number) => void;
-};
-
-export class Host extends events.Listener<HostEvents> {
-  readonly #emitter: events.Emitter<HostEvents>;
+export class Host extends events.Listener<Events> {
+  readonly #emitter: events.Emitter<Events>;
 
   readonly plugins: Plugin[] = [];
 
@@ -56,10 +41,10 @@ export class Host extends events.Listener<HostEvents> {
   doc!: Doc;
 
   constructor() {
-    const listeners: events.Clients<HostEvents> = {};
+    const listeners: events.Clients<Events> = {};
     super(listeners);
 
-    this.#emitter = new events.Emitter<HostEvents>(listeners);
+    this.#emitter = new events.Emitter<Events>(listeners);
   }
 
   register(...plugins: Plugin[]): void {
