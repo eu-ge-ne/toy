@@ -2,11 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import {
-  AsyncInterceptorEvents,
-  ReactorEvents,
-  SyncInterceptorEvents,
-} from "./events.ts";
+import { InterceptorEvents, ReactorEvents } from "./events.ts";
 import { Plugin } from "./plugin.ts";
 
 export interface Alert {
@@ -33,16 +29,8 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host extends events.Listener<
-  SyncInterceptorEvents,
-  AsyncInterceptorEvents,
-  ReactorEvents
-> {
-  readonly #emitter: events.Emitter<
-    SyncInterceptorEvents,
-    AsyncInterceptorEvents,
-    ReactorEvents
-  >;
+export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
+  readonly #emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
   readonly plugins: Plugin[] = [];
 
@@ -53,20 +41,13 @@ export class Host extends events.Listener<
   doc!: Doc;
 
   constructor() {
-    const syncInterceptors: events.SyncInterceptors<SyncInterceptorEvents> = {};
-    const asyncInterceptors: events.AsyncInterceptors<AsyncInterceptorEvents> =
-      {};
+    const interceptors: events.Interceptors<InterceptorEvents> = {};
     const reactors: events.Reactors<ReactorEvents> = {};
 
-    super(syncInterceptors, asyncInterceptors, reactors);
+    super(interceptors, reactors);
 
-    this.#emitter = new events.Emitter<
-      SyncInterceptorEvents,
-      AsyncInterceptorEvents,
-      ReactorEvents
-    >(
-      syncInterceptors,
-      asyncInterceptors,
+    this.#emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
+      interceptors,
       reactors,
     );
   }
@@ -115,12 +96,12 @@ export class Host extends events.Listener<
   }
 
   async start(): Promise<void> {
-    await this.#emitter.interceptAsync("start", {});
+    await this.#emitter.intercept("start", {});
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.interceptAsync("stop", { e });
-    await this.#emitter.interceptAsync("stop.after", { e });
+    await this.#emitter.intercept("stop", { e });
+    await this.#emitter.intercept("stop.after", { e });
   }
 
   resize(): void {

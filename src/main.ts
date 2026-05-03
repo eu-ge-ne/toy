@@ -31,7 +31,7 @@ if (args.version) {
 
 const host = new plugins.Host();
 
-host.onInterceptAsync("start", async () => {
+host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
   vt.init();
@@ -42,7 +42,7 @@ host.onInterceptAsync("start", async () => {
   });
 });
 
-host.onInterceptAsync("stop.after", ({ e }) => {
+host.onIntercept("stop.after", ({ e }) => {
   vt.restore();
 
   if (e) {

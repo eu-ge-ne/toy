@@ -11,11 +11,7 @@ type _InterceptorData = any;
 // deno-lint-ignore no-explicit-any
 type _ReactorData = any[];
 
-export type SyncInterceptorEvents = {
-  [key: string]: (data: _InterceptorData) => void;
-};
-
-export type AsyncInterceptorEvents = {
+export type InterceptorEvents = {
   [key: string]: (data: _InterceptorData) => Promise<void>;
 };
 

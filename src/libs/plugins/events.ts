@@ -1,10 +1,6 @@
 import { InterceptorData } from "@libs/events";
 
-export type SyncInterceptorEvents = {
-  "test": (_: InterceptorData<{ test: boolean }>) => void;
-};
-
-export type AsyncInterceptorEvents = {
+export type InterceptorEvents = {
   "start": (_: InterceptorData) => Promise<void>;
   "stop": (
     _: InterceptorData<{ e?: PromiseRejectionEvent }>,

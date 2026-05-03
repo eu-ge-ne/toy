@@ -23,8 +23,8 @@ export class EditorPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.onInterceptAsync("start", this.onStart);
-    host.onInterceptAsync("stop", this.onStop);
+    host.onIntercept("start", this.onStart);
+    host.onIntercept("stop", this.onStop);
     host.onReact("resize", this.onResize);
     host.onReact("render", this.onRender);
   }
