@@ -48,7 +48,7 @@ export class Emitter<
     }
   }
 
-  react<E extends keyof C>(name: E, data: Parameters<C[E]>[0]): void {
+  react<E extends keyof C>(name: E, ...data: Parameters<C[E]>): void {
     const listeners = this.reactors[name];
     if (!listeners) {
       return;
@@ -56,7 +56,7 @@ export class Emitter<
 
     for (const { fn } of listeners) {
       try {
-        const result = fn(data);
+        const result = fn(...data);
         if (result instanceof Promise) {
           result.catch((err) => console.error(err));
         }

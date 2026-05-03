@@ -124,13 +124,13 @@ export class Host extends events.Listener<
   }
 
   resize(): void {
-    this.#emitter.react("resize", undefined);
+    this.#emitter.react("resize");
   }
 
   render(): void {
-    this.#emitter.react("render.before", undefined);
-    this.#emitter.react("render", undefined);
-    this.#emitter.react("render.after", undefined);
+    this.#emitter.react("render.before");
+    this.#emitter.react("render");
+    this.#emitter.react("render.after");
   }
 
   debugVersion(version: string): void {
