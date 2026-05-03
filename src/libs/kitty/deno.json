@@ -1,4 +1,4 @@
 {
   "name": "@libs/kitty",
-  "exports": "./main.ts"
+  "exports": "./index.ts"
 }

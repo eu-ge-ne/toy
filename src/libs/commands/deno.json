@@ -1,4 +1,4 @@
 {
   "name": "@libs/commands",
-  "exports": "./mod.ts"
+  "exports": "./index.ts"
 }

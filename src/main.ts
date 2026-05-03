@@ -31,6 +31,17 @@ if (args.version) {
 
 const host = new plugins.Host();
 
+alert.register(host);
+ask.register(host);
+askFileName.register(host);
+debug.register(host);
+editor.register(host);
+files.register(host);
+footer.register(host);
+header.register(host);
+palette.register(host);
+shortcuts.register(host);
+
 host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
@@ -80,17 +91,6 @@ host.onIntercept("command", async ({ cmd }) => {
       return;
   }
 });
-
-alert.register(host);
-ask.register(host);
-askFileName.register(host);
-debug.register(host);
-editor.register(host);
-files.register(host);
-footer.register(host);
-header.register(host);
-palette.register(host);
-shortcuts.register(host);
 
 host.start();
 host.resize();
