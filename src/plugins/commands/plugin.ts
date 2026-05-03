@@ -2,13 +2,8 @@ import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-export class CommandsPlugin {
-  constructor(private readonly host: plugins.Host) {
-    host.onIntercept("key.press", this.onKey, -1000);
-    host.onIntercept("command", this.onCommand);
-  }
-
-  onKey = async (data: { cancel?: boolean; key: kitty.Key }) => {
+export function register(host: plugins.Host): void {
+  host.onIntercept("key.press", async (data) => {
     const name = commands.ShortcutToCommand[kitty.shortcut(data.key)];
     if (!name) {
       return;
@@ -16,18 +11,18 @@ export class CommandsPlugin {
 
     data.cancel = true;
 
-    await this.host.command({ name } as commands.Command);
-  };
+    await host.command({ name } as commands.Command);
+  }, -1000);
 
-  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Exit":
-        await this.host.stop();
+        await host.stop();
         return;
 
       case "Save":
-        await this.host.files.save();
+        await host.files.save();
         return;
     }
-  };
+  });
 }

@@ -4,8 +4,8 @@ import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 import * as alert from "@plugins/alert";
 import * as ask from "@plugins/ask";
-import { AskFileNamePlugin } from "@plugins/ask-file-name";
-import { CommandsPlugin } from "@plugins/commands";
+import * as askFileName from "@plugins/ask-file-name";
+import * as commands from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
 import { FilesPlugin } from "@plugins/files";
@@ -71,14 +71,14 @@ host.onReact("render.after", () => {
 
 alert.register(host);
 ask.register(host);
+askFileName.register(host);
+commands.register(host);
 
-new CommandsPlugin(host);
 new DebugPlugin(host);
 new HeaderPlugin(host);
 new FooterPlugin(host);
 new PalettePlugin(host);
 
-host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
 

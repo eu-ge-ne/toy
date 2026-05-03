@@ -1,19 +1,13 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-export class AskFileNamePlugin {
-  readonly #widget = new AskFileNameWidget();
+export function register(host: plugins.Host): void {
+  const widget = new AskFileNameWidget();
 
-  constructor(host: plugins.Host) {
-    host.onReact("resize", this.onResize);
-    host.onIntercept("command", this.onCommand);
-  }
-
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(60, 0, columns);
@@ -21,18 +15,20 @@ export class AskFileNamePlugin {
     const y = Math.trunc((rows - h) / 2);
     const x = Math.trunc((columns - w) / 2);
 
-    this.#widget.resize(w, h, y, x);
-  };
+    widget.resize(w, h, y, x);
+  });
 
-  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  };
+  });
 
-  async open(fileName: string): Promise<string | undefined> {
-    return await this.#widget.open(fileName);
-  }
+  host.registerAskFileName({
+    async open(fileName: string): Promise<string | undefined> {
+      return await widget.open(fileName);
+    },
+  });
 }
