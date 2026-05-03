@@ -5,7 +5,7 @@ import * as vt from "@libs/vt";
 import * as alert from "@plugins/alert";
 import * as ask from "@plugins/ask";
 import * as askFileName from "@plugins/ask-file-name";
-import { DebugPlugin } from "@plugins/debug";
+import * as debug from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
 import { FilesPlugin } from "@plugins/files";
 import { FooterPlugin } from "@plugins/footer";
@@ -84,7 +84,7 @@ host.onIntercept("command", async ({ cmd }) => {
 alert.register(host);
 ask.register(host);
 askFileName.register(host);
-new DebugPlugin(host);
+debug.register(host);
 new HeaderPlugin(host);
 new FooterPlugin(host);
 new PalettePlugin(host);
