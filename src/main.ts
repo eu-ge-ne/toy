@@ -5,13 +5,13 @@ import * as vt from "@libs/vt";
 import * as alert from "@plugins/alert";
 import * as ask from "@plugins/ask";
 import * as askFileName from "@plugins/ask-file-name";
-import * as commands from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
 import { EditorPlugin } from "@plugins/editor";
 import { FilesPlugin } from "@plugins/files";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
+import * as shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -69,18 +69,28 @@ host.onReact("render.after", () => {
   host.debugRender(performance.now() - renderStarted);
 });
 
+host.onIntercept("command", async ({ cmd }) => {
+  switch (cmd.name) {
+    case "Exit":
+      await host.stop();
+      return;
+
+    case "Save":
+      await host.files.save();
+      return;
+  }
+});
+
 alert.register(host);
 ask.register(host);
 askFileName.register(host);
-commands.register(host);
-
 new DebugPlugin(host);
 new HeaderPlugin(host);
 new FooterPlugin(host);
 new PalettePlugin(host);
-
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
+shortcuts.register(host);
 
 host.start();
 host.resize();

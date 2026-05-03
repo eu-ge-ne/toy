@@ -13,16 +13,4 @@ export function register(host: plugins.Host): void {
 
     await host.command({ name } as commands.Command);
   }, -1000);
-
-  host.onIntercept("command", async ({ cmd }) => {
-    switch (cmd.name) {
-      case "Exit":
-        await host.stop();
-        return;
-
-      case "Save":
-        await host.files.save();
-        return;
-    }
-  });
 }
