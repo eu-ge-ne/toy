@@ -1,67 +1,55 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { DebugWidget } from "./widget.ts";
 
-export class DebugPlugin extends plugins.Plugin {
-  #zen = true;
-
-  readonly #widget = new DebugWidget({
+export function register(host: plugins.Host): void {
+  const widget = new DebugWidget({
     disabled: true,
     version: "",
     renderElapsed: 0,
     inputElapsed: 0,
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
+  let zen = true;
 
-    host.onSync("resize", this.onResize);
-    host.onSync("render", () => this.#widget.render(), 1000);
-    host.onSync("debug.version", this.onDebugVersion);
-    host.onSync("debug.render", this.onDebugRender);
-    host.onSync("debug.input", this.onDebugInput);
-  }
-
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
     const h = std.clamp(10, 0, rows);
-    const y = this.#zen ? rows - h : rows - 1 - h;
+    const y = zen ? rows - h : rows - 1 - h;
     const x = columns - w;
 
-    this.#widget.resize(w, h, y, x);
-  };
+    widget.resize(w, h, y, x);
+  });
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  host.onReact("render", () => widget.render(), 1000);
+
+  host.onReact("debug.version", (version) => widget.props.version = version);
+
+  host.onReact(
+    "debug.render",
+    (elapsed) => widget.props.renderElapsed = elapsed,
+  );
+
+  host.onReact("debug.input", (elapsed) => widget.props.inputElapsed = elapsed);
+
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        this.#zen = !this.#zen;
-        this.host.resize();
+        zen = !zen;
+        host.resize();
         return;
 
       case "Debug":
-        this.#widget.props.disabled = !this.#widget.props.disabled;
+        widget.props.disabled = !widget.props.disabled;
         return;
 
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  }
-
-  onDebugVersion = (version: string) => {
-    this.#widget.props.version = version;
-  };
-
-  onDebugRender = (elapsed: number) => {
-    this.#widget.props.renderElapsed = elapsed;
-  };
-
-  onDebugInput = (elapsed: number) => {
-    this.#widget.props.inputElapsed = elapsed;
-  };
+  });
 }

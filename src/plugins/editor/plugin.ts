@@ -1,131 +1,112 @@
-import * as commands from "@libs/commands";
-import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-export class EditorPlugin extends plugins.Plugin {
-  #zen = true;
-
-  readonly #widget = new EditorWidget({
+export function register(host: plugins.Host): void {
+  const widget = new EditorWidget({
     multiLine: true,
     onTextChange: () => {
-      this.host.statusDocModified(
-        this.#widget.modified,
-        this.#widget.lineCount,
+      host.statusDocModified(
+        widget.modified,
+        widget.lineCount,
       );
     },
-    onCursorChange: (x) => this.host.statusDocCursor(x.ln, x.col),
-    onKeyHandle: (x) => this.host.debugInput(x),
+    onCursorChange: (x) => host.statusDocCursor(x.ln, x.col),
+    onKeyHandle: (x) => host.debugInput(x),
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
+  let zen = true;
 
-    host.on("start", this.onStart);
-    host.on("stop", this.onStop);
-    host.onSync("resize", this.onResize);
-    host.onSync("render", this.onRender);
-  }
+  host.onIntercept("start", async () => {
+    widget.setFocused(true);
 
-  onStart = async () => {
-    this.#widget.setFocused(true);
+    widget.resetChanges();
+    widget.resetCursor();
+  });
 
-    this.#widget.resetChanges();
-    this.#widget.resetCursor();
-  };
-
-  onStop = async (e?: PromiseRejectionEvent) => {
+  host.onIntercept("stop", async ({ e }) => {
     if (e) {
       return;
     }
 
-    if (this.#widget.modified) {
-      if (await this.host.ask.open("Save changes?")) {
-        await this.host.files.save();
+    if (widget.modified) {
+      if (await host.ask.open("Save changes?")) {
+        await host.files.save();
       }
     }
-  };
+  });
 
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
-    if (this.#zen) {
-      this.#widget.resize(columns, rows, 0, 0);
+    if (zen) {
+      widget.resize(columns, rows, 0, 0);
     } else {
-      this.#widget.resize(columns, rows - 2, 1, 0);
+      widget.resize(columns, rows - 2, 1, 0);
     }
-  };
+  });
 
-  onRender = () => {
-    this.#widget.render();
-  };
+  host.onReact("render", () => widget.render());
 
-  override async onKey(key: kitty.Key): Promise<boolean> {
-    if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
-      return false;
-    }
+  host.onIntercept("key.press", async ({ key }) => widget.onKey(key));
 
-    return this.#widget.onKey(key);
-  }
-
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        this.#widget.toggleIndex();
-        this.#zen = !this.#zen;
-        this.host.resize();
+        widget.toggleIndex();
+        zen = !zen;
+        host.resize();
         return;
 
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
 
       case "Whitespace":
-        this.#widget.toggleWhitespace();
+        widget.toggleWhitespace();
         return;
 
       case "Wrap":
-        this.#widget.toggleWrapped();
+        widget.toggleWrapped();
         return;
 
       case "Copy":
-        this.#widget.copy();
+        widget.copy();
         return;
 
       case "Cut":
-        this.#widget.cut();
+        widget.cut();
         return;
 
       case "Paste":
-        this.#widget.paste();
+        widget.paste();
         return;
 
       case "Undo":
-        this.#widget.undo();
+        widget.undo();
         return;
 
       case "Redo":
-        this.#widget.redo();
+        widget.redo();
         return;
 
       case "SelectAll":
-        this.#widget.selectAll();
+        widget.selectAll();
         return;
     }
-  }
+  });
 
-  reset(): void {
-    this.#widget.resetChanges();
-    this.#widget.resetCursor();
-  }
-
-  write(chunk: string): void {
-    this.#widget.append(chunk);
-  }
-
-  read(): Iterable<string> {
-    return this.#widget.read();
-  }
+  host.registerDoc({
+    reset(): void {
+      widget.resetChanges();
+      widget.resetCursor();
+    },
+    write(chunk: string): void {
+      widget.append(chunk);
+    },
+    read(): Iterable<string> {
+      return widget.read();
+    },
+  });
 }

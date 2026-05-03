@@ -1,20 +1,13 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskWidget } from "./widget.ts";
 
-export class AskPlugin extends plugins.Plugin {
-  readonly #widget = new AskWidget();
+export function register(host: plugins.Host): void {
+  const widget = new AskWidget();
 
-  constructor(host: plugins.Host) {
-    super(host);
-
-    host.onSync("resize", this.onResize);
-  }
-
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(60, 0, columns);
@@ -22,18 +15,20 @@ export class AskPlugin extends plugins.Plugin {
     const y = Math.trunc((rows - h) / 2);
     const x = Math.trunc((columns - w) / 2);
 
-    this.#widget.resize(w, h, y, x);
-  };
+    widget.resize(w, h, y, x);
+  });
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  }
+  });
 
-  async open(message: string): Promise<boolean> {
-    return await this.#widget.open(message);
-  }
+  host.registerAsk({
+    async open(message: string): Promise<boolean> {
+      return await widget.open(message);
+    },
+  });
 }

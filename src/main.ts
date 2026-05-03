@@ -2,16 +2,16 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
-import { AlertPlugin } from "@plugins/alert";
-import { AskPlugin } from "@plugins/ask";
-import { AskFileNamePlugin } from "@plugins/ask-file-name";
-import { CommandsPlugin } from "@plugins/commands";
-import { DebugPlugin } from "@plugins/debug";
-import { EditorPlugin } from "@plugins/editor";
-import { FilesPlugin } from "@plugins/files";
-import { FooterPlugin } from "@plugins/footer";
-import { HeaderPlugin } from "@plugins/header";
-import { PalettePlugin } from "@plugins/palette";
+import * as alert from "@plugins/alert";
+import * as ask from "@plugins/ask";
+import * as askFileName from "@plugins/ask-file-name";
+import * as debug from "@plugins/debug";
+import * as editor from "@plugins/editor";
+import * as files from "@plugins/files";
+import * as footer from "@plugins/footer";
+import * as header from "@plugins/header";
+import * as palette from "@plugins/palette";
+import * as shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -31,7 +31,7 @@ if (args.version) {
 
 const host = new plugins.Host();
 
-host.on("start", async () => {
+host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
   vt.init();
@@ -42,7 +42,7 @@ host.on("start", async () => {
   });
 });
 
-host.on("stop.after", (e) => {
+host.onIntercept("stop.after", ({ e }) => {
   vt.restore();
 
   if (e) {
@@ -54,14 +54,14 @@ host.on("stop.after", (e) => {
 
 let renderStarted = 0;
 
-host.onSync("render.before", () => {
+host.onReact("render.before", () => {
   renderStarted = performance.now();
 
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 });
 
-host.onSync("render.after", () => {
+host.onReact("render.after", () => {
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
   vt.sync.esu();
@@ -69,25 +69,34 @@ host.onSync("render.after", () => {
   host.debugRender(performance.now() - renderStarted);
 });
 
-host.register(
-  new CommandsPlugin(host),
-  new DebugPlugin(host),
-  new HeaderPlugin(host),
-  new FooterPlugin(host),
-  new PalettePlugin(host),
-);
+host.onIntercept("command", async ({ cmd }) => {
+  switch (cmd.name) {
+    case "Exit":
+      await host.stop();
+      return;
 
-host.registerAlert(new AlertPlugin(host));
-host.registerAsk(new AskPlugin(host));
-host.registerAskFileName(new AskFileNamePlugin(host));
-host.registerFiles(new FilesPlugin(host));
-host.registerDoc(new EditorPlugin(host));
+    case "Save":
+      await host.files.save();
+      return;
+  }
+});
+
+alert.register(host);
+ask.register(host);
+askFileName.register(host);
+debug.register(host);
+editor.register(host);
+files.register(host);
+footer.register(host);
+header.register(host);
+palette.register(host);
+shortcuts.register(host);
 
 host.start();
 host.resize();
 host.debugVersion(version);
 
-await host.emitCommand({ name: "Theme", data: "Default" });
+await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
@@ -98,5 +107,5 @@ while (true) {
 
   const key = await vt.readKey();
 
-  await host.emitKey(key);
+  await host.keyPress(key);
 }

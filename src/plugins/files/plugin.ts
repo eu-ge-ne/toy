@@ -1,68 +1,68 @@
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
-export class FilesPlugin extends plugins.Plugin {
-  #fileName?: string;
+export function register(host: plugins.Host): void {
+  let fileName: string | undefined;
 
-  async open(fileName: string): Promise<void> {
-    try {
-      for await (const chunk of files.load(fileName)) {
-        this.host.doc.write(chunk);
+  host.registerFiles({
+    async open(newFileName: string): Promise<void> {
+      try {
+        for await (const chunk of files.load(newFileName)) {
+          host.doc.write(chunk);
+        }
+
+        host.doc.reset();
+
+        host.statusDocName(newFileName);
+
+        fileName = newFileName;
+      } catch (err) {
+        if (!(err instanceof Deno.errors.NotFound)) {
+          const message = Error.isError(err) ? err.message : Deno.inspect(err);
+          await host.alert.open(message);
+
+          await host.stop();
+        }
       }
+    },
 
-      this.host.doc.reset();
-
-      this.host.statusDocName(fileName);
-
-      this.#fileName = fileName;
-    } catch (err) {
-      if (!(err instanceof Deno.errors.NotFound)) {
-        const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.alert.open(message);
-
-        await this.host.stop();
-      }
-    }
-  }
-
-  async save(): Promise<void> {
-    if (!this.#fileName) {
-      await this.host.files.saveAs();
-      return;
-    }
-
-    try {
-      await files.save(this.#fileName, this.host.doc.read());
-
-      this.host.doc.reset();
-    } catch (err) {
-      const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await this.host.alert.open(message);
-
-      await this.host.files.saveAs();
-    }
-  }
-
-  async saveAs(): Promise<void> {
-    while (true) {
-      const newFileName = await this.host.askFileName.open(
-        this.#fileName ?? "",
-      );
-      if (!newFileName) {
+    async save(): Promise<void> {
+      if (!fileName) {
+        await host.files.saveAs();
         return;
       }
 
       try {
-        await files.save(newFileName, this.host.doc.read());
+        await files.save(fileName, host.doc.read());
 
-        this.#fileName = newFileName;
-        this.host.statusDocName(newFileName);
-
-        this.host.doc.reset();
+        host.doc.reset();
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.host.alert.open(message);
+        await host.alert.open(message);
+
+        await host.files.saveAs();
       }
-    }
-  }
+    },
+
+    async saveAs(): Promise<void> {
+      while (true) {
+        const newFileName = await host.askFileName.open(fileName ?? "");
+        if (!newFileName) {
+          return;
+        }
+
+        try {
+          await files.save(newFileName, host.doc.read());
+
+          fileName = newFileName;
+          host.statusDocName(newFileName);
+
+          host.doc.reset();
+        } catch (err) {
+          const message = Error.isError(err) ? err.message : Deno.inspect(err);
+          await host.alert.open(message);
+        }
+      }
+    },
+  });
 }

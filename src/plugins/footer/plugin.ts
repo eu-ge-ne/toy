@@ -1,59 +1,51 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { FooterWidget } from "./widget.ts";
 
-export class FooterPlugin extends plugins.Plugin {
-  #disabled = true;
-
-  readonly #widget = new FooterWidget({
+export function register(host: plugins.Host): void {
+  const widget = new FooterWidget({
     ln: 0,
     col: 0,
     lineCount: 0,
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
+  let disabled = true;
 
-    host.onSync("resize", this.onResize);
-    host.onSync("render", this.onRender);
-    host.onSync("status.doc.cursor", this.onStatusDocCursor);
-    host.onSync("status.doc.modified", this.onStatusDocModified);
-  }
-
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
-    this.#widget.resize(columns, 1, rows - 1, 0);
-  };
+    widget.resize(columns, 1, rows - 1, 0);
+  });
 
-  onRender = () => {
-    if (this.#disabled) {
+  host.onReact("render", () => {
+    if (disabled) {
       return;
     }
-    this.#widget.render();
-  };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+    widget.render();
+  });
+
+  host.onReact("status.doc.cursor", ({ ln, col }) => {
+    widget.props.ln = ln;
+    widget.props.col = col;
+  });
+
+  host.onReact(
+    "status.doc.modified",
+    ({ lineCount }) => widget.props.lineCount = lineCount,
+  );
+
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        this.#disabled = !this.#disabled;
-        this.host.resize();
+        disabled = !disabled;
+        host.resize();
         return;
 
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  }
-
-  onStatusDocCursor = (ln: number, col: number) => {
-    this.#widget.props.ln = ln;
-    this.#widget.props.col = col;
-  };
-
-  onStatusDocModified = (_: boolean, lineCount: number) => {
-    this.#widget.props.lineCount = lineCount;
-  };
+  });
 }

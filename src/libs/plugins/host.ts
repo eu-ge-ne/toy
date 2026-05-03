@@ -2,8 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { Events, SyncEvents } from "./events.ts";
-import { Plugin } from "./plugin.ts";
+import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
 export interface Alert {
   open(_: string): Promise<void>;
@@ -29,10 +28,8 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host extends events.Listener<Events, SyncEvents> {
-  readonly #emitter: events.Emitter<Events, SyncEvents>;
-
-  readonly plugins: Plugin[] = [];
+export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
+  readonly #emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
   alert!: Alert;
   ask!: Ask;
@@ -41,99 +38,85 @@ export class Host extends events.Listener<Events, SyncEvents> {
   doc!: Doc;
 
   constructor() {
-    const clients: events.Clients<Events> = {};
-    const syncClients: events.Clients<SyncEvents> = {};
-    super(clients, syncClients);
+    const interceptors: events.Interceptors<InterceptorEvents> = {};
+    const reactors: events.Reactors<ReactorEvents> = {};
 
-    this.#emitter = new events.Emitter<Events, SyncEvents>(
-      clients,
-      syncClients,
+    super(interceptors, reactors);
+
+    this.#emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
+      interceptors,
+      reactors,
     );
   }
 
-  register(...plugins: Plugin[]): void {
-    this.plugins.push(...plugins);
-  }
-
-  registerAlert(plugin: Plugin & Alert): void {
+  registerAlert(plugin: Alert): void {
     this.alert = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerAsk(plugin: Plugin & Ask): void {
+  registerAsk(plugin: Ask): void {
     this.ask = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerAskFileName(plugin: Plugin & AskFileName): void {
+  registerAskFileName(plugin: AskFileName): void {
     this.askFileName = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerFiles(plugin: Plugin & Files): void {
+  registerFiles(plugin: Files): void {
     this.files = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerDoc(plugin: Plugin & Doc): void {
+  registerDoc(plugin: Doc): void {
     this.doc = plugin;
-    this.plugins.push(plugin);
-  }
-
-  async emitKey(key: kitty.Key): Promise<void> {
-    for (const x of this.plugins) {
-      if (await x.onKey?.(key)) {
-        return;
-      }
-    }
-  }
-
-  async emitCommand(cmd: commands.Command): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onCommand?.(cmd);
-    }
   }
 
   async start(): Promise<void> {
-    await this.#emitter.emit("start");
+    await this.#emitter.intercept("start", {});
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.emit("stop", e);
-    await this.#emitter.emit("stop.after", e);
+    await this.#emitter.intercept("stop", { e });
+    await this.#emitter.intercept("stop.after", { e });
+  }
+
+  async keyPress(key: kitty.Key): Promise<void> {
+    await this.#emitter.intercept("key.press", { key });
+  }
+
+  async command(cmd: commands.Command): Promise<void> {
+    await this.#emitter.intercept("command", { cmd });
   }
 
   resize(): void {
-    this.#emitter.emitSync("resize");
+    this.#emitter.react("resize");
   }
 
   render(): void {
-    this.#emitter.emitSync("render.before");
-    this.#emitter.emitSync("render");
-    this.#emitter.emitSync("render.after");
+    this.#emitter.react("render.before");
+    this.#emitter.react("render");
+    this.#emitter.react("render.after");
   }
 
   debugVersion(version: string): void {
-    this.#emitter.emitSync("debug.version", version);
+    this.#emitter.react("debug.version", version);
   }
 
   debugRender(elapsed: number): void {
-    this.#emitter.emitSync("debug.render", elapsed);
+    this.#emitter.react("debug.render", elapsed);
   }
 
   debugInput(elapsed: number): void {
-    this.#emitter.emitSync("debug.input", elapsed);
+    this.#emitter.react("debug.input", elapsed);
   }
 
   statusDocName(name: string): void {
-    this.#emitter.emitSync("status.doc.name", name);
+    this.#emitter.react("status.doc.name", name);
   }
 
   statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.emitSync("status.doc.modified", modified, lineCount);
+    this.#emitter.react("status.doc.modified", { modified, lineCount });
   }
 
   statusDocCursor(ln: number, col: number): void {
-    this.#emitter.emitSync("status.doc.cursor", ln, col);
+    this.#emitter.react("status.doc.cursor", { ln, col });
   }
 }

@@ -1,59 +1,52 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { PaletteWidget } from "./widget.ts";
 
-export class PalettePlugin extends plugins.Plugin {
-  #zen = true;
-
-  readonly #widget = new PaletteWidget({
+export function register(host: plugins.Host): void {
+  const widget = new PaletteWidget({
     onRender: () => {
-      this.host.resize();
-      this.host.render();
+      host.resize();
+      host.render();
     },
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
+  let zen = true;
 
-    host.onSync("resize", this.onResize);
-  }
-
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
-    if (this.#zen) {
-      this.#widget.resize(columns, rows, 0, 0);
+    if (zen) {
+      widget.resize(columns, rows, 0, 0);
     } else {
-      this.#widget.resize(columns, rows - 2, 1, 0);
+      widget.resize(columns, rows - 2, 1, 0);
     }
-  };
+  });
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        this.#zen = !this.#zen;
-        this.host.resize();
+        zen = !zen;
+        host.resize();
         return;
 
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
 
       case "Palette":
-        await this.#run();
+        await run();
         return;
     }
-  }
+  });
 
-  async #run(): Promise<void> {
-    const cmd = await this.#widget.open();
+  async function run(): Promise<void> {
+    const cmd = await widget.open();
 
-    this.host.render();
+    host.render();
 
     if (cmd) {
-      await this.host.emitCommand(cmd);
+      await host.command(cmd);
     }
   }
 }
