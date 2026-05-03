@@ -10,7 +10,7 @@ import * as editor from "@plugins/editor";
 import * as files from "@plugins/files";
 import * as footer from "@plugins/footer";
 import * as header from "@plugins/header";
-import { PalettePlugin } from "@plugins/palette";
+import * as palette from "@plugins/palette";
 import * as shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
@@ -89,7 +89,7 @@ editor.register(host);
 files.register(host);
 footer.register(host);
 header.register(host);
-new PalettePlugin(host);
+palette.register(host);
 shortcuts.register(host);
 
 host.start();
