@@ -1,4 +1,5 @@
 import { InterceptorData } from "@libs/events";
+import * as kitty from "@libs/kitty";
 
 export type InterceptorEvents = {
   "start": (_: InterceptorData) => Promise<void>;
@@ -8,6 +9,7 @@ export type InterceptorEvents = {
   "stop.after": (
     _: InterceptorData<{ e?: PromiseRejectionEvent }>,
   ) => Promise<void>;
+  "key.press": (_: InterceptorData<{ key: kitty.Key }>) => Promise<void>;
 };
 
 export type ReactorEvents = {

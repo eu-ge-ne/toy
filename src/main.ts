@@ -98,5 +98,5 @@ while (true) {
 
   const key = await vt.readKey();
 
-  await host.emitKey(key);
+  await host.keyPress(key);
 }

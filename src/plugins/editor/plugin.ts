@@ -26,7 +26,8 @@ export class EditorPlugin extends plugins.Plugin {
     host.onIntercept("start", this.onStart);
     host.onIntercept("stop", this.onStop);
     host.onReact("resize", this.onResize);
-    host.onReact("render", this.onRender);
+    host.onReact("render", () => this.#widget.render());
+    host.onIntercept("key.press", this.onKey);
   }
 
   onStart = async () => {
@@ -58,17 +59,9 @@ export class EditorPlugin extends plugins.Plugin {
     }
   };
 
-  onRender = () => {
-    this.#widget.render();
+  onKey = async ({ key }: { key: kitty.Key }) => {
+    this.#widget.onKey(key);
   };
-
-  override async onKey(key: kitty.Key): Promise<boolean> {
-    if (commands.ShortcutToCommand[kitty.shortcut(key)]) {
-      return false;
-    }
-
-    return this.#widget.onKey(key);
-  }
 
   override async onCommand(cmd: commands.Command): Promise<void> {
     switch (cmd.name) {
