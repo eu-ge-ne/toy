@@ -1,4 +1,4 @@
 {
   "name": "@libs/events",
-  "exports": "./events.ts"
+  "exports": "./index.ts"
 }
