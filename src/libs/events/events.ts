@@ -5,17 +5,18 @@ type EventMap = {
   [_: string]: (...args: AnyArgs) => void | Promise<void>;
 };
 
-export type Clients<A extends EventMap> = {
-  [E in keyof A]?: {
-    fn: A[E];
-    order: number;
-  }[];
+export type AsyncClients<A extends EventMap> = {
+  [E in keyof A]?: { fn: A[E]; order: number }[];
+};
+
+export type SyncClients<A extends EventMap> = {
+  [E in keyof A]?: { fn: A[E]; order: number }[];
 };
 
 export class Emitter<A extends EventMap, B extends EventMap> {
   constructor(
-    private readonly asyncClients: Clients<A>,
-    private readonly syncClients: Clients<B>,
+    private readonly asyncClients: AsyncClients<A>,
+    private readonly syncClients: SyncClients<B>,
   ) {
   }
 
@@ -40,8 +41,8 @@ export class Emitter<A extends EventMap, B extends EventMap> {
 
 export class Listener<A extends EventMap, B extends EventMap> {
   constructor(
-    private readonly asyncClients: Clients<A>,
-    private readonly syncClients: Clients<B>,
+    private readonly asyncClients: AsyncClients<A>,
+    private readonly syncClients: SyncClients<B>,
   ) {
   }
 

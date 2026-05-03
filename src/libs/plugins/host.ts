@@ -41,8 +41,8 @@ export class Host extends events.Listener<Events, SyncEvents> {
   doc!: Doc;
 
   constructor() {
-    const clients: events.Clients<Events> = {};
-    const syncClients: events.Clients<SyncEvents> = {};
+    const clients: events.SyncClients<Events> = {};
+    const syncClients: events.SyncClients<SyncEvents> = {};
     super(clients, syncClients);
 
     this.#emitter = new events.Emitter<Events, SyncEvents>(
