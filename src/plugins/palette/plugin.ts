@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { PaletteWidget } from "./widget.ts";
 
-export class PalettePlugin extends plugins.Plugin {
+export class PalettePlugin {
   #zen = true;
 
   readonly #widget = new PaletteWidget({
@@ -14,9 +14,7 @@ export class PalettePlugin extends plugins.Plugin {
     },
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
-
+  constructor(private readonly host: plugins.Host) {
     host.onReact("resize", this.onResize);
     host.onIntercept("command", this.onCommand);
   }

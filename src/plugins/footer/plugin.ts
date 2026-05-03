@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { FooterWidget } from "./widget.ts";
 
-export class FooterPlugin extends plugins.Plugin {
+export class FooterPlugin {
   #disabled = true;
 
   readonly #widget = new FooterWidget({
@@ -13,9 +13,7 @@ export class FooterPlugin extends plugins.Plugin {
     lineCount: 0,
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
-
+  constructor(private readonly host: plugins.Host) {
     host.onReact("resize", this.onResize);
     host.onReact("render", this.onRender);
     host.onReact("status.doc.cursor", this.onStatusDocCursor);

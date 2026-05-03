@@ -5,12 +5,10 @@ import * as themes from "@libs/themes";
 
 import { AskWidget } from "./widget.ts";
 
-export class AskPlugin extends plugins.Plugin {
+export class AskPlugin {
   readonly #widget = new AskWidget();
 
   constructor(host: plugins.Host) {
-    super(host);
-
     host.onReact("resize", this.onResize);
     host.onIntercept("command", this.onCommand);
   }

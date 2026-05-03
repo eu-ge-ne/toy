@@ -5,12 +5,10 @@ import * as themes from "@libs/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export class AlertPlugin extends plugins.Plugin {
+export class AlertPlugin {
   readonly #widget = new AlertWidget();
 
   constructor(host: plugins.Host) {
-    super(host);
-
     host.onReact("resize", this.onResize);
     host.onIntercept("command", this.onCommand);
   }

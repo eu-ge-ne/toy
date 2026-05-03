@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-export class EditorPlugin extends plugins.Plugin {
+export class EditorPlugin {
   #zen = true;
 
   readonly #widget = new EditorWidget({
@@ -20,9 +20,7 @@ export class EditorPlugin extends plugins.Plugin {
     onKeyHandle: (x) => this.host.debugInput(x),
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
-
+  constructor(private readonly host: plugins.Host) {
     host.onIntercept("start", this.onStart);
     host.onIntercept("stop", this.onStop);
     host.onReact("resize", this.onResize);

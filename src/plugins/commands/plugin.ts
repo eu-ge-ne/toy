@@ -2,10 +2,8 @@ import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-export class CommandsPlugin extends plugins.Plugin {
-  constructor(host: plugins.Host) {
-    super(host);
-
+export class CommandsPlugin {
+  constructor(private readonly host: plugins.Host) {
     host.onIntercept("key.press", this.onKey, -1000);
     host.onIntercept("command", this.onCommand);
   }

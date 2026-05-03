@@ -3,7 +3,6 @@ import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
-import { Plugin } from "./plugin.ts";
 
 export interface Alert {
   open(_: string): Promise<void>;
@@ -32,8 +31,6 @@ export interface Doc {
 export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
   readonly #emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
-  readonly plugins: Plugin[] = [];
-
   alert!: Alert;
   ask!: Ask;
   askFileName!: AskFileName;
@@ -52,33 +49,24 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     );
   }
 
-  register(...plugins: Plugin[]): void {
-    this.plugins.push(...plugins);
-  }
-
-  registerAlert(plugin: Plugin & Alert): void {
+  registerAlert(plugin: Alert): void {
     this.alert = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerAsk(plugin: Plugin & Ask): void {
+  registerAsk(plugin: Ask): void {
     this.ask = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerAskFileName(plugin: Plugin & AskFileName): void {
+  registerAskFileName(plugin: AskFileName): void {
     this.askFileName = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerFiles(plugin: Plugin & Files): void {
+  registerFiles(plugin: Files): void {
     this.files = plugin;
-    this.plugins.push(plugin);
   }
 
-  registerDoc(plugin: Plugin & Doc): void {
+  registerDoc(plugin: Doc): void {
     this.doc = plugin;
-    this.plugins.push(plugin);
   }
 
   async start(): Promise<void> {

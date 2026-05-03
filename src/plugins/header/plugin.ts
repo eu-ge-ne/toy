@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export class HeaderPlugin extends plugins.Plugin {
+export class HeaderPlugin {
   #disabled = true;
 
   readonly #widget = new HeaderWidget({
@@ -12,9 +12,7 @@ export class HeaderPlugin extends plugins.Plugin {
     modified: false,
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
-
+  constructor(private readonly host: plugins.Host) {
     host.onReact("resize", this.onResize);
     host.onReact("render", this.onRender);
     host.onReact("status.doc.name", this.onStatusDocName);

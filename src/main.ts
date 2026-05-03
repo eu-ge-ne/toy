@@ -69,13 +69,11 @@ host.onReact("render.after", () => {
   host.debugRender(performance.now() - renderStarted);
 });
 
-host.register(
-  new CommandsPlugin(host),
-  new DebugPlugin(host),
-  new HeaderPlugin(host),
-  new FooterPlugin(host),
-  new PalettePlugin(host),
-);
+new CommandsPlugin(host);
+new DebugPlugin(host);
+new HeaderPlugin(host);
+new FooterPlugin(host);
+new PalettePlugin(host);
 
 host.registerAlert(new AlertPlugin(host));
 host.registerAsk(new AskPlugin(host));

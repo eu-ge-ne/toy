@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 
 import { DebugWidget } from "./widget.ts";
 
-export class DebugPlugin extends plugins.Plugin {
+export class DebugPlugin {
   #zen = true;
 
   readonly #widget = new DebugWidget({
@@ -15,9 +15,7 @@ export class DebugPlugin extends plugins.Plugin {
     inputElapsed: 0,
   });
 
-  constructor(host: plugins.Host) {
-    super(host);
-
+  constructor(private readonly host: plugins.Host) {
     host.onReact("resize", this.onResize);
     host.onReact("render", () => this.#widget.render(), 1000);
     host.onReact("debug.version", this.onDebugVersion);

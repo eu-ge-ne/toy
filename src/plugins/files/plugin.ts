@@ -1,8 +1,11 @@
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
-export class FilesPlugin extends plugins.Plugin {
+export class FilesPlugin {
   #fileName?: string;
+
+  constructor(private readonly host: plugins.Host) {
+  }
 
   async open(fileName: string): Promise<void> {
     try {

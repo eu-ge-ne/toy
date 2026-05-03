@@ -5,12 +5,10 @@ import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-export class AskFileNamePlugin extends plugins.Plugin {
+export class AskFileNamePlugin {
   readonly #widget = new AskFileNameWidget();
 
   constructor(host: plugins.Host) {
-    super(host);
-
     host.onReact("resize", this.onResize);
     host.onIntercept("command", this.onCommand);
   }
