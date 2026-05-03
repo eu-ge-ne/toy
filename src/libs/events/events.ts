@@ -1,16 +1,18 @@
-type Events = {
-  // deno-lint-ignore no-explicit-any
-  [_: string]: (..._: any[]) => any;
+// deno-lint-ignore no-explicit-any
+type AnyArgs = any[];
+
+type EventMap = {
+  [_: string]: (...args: AnyArgs) => void | Promise<void>;
 };
 
-export type Clients<A extends Events> = {
+export type Clients<A extends EventMap> = {
   [E in keyof A]?: {
     fn: A[E];
     order: number;
   }[];
 };
 
-export class Emitter<A extends Events, B extends Events> {
+export class Emitter<A extends EventMap, B extends EventMap> {
   constructor(
     private readonly clients: Clients<A>,
     private readonly syncClients: Clients<B>,
@@ -36,7 +38,7 @@ export class Emitter<A extends Events, B extends Events> {
   }
 }
 
-export class Listener<A extends Events, B extends Events> {
+export class Listener<A extends EventMap, B extends EventMap> {
   constructor(
     private readonly clients: Clients<A>,
     private readonly syncClients: Clients<B>,
