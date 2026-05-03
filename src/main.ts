@@ -2,8 +2,8 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
-import { AlertPlugin } from "@plugins/alert";
-import { AskPlugin } from "@plugins/ask";
+import * as alert from "@plugins/alert";
+import * as ask from "@plugins/ask";
 import { AskFileNamePlugin } from "@plugins/ask-file-name";
 import { CommandsPlugin } from "@plugins/commands";
 import { DebugPlugin } from "@plugins/debug";
@@ -69,14 +69,15 @@ host.onReact("render.after", () => {
   host.debugRender(performance.now() - renderStarted);
 });
 
+alert.register(host);
+ask.register(host);
+
 new CommandsPlugin(host);
 new DebugPlugin(host);
 new HeaderPlugin(host);
 new FooterPlugin(host);
 new PalettePlugin(host);
 
-host.registerAlert(new AlertPlugin(host));
-host.registerAsk(new AskPlugin(host));
 host.registerAskFileName(new AskFileNamePlugin(host));
 host.registerFiles(new FilesPlugin(host));
 host.registerDoc(new EditorPlugin(host));
