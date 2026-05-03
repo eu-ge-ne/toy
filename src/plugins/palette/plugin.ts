@@ -18,6 +18,7 @@ export class PalettePlugin extends plugins.Plugin {
     super(host);
 
     host.onReact("resize", this.onResize);
+    host.onIntercept("command", this.onCommand);
   }
 
   onResize = () => {
@@ -30,7 +31,7 @@ export class PalettePlugin extends plugins.Plugin {
     }
   };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
@@ -45,7 +46,7 @@ export class PalettePlugin extends plugins.Plugin {
         await this.#run();
         return;
     }
-  }
+  };
 
   async #run(): Promise<void> {
     const cmd = await this.#widget.open();
@@ -53,7 +54,7 @@ export class PalettePlugin extends plugins.Plugin {
     this.host.render();
 
     if (cmd) {
-      await this.host.emitCommand(cmd);
+      await this.host.command(cmd);
     }
   }
 }

@@ -81,12 +81,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.plugins.push(plugin);
   }
 
-  async emitCommand(cmd: commands.Command): Promise<void> {
-    for (const x of this.plugins) {
-      await x.onCommand?.(cmd);
-    }
-  }
-
   async start(): Promise<void> {
     await this.#emitter.intercept("start", {});
   }
@@ -98,6 +92,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   async keyPress(key: kitty.Key): Promise<void> {
     await this.#emitter.intercept("key.press", { key });
+  }
+
+  async command(cmd: commands.Command): Promise<void> {
+    await this.#emitter.intercept("command", { cmd });
   }
 
   resize(): void {

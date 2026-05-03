@@ -23,6 +23,7 @@ export class DebugPlugin extends plugins.Plugin {
     host.onReact("debug.version", this.onDebugVersion);
     host.onReact("debug.render", this.onDebugRender);
     host.onReact("debug.input", this.onDebugInput);
+    host.onIntercept("command", this.onCommand);
   }
 
   onResize = () => {
@@ -36,7 +37,7 @@ export class DebugPlugin extends plugins.Plugin {
     this.#widget.resize(w, h, y, x);
   };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
     switch (cmd.name) {
       case "Zen":
         this.#zen = !this.#zen;
@@ -51,7 +52,7 @@ export class DebugPlugin extends plugins.Plugin {
         this.#widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  }
+  };
 
   onDebugVersion = (version: string) => {
     this.#widget.props.version = version;

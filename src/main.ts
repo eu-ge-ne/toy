@@ -87,7 +87,7 @@ host.start();
 host.resize();
 host.debugVersion(version);
 
-await host.emitCommand({ name: "Theme", data: "Default" });
+await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);

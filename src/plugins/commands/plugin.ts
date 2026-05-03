@@ -7,6 +7,7 @@ export class CommandsPlugin extends plugins.Plugin {
     super(host);
 
     host.onIntercept("key.press", this.onKey, -1000);
+    host.onIntercept("command", this.onCommand);
   }
 
   onKey = async (data: { cancel?: boolean; key: kitty.Key }) => {
@@ -17,10 +18,10 @@ export class CommandsPlugin extends plugins.Plugin {
 
     data.cancel = true;
 
-    await this.host.emitCommand({ name } as commands.Command);
+    await this.host.command({ name } as commands.Command);
   };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
     switch (cmd.name) {
       case "Exit":
         await this.host.stop();
@@ -30,5 +31,5 @@ export class CommandsPlugin extends plugins.Plugin {
         await this.host.files.save();
         return;
     }
-  }
+  };
 }

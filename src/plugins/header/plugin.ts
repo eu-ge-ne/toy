@@ -19,6 +19,7 @@ export class HeaderPlugin extends plugins.Plugin {
     host.onReact("render", this.onRender);
     host.onReact("status.doc.name", this.onStatusDocName);
     host.onReact("status.doc.modified", this.onStatusDocModified);
+    host.onIntercept("command", this.onCommand);
   }
 
   onResize = () => {
@@ -34,7 +35,7 @@ export class HeaderPlugin extends plugins.Plugin {
     this.#widget.render();
   };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
     switch (cmd.name) {
       case "Zen":
         this.#disabled = !this.#disabled;
@@ -45,7 +46,7 @@ export class HeaderPlugin extends plugins.Plugin {
         this.#widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  }
+  };
 
   onStatusDocName = (fileName: string) => {
     this.#widget.props.fileName = fileName;

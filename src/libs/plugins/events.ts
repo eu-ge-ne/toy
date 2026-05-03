@@ -1,3 +1,4 @@
+import * as commands from "@libs/commands";
 import { InterceptorData } from "@libs/events";
 import * as kitty from "@libs/kitty";
 
@@ -10,6 +11,7 @@ export type InterceptorEvents = {
     _: InterceptorData<{ e?: PromiseRejectionEvent }>,
   ) => Promise<void>;
   "key.press": (_: InterceptorData<{ key: kitty.Key }>) => Promise<void>;
+  "command": (_: InterceptorData<{ cmd: commands.Command }>) => Promise<void>;
 };
 
 export type ReactorEvents = {

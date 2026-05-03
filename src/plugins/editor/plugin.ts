@@ -28,6 +28,7 @@ export class EditorPlugin extends plugins.Plugin {
     host.onReact("resize", this.onResize);
     host.onReact("render", () => this.#widget.render());
     host.onIntercept("key.press", this.onKey);
+    host.onIntercept("command", this.onCommand);
   }
 
   onStart = async () => {
@@ -63,7 +64,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.onKey(key);
   };
 
-  override async onCommand(cmd: commands.Command): Promise<void> {
+  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
     switch (cmd.name) {
       case "Zen":
         this.#widget.toggleIndex();
@@ -107,7 +108,7 @@ export class EditorPlugin extends plugins.Plugin {
         this.#widget.selectAll();
         return;
     }
-  }
+  };
 
   reset(): void {
     this.#widget.resetChanges();
