@@ -14,7 +14,7 @@ export type Clients<A extends EventMap> = {
 
 export class Emitter<A extends EventMap, B extends EventMap> {
   constructor(
-    private readonly clients: Clients<A>,
+    private readonly asyncClients: Clients<A>,
     private readonly syncClients: Clients<B>,
   ) {
   }
@@ -23,7 +23,7 @@ export class Emitter<A extends EventMap, B extends EventMap> {
     event: E,
     ...args: Parameters<A[E]>
   ): Promise<void> {
-    for (const { fn } of this.clients[event] ?? []) {
+    for (const { fn } of this.asyncClients[event] ?? []) {
       await fn(...args);
     }
   }
@@ -40,22 +40,22 @@ export class Emitter<A extends EventMap, B extends EventMap> {
 
 export class Listener<A extends EventMap, B extends EventMap> {
   constructor(
-    private readonly clients: Clients<A>,
+    private readonly asyncClients: Clients<A>,
     private readonly syncClients: Clients<B>,
   ) {
   }
 
   on<E extends keyof A>(event: E, fn: A[E], order = 0): void {
-    let clients = this.clients[event];
+    let clients = this.asyncClients[event];
     if (!clients) {
-      clients = this.clients[event] = [];
+      clients = this.asyncClients[event] = [];
     }
     clients.push({ fn, order });
     clients.sort((a, b) => a.order - b.order);
   }
 
   off<E extends keyof A>(event: E, fn: A[E]): void {
-    const clients = this.clients[event];
+    const clients = this.asyncClients[event];
     if (clients) {
       const i = clients.findIndex((x) => x.fn === fn);
       if (i >= 0) {
