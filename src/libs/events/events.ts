@@ -5,13 +5,11 @@ export type InterceptorData<T = Record<string, any>> =
   & CancellableData
   & T;
 
-type _InterceptorData =
-  & CancellableData
-  // deno-lint-ignore no-explicit-any
-  & Record<string, any>;
+// deno-lint-ignore no-explicit-any
+type _InterceptorData = any;
 
 // deno-lint-ignore no-explicit-any
-type _ReactorData<T = any[]> = T;
+type _ReactorData = any[];
 
 export type SyncInterceptorEvents = {
   [key: string]: (data: _InterceptorData) => void;

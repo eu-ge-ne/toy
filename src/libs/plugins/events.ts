@@ -1,6 +1,8 @@
 import { InterceptorData } from "@libs/events";
 
-export type SyncInterceptorEvents = Record<PropertyKey, never>;
+export type SyncInterceptorEvents = {
+  "test": (_: InterceptorData<{ test: boolean }>) => void;
+};
 
 export type AsyncInterceptorEvents = {
   "start": (_: InterceptorData) => Promise<void>;

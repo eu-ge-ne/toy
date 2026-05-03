@@ -1,6 +1,7 @@
 import { AsyncInterceptors, Reactors, SyncInterceptors } from "./clients.ts";
 import {
   AsyncInterceptorEvents,
+  InterceptorData,
   ReactorEvents,
   SyncInterceptorEvents,
 } from "./events.ts";
@@ -25,7 +26,7 @@ export class Emitter<
 
     for (const { fn } of listeners) {
       fn(data);
-      if (data.cancel) {
+      if ((data as InterceptorData).cancel) {
         return;
       }
     }
@@ -42,7 +43,7 @@ export class Emitter<
 
     for (const { fn } of listeners) {
       await fn(data);
-      if (data.cancel) {
+      if ((data as InterceptorData).cancel) {
         return;
       }
     }
