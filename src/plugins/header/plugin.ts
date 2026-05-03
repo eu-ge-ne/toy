@@ -1,56 +1,50 @@
-import * as commands from "@libs/commands";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export class HeaderPlugin {
-  #disabled = true;
-
-  readonly #widget = new HeaderWidget({
+export function register(host: plugins.Host): void {
+  const widget = new HeaderWidget({
     fileName: "",
     modified: false,
   });
 
-  constructor(private readonly host: plugins.Host) {
-    host.onReact("resize", this.onResize);
-    host.onReact("render", this.onRender);
-    host.onReact("status.doc.name", this.onStatusDocName);
-    host.onReact("status.doc.modified", this.onStatusDocModified);
-    host.onIntercept("command", this.onCommand);
-  }
+  let disabled = true;
 
-  onResize = () => {
+  host.onReact("resize", () => {
     const { columns } = Deno.consoleSize();
 
-    this.#widget.resize(columns, 1, 0, 0);
-  };
+    widget.resize(columns, 1, 0, 0);
+  });
 
-  onRender = () => {
-    if (this.#disabled) {
+  host.onReact("render", () => {
+    if (disabled) {
       return;
     }
-    this.#widget.render();
-  };
 
-  onCommand = async ({ cmd }: { cmd: commands.Command }) => {
+    widget.render();
+  });
+
+  host.onReact(
+    "status.doc.name",
+    (fileName) => widget.props.fileName = fileName,
+  );
+
+  host.onReact(
+    "status.doc.modified",
+    ({ modified }) => widget.props.modified = modified,
+  );
+
+  host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        this.#disabled = !this.#disabled;
-        this.host.resize();
+        disabled = !disabled;
+        host.resize();
         return;
 
       case "Theme":
-        this.#widget.setTheme(themes.Themes[cmd.data]);
+        widget.setTheme(themes.Themes[cmd.data]);
         return;
     }
-  };
-
-  onStatusDocName = (fileName: string) => {
-    this.#widget.props.fileName = fileName;
-  };
-
-  onStatusDocModified = ({ modified }: { modified: boolean }) => {
-    this.#widget.props.modified = modified;
-  };
+  });
 }

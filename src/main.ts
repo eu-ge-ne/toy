@@ -8,8 +8,8 @@ import * as askFileName from "@plugins/ask-file-name";
 import * as debug from "@plugins/debug";
 import * as editor from "@plugins/editor";
 import * as files from "@plugins/files";
-import { FooterPlugin } from "@plugins/footer";
-import { HeaderPlugin } from "@plugins/header";
+import * as footer from "@plugins/footer";
+import * as header from "@plugins/header";
 import { PalettePlugin } from "@plugins/palette";
 import * as shortcuts from "@plugins/shortcuts";
 
@@ -87,8 +87,8 @@ askFileName.register(host);
 debug.register(host);
 editor.register(host);
 files.register(host);
-new HeaderPlugin(host);
-new FooterPlugin(host);
+footer.register(host);
+header.register(host);
 new PalettePlugin(host);
 shortcuts.register(host);
 
