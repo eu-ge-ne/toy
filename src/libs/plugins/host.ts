@@ -2,7 +2,11 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-import { Events, SyncEvents } from "./events.ts";
+import {
+  AsyncInterceptorEvents,
+  ReactorEvents,
+  SyncInterceptorEvents,
+} from "./events.ts";
 import { Plugin } from "./plugin.ts";
 
 export interface Alert {
@@ -29,8 +33,16 @@ export interface Doc {
   read(): Iterable<string>;
 }
 
-export class Host extends events.Listener<Events, SyncEvents> {
-  readonly #emitter: events.Emitter<Events, SyncEvents>;
+export class Host extends events.Listener<
+  SyncInterceptorEvents,
+  AsyncInterceptorEvents,
+  ReactorEvents
+> {
+  readonly #emitter: events.Emitter<
+    SyncInterceptorEvents,
+    AsyncInterceptorEvents,
+    ReactorEvents
+  >;
 
   readonly plugins: Plugin[] = [];
 
@@ -41,13 +53,21 @@ export class Host extends events.Listener<Events, SyncEvents> {
   doc!: Doc;
 
   constructor() {
-    const clients: events.SyncClients<Events> = {};
-    const syncClients: events.SyncClients<SyncEvents> = {};
-    super(clients, syncClients);
+    const syncInterceptors: events.SyncInterceptors<SyncInterceptorEvents> = {};
+    const asyncInterceptors: events.AsyncInterceptors<AsyncInterceptorEvents> =
+      {};
+    const reactors: events.Reactors<ReactorEvents> = {};
 
-    this.#emitter = new events.Emitter<Events, SyncEvents>(
-      clients,
-      syncClients,
+    super(syncInterceptors, asyncInterceptors, reactors);
+
+    this.#emitter = new events.Emitter<
+      SyncInterceptorEvents,
+      AsyncInterceptorEvents,
+      ReactorEvents
+    >(
+      syncInterceptors,
+      asyncInterceptors,
+      reactors,
     );
   }
 
@@ -95,45 +115,45 @@ export class Host extends events.Listener<Events, SyncEvents> {
   }
 
   async start(): Promise<void> {
-    await this.#emitter.emit("start");
+    await this.#emitter.interceptAsync("start", {});
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.emit("stop", e);
-    await this.#emitter.emit("stop.after", e);
+    await this.#emitter.interceptAsync("stop", { e });
+    await this.#emitter.interceptAsync("stop.after", { e });
   }
 
   resize(): void {
-    this.#emitter.emitSync("resize");
+    this.#emitter.react("resize", undefined);
   }
 
   render(): void {
-    this.#emitter.emitSync("render.before");
-    this.#emitter.emitSync("render");
-    this.#emitter.emitSync("render.after");
+    this.#emitter.react("render.before", undefined);
+    this.#emitter.react("render", undefined);
+    this.#emitter.react("render.after", undefined);
   }
 
   debugVersion(version: string): void {
-    this.#emitter.emitSync("debug.version", version);
+    this.#emitter.react("debug.version", version);
   }
 
   debugRender(elapsed: number): void {
-    this.#emitter.emitSync("debug.render", elapsed);
+    this.#emitter.react("debug.render", elapsed);
   }
 
   debugInput(elapsed: number): void {
-    this.#emitter.emitSync("debug.input", elapsed);
+    this.#emitter.react("debug.input", elapsed);
   }
 
   statusDocName(name: string): void {
-    this.#emitter.emitSync("status.doc.name", name);
+    this.#emitter.react("status.doc.name", name);
   }
 
   statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.emitSync("status.doc.modified", modified, lineCount);
+    this.#emitter.react("status.doc.modified", { modified, lineCount });
   }
 
   statusDocCursor(ln: number, col: number): void {
-    this.#emitter.emitSync("status.doc.cursor", ln, col);
+    this.#emitter.react("status.doc.cursor", { ln, col });
   }
 }

@@ -15,10 +15,10 @@ export class HeaderPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.onSync("resize", this.onResize);
-    host.onSync("render", this.onRender);
-    host.onSync("status.doc.name", this.onStatusDocName);
-    host.onSync("status.doc.modified", this.onStatusDocModified);
+    host.onReact("resize", this.onResize);
+    host.onReact("render", this.onRender);
+    host.onReact("status.doc.name", this.onStatusDocName);
+    host.onReact("status.doc.modified", this.onStatusDocModified);
   }
 
   onResize = () => {
@@ -51,7 +51,7 @@ export class HeaderPlugin extends plugins.Plugin {
     this.#widget.props.fileName = fileName;
   };
 
-  onStatusDocModified = (modified: boolean) => {
+  onStatusDocModified = ({ modified }: { modified: boolean }) => {
     this.#widget.props.modified = modified;
   };
 }

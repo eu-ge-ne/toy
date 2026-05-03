@@ -23,10 +23,10 @@ export class EditorPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.on("start", this.onStart);
-    host.on("stop", this.onStop);
-    host.onSync("resize", this.onResize);
-    host.onSync("render", this.onRender);
+    host.onInterceptAsync("start", this.onStart);
+    host.onInterceptAsync("stop", this.onStop);
+    host.onReact("resize", this.onResize);
+    host.onReact("render", this.onRender);
   }
 
   onStart = async () => {
@@ -36,7 +36,7 @@ export class EditorPlugin extends plugins.Plugin {
     this.#widget.resetCursor();
   };
 
-  onStop = async (e?: PromiseRejectionEvent) => {
+  onStop = async ({ e }: { e?: PromiseRejectionEvent }) => {
     if (e) {
       return;
     }

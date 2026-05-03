@@ -18,11 +18,11 @@ export class DebugPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.onSync("resize", this.onResize);
-    host.onSync("render", () => this.#widget.render(), 1000);
-    host.onSync("debug.version", this.onDebugVersion);
-    host.onSync("debug.render", this.onDebugRender);
-    host.onSync("debug.input", this.onDebugInput);
+    host.onReact("resize", this.onResize);
+    host.onReact("render", () => this.#widget.render(), 1000);
+    host.onReact("debug.version", this.onDebugVersion);
+    host.onReact("debug.render", this.onDebugRender);
+    host.onReact("debug.input", this.onDebugInput);
   }
 
   onResize = () => {

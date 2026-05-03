@@ -11,7 +11,7 @@ export class AskFileNamePlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.onSync("resize", this.onResize);
+    host.onReact("resize", this.onResize);
   }
 
   onResize = () => {

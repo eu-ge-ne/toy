@@ -16,10 +16,10 @@ export class FooterPlugin extends plugins.Plugin {
   constructor(host: plugins.Host) {
     super(host);
 
-    host.onSync("resize", this.onResize);
-    host.onSync("render", this.onRender);
-    host.onSync("status.doc.cursor", this.onStatusDocCursor);
-    host.onSync("status.doc.modified", this.onStatusDocModified);
+    host.onReact("resize", this.onResize);
+    host.onReact("render", this.onRender);
+    host.onReact("status.doc.cursor", this.onStatusDocCursor);
+    host.onReact("status.doc.modified", this.onStatusDocModified);
   }
 
   onResize = () => {
@@ -48,12 +48,12 @@ export class FooterPlugin extends plugins.Plugin {
     }
   }
 
-  onStatusDocCursor = (ln: number, col: number) => {
+  onStatusDocCursor = ({ ln, col }: { ln: number; col: number }) => {
     this.#widget.props.ln = ln;
     this.#widget.props.col = col;
   };
 
-  onStatusDocModified = (_: boolean, lineCount: number) => {
+  onStatusDocModified = ({ lineCount }: { lineCount: number }) => {
     this.#widget.props.lineCount = lineCount;
   };
 }
