@@ -21,19 +21,19 @@ export class Emitter<A extends EventMap, B extends EventMap> {
   }
 
   async emit<E extends keyof A>(
-    event: E,
+    name: E,
     ...args: Parameters<A[E]>
   ): Promise<void> {
-    for (const { fn } of this.asyncClients[event] ?? []) {
+    for (const { fn } of this.asyncClients[name] ?? []) {
       await fn(...args);
     }
   }
 
   emitSync<E extends keyof B>(
-    event: E,
+    name: E,
     ...args: Parameters<B[E]>
   ): void {
-    for (const { fn } of this.syncClients[event] ?? []) {
+    for (const { fn } of this.syncClients[name] ?? []) {
       fn(...args);
     }
   }
@@ -46,17 +46,17 @@ export class Listener<A extends EventMap, B extends EventMap> {
   ) {
   }
 
-  on<E extends keyof A>(event: E, fn: A[E], order = 0): void {
-    let clients = this.asyncClients[event];
+  on<E extends keyof A>(name: E, fn: A[E], order = 0): void {
+    let clients = this.asyncClients[name];
     if (!clients) {
-      clients = this.asyncClients[event] = [];
+      clients = this.asyncClients[name] = [];
     }
     clients.push({ fn, order });
     clients.sort((a, b) => a.order - b.order);
   }
 
-  off<E extends keyof A>(event: E, fn: A[E]): void {
-    const clients = this.asyncClients[event];
+  off<E extends keyof A>(name: E, fn: A[E]): void {
+    const clients = this.asyncClients[name];
     if (clients) {
       const i = clients.findIndex((x) => x.fn === fn);
       if (i >= 0) {
@@ -65,17 +65,17 @@ export class Listener<A extends EventMap, B extends EventMap> {
     }
   }
 
-  onSync<E extends keyof B>(event: E, fn: B[E], order = 0): void {
-    let clients = this.syncClients[event];
+  onSync<E extends keyof B>(name: E, fn: B[E], order = 0): void {
+    let clients = this.syncClients[name];
     if (!clients) {
-      clients = this.syncClients[event] = [];
+      clients = this.syncClients[name] = [];
     }
     clients.push({ fn, order });
     clients.sort((a, b) => a.order - b.order);
   }
 
-  offSync<E extends keyof B>(event: E, fn: B[E]): void {
-    const clients = this.syncClients[event];
+  offSync<E extends keyof B>(name: E, fn: B[E]): void {
+    const clients = this.syncClients[name];
     if (clients) {
       const i = clients.findIndex((x) => x.fn === fn);
       if (i >= 0) {
