@@ -1,10 +1,9 @@
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AskWidget extends widgets.Modal<void, [string], boolean> {
+export class AskWidget extends widgets.Modal2 {
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;
@@ -31,19 +30,8 @@ export class AskWidget extends widgets.Modal<void, [string], boolean> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  protected override async openBefore(text: string): Promise<void> {
+  openBefore(text: string): void {
     this.children.text.value = text;
-  }
-
-  protected override async handleKey(key: kitty.Key): Promise<[] | [boolean]> {
-    switch (key.name) {
-      case "ESC":
-        return [false];
-      case "ENTER":
-        return [true];
-    }
-
-    return [];
   }
 
   setTheme(theme: themes.Theme): void {
