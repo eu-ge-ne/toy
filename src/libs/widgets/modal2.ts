@@ -1,9 +1,14 @@
+import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
 import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
-export abstract class Modal2<Props = void> extends Widget<Props> {
+interface Props {
+  opened: boolean;
+}
+
+export abstract class Modal2<P = {}> extends Widget<P & Props> {
   render(): void {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
@@ -18,4 +23,6 @@ export abstract class Modal2<Props = void> extends Widget<Props> {
     vt.buf.flush();
     vt.sync.esu();
   }
+
+  abstract onKeyPress(key: kitty.Key): void;
 }

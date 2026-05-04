@@ -29,38 +29,28 @@ export function register(host: plugins.Host): void {
 
   host.registerAsk({
     async open(message: string): Promise<boolean> {
-      let opened = true;
-      let result = false;
-
-      widget.openBefore(message);
+      widget.open(message);
 
       const onRender = () => widget.render();
 
       const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
         data.cancel = true;
 
-        switch (widget.handleKeyPress(data.key)) {
-          case "no":
-            host.offReact("render", onRender);
-            host.offIntercept("key.press", onKeyPress);
-            opened = false;
-            result = false;
-            return;
-          case "yes":
-            host.offReact("render", onRender);
-            host.offIntercept("key.press", onKeyPress);
-            opened = false;
-            result = true;
-            return;
+        widget.onKeyPress(data.key);
+
+        if (!widget.props.opened) {
+          host.offReact("render", onRender);
+          host.offIntercept("key.press", onKeyPress);
+          return;
         }
       };
 
       host.onReact("render", onRender, 1000);
       host.onIntercept("key.press", onKeyPress, -1000);
 
-      await host.loop(() => opened);
+      await host.loop(() => widget.props.opened);
 
-      return result;
+      return widget.props.result;
     },
   });
 }

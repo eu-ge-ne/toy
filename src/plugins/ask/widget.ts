@@ -4,7 +4,7 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AskWidget extends widgets.Modal2 {
+export class AskWidget extends widgets.Modal2<{ result: boolean }> {
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;
@@ -12,7 +12,10 @@ export class AskWidget extends widgets.Modal2 {
   };
 
   constructor() {
-    super();
+    super({
+      opened: false,
+      result: false,
+    });
 
     this.children = {
       bg: new BgWidget(),
@@ -40,16 +43,22 @@ export class AskWidget extends widgets.Modal2 {
     this.children.footer.color = text;
   }
 
-  openBefore(text: string): void {
+  open(text: string): void {
     this.children.text.value = text;
+
+    this.props.opened = true;
   }
 
-  handleKeyPress(key: kitty.Key): "yes" | "no" | undefined {
+  onKeyPress(key: kitty.Key): void {
     switch (key.name) {
       case "ESC":
-        return "no";
+        this.props.result = false;
+        this.props.opened = false;
+        return;
       case "ENTER":
-        return "yes";
+        this.props.result = true;
+        this.props.opened = false;
+        return;
     }
   }
 }

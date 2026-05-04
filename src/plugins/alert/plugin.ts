@@ -29,19 +29,18 @@ export function register(host: plugins.Host): void {
 
   host.registerAlert({
     async open(message: string): Promise<void> {
-      let opened = true;
-
-      widget.openBefore(message);
+      widget.open(message);
 
       const onRender = () => widget.render();
 
       const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
         data.cancel = true;
 
-        if (widget.handleKeyPress(data.key) === "close") {
+        widget.onKeyPress(data.key);
+
+        if (!widget.props.opened) {
           host.offReact("render", onRender);
           host.offIntercept("key.press", onKeyPress);
-          opened = false;
           return;
         }
       };
@@ -49,7 +48,7 @@ export function register(host: plugins.Host): void {
       host.onReact("render", onRender, 1000);
       host.onIntercept("key.press", onKeyPress, -1000);
 
-      await host.loop(() => opened);
+      await host.loop(() => widget.props.opened);
     },
   });
 }

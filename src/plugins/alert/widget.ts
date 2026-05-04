@@ -12,7 +12,9 @@ export class AlertWidget extends widgets.Modal2 {
   };
 
   constructor() {
-    super();
+    super({
+      opened: false,
+    });
 
     this.children = {
       bg: new BgWidget(),
@@ -40,15 +42,17 @@ export class AlertWidget extends widgets.Modal2 {
     this.children.footer.color = text;
   }
 
-  openBefore(message: string): void {
-    this.children.text.value = message;
+  open(text: string): void {
+    this.children.text.value = text;
+
+    this.props.opened = true;
   }
 
-  handleKeyPress(key: kitty.Key): "close" | undefined {
+  onKeyPress(key: kitty.Key): void {
     switch (key.name) {
       case "ESC":
       case "ENTER":
-        return "close";
+        this.props.opened = false;
     }
   }
 }
