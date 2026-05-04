@@ -39,14 +39,14 @@ export function register(host: plugins.Host): void {
       const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
         data.cancel = true;
 
-        switch (data.key.name) {
-          case "ESC":
+        switch (widget.handleKeyPress(data.key)) {
+          case "no":
             host.offReact("render", onRender);
             host.offIntercept("key.press", onKeyPress);
             opened = false;
             result = false;
             return;
-          case "ENTER":
+          case "yes":
             host.offReact("render", onRender);
             host.offIntercept("key.press", onKeyPress);
             opened = false;

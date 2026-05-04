@@ -1,3 +1,4 @@
+import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -30,10 +31,6 @@ export class AskWidget extends widgets.Modal2 {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  openBefore(text: string): void {
-    this.children.text.value = text;
-  }
-
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bgLight1);
     const text = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
@@ -41,5 +38,18 @@ export class AskWidget extends widgets.Modal2 {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
+  }
+
+  openBefore(text: string): void {
+    this.children.text.value = text;
+  }
+
+  handleKeyPress(key: kitty.Key): "yes" | "no" | undefined {
+    switch (key.name) {
+      case "ESC":
+        return "no";
+      case "ENTER":
+        return "yes";
+    }
   }
 }

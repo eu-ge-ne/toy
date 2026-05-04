@@ -1,3 +1,4 @@
+import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -30,10 +31,6 @@ export class AlertWidget extends widgets.Modal2 {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  openBefore(message: string): void {
-    this.children.text.value = message;
-  }
-
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bgDanger);
     const text = new Uint8Array([...theme.bgDanger, ...theme.fgLight1]);
@@ -41,5 +38,17 @@ export class AlertWidget extends widgets.Modal2 {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
+  }
+
+  openBefore(message: string): void {
+    this.children.text.value = message;
+  }
+
+  handleKeyPress(key: kitty.Key): "close" | undefined {
+    switch (key.name) {
+      case "ESC":
+      case "ENTER":
+        return "close";
+    }
   }
 }
