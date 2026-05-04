@@ -30,14 +30,18 @@ export class PaletteWidget
       editor: new EditorWidget({ multiLine: false }),
       list: new ListWidget<commands.Command>({
         emptyText: "No matching commands",
+        items: [],
+        index: 0,
       }),
     };
   }
 
   override resizeChildren(): void {
+    const { list, bg, editor } = this.children;
+
     const width = Math.min(60, this.width);
 
-    let listSize = Math.min(this.children.list.values.length, maxListSize);
+    let listSize = Math.min(list.props.items.length, maxListSize);
     let height = 3 + Math.max(listSize, 1);
     if (height > this.height) {
       height = this.height;
@@ -49,9 +53,9 @@ export class PaletteWidget
     const y = this.y + Math.trunc((this.height - height) / 2);
     const x = this.x + Math.trunc((this.width - width) / 2);
 
-    this.children.bg.resize(width, height, y, x);
-    this.children.editor.resize(width - 4, 1, y + 1, x + 2);
-    this.children.list.resize(width - 4, height - 3, y + 2, x + 2);
+    bg.resize(width, height, y, x);
+    editor.resize(width - 4, 1, y + 1, x + 2);
+    list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
   protected override async openBefore(): Promise<void> {
@@ -62,7 +66,7 @@ export class PaletteWidget
     editor.resetChanges();
     editor.resetCursor();
 
-    list.values = options;
+    list.props.items = options;
   }
 
   protected override render(): void {
@@ -80,17 +84,17 @@ export class PaletteWidget
       case "ESC":
         return [undefined];
       case "ENTER":
-        return [list.values[list.selectedIndex]?.value];
+        return [list.props.items[list.props.index]?.value];
       case "UP":
-        if (list.values.length > 0) {
-          list.selectedIndex = Math.max(list.selectedIndex - 1, 0);
+        if (list.props.items.length > 0) {
+          list.props.index = Math.max(list.props.index - 1, 0);
         }
         return [];
       case "DOWN":
-        if (list.values.length > 0) {
-          list.selectedIndex = Math.min(
-            list.selectedIndex + 1,
-            list.values.length - 1,
+        if (list.props.items.length > 0) {
+          list.props.index = Math.min(
+            list.props.index + 1,
+            list.props.items.length - 1,
           );
         }
         return [];
@@ -119,14 +123,16 @@ export class PaletteWidget
   #filter(): void {
     const { editor, list } = this.children;
 
-    list.selectedIndex = 0;
+    list.props.index = 0;
 
     const text = editor.text.toUpperCase();
 
     if (!text) {
-      list.values = options;
+      list.props.items = options;
     } else {
-      list.values = options.filter((x) => x.name.toUpperCase().includes(text));
+      list.props.items = options.filter((x) =>
+        x.name.toUpperCase().includes(text)
+      );
     }
   }
 }
