@@ -3,14 +3,14 @@ import * as widgets from "@libs/widgets";
 
 const encoder = new TextEncoder();
 
-interface ListWidgetItem<T> {
+interface Item<T> {
+  label(width: number): string;
   value: T;
-  string(width: number): string;
 }
 
 interface Props<T> {
   readonly emptyText: string;
-  items: ListWidgetItem<T>[];
+  items: Item<T>[];
   index: number;
 }
 
@@ -58,7 +58,7 @@ export class ListWidget<T> extends widgets.Frame<Props<T>> {
 
       vt.buf.write(i === index ? this.selectedColor : this.color);
       vt.cursor.set(vt.buf, this.y + y, this.x);
-      vt.buf.write(encoder.encode(v.string(this.width)));
+      vt.buf.write(encoder.encode(v.label(this.width)));
     }
   }
 }

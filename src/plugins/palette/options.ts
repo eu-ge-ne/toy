@@ -8,7 +8,7 @@ export class Option {
   ) {
   }
 
-  string(width: number): string {
+  label(width: number): string {
     const shortcuts = this.shortcuts.join(" ");
     const w = width - shortcuts.length;
     return this.name.slice(0, w).padEnd(w, " ") + shortcuts;
