@@ -23,8 +23,8 @@ export class AskFileNameWidget
     this.children = {
       bg: new BgWidget(),
       header: new TextWidget({ align: "center" }),
-      editor: new EditorWidget({ multiLine: false }),
       footer: new TextWidget({ align: "center" }),
+      editor: new EditorWidget({ multiLine: false }),
     };
 
     this.children.header.value = "Save As";
