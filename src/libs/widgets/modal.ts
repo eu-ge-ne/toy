@@ -1,7 +1,6 @@
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
-import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
 interface Props {
@@ -14,9 +13,7 @@ export abstract class Modal<P = unknown> extends Widget<P & Props> {
     vt.buf.write(vt.cursor.hide);
 
     for (const child of Object.values(this.children)) {
-      if (child instanceof Frame) {
-        child.render();
-      }
+      child.render();
     }
 
     vt.buf.write(vt.cursor.show);

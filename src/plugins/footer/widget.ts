@@ -10,7 +10,7 @@ interface Props {
   lineCount: number;
 }
 
-export class FooterWidget extends widgets.Frame<Props> {
+export class FooterWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;

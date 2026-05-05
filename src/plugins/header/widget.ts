@@ -9,7 +9,7 @@ interface Props {
   modified: boolean;
 }
 
-export class HeaderWidget extends widgets.Frame<Props> {
+export class HeaderWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;

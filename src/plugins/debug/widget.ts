@@ -13,7 +13,7 @@ interface Props {
   inputElapsed: number;
 }
 
-export class DebugWidget extends widgets.Frame<Props> {
+export class DebugWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     line1: TextWidget;

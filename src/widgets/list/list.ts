@@ -14,7 +14,7 @@ interface Props<T> {
   index: number;
 }
 
-export class ListWidget<T> extends widgets.Frame<Props<T>> {
+export class ListWidget<T> extends widgets.Widget<Props<T>> {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
 

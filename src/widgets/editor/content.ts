@@ -17,7 +17,7 @@ const enum CharColor {
   EmptySelected,
 }
 
-export class Content extends widgets.Frame {
+export class Content extends widgets.Widget {
   #focused = false;
 
   #mode = {
