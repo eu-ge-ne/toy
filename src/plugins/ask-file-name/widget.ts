@@ -6,7 +6,7 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget
-  extends widgets.Modal<void, [string], string | undefined> {
+  extends widgets.Modal2<{ result: string | undefined }> {
   protected override children: {
     bg: BgWidget;
     header: TextWidget;
@@ -15,7 +15,10 @@ export class AskFileNameWidget
   };
 
   constructor() {
-    super();
+    super({
+      opened: false,
+      result: undefined,
+    });
 
     this.children = {
       bg: new BgWidget(),
@@ -37,42 +40,45 @@ export class AskFileNameWidget
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  protected override async openBefore(path: string): Promise<void> {
+  setTheme(theme: themes.Theme): void {
+    const bg = new Uint8Array(theme.bgLight1);
+    const text = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
+
+    this.children.bg.color = bg;
+    this.children.header.color = text;
+    this.children.footer.color = text;
+    this.children.editor.setTheme(theme);
+  }
+
+  open(path: string): void {
     const { editor } = this.children;
 
     editor.setFocused(true);
     editor.text = path;
     editor.resetChanges();
     editor.resetCursor();
+
+    this.props.opened = true;
   }
 
-  protected override async handleKey(
-    key: kitty.Key,
-  ): Promise<[] | [string | undefined]> {
+  onKeyPress(key: kitty.Key): void {
     const { editor } = this.children;
 
     switch (key.name) {
       case "ESC":
-        return [undefined];
+        this.props.result = undefined;
+        this.props.opened = false;
+        return;
       case "ENTER": {
         const path = editor.text;
         if (path) {
-          return [path];
+          this.props.result = path;
+          this.props.opened = false;
+          return;
         }
       }
     }
 
     editor.onKey(key);
-
-    return [];
-  }
-
-  setTheme(theme: themes.Theme): void {
-    const bg = new Uint8Array(theme.bgLight1);
-    const text = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
-
-    this.children.bg.color = bg;
-    this.children.footer.color = text;
-    this.children.editor.setTheme(theme);
   }
 }
