@@ -8,7 +8,7 @@ interface Props {
   opened: boolean;
 }
 
-export abstract class Modal<P = {}> extends Widget<P & Props> {
+export abstract class Modal<P = unknown> extends Widget<P & Props> {
   render(): void {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
