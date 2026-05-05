@@ -80,6 +80,8 @@ export class PaletteWidget
     editor.resetCursor();
 
     list.props.items = options;
+
+    this.props.opened = true;
   }
 
   onKeyPress(key: kitty.Key): void {
