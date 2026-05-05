@@ -1,4 +1,4 @@
-export abstract class Widget<Props> {
+export abstract class Widget<Props = void> {
   width = 0;
   height = 0;
   y = 0;
@@ -20,4 +20,6 @@ export abstract class Widget<Props> {
 
   protected resizeChildren(): void {
   }
+
+  abstract render(): void;
 }

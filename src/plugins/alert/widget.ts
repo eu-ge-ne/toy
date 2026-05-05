@@ -4,7 +4,7 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AlertWidget extends widgets.Modal<void, [unknown]> {
+export class AlertWidget extends widgets.Modal {
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;
@@ -12,7 +12,9 @@ export class AlertWidget extends widgets.Modal<void, [unknown]> {
   };
 
   constructor() {
-    super();
+    super({
+      opened: false,
+    });
 
     this.children = {
       bg: new BgWidget(),
@@ -31,20 +33,6 @@ export class AlertWidget extends widgets.Modal<void, [unknown]> {
     footer.resize(this.width, 1, this.y + this.height - 2, this.x);
   }
 
-  protected override async openBefore(message: string): Promise<void> {
-    this.children.text.value = message;
-  }
-
-  protected override async handleKey(key: kitty.Key): Promise<[] | [void]> {
-    switch (key.name) {
-      case "ESC":
-      case "ENTER":
-        return [undefined];
-    }
-
-    return [];
-  }
-
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bgDanger);
     const text = new Uint8Array([...theme.bgDanger, ...theme.fgLight1]);
@@ -52,5 +40,19 @@ export class AlertWidget extends widgets.Modal<void, [unknown]> {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
+  }
+
+  open(text: string): void {
+    this.children.text.value = text;
+
+    this.props.opened = true;
+  }
+
+  onKeyPress(key: kitty.Key): void {
+    switch (key.name) {
+      case "ESC":
+      case "ENTER":
+        this.props.opened = false;
+    }
   }
 }

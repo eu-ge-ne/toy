@@ -102,10 +102,4 @@ if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
-while (true) {
-  host.render();
-
-  const key = await vt.readKey();
-
-  await host.keyPress(key);
-}
+await host.loop(() => true);

@@ -1,39 +1,19 @@
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
-import { Frame } from "./frame.ts";
 import { Widget } from "./widget.ts";
 
-export abstract class Modal<
-  Props = void,
-  Params extends unknown[] = [],
-  Result = void,
-> extends Widget<Props> {
-  async open(...params: Params): Promise<Result> {
-    await this.openBefore(...params);
+interface Props {
+  opened: boolean;
+}
 
-    while (true) {
-      this.render();
-
-      const key = await vt.readKey();
-
-      const result = await this.handleKey(key);
-      if (result.length === 1) {
-        return result[0];
-      }
-    }
-  }
-
-  protected abstract openBefore(..._: Params): Promise<void>;
-
-  protected render(): void {
+export abstract class Modal<P = unknown> extends Widget<P & Props> {
+  render(): void {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
 
     for (const child of Object.values(this.children)) {
-      if (child instanceof Frame) {
-        child.render();
-      }
+      child.render();
     }
 
     vt.buf.write(vt.cursor.show);
@@ -41,5 +21,5 @@ export abstract class Modal<
     vt.sync.esu();
   }
 
-  protected abstract handleKey(key: kitty.Key): Promise<[] | [Result]>;
+  abstract onKeyPress(key: kitty.Key): void;
 }

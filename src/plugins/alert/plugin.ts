@@ -1,3 +1,4 @@
+import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -28,7 +29,26 @@ export function register(host: plugins.Host): void {
 
   host.registerAlert({
     async open(message: string): Promise<void> {
-      await widget.open(message);
+      widget.open(message);
+
+      const onRender = () => widget.render();
+
+      const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
+        data.cancel = true;
+
+        widget.onKeyPress(data.key);
+
+        if (!widget.props.opened) {
+          host.offReact("render", onRender);
+          host.offIntercept("key.press", onKeyPress);
+          return;
+        }
+      };
+
+      host.onReact("render", onRender, 1000);
+      host.onIntercept("key.press", onKeyPress, -1000);
+
+      await host.loop(() => widget.props.opened);
     },
   });
 }

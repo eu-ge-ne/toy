@@ -1,3 +1,4 @@
+import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -28,7 +29,28 @@ export function register(host: plugins.Host): void {
 
   host.registerAskFileName({
     async open(fileName: string): Promise<string | undefined> {
-      return await widget.open(fileName);
+      widget.open(fileName);
+
+      const onRender = () => widget.render();
+
+      const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
+        data.cancel = true;
+
+        widget.onKeyPress(data.key);
+
+        if (!widget.props.opened) {
+          host.offReact("render", onRender);
+          host.offIntercept("key.press", onKeyPress);
+          return;
+        }
+      };
+
+      host.onReact("render", onRender, 1000);
+      host.onIntercept("key.press", onKeyPress, -1000);
+
+      await host.loop(() => widget.props.opened);
+
+      return widget.props.result;
     },
   });
 }

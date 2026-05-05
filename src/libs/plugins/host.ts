@@ -1,6 +1,7 @@
 import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
+import * as vt from "@libs/vt";
 
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
@@ -67,6 +68,16 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   registerDoc(plugin: Doc): void {
     this.doc = plugin;
+  }
+
+  async loop(running: () => boolean): Promise<void> {
+    while (running()) {
+      this.render();
+
+      const key = await vt.readKey();
+
+      await this.keyPress(key);
+    }
   }
 
   async start(): Promise<void> {

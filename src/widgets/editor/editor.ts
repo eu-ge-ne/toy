@@ -17,7 +17,7 @@ interface Props {
   onKeyHandle?: (_: number) => void;
 }
 
-export class EditorWidget extends widgets.Frame<Props> {
+export class EditorWidget extends widgets.Widget<Props> {
   #focused = false;
 
   readonly #doc = new documents.Document();

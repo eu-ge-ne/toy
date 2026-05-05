@@ -7,7 +7,7 @@ interface Props {
   readonly align: "left" | "center" | "right";
 }
 
-export class TextWidget extends widgets.Frame<Props> {
+export class TextWidget extends widgets.Widget<Props> {
   color = new Uint8Array();
   value = "";
 
@@ -36,7 +36,7 @@ export class TextWidget extends widgets.Frame<Props> {
   }
 }
 
-export class MultiLineText extends widgets.Frame<Props> {
+export class MultiLineText extends widgets.Widget<Props> {
   color = new Uint8Array();
   value = "";
 
