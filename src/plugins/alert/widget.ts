@@ -4,7 +4,7 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AlertWidget extends widgets.Modal2 {
+export class AlertWidget extends widgets.Modal {
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;

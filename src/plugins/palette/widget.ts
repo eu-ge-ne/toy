@@ -10,29 +10,28 @@ import { options } from "./options.ts";
 
 const maxListSize = 10;
 
-interface Props {
-  onRender: () => void;
-}
-
 export class PaletteWidget
-  extends widgets.Modal<Props, [], commands.Command | undefined> {
+  extends widgets.Modal<{ result: commands.Command | undefined }> {
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
     list: ListWidget<commands.Command>;
   };
 
-  constructor(props: Props) {
-    super(props);
+  constructor() {
+    super({
+      opened: false,
+      result: undefined,
+    });
 
     this.children = {
       bg: new BgWidget(),
-      editor: new EditorWidget({ multiLine: false }),
       list: new ListWidget<commands.Command>({
         emptyText: "No matching commands",
         items: [],
         index: 0,
       }),
+      editor: new EditorWidget({ multiLine: false }),
     };
   }
 
@@ -58,54 +57,6 @@ export class PaletteWidget
     list.resize(width - 4, height - 3, y + 2, x + 2);
   }
 
-  protected override async openBefore(): Promise<void> {
-    const { editor, list } = this.children;
-
-    editor.setFocused(true);
-    editor.text = "";
-    editor.resetChanges();
-    editor.resetCursor();
-
-    list.props.items = options;
-  }
-
-  protected override render(): void {
-    this.props.onRender();
-
-    super.render();
-  }
-
-  protected override async handleKey(
-    key: kitty.Key,
-  ): Promise<[] | [commands.Command | undefined]> {
-    const { list, editor } = this.children;
-
-    switch (key.name) {
-      case "ESC":
-        return [undefined];
-      case "ENTER":
-        return [list.props.items[list.props.index]?.value];
-      case "UP":
-        if (list.props.items.length > 0) {
-          list.props.index = Math.max(list.props.index - 1, 0);
-        }
-        return [];
-      case "DOWN":
-        if (list.props.items.length > 0) {
-          list.props.index = Math.min(
-            list.props.index + 1,
-            list.props.items.length - 1,
-          );
-        }
-        return [];
-    }
-
-    editor.onKey(key);
-    this.#filter();
-
-    return [];
-  }
-
   setTheme(theme: themes.Theme): void {
     const bg = new Uint8Array(theme.bgLight1);
     const option = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
@@ -118,6 +69,49 @@ export class PaletteWidget
     this.children.list.color = option;
     this.children.list.selectedColor = selectedOption;
     this.children.editor.setTheme(theme);
+  }
+
+  open(): void {
+    const { editor, list } = this.children;
+
+    editor.setFocused(true);
+    editor.text = "";
+    editor.resetChanges();
+    editor.resetCursor();
+
+    list.props.items = options;
+  }
+
+  onKeyPress(key: kitty.Key): void {
+    const { list, editor } = this.children;
+
+    switch (key.name) {
+      case "ESC":
+        this.props.result = undefined;
+        this.props.opened = false;
+        return;
+      case "ENTER":
+        this.props.result = list.props.items[list.props.index]?.value;
+        this.props.opened = false;
+        return;
+      case "UP":
+        if (list.props.items.length > 0) {
+          list.props.index = Math.max(list.props.index - 1, 0);
+        }
+        return;
+      case "DOWN":
+        if (list.props.items.length > 0) {
+          list.props.index = Math.min(
+            list.props.index + 1,
+            list.props.items.length - 1,
+          );
+        }
+        return;
+    }
+
+    editor.onKey(key);
+
+    this.#filter();
   }
 
   #filter(): void {
