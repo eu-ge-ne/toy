@@ -10,14 +10,14 @@ import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
 import { History } from "./history.ts";
 
-interface Props {
-  readonly multiLine: boolean;
+interface Params {
+  multiLine: boolean;
   onTextChange?: () => void;
   onCursorChange?: (_: { ln: number; col: number }) => void;
   onKeyHandle?: (_: number) => void;
 }
 
-export class EditorWidget extends widgets.Widget<Props> {
+export class EditorWidget extends widgets.Widget<Params> {
   #focused = false;
 
   readonly #doc = new documents.Document();
@@ -47,18 +47,18 @@ export class EditorWidget extends widgets.Widget<Props> {
     content: Content;
   };
 
-  constructor(props: Props) {
-    super(props);
+  constructor(params: Params) {
+    super(params);
 
     this.children = {
       bg: new BgWidget(),
       content: new Content(this.#doc, this.#gDoc, this.#cursor),
     };
 
-    this.#history.onChange = props.onTextChange;
+    this.#history.onChange = params.onTextChange;
 
     this.#cursor.onChange = () =>
-      props.onCursorChange?.({
+      params.onCursorChange?.({
         ln: this.#cursor.ln,
         col: this.#cursor.col,
       });
@@ -131,7 +131,7 @@ export class EditorWidget extends widgets.Widget<Props> {
   }
 
   resetCursor(): void {
-    if (this.props.multiLine) {
+    if (this.params.multiLine) {
       this.#cursor.set(0, 0, false);
     } else {
       this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
@@ -152,7 +152,7 @@ export class EditorWidget extends widgets.Widget<Props> {
 
     handler[0].call(this, key);
 
-    this.props.onKeyHandle?.(performance.now() - t0);
+    this.params.onKeyHandle?.(performance.now() - t0);
   }
 
   #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
@@ -166,7 +166,7 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyBottom,
-      (x) => this.props.multiLine && x.name === "DOWN" && Boolean(x.super),
+      (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
     ],
     [
       this.#onKeyCopy,
@@ -182,7 +182,7 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyDown,
-      (x) => this.props.multiLine && x.name === "DOWN",
+      (x) => this.params.multiLine && x.name === "DOWN",
     ],
     [
       this.#onKeyEnd,
@@ -198,7 +198,7 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyEnter,
-      (x) => this.props.multiLine && x.name === "ENTER",
+      (x) => this.params.multiLine && x.name === "ENTER",
     ],
     [
       this.#onKeyHome,
@@ -218,11 +218,11 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyPageDown,
-      (x) => this.props.multiLine && x.name === "PAGE_DOWN",
+      (x) => this.params.multiLine && x.name === "PAGE_DOWN",
     ],
     [
       this.#onKeyPageUp,
-      (x) => this.props.multiLine && x.name === "PAGE_UP",
+      (x) => this.params.multiLine && x.name === "PAGE_UP",
     ],
     [
       this.#onKeyPaste,
@@ -246,7 +246,7 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyTop,
-      (x) => this.props.multiLine && x.name === "UP" && Boolean(x.super),
+      (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super),
     ],
     [
       this.#onKeyUndo,
@@ -254,7 +254,7 @@ export class EditorWidget extends widgets.Widget<Props> {
     ],
     [
       this.#onKeyUp,
-      (x) => this.props.multiLine && x.name === "UP",
+      (x) => this.params.multiLine && x.name === "UP",
     ],
   ];
 
