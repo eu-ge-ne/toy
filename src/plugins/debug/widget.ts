@@ -6,14 +6,12 @@ import { TextWidget } from "@widgets/text";
 
 const MIB = Math.pow(1024, 2);
 
-interface Props {
-  disabled: boolean;
-  version: string;
-  renderElapsed: number;
-  inputElapsed: number;
-}
+export class DebugWidget extends widgets.Widget {
+  visible = false;
+  version = "";
+  renderElapsed = 0;
+  inputElapsed = 0;
 
-export class DebugWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     line1: TextWidget;
@@ -24,8 +22,8 @@ export class DebugWidget extends widgets.Widget<Props> {
     line6: TextWidget;
   };
 
-  constructor(props: Props) {
-    super(props);
+  constructor() {
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -52,7 +50,7 @@ export class DebugWidget extends widgets.Widget<Props> {
   }
 
   render(): void {
-    if (this.props.disabled) {
+    if (!this.visible) {
       return;
     }
 
@@ -66,14 +64,14 @@ export class DebugWidget extends widgets.Widget<Props> {
 
     this.children.bg.render();
 
-    this.children.line1.value = this.props.version;
+    this.children.line1.value = this.version;
     this.children.line1.render();
 
-    const i = this.props.inputElapsed.toFixed(1);
+    const i = this.inputElapsed.toFixed(1);
     this.children.line2.value = `Input    : ${i} ms`;
     this.children.line2.render();
 
-    const r = this.props.renderElapsed.toFixed(1);
+    const r = this.renderElapsed.toFixed(1);
     this.children.line3.value = `Render   : ${r} ms`;
     this.children.line3.render();
 
