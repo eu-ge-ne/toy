@@ -12,9 +12,7 @@ export class AlertWidget extends widgets.Modal {
   };
 
   constructor() {
-    super({
-      opened: false,
-    });
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -45,14 +43,14 @@ export class AlertWidget extends widgets.Modal {
   open(text: string): void {
     this.children.text.value = text;
 
-    this.props.opened = true;
+    this.opened = true;
   }
 
   onKeyPress(key: kitty.Key): void {
     switch (key.name) {
       case "ESC":
       case "ENTER":
-        this.props.opened = false;
+        this.opened = false;
     }
   }
 }
