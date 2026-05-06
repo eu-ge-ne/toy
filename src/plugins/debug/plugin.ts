@@ -5,12 +5,7 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 export function register(host: plugins.Host): void {
-  const widget = new DebugWidget({
-    disabled: true,
-    version: "",
-    renderElapsed: 0,
-    inputElapsed: 0,
-  });
+  const widget = new DebugWidget();
 
   let zen = true;
 
@@ -26,15 +21,9 @@ export function register(host: plugins.Host): void {
   });
 
   host.onReact("render", () => widget.render(), 1000);
-
-  host.onReact("debug.version", (version) => widget.props.version = version);
-
-  host.onReact(
-    "debug.render",
-    (elapsed) => widget.props.renderElapsed = elapsed,
-  );
-
-  host.onReact("debug.input", (elapsed) => widget.props.inputElapsed = elapsed);
+  host.onReact("debug.version", (x) => widget.version = x);
+  host.onReact("debug.render", (x) => widget.renderElapsed = x);
+  host.onReact("debug.input", (x) => widget.inputElapsed = x);
 
   host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
@@ -44,7 +33,7 @@ export function register(host: plugins.Host): void {
         return;
 
       case "Debug":
-        widget.props.disabled = !widget.props.disabled;
+        widget.visible = !widget.visible;
         return;
 
       case "Theme":

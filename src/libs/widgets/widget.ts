@@ -1,4 +1,4 @@
-export abstract class Widget<Props = void> {
+export abstract class Widget<T = void> {
   width = 0;
   height = 0;
   y = 0;
@@ -6,7 +6,7 @@ export abstract class Widget<Props = void> {
 
   protected children: Record<string, Widget<unknown>> = {};
 
-  constructor(readonly props: Props) {
+  constructor(protected readonly params: T) {
   }
 
   resize(w: number, h: number, y: number, x: number): void {

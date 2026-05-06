@@ -5,8 +5,9 @@ import { BgWidget } from "@widgets/bg";
 import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
-export class AskFileNameWidget
-  extends widgets.Modal<{ result: string | undefined }> {
+export class AskFileNameWidget extends widgets.Modal {
+  result: string | undefined;
+
   protected override children: {
     bg: BgWidget;
     header: TextWidget;
@@ -15,10 +16,7 @@ export class AskFileNameWidget
   };
 
   constructor() {
-    super({
-      opened: false,
-      result: undefined,
-    });
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -58,7 +56,7 @@ export class AskFileNameWidget
     editor.resetChanges();
     editor.resetCursor();
 
-    this.props.opened = true;
+    this.opened = true;
   }
 
   onKeyPress(key: kitty.Key): void {
@@ -66,14 +64,14 @@ export class AskFileNameWidget
 
     switch (key.name) {
       case "ESC":
-        this.props.result = undefined;
-        this.props.opened = false;
+        this.result = undefined;
+        this.opened = false;
         return;
       case "ENTER": {
         const path = editor.text;
         if (path) {
-          this.props.result = path;
-          this.props.opened = false;
+          this.result = path;
+          this.opened = false;
           return;
         }
       }

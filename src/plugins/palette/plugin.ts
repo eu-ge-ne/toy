@@ -5,14 +5,7 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 export function register(host: plugins.Host): void {
-  const widget = new PaletteWidget(
-    /*{
-    onRender: () => {
-      host.resize();
-      host.render();
-    },
-  }*/
-  );
+  const widget = new PaletteWidget();
 
   let zen = true;
 
@@ -53,7 +46,7 @@ export function register(host: plugins.Host): void {
 
       widget.onKeyPress(data.key);
 
-      if (!widget.props.opened) {
+      if (!widget.opened) {
         host.offReact("render", onRender);
         host.offIntercept("key.press", onKeyPress);
         return;
@@ -67,9 +60,9 @@ export function register(host: plugins.Host): void {
 
     host.resize();
 
-    await host.loop(() => widget.props.opened);
+    await host.loop(() => widget.opened);
 
-    const cmd = widget.props.result;
+    const cmd = widget.result;
     if (cmd) {
       await host.command(cmd);
     }

@@ -3,11 +3,9 @@ import * as vt from "@libs/vt";
 
 import { Widget } from "./widget.ts";
 
-interface Props {
-  opened: boolean;
-}
+export abstract class Modal<T = void> extends Widget<T> {
+  opened = false;
 
-export abstract class Modal<P = unknown> extends Widget<P & Props> {
   render(): void {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);

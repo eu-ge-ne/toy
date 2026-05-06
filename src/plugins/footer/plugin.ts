@@ -4,11 +4,7 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export function register(host: plugins.Host): void {
-  const widget = new FooterWidget({
-    ln: 0,
-    col: 0,
-    lineCount: 0,
-  });
+  const widget = new FooterWidget();
 
   let disabled = true;
 
@@ -27,13 +23,13 @@ export function register(host: plugins.Host): void {
   });
 
   host.onReact("status.doc.cursor", ({ ln, col }) => {
-    widget.props.ln = ln;
-    widget.props.col = col;
+    widget.ln = ln;
+    widget.col = col;
   });
 
   host.onReact(
     "status.doc.modified",
-    ({ lineCount }) => widget.props.lineCount = lineCount,
+    ({ lineCount }) => widget.lineCount = lineCount,
   );
 
   host.onIntercept("command", async ({ cmd }) => {
