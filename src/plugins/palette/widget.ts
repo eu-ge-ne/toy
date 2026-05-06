@@ -10,8 +10,9 @@ import { options } from "./options.ts";
 
 const maxListSize = 10;
 
-export class PaletteWidget
-  extends widgets.Modal<{ result: commands.Command | undefined }> {
+export class PaletteWidget extends widgets.Modal {
+  result: commands.Command | undefined;
+
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
@@ -19,17 +20,12 @@ export class PaletteWidget
   };
 
   constructor() {
-    super({
-      opened: false,
-      result: undefined,
-    });
+    super();
 
     this.children = {
       bg: new BgWidget(),
       list: new ListWidget<commands.Command>({
         emptyText: "No matching commands",
-        items: [],
-        index: 0,
       }),
       editor: new EditorWidget({ multiLine: false }),
     };
@@ -40,7 +36,7 @@ export class PaletteWidget
 
     const width = Math.min(60, this.width);
 
-    let listSize = Math.min(list.props.items.length, maxListSize);
+    let listSize = Math.min(list.items.length, maxListSize);
     let height = 3 + Math.max(listSize, 1);
     if (height > this.height) {
       height = this.height;
@@ -79,9 +75,9 @@ export class PaletteWidget
     editor.resetChanges();
     editor.resetCursor();
 
-    list.props.items = options;
+    list.items = options;
 
-    this.props.opened = true;
+    this.opened = true;
   }
 
   onKeyPress(key: kitty.Key): void {
@@ -89,23 +85,23 @@ export class PaletteWidget
 
     switch (key.name) {
       case "ESC":
-        this.props.result = undefined;
-        this.props.opened = false;
+        this.result = undefined;
+        this.opened = false;
         return;
       case "ENTER":
-        this.props.result = list.props.items[list.props.index]?.value;
-        this.props.opened = false;
+        this.result = list.items[list.index]?.value;
+        this.opened = false;
         return;
       case "UP":
-        if (list.props.items.length > 0) {
-          list.props.index = Math.max(list.props.index - 1, 0);
+        if (list.items.length > 0) {
+          list.index = Math.max(list.index - 1, 0);
         }
         return;
       case "DOWN":
-        if (list.props.items.length > 0) {
-          list.props.index = Math.min(
-            list.props.index + 1,
-            list.props.items.length - 1,
+        if (list.items.length > 0) {
+          list.index = Math.min(
+            list.index + 1,
+            list.items.length - 1,
           );
         }
         return;
@@ -119,16 +115,14 @@ export class PaletteWidget
   #filter(): void {
     const { editor, list } = this.children;
 
-    list.props.index = 0;
+    list.index = 0;
 
     const text = editor.text.toUpperCase();
 
     if (!text) {
-      list.props.items = options;
+      list.items = options;
     } else {
-      list.props.items = options.filter((x) =>
-        x.name.toUpperCase().includes(text)
-      );
+      list.items = options.filter((x) => x.name.toUpperCase().includes(text));
     }
   }
 }
