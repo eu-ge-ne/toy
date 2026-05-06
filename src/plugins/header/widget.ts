@@ -4,19 +4,17 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { TextWidget } from "@widgets/text";
 
-interface Props {
-  fileName: string;
-  modified: boolean;
-}
+export class HeaderWidget extends widgets.Widget {
+  fileName = "";
+  modified = false;
 
-export class HeaderWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;
   };
 
-  constructor(props: Props) {
-    super(props);
+  constructor() {
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -36,8 +34,8 @@ export class HeaderWidget extends widgets.Widget<Props> {
 
     this.children.bg.render();
 
-    const f = this.props.modified ? " +" : "";
-    this.children.text.value = `${this.props.fileName}${f}`;
+    const f = this.modified ? " +" : "";
+    this.children.text.value = `${this.fileName}${f}`;
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);

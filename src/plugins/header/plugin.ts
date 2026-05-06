@@ -4,10 +4,7 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export function register(host: plugins.Host): void {
-  const widget = new HeaderWidget({
-    fileName: "",
-    modified: false,
-  });
+  const widget = new HeaderWidget();
 
   let disabled = true;
 
@@ -25,14 +22,11 @@ export function register(host: plugins.Host): void {
     widget.render();
   });
 
-  host.onReact(
-    "status.doc.name",
-    (fileName) => widget.props.fileName = fileName,
-  );
+  host.onReact("status.doc.name", (fileName) => widget.fileName = fileName);
 
   host.onReact(
     "status.doc.modified",
-    ({ modified }) => widget.props.modified = modified,
+    ({ modified }) => widget.modified = modified,
   );
 
   host.onIntercept("command", async ({ cmd }) => {
