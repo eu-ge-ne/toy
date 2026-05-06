@@ -4,7 +4,9 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
-export class AskWidget extends widgets.Modal<{ result: boolean }> {
+export class AskWidget extends widgets.Modal {
+  result = false;
+
   protected override children: {
     bg: BgWidget;
     text: MultiLineText;
@@ -12,10 +14,7 @@ export class AskWidget extends widgets.Modal<{ result: boolean }> {
   };
 
   constructor() {
-    super({
-      opened: false,
-      result: false,
-    });
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -46,18 +45,18 @@ export class AskWidget extends widgets.Modal<{ result: boolean }> {
   open(text: string): void {
     this.children.text.value = text;
 
-    this.props.opened = true;
+    this.opened = true;
   }
 
   onKeyPress(key: kitty.Key): void {
     switch (key.name) {
       case "ESC":
-        this.props.result = false;
-        this.props.opened = false;
+        this.result = false;
+        this.opened = false;
         return;
       case "ENTER":
-        this.props.result = true;
-        this.props.opened = false;
+        this.result = true;
+        this.opened = false;
         return;
     }
   }
