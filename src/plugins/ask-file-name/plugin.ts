@@ -38,7 +38,7 @@ export function register(host: plugins.Host): void {
 
         widget.onKeyPress(data.key);
 
-        if (!widget.props.opened) {
+        if (!widget.opened) {
           host.offReact("render", onRender);
           host.offIntercept("key.press", onKeyPress);
           return;
@@ -48,9 +48,9 @@ export function register(host: plugins.Host): void {
       host.onReact("render", onRender, 1000);
       host.onIntercept("key.press", onKeyPress, -1000);
 
-      await host.loop(() => widget.props.opened);
+      await host.loop(() => widget.opened);
 
-      return widget.props.result;
+      return widget.result;
     },
   });
 }
