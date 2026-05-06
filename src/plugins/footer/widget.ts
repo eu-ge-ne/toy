@@ -4,20 +4,18 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { TextWidget } from "@widgets/text";
 
-interface Props {
-  ln: number;
-  col: number;
-  lineCount: number;
-}
+export class FooterWidget extends widgets.Widget {
+  ln = 0;
+  col = 0;
+  lineCount = 0;
 
-export class FooterWidget extends widgets.Widget<Props> {
   protected override children: {
     bg: BgWidget;
     text: TextWidget;
   };
 
-  constructor(props: Props) {
-    super(props);
+  constructor() {
+    super();
 
     this.children = {
       bg: new BgWidget(),
@@ -37,11 +35,11 @@ export class FooterWidget extends widgets.Widget<Props> {
 
     this.children.bg.render();
 
-    const ln = this.props.ln + 1;
-    const col = this.props.col + 1;
-    const pct = this.props.lineCount === 0
+    const ln = this.ln + 1;
+    const col = this.col + 1;
+    const pct = this.lineCount === 0
       ? 0
-      : ((this.props.ln / this.props.lineCount) * 100).toFixed(0);
+      : ((this.ln / this.lineCount) * 100).toFixed(0);
 
     this.children.text.value = `${ln} ${col}  ${pct}% `;
 
