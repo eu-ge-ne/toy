@@ -8,20 +8,16 @@ interface Item<T> {
   value: T;
 }
 
-interface Props<T> {
-  readonly emptyText: string;
-  items: Item<T>[];
-  index: number;
-}
-
-export class ListWidget<T> extends widgets.Widget<Props<T>> {
+export class ListWidget<T> extends widgets.Widget<{ emptyText: string }> {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
+  items: Item<T>[] = [];
+  index = 0;
 
   #scrollIndex = 0;
 
   render(): void {
-    if (this.props.items.length === 0) {
+    if (this.items.length === 0) {
       this.#renderEmpty();
     } else {
       this.#scroll();
@@ -32,11 +28,11 @@ export class ListWidget<T> extends widgets.Widget<Props<T>> {
   #renderEmpty(): void {
     vt.buf.write(this.color);
     vt.cursor.set(vt.buf, this.y, this.x);
-    vt.buf.write(encoder.encode(this.props.emptyText.slice(0, this.width)));
+    vt.buf.write(encoder.encode(this.params.emptyText.slice(0, this.width)));
   }
 
   #scroll(): void {
-    const { index } = this.props;
+    const { index } = this;
 
     const delta = index - this.#scrollIndex;
     if (delta < 0) {
@@ -47,7 +43,7 @@ export class ListWidget<T> extends widgets.Widget<Props<T>> {
   }
 
   #renderList(): void {
-    const { items, index } = this.props;
+    const { items, index } = this;
 
     for (let y = 0; y < this.height; y += 1) {
       const i = this.#scrollIndex + y;
