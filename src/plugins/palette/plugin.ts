@@ -51,13 +51,13 @@ export function register(host: plugins.Host): void {
         return;
       }
 
-      host.resize2();
+      host.resize();
     };
 
     host.onReact("render", onRender, 1000);
     host.onIntercept("key.press", onKeyPress, -1000);
 
-    host.resize2();
+    host.resize();
 
     await host.loop(() => widget.opened);
 

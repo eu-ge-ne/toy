@@ -97,7 +97,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     await this.#emitter.intercept("command", { cmd });
   }
 
-  resize2(): void {
+  resize(): void {
     this.#emitter.react("resize");
   }
 
