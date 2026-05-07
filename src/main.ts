@@ -96,7 +96,7 @@ host.onIntercept("command", async ({ cmd }) => {
   }
 }, 1000);
 
-host.start();
+await host.start();
 host.resize();
 host.debugVersion(version);
 
