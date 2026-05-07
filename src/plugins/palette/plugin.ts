@@ -23,7 +23,6 @@ export function register(host: plugins.Host): void {
     switch (cmd.name) {
       case "Zen":
         zen = !zen;
-        host.resize();
         return;
 
       case "Theme":
@@ -52,13 +51,13 @@ export function register(host: plugins.Host): void {
         return;
       }
 
-      host.resize();
+      host.resize2();
     };
 
     host.onReact("render", onRender, 1000);
     host.onIntercept("key.press", onKeyPress, -1000);
 
-    host.resize();
+    host.resize2();
 
     await host.loop(() => widget.opened);
 

@@ -48,7 +48,7 @@ host.onIntercept("start", async () => {
   vt.init();
 
   Deno.addSignalListener("SIGWINCH", () => {
-    host.resize();
+    host.resize2();
     host.render();
   });
 });
@@ -89,11 +89,15 @@ host.onIntercept("command", async ({ cmd }) => {
     case "Save":
       await host.files.save();
       return;
+
+    case "Zen":
+      host.resize2();
+      return;
   }
-});
+}, 1000);
 
 host.start();
-host.resize();
+host.resize2();
 host.debugVersion(version);
 
 await host.command({ name: "Theme", data: "Default" });

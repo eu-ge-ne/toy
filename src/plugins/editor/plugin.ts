@@ -54,9 +54,8 @@ export function register(host: plugins.Host): void {
   host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        widget.toggleIndex();
         zen = !zen;
-        host.resize();
+        widget.toggleIndex();
         return;
 
       case "Theme":

@@ -6,7 +6,7 @@ import { FooterWidget } from "./widget.ts";
 export function register(host: plugins.Host): void {
   const widget = new FooterWidget();
 
-  let disabled = true;
+  let visible = false;
 
   host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
@@ -15,7 +15,7 @@ export function register(host: plugins.Host): void {
   });
 
   host.onReact("render", () => {
-    if (disabled) {
+    if (!visible) {
       return;
     }
 
@@ -35,8 +35,7 @@ export function register(host: plugins.Host): void {
   host.onIntercept("command", async ({ cmd }) => {
     switch (cmd.name) {
       case "Zen":
-        disabled = !disabled;
-        host.resize();
+        visible = !visible;
         return;
 
       case "Theme":
