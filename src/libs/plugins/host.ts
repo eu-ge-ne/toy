@@ -1,6 +1,5 @@
 import * as commands from "@libs/commands";
 import * as events from "@libs/events";
-import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
@@ -76,7 +75,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
       const key = await vt.readKey();
 
-      await this.keyPress(key);
+      await this.#emitter.intercept("key.press", { key });
     }
   }
 
@@ -87,10 +86,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
   async stop(e?: PromiseRejectionEvent): Promise<void> {
     await this.#emitter.intercept("stop", { e });
     await this.#emitter.intercept("stop.after", { e });
-  }
-
-  async keyPress(key: kitty.Key): Promise<void> {
-    await this.#emitter.intercept("key.press", { key });
   }
 
   async command(cmd: commands.Command): Promise<void> {
