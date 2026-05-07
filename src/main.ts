@@ -89,8 +89,12 @@ host.onIntercept("command", async ({ cmd }) => {
     case "Save":
       await host.files.save();
       return;
+
+    case "Zen":
+      host.resize();
+      return;
   }
-});
+}, 1000);
 
 host.start();
 host.resize();

@@ -23,7 +23,6 @@ export function register(host: plugins.Host): void {
     switch (cmd.name) {
       case "Zen":
         zen = !zen;
-        host.resize();
         return;
 
       case "Theme":
