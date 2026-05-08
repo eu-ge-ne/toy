@@ -1,6 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 import * as alert from "@plugins/alert";
@@ -30,17 +29,7 @@ if (args.version) {
   Deno.exit();
 }
 
-const clients = new events.Clients<
-  plugins.InterceptorEvents,
-  plugins.ReactorEvents
->();
-
-const emitter = new events.Emitter<
-  plugins.InterceptorEvents,
-  plugins.ReactorEvents
->(clients);
-
-const host = new plugins.Host(clients, emitter);
+const host = new plugins.Host();
 
 alert.register(host);
 ask.register(host);
@@ -80,12 +69,12 @@ host.onIntercept("command", async ({ cmd }) => {
       return;
 
     case "Zen":
-      emitter.react("resize");
+      host.resize();
       return;
   }
 }, 1000);
 
-await emitter.intercept("start", {});
+await host.start();
 host.debugVersion(version);
 await host.command({ name: "Theme", data: "Default" });
 

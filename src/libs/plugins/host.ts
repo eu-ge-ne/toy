@@ -29,20 +29,25 @@ export interface Doc {
 }
 
 export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
+  private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
+
   alert!: Alert;
   ask!: Ask;
   askFileName!: AskFileName;
   files!: Files;
   doc!: Doc;
 
-  constructor(
-    clients: events.Clients<InterceptorEvents, ReactorEvents>,
-    private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>,
-  ) {
+  constructor() {
+    const clients = new events.Clients<InterceptorEvents, ReactorEvents>();
+
     super(clients);
 
+    this.emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
+      clients,
+    );
+
     Deno.addSignalListener("SIGWINCH", () => {
-      this.#resize();
+      this.resize();
       this.#render();
     });
   }
@@ -74,7 +79,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
     while (ctx.continue) {
       if (ctx.layoutChanged) {
-        this.#resize();
+        this.resize();
         ctx.layoutChanged = false;
       }
 
@@ -86,6 +91,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
       iter(ctx);
     }
+  }
+
+  async start(): Promise<void> {
+    await this.emitter.intercept("start", {});
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
@@ -120,7 +129,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.emitter.react("status.doc.cursor", { ln, col });
   }
 
-  #resize(): void {
+  resize(): void {
     this.emitter.react("resize");
   }
 
