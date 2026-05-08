@@ -86,13 +86,11 @@ host.onIntercept("command", async ({ cmd }) => {
 }, 1000);
 
 await emitter.intercept("start", {});
-emitter.react("resize");
 host.debugVersion(version);
-
 await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
-await host.loop(() => true);
+await host.loop(() => {});

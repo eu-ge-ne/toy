@@ -42,7 +42,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     super(clients);
 
     Deno.addSignalListener("SIGWINCH", () => {
-      this.resize();
+      this.#resize();
       this.#render();
     });
   }
@@ -67,13 +67,24 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.doc = plugin;
   }
 
-  async loop(running: () => boolean): Promise<void> {
-    while (running()) {
+  async loop(
+    iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
+  ): Promise<void> {
+    const ctx = { continue: true, layoutChanged: true };
+
+    while (ctx.continue) {
+      if (ctx.layoutChanged) {
+        this.#resize();
+        ctx.layoutChanged = false;
+      }
+
       this.#render();
 
       const key = await vt.readKey();
 
       await this.emitter.intercept("key.press", { key });
+
+      iter(ctx);
     }
   }
 
@@ -83,10 +94,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   async command(cmd: commands.Command): Promise<void> {
     await this.emitter.intercept("command", { cmd });
-  }
-
-  resize(): void {
-    this.emitter.react("resize");
   }
 
   debugVersion(version: string): void {
@@ -111,6 +118,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   statusDocCursor(ln: number, col: number): void {
     this.emitter.react("status.doc.cursor", { ln, col });
+  }
+
+  #resize(): void {
+    this.emitter.react("resize");
   }
 
   #render(): void {
