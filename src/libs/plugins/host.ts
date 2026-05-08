@@ -29,7 +29,7 @@ export interface Doc {
 }
 
 export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
-  readonly #emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
+  private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
   alert!: Alert;
   ask!: Ask;
@@ -38,15 +38,18 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
   doc!: Doc;
 
   constructor() {
-    const interceptors: events.Interceptors<InterceptorEvents> = {};
-    const reactors: events.Reactors<ReactorEvents> = {};
+    const clients = new events.Clients<InterceptorEvents, ReactorEvents>();
 
-    super(interceptors, reactors);
+    super(clients);
 
-    this.#emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
-      interceptors,
-      reactors,
+    this.emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
+      clients,
     );
+
+    Deno.addSignalListener("SIGWINCH", () => {
+      this.resize();
+      this.#render();
+    });
   }
 
   registerAlert(plugin: Alert): void {
@@ -69,60 +72,75 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.doc = plugin;
   }
 
-  async loop(running: () => boolean): Promise<void> {
-    while (running()) {
-      this.render();
+  async loop(
+    iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
+  ): Promise<void> {
+    const ctx = { continue: true, layoutChanged: true };
+
+    while (ctx.continue) {
+      if (ctx.layoutChanged) {
+        this.resize();
+        ctx.layoutChanged = false;
+      }
+
+      this.#render();
 
       const key = await vt.readKey();
 
-      await this.#emitter.intercept("key.press", { key });
+      await this.emitter.intercept("key.press", { key });
+
+      iter(ctx);
     }
   }
 
-  async start(): Promise<void> {
-    await this.#emitter.intercept("start", {});
+  async start(data: { version: string }): Promise<void> {
+    await this.emitter.intercept("start", data);
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.intercept("stop", { e });
-    await this.#emitter.intercept("stop.after", { e });
+    await this.emitter.intercept("stop", { e });
   }
 
   async command(cmd: commands.Command): Promise<void> {
-    await this.#emitter.intercept("command", { cmd });
-  }
-
-  resize(): void {
-    this.#emitter.react("resize");
-  }
-
-  render(): void {
-    this.#emitter.react("render.before");
-    this.#emitter.react("render");
-    this.#emitter.react("render.after");
-  }
-
-  debugVersion(version: string): void {
-    this.#emitter.react("debug.version", version);
+    await this.emitter.intercept("command", { cmd });
   }
 
   debugRender(elapsed: number): void {
-    this.#emitter.react("debug.render", elapsed);
+    this.emitter.react("debug.render", elapsed);
   }
 
   debugInput(elapsed: number): void {
-    this.#emitter.react("debug.input", elapsed);
+    this.emitter.react("debug.input", elapsed);
   }
 
   statusDocName(name: string): void {
-    this.#emitter.react("status.doc.name", name);
+    this.emitter.react("status.doc.name", name);
   }
 
   statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.react("status.doc.modified", { modified, lineCount });
+    this.emitter.react("status.doc.modified", { modified, lineCount });
   }
 
   statusDocCursor(ln: number, col: number): void {
-    this.#emitter.react("status.doc.cursor", { ln, col });
+    this.emitter.react("status.doc.cursor", { ln, col });
+  }
+
+  resize(): void {
+    this.emitter.react("resize");
+  }
+
+  #render(): void {
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.emitter.react("render");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    this.debugRender(performance.now() - t0);
   }
 }

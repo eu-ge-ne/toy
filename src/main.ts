@@ -46,14 +46,9 @@ host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
   vt.init();
-
-  Deno.addSignalListener("SIGWINCH", () => {
-    host.resize();
-    host.render();
-  });
 });
 
-host.onIntercept("stop.after", ({ e }) => {
+host.onIntercept("stop", ({ e }) => {
   vt.restore();
 
   if (e) {
@@ -61,24 +56,7 @@ host.onIntercept("stop.after", ({ e }) => {
   }
 
   Deno.exit(0);
-});
-
-let renderStarted = 0;
-
-host.onReact("render.before", () => {
-  renderStarted = performance.now();
-
-  vt.sync.bsu();
-  vt.buf.write(vt.cursor.hide);
-});
-
-host.onReact("render.after", () => {
-  vt.buf.write(vt.cursor.show);
-  vt.buf.flush();
-  vt.sync.esu();
-
-  host.debugRender(performance.now() - renderStarted);
-});
+}, 1000);
 
 host.onIntercept("command", async ({ cmd }) => {
   switch (cmd.name) {
@@ -96,14 +74,11 @@ host.onIntercept("command", async ({ cmd }) => {
   }
 }, 1000);
 
-await host.start();
-host.resize();
-host.debugVersion(version);
-
+await host.start({ version });
 await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
-await host.loop(() => true);
+await host.loop(() => {});

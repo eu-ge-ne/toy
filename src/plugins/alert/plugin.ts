@@ -48,7 +48,7 @@ export function register(host: plugins.Host): void {
       host.onReact("render", onRender, 1000);
       host.onIntercept("key.press", onKeyPress, -1000);
 
-      await host.loop(() => widget.opened);
+      await host.loop((ctx) => ctx.continue = widget.opened);
     },
   });
 }

@@ -50,16 +50,15 @@ export function register(host: plugins.Host): void {
         host.offIntercept("key.press", onKeyPress);
         return;
       }
-
-      host.resize();
     };
 
     host.onReact("render", onRender, 1000);
     host.onIntercept("key.press", onKeyPress, -1000);
 
-    host.resize();
-
-    await host.loop(() => widget.opened);
+    await host.loop((ctx) => {
+      ctx.continue = widget.opened;
+      ctx.layoutChanged = true;
+    });
 
     const cmd = widget.result;
     if (cmd) {
