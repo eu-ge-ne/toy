@@ -47,7 +47,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     );
 
     Deno.addSignalListener("SIGWINCH", () => {
-      this.resize();
+      this.#resize();
       this.#render();
     });
   }
@@ -79,7 +79,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
     while (ctx.continue) {
       if (ctx.layoutChanged) {
-        this.resize();
+        this.#resize();
         ctx.layoutChanged = false;
       }
 
@@ -93,11 +93,11 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     }
   }
 
-  async start(data: { version: string }): Promise<void> {
+  async emitStart(data: { version: string }): Promise<void> {
     await this.emitter.intercept("start", data);
   }
 
-  async stop(e?: PromiseRejectionEvent): Promise<void> {
+  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     await this.emitter.intercept("stop", { e });
   }
 
@@ -125,7 +125,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.emitter.react("status.doc.cursor", { ln, col });
   }
 
-  resize(): void {
+  #resize(): void {
     this.emitter.react("resize");
   }
 

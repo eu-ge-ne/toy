@@ -43,7 +43,7 @@ palette.register(host);
 shortcuts.register(host);
 
 host.onIntercept("start", async () => {
-  globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
+  globalThis.addEventListener("unhandledrejection", (e) => host.emitStop(e));
 
   vt.init();
 });
@@ -58,10 +58,12 @@ host.onIntercept("stop", ({ e }) => {
   Deno.exit(0);
 }, 1000);
 
+let layoutChanged = false;
+
 host.onIntercept("command", async ({ cmd }) => {
   switch (cmd.name) {
     case "Exit":
-      await host.stop();
+      await host.emitStop();
       return;
 
     case "Save":
@@ -69,16 +71,21 @@ host.onIntercept("command", async ({ cmd }) => {
       return;
 
     case "Zen":
-      host.resize();
+      layoutChanged = true;
       return;
   }
 }, 1000);
 
-await host.start({ version });
+await host.emitStart({ version });
 await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
-await host.loop(() => {});
+await host.loop((ctx) => {
+  if (layoutChanged) {
+    ctx.layoutChanged = true;
+    layoutChanged = false;
+  }
+});

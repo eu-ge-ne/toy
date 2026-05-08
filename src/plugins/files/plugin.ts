@@ -21,7 +21,7 @@ export function register(host: plugins.Host): void {
           const message = Error.isError(err) ? err.message : Deno.inspect(err);
           await host.alert.open(message);
 
-          await host.stop();
+          await host.emitStop();
         }
       }
     },
