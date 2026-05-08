@@ -80,13 +80,13 @@ host.onIntercept("command", async ({ cmd }) => {
       return;
 
     case "Zen":
-      host.resize();
+      emitter.react("resize");
       return;
   }
 }, 1000);
 
 await emitter.intercept("start", {});
-host.resize();
+emitter.react("resize");
 host.debugVersion(version);
 
 await host.command({ name: "Theme", data: "Default" });
