@@ -74,23 +74,6 @@ host.onIntercept("stop.after", ({ e }) => {
   Deno.exit(0);
 });
 
-let renderStarted = 0;
-
-host.onReact("render.before", () => {
-  renderStarted = performance.now();
-
-  vt.sync.bsu();
-  vt.buf.write(vt.cursor.hide);
-});
-
-host.onReact("render.after", () => {
-  vt.buf.write(vt.cursor.show);
-  vt.buf.flush();
-  vt.sync.esu();
-
-  host.debugRender(performance.now() - renderStarted);
-});
-
 host.onIntercept("command", async ({ cmd }) => {
   switch (cmd.name) {
     case "Exit":

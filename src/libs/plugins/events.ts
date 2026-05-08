@@ -16,9 +16,7 @@ export type InterceptorEvents = {
 
 export type ReactorEvents = {
   "resize": () => void;
-  "render.before": () => void;
   "render": () => void;
-  "render.after": () => void;
   "debug.version": (_: string) => void;
   "debug.render": (_: number) => void;
   "debug.input": (_: number) => void;

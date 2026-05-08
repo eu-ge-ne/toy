@@ -86,9 +86,18 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
   }
 
   render(): void {
-    this.emitter.react("render.before");
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
     this.emitter.react("render");
-    this.emitter.react("render.after");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    this.debugRender(performance.now() - t0);
   }
 
   debugVersion(version: string): void {
