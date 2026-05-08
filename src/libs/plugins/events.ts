@@ -3,7 +3,7 @@ import { InterceptorData } from "@libs/events";
 import * as kitty from "@libs/kitty";
 
 export type InterceptorEvents = {
-  "start": (_: InterceptorData) => Promise<void>;
+  "start": (_: InterceptorData<{ version: string }>) => Promise<void>;
   "stop": (
     _: InterceptorData<{ e?: PromiseRejectionEvent }>,
   ) => Promise<void>;
@@ -14,7 +14,6 @@ export type InterceptorEvents = {
 export type ReactorEvents = {
   "resize": () => void;
   "render": () => void;
-  "debug.version": (_: string) => void;
   "debug.render": (_: number) => void;
   "debug.input": (_: number) => void;
   "status.doc.name": (_: string) => void;

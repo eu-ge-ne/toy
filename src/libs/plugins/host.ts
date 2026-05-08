@@ -93,8 +93,8 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     }
   }
 
-  async start(): Promise<void> {
-    await this.emitter.intercept("start", {});
+  async start(data: { version: string }): Promise<void> {
+    await this.emitter.intercept("start", data);
   }
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
@@ -103,10 +103,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   async command(cmd: commands.Command): Promise<void> {
     await this.emitter.intercept("command", { cmd });
-  }
-
-  debugVersion(version: string): void {
-    this.emitter.react("debug.version", version);
   }
 
   debugRender(elapsed: number): void {

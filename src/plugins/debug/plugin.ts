@@ -9,6 +9,10 @@ export function register(host: plugins.Host): void {
 
   let zen = true;
 
+  host.onIntercept("start", async ({ version }) => {
+    widget.version = version;
+  });
+
   host.onReact("resize", () => {
     const { columns, rows } = Deno.consoleSize();
 
@@ -21,7 +25,6 @@ export function register(host: plugins.Host): void {
   });
 
   host.onReact("render", () => widget.render(), 1000);
-  host.onReact("debug.version", (x) => widget.version = x);
   host.onReact("debug.render", (x) => widget.renderElapsed = x);
   host.onReact("debug.input", (x) => widget.inputElapsed = x);
 

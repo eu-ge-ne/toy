@@ -74,8 +74,7 @@ host.onIntercept("command", async ({ cmd }) => {
   }
 }, 1000);
 
-await host.start();
-host.debugVersion(version);
+await host.start({ version });
 await host.command({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
