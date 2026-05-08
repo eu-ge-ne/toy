@@ -40,6 +40,11 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>,
   ) {
     super(clients);
+
+    Deno.addSignalListener("SIGWINCH", () => {
+      this.resize();
+      this.#render();
+    });
   }
 
   registerAlert(plugin: Alert): void {
@@ -64,7 +69,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   async loop(running: () => boolean): Promise<void> {
     while (running()) {
-      this.render();
+      this.#render();
 
       const key = await vt.readKey();
 
@@ -83,21 +88,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   resize(): void {
     this.emitter.react("resize");
-  }
-
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.emitter.react("render");
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.debugRender(performance.now() - t0);
   }
 
   debugVersion(version: string): void {
@@ -122,5 +112,20 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   statusDocCursor(ln: number, col: number): void {
     this.emitter.react("status.doc.cursor", { ln, col });
+  }
+
+  #render(): void {
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.emitter.react("render");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    this.debugRender(performance.now() - t0);
   }
 }

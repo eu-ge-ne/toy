@@ -57,11 +57,6 @@ host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.stop(e));
 
   vt.init();
-
-  Deno.addSignalListener("SIGWINCH", () => {
-    host.resize();
-    host.render();
-  });
 });
 
 host.onIntercept("stop.after", ({ e }) => {
