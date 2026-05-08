@@ -29,24 +29,17 @@ export interface Doc {
 }
 
 export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
-  readonly #emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
-
   alert!: Alert;
   ask!: Ask;
   askFileName!: AskFileName;
   files!: Files;
   doc!: Doc;
 
-  constructor() {
-    const interceptors: events.Interceptors<InterceptorEvents> = {};
-    const reactors: events.Reactors<ReactorEvents> = {};
-
-    super(interceptors, reactors);
-
-    this.#emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
-      interceptors,
-      reactors,
-    );
+  constructor(
+    clients: events.Clients<InterceptorEvents, ReactorEvents>,
+    private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>,
+  ) {
+    super(clients);
   }
 
   registerAlert(plugin: Alert): void {
@@ -75,54 +68,50 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
       const key = await vt.readKey();
 
-      await this.#emitter.intercept("key.press", { key });
+      await this.emitter.intercept("key.press", { key });
     }
   }
 
-  async start(): Promise<void> {
-    await this.#emitter.intercept("start", {});
-  }
-
   async stop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.#emitter.intercept("stop", { e });
-    await this.#emitter.intercept("stop.after", { e });
+    await this.emitter.intercept("stop", { e });
+    await this.emitter.intercept("stop.after", { e });
   }
 
   async command(cmd: commands.Command): Promise<void> {
-    await this.#emitter.intercept("command", { cmd });
+    await this.emitter.intercept("command", { cmd });
   }
 
   resize(): void {
-    this.#emitter.react("resize");
+    this.emitter.react("resize");
   }
 
   render(): void {
-    this.#emitter.react("render.before");
-    this.#emitter.react("render");
-    this.#emitter.react("render.after");
+    this.emitter.react("render.before");
+    this.emitter.react("render");
+    this.emitter.react("render.after");
   }
 
   debugVersion(version: string): void {
-    this.#emitter.react("debug.version", version);
+    this.emitter.react("debug.version", version);
   }
 
   debugRender(elapsed: number): void {
-    this.#emitter.react("debug.render", elapsed);
+    this.emitter.react("debug.render", elapsed);
   }
 
   debugInput(elapsed: number): void {
-    this.#emitter.react("debug.input", elapsed);
+    this.emitter.react("debug.input", elapsed);
   }
 
   statusDocName(name: string): void {
-    this.#emitter.react("status.doc.name", name);
+    this.emitter.react("status.doc.name", name);
   }
 
   statusDocModified(modified: boolean, lineCount: number): void {
-    this.#emitter.react("status.doc.modified", { modified, lineCount });
+    this.emitter.react("status.doc.modified", { modified, lineCount });
   }
 
   statusDocCursor(ln: number, col: number): void {
-    this.#emitter.react("status.doc.cursor", { ln, col });
+    this.emitter.react("status.doc.cursor", { ln, col });
   }
 }

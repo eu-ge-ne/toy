@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 import * as alert from "@plugins/alert";
@@ -29,7 +30,17 @@ if (args.version) {
   Deno.exit();
 }
 
-const host = new plugins.Host();
+const clients = new events.Clients<
+  plugins.InterceptorEvents,
+  plugins.ReactorEvents
+>();
+
+const emitter = new events.Emitter<
+  plugins.InterceptorEvents,
+  plugins.ReactorEvents
+>(clients);
+
+const host = new plugins.Host(clients, emitter);
 
 alert.register(host);
 ask.register(host);
@@ -96,7 +107,7 @@ host.onIntercept("command", async ({ cmd }) => {
   }
 }, 1000);
 
-await host.start();
+await emitter.intercept("start", {});
 host.resize();
 host.debugVersion(version);
 

@@ -1,53 +1,51 @@
-import { Interceptors, Reactors } from "./clients.ts";
+import { Clients } from "./clients.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
-export class Listener<
-  B extends InterceptorEvents,
-  C extends ReactorEvents,
-> {
-  constructor(
-    private readonly interceptors: Interceptors<B>,
-    private readonly reactors: Reactors<C>,
-  ) {
+export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
+  constructor(private readonly clients: Clients<IE, RE>) {
   }
 
-  onIntercept<E extends keyof B>(name: E, fn: B[E], order = 0): void {
-    let listeners = this.interceptors[name];
-    if (!listeners) {
-      listeners = this.interceptors[name] = [];
+  onIntercept<E extends keyof IE>(name: E, fn: IE[E], order = 0): void {
+    let xx = this.clients.Interceptors[name];
+    if (!xx) {
+      xx = this.clients.Interceptors[name] = [];
     }
-    listeners.push({ fn, order });
-    listeners.sort((a, b) => a.order - b.order);
+
+    xx.push({ fn, order });
+    xx.sort((a, b) => a.order - b.order);
   }
 
-  onReact<E extends keyof C>(name: E, fn: C[E], order = 0): void {
-    let listeners = this.reactors[name];
-    if (!listeners) {
-      listeners = this.reactors[name] = [];
+  onReact<E extends keyof RE>(name: E, fn: RE[E], order = 0): void {
+    let xx = this.clients.Reactors[name];
+    if (!xx) {
+      xx = this.clients.Reactors[name] = [];
     }
-    listeners.push({ fn, order });
-    listeners.sort((a, b) => a.order - b.order);
+
+    xx.push({ fn, order });
+    xx.sort((a, b) => a.order - b.order);
   }
 
-  offIntercept<E extends keyof B>(name: E, fn: B[E]): void {
-    const listeners = this.interceptors[name];
-    if (!listeners) {
+  offIntercept<E extends keyof IE>(name: E, fn: IE[E]): void {
+    const xx = this.clients.Interceptors[name];
+    if (!xx) {
       return;
     }
-    const i = listeners.findIndex((x) => x.fn === fn);
+
+    const i = xx.findIndex((x) => x.fn === fn);
     if (i >= 0) {
-      listeners.splice(i, 1);
+      xx.splice(i, 1);
     }
   }
 
-  offReact<E extends keyof C>(name: E, fn: C[E]): void {
-    const listeners = this.reactors[name];
-    if (!listeners) {
+  offReact<E extends keyof RE>(name: E, fn: RE[E]): void {
+    const xx = this.clients.Reactors[name];
+    if (!xx) {
       return;
     }
-    const i = listeners.findIndex((x) => x.fn === fn);
+
+    const i = xx.findIndex((x) => x.fn === fn);
     if (i >= 0) {
-      listeners.splice(i, 1);
+      xx.splice(i, 1);
     }
   }
 }
