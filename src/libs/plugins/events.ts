@@ -7,9 +7,6 @@ export type InterceptorEvents = {
   "stop": (
     _: InterceptorData<{ e?: PromiseRejectionEvent }>,
   ) => Promise<void>;
-  "stop.after": (
-    _: InterceptorData<{ e?: PromiseRejectionEvent }>,
-  ) => Promise<void>;
   "key.press": (_: InterceptorData<{ key: kitty.Key }>) => Promise<void>;
   "command": (_: InterceptorData<{ cmd: commands.Command }>) => Promise<void>;
 };

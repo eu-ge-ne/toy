@@ -59,7 +59,7 @@ host.onIntercept("start", async () => {
   vt.init();
 });
 
-host.onIntercept("stop.after", ({ e }) => {
+host.onIntercept("stop", ({ e }) => {
   vt.restore();
 
   if (e) {
@@ -67,7 +67,7 @@ host.onIntercept("stop.after", ({ e }) => {
   }
 
   Deno.exit(0);
-});
+}, 1000);
 
 host.onIntercept("command", async ({ cmd }) => {
   switch (cmd.name) {

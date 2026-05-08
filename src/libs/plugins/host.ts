@@ -79,7 +79,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   async stop(e?: PromiseRejectionEvent): Promise<void> {
     await this.emitter.intercept("stop", { e });
-    await this.emitter.intercept("stop.after", { e });
   }
 
   async command(cmd: commands.Command): Promise<void> {
