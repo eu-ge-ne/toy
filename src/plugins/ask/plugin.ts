@@ -5,52 +5,56 @@ import * as themes from "@libs/themes";
 
 import { AskWidget } from "./widget.ts";
 
-export function register(host: plugins.Host): void {
-  const widget = new AskWidget();
+export default {
+  register(api: plugins.Api): void {
+    const widget = new AskWidget();
 
-  host.onReact("resize", () => {
-    const { columns, rows } = Deno.consoleSize();
+    api.onReact("resize", () => {
+      const { columns, rows } = Deno.consoleSize();
 
-    const w = std.clamp(60, 0, columns);
-    const h = std.clamp(7, 0, rows);
-    const y = Math.trunc((rows - h) / 2);
-    const x = Math.trunc((columns - w) / 2);
+      const w = std.clamp(60, 0, columns);
+      const h = std.clamp(7, 0, rows);
+      const y = Math.trunc((rows - h) / 2);
+      const x = Math.trunc((columns - w) / 2);
 
-    widget.resize(w, h, y, x);
-  });
+      widget.resize(w, h, y, x);
+    });
 
-  host.onIntercept("command", async ({ cmd }) => {
-    switch (cmd.name) {
-      case "Theme":
-        widget.setTheme(themes.Themes[cmd.data]);
-        return;
-    }
-  });
-
-  host.registerAsk({
-    async open(message: string): Promise<boolean> {
-      widget.open(message);
-
-      const onRender = () => widget.render();
-
-      const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
-        data.cancel = true;
-
-        widget.onKeyPress(data.key);
-
-        if (!widget.opened) {
-          host.offReact("render", onRender);
-          host.offIntercept("key.press", onKeyPress);
+    api.onIntercept("command", async ({ cmd }) => {
+      switch (cmd.name) {
+        case "Theme":
+          widget.setTheme(themes.Themes[cmd.data]);
           return;
-        }
-      };
+      }
+    });
 
-      host.onReact("render", onRender, 1000);
-      host.onIntercept("key.press", onKeyPress, -1000);
+    api.registerAsk({
+      async open(message: string): Promise<boolean> {
+        widget.open(message);
 
-      await host.loop((ctx) => ctx.continue = widget.opened);
+        const onRender = () => widget.render();
 
-      return widget.result;
-    },
-  });
-}
+        const onKeyPress = async (
+          data: { cancel?: boolean; key: kitty.Key },
+        ) => {
+          data.cancel = true;
+
+          widget.onKeyPress(data.key);
+
+          if (!widget.opened) {
+            api.offReact("render", onRender);
+            api.offIntercept("key.press", onKeyPress);
+            return;
+          }
+        };
+
+        api.onReact("render", onRender, 1000);
+        api.onIntercept("key.press", onKeyPress, -1000);
+
+        await api.loop((ctx) => ctx.continue = widget.opened);
+
+        return widget.result;
+      },
+    });
+  },
+};

@@ -2,33 +2,12 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as vt from "@libs/vt";
 
+import { Plugin } from "@libs/plugins";
+import { Alert, Api, Ask, AskFileName, Doc, Files } from "./api.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
-export interface Alert {
-  open(_: string): Promise<void>;
-}
-
-export interface Ask {
-  open(_: string): Promise<boolean>;
-}
-
-export interface AskFileName {
-  open(_: string): Promise<string | undefined>;
-}
-
-export interface Files {
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-}
-
-export interface Doc {
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
-}
-
-export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
+export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
+  implements Api {
   private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
   alert!: Alert;
@@ -47,10 +26,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     );
   }
 
-  registerAlert(plugin: Alert): void {
-    this.alert = plugin;
-  }
-
   registerAsk(plugin: Ask): void {
     this.ask = plugin;
   }
@@ -65,6 +40,14 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   registerDoc(plugin: Doc): void {
     this.doc = plugin;
+  }
+
+  register(plugin: Plugin): void {
+    plugin.register(this);
+
+    if (plugin.registerAlert) {
+      this.alert = plugin.registerAlert(this);
+    }
   }
 
   resize(): void {
@@ -115,7 +98,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     await this.emitter.intercept("stop", { e });
   }
 
-  async command(cmd: commands.Command): Promise<void> {
+  async emitCommand(cmd: commands.Command): Promise<void> {
     await this.emitter.intercept("command", { cmd });
   }
 

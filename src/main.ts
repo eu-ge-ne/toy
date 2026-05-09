@@ -2,16 +2,16 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
-import * as alert from "@plugins/alert";
-import * as ask from "@plugins/ask";
-import * as askFileName from "@plugins/ask-file-name";
-import * as debug from "@plugins/debug";
-import * as editor from "@plugins/editor";
-import * as files from "@plugins/files";
-import * as footer from "@plugins/footer";
-import * as header from "@plugins/header";
-import * as palette from "@plugins/palette";
-import * as shortcuts from "@plugins/shortcuts";
+import alert from "@plugins/alert";
+import ask from "@plugins/ask";
+import askFileName from "@plugins/ask-file-name";
+import debug from "@plugins/debug";
+import editor from "@plugins/editor";
+import files from "@plugins/files";
+import footer from "@plugins/footer";
+import header from "@plugins/header";
+import palette from "@plugins/palette";
+import shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
 
@@ -31,7 +31,7 @@ if (args.version) {
 
 const host = new plugins.Host();
 
-alert.register(host);
+host.register(alert);
 ask.register(host);
 askFileName.register(host);
 debug.register(host);
@@ -82,7 +82,7 @@ host.onIntercept("command", async ({ cmd }) => {
 }, 1000);
 
 await host.emitStart({ version });
-await host.command({ name: "Theme", data: "Default" });
+await host.emitCommand({ name: "Theme", data: "Default" });
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
