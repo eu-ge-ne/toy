@@ -6,7 +6,7 @@ import { EditorWidget } from "@widgets/editor";
 let widget: EditorWidget;
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -95,7 +95,7 @@ export default {
       }
     });
   },
-  registerDoc(): plugins.Doc {
+  initDoc(): plugins.Doc {
     return {
       reset(): void {
         widget.resetChanges();
@@ -109,4 +109,4 @@ export default {
       },
     };
   },
-};
+} satisfies plugins.Plugin;

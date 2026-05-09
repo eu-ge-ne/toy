@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
     const widget = new FooterWidget();
 
     let visible = false;
@@ -45,4 +45,4 @@ export default {
       }
     });
   },
-};
+} satisfies plugins.Plugin;

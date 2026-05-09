@@ -5,10 +5,12 @@ import * as themes from "@libs/themes";
 
 import { AskWidget } from "./widget.ts";
 
-const widget = new AskWidget();
+let widget: AskWidget;
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
+    widget = new AskWidget();
+
     api.onReact("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
@@ -28,7 +30,7 @@ export default {
       }
     });
   },
-  registerAsk(api: plugins.Api): plugins.Ask {
+  initAsk(api: plugins.Api): plugins.Ask {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);
@@ -52,10 +54,10 @@ export default {
         api.onReact("render", onRender, 1000);
         api.onIntercept("key.press", onKeyPress, -1000);
 
-        await api.loop((ctx) => ctx.continue = widget.opened);
+        await api.run((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },
     };
   },
-};
+} satisfies plugins.Plugin;

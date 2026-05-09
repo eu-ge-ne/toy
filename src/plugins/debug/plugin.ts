@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
     const widget = new DebugWidget();
 
     let zen = true;
@@ -45,4 +45,4 @@ export default {
       }
     });
   },
-};
+} satisfies plugins.Plugin;

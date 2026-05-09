@@ -5,10 +5,12 @@ import * as themes from "@libs/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-const widget = new AlertWidget();
+let widget: AlertWidget;
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
+    widget = new AlertWidget();
+
     api.onReact("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
@@ -28,7 +30,7 @@ export default {
       }
     });
   },
-  registerAlert(api: plugins.Api): plugins.Alert {
+  initAlert(api: plugins.Api): plugins.Alert {
     return {
       async open(message: string): Promise<void> {
         widget.open(message);
@@ -52,7 +54,7 @@ export default {
         api.onReact("render", onRender, 1000);
         api.onIntercept("key.press", onKeyPress, -1000);
 
-        await api.loop((ctx) => ctx.continue = widget.opened);
+        await api.run((ctx) => ctx.continue = widget.opened);
       },
     };
   },

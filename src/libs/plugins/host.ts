@@ -27,26 +27,26 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
   }
 
   register(plugin: Plugin): void {
-    plugin.register?.(this);
+    plugin.init?.(this);
 
-    if (plugin.registerAlert) {
-      this.alert = plugin.registerAlert(this);
+    if (plugin.initAlert) {
+      this.alert = plugin.initAlert(this);
     }
 
-    if (plugin.registerAsk) {
-      this.ask = plugin.registerAsk(this);
+    if (plugin.initAsk) {
+      this.ask = plugin.initAsk(this);
     }
 
-    if (plugin.registerAskFileName) {
-      this.askFileName = plugin.registerAskFileName(this);
+    if (plugin.initAskFileName) {
+      this.askFileName = plugin.initAskFileName(this);
     }
 
-    if (plugin.registerDoc) {
-      this.doc = plugin.registerDoc(this);
+    if (plugin.initDoc) {
+      this.doc = plugin.initDoc(this);
     }
 
-    if (plugin.registerFiles) {
-      this.files = plugin.registerFiles(this);
+    if (plugin.initFiles) {
+      this.files = plugin.initFiles(this);
     }
   }
 
@@ -69,7 +69,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     this.emitter.react("debug.render", performance.now() - t0);
   }
 
-  async loop(
+  async run(
     iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void> {
     const ctx = { continue: true, layoutChanged: true };
