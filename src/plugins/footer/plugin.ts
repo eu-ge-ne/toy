@@ -9,13 +9,13 @@ export default {
 
     let visible = false;
 
-    api.onReact("resize", () => {
+    api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       widget.resize(columns, 1, rows - 1, 0);
     });
 
-    api.onReact("render", () => {
+    api.react("render", () => {
       if (!visible) {
         return;
       }
@@ -23,17 +23,17 @@ export default {
       widget.render();
     });
 
-    api.onReact("status.doc.cursor", ({ ln, col }) => {
+    api.react("status.doc.cursor", ({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });
 
-    api.onReact(
+    api.react(
       "status.doc.modified",
       ({ lineCount }) => widget.lineCount = lineCount,
     );
 
-    api.onIntercept("command", async ({ cmd }) => {
+    api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
         case "Zen":
           visible = !visible;

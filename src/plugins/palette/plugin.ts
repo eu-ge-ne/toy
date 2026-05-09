@@ -1,4 +1,3 @@
-import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
@@ -10,7 +9,7 @@ export default {
 
     let zen = true;
 
-    api.onReact("resize", () => {
+    api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       if (zen) {
@@ -20,7 +19,7 @@ export default {
       }
     });
 
-    api.onIntercept("command", async ({ cmd }) => {
+    api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
         case "Zen":
           zen = !zen;
@@ -39,22 +38,23 @@ export default {
     async function run(): Promise<void> {
       widget.open();
 
-      const onRender = () => widget.render();
+      const offRender = api.reactOrdered("render", 1000, () => widget.render());
 
-      const onKeyPress = async (data: { cancel?: boolean; key: kitty.Key }) => {
-        data.cancel = true;
+      const offKeyPress = api.interceptOrdered(
+        "key.press",
+        -1000,
+        async (data) => {
+          data.cancel = true;
 
-        widget.onKeyPress(data.key);
+          widget.onKeyPress(data.key);
+          if (widget.opened) {
+            return;
+          }
 
-        if (!widget.opened) {
-          api.offReact("render", onRender);
-          api.offIntercept("key.press", onKeyPress);
-          return;
-        }
-      };
-
-      api.onReact("render", onRender, 1000);
-      api.onIntercept("key.press", onKeyPress, -1000);
+          offRender();
+          offKeyPress();
+        },
+      );
 
       await api.run((ctx) => {
         ctx.continue = widget.opened;

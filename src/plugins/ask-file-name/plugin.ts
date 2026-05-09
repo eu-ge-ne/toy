@@ -1,4 +1,3 @@
-import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -11,7 +10,7 @@ export default {
   init(api: plugins.Api): void {
     widget = new AskFileNameWidget();
 
-    api.onReact("resize", () => {
+    api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -22,7 +21,7 @@ export default {
       widget.resize(w, h, y, x);
     });
 
-    api.onIntercept("command", async ({ cmd }) => {
+    api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
@@ -35,24 +34,27 @@ export default {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);
 
-        const onRender = () => widget.render();
+        const offRender = api.reactOrdered(
+          "render",
+          1000,
+          () => widget.render(),
+        );
 
-        const onKeyPress = async (
-          data: { cancel?: boolean; key: kitty.Key },
-        ) => {
-          data.cancel = true;
+        const offKeyPress = api.interceptOrdered(
+          "key.press",
+          -1000,
+          async (data) => {
+            data.cancel = true;
 
-          widget.onKeyPress(data.key);
+            widget.onKeyPress(data.key);
+            if (widget.opened) {
+              return;
+            }
 
-          if (!widget.opened) {
-            api.offReact("render", onRender);
-            api.offIntercept("key.press", onKeyPress);
-            return;
-          }
-        };
-
-        api.onReact("render", onRender, 1000);
-        api.onIntercept("key.press", onKeyPress, -1000);
+            offRender();
+            offKeyPress();
+          },
+        );
 
         await api.run((ctx) => ctx.continue = widget.opened);
 

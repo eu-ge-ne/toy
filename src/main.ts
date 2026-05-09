@@ -48,13 +48,13 @@ Deno.addSignalListener("SIGWINCH", () => {
   host.render();
 });
 
-host.onIntercept("start", async () => {
+host.intercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.emitStop(e));
 
   vt.init();
 });
 
-host.onIntercept("stop", ({ e }) => {
+host.interceptOrdered("stop", 1000, ({ e }) => {
   vt.restore();
 
   if (e) {
@@ -62,11 +62,11 @@ host.onIntercept("stop", ({ e }) => {
   }
 
   Deno.exit(0);
-}, 1000);
+});
 
 let layoutChanged = false;
 
-host.onIntercept("command", async ({ cmd }) => {
+host.interceptOrdered("command", 1000, async ({ cmd }) => {
   switch (cmd.name) {
     case "Exit":
       await host.emitStop();
@@ -80,7 +80,7 @@ host.onIntercept("command", async ({ cmd }) => {
       layoutChanged = true;
       return;
   }
-}, 1000);
+});
 
 await host.emitStart({ version });
 await host.emitCommand({ name: "Theme", data: "Default" });
