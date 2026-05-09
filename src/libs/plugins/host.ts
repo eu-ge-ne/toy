@@ -45,11 +45,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
       clients,
     );
-
-    Deno.addSignalListener("SIGWINCH", () => {
-      this.#resize();
-      this.#render();
-    });
   }
 
   registerAlert(plugin: Alert): void {
@@ -72,6 +67,25 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.doc = plugin;
   }
 
+  resize(): void {
+    this.emitter.react("resize");
+  }
+
+  render(): void {
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.emitter.react("render");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    this.debugRender(performance.now() - t0);
+  }
+
   async loop(
     iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void> {
@@ -79,11 +93,11 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
     while (ctx.continue) {
       if (ctx.layoutChanged) {
-        this.#resize();
+        this.resize();
         ctx.layoutChanged = false;
       }
 
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -123,24 +137,5 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
   statusDocCursor(ln: number, col: number): void {
     this.emitter.react("status.doc.cursor", { ln, col });
-  }
-
-  #resize(): void {
-    this.emitter.react("resize");
-  }
-
-  #render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.emitter.react("render");
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.debugRender(performance.now() - t0);
   }
 }

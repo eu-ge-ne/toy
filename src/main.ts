@@ -42,6 +42,11 @@ header.register(host);
 palette.register(host);
 shortcuts.register(host);
 
+Deno.addSignalListener("SIGWINCH", () => {
+  host.resize();
+  host.render();
+});
+
 host.onIntercept("start", async () => {
   globalThis.addEventListener("unhandledrejection", (e) => host.emitStop(e));
 
