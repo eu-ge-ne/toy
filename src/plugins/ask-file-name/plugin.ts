@@ -5,10 +5,12 @@ import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-const widget = new AskFileNameWidget();
+let widget: AskFileNameWidget;
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
+    widget = new AskFileNameWidget();
+
     api.onReact("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
@@ -28,7 +30,7 @@ export default {
       }
     });
   },
-  registerAskFileName(api: plugins.Api): plugins.AskFileName {
+  initAskFileName(api: plugins.Api): plugins.AskFileName {
     return {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);
@@ -52,10 +54,10 @@ export default {
         api.onReact("render", onRender, 1000);
         api.onIntercept("key.press", onKeyPress, -1000);
 
-        await api.loop((ctx) => ctx.continue = widget.opened);
+        await api.run((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },
     };
   },
-};
+} satisfies plugins.Plugin;

@@ -2,7 +2,7 @@ import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
 export default {
-  registerFiles(api: plugins.Api): plugins.Files {
+  initFiles(api: plugins.Api): plugins.Files {
     let fileName: string | undefined;
 
     return {
@@ -69,4 +69,4 @@ export default {
       },
     };
   },
-};
+} satisfies plugins.Plugin;

@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
     const widget = new HeaderWidget();
 
     let visible = false;
@@ -42,4 +42,4 @@ export default {
       }
     });
   },
-};
+} satisfies plugins.Plugin;

@@ -27,14 +27,14 @@ export type Doc = {
   read(): Iterable<string>;
 };
 
-export type Api = {
+export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   alert: Alert;
   ask: Ask;
   askFileName: AskFileName;
   doc: Doc;
   files: Files;
 
-  loop(
+  run(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;
 
@@ -46,4 +46,4 @@ export type Api = {
   emitStatusDocName(name: string): void;
   emitStatusDocModified(modified: boolean, lineCount: number): void;
   emitStatusDocCursor(ln: number, col: number): void;
-} & events.Listener<InterceptorEvents, ReactorEvents>;
+};

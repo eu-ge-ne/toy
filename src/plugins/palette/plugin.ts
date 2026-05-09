@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 export default {
-  register(api: plugins.Api): void {
+  init(api: plugins.Api): void {
     const widget = new PaletteWidget();
 
     let zen = true;
@@ -56,7 +56,7 @@ export default {
       api.onReact("render", onRender, 1000);
       api.onIntercept("key.press", onKeyPress, -1000);
 
-      await api.loop((ctx) => {
+      await api.run((ctx) => {
         ctx.continue = widget.opened;
         ctx.layoutChanged = true;
       });
@@ -67,4 +67,4 @@ export default {
       }
     }
   },
-};
+} satisfies plugins.Plugin;
