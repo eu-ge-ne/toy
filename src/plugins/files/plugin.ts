@@ -2,10 +2,10 @@ import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
 export default {
-  register(api: plugins.Api): void {
+  registerFiles(api: plugins.Api): plugins.Files {
     let fileName: string | undefined;
 
-    api.registerFiles({
+    return {
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
@@ -28,7 +28,6 @@ export default {
           }
         }
       },
-
       async save(): Promise<void> {
         if (!fileName) {
           await api.files.saveAs();
@@ -46,7 +45,6 @@ export default {
           await api.files.saveAs();
         }
       },
-
       async saveAs(): Promise<void> {
         while (true) {
           const newFileName = await api.askFileName.open(fileName ?? "");
@@ -69,6 +67,6 @@ export default {
           }
         }
       },
-    });
+    };
   },
 };

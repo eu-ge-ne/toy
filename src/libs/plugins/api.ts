@@ -34,8 +34,6 @@ export type Api = {
   doc: Doc;
   files: Files;
 
-  registerFiles(plugin: Files): void;
-
   loop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;

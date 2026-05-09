@@ -36,12 +36,11 @@ host.register(ask);
 host.register(askFileName);
 host.register(debug);
 host.register(editor);
-
-files.register(host);
-footer.register(host);
-header.register(host);
-palette.register(host);
-shortcuts.register(host);
+host.register(files);
+host.register(footer);
+host.register(header);
+host.register(palette);
+host.register(shortcuts);
 
 Deno.addSignalListener("SIGWINCH", () => {
   host.resize();

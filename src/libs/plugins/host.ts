@@ -26,16 +26,8 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     );
   }
 
-  registerFiles(plugin: Files): void {
-    this.files = plugin;
-  }
-
-  registerDoc(plugin: Doc): void {
-    this.doc = plugin;
-  }
-
   register(plugin: Plugin): void {
-    plugin.register(this);
+    plugin.register?.(this);
 
     if (plugin.registerAlert) {
       this.alert = plugin.registerAlert(this);
@@ -51,6 +43,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
 
     if (plugin.registerDoc) {
       this.doc = plugin.registerDoc(this);
+    }
+
+    if (plugin.registerFiles) {
+      this.files = plugin.registerFiles(this);
     }
   }
 
