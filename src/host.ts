@@ -1,32 +1,39 @@
 import * as commands from "@libs/commands";
 import * as events from "@libs/events";
+import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-import { Plugin } from "@libs/plugins";
-import { Alert, Api, Ask, AskFileName, Doc, Files } from "./api.ts";
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
+export class Host
+  extends events.Listener<plugins.InterceptorEvents, plugins.ReactorEvents>
+  implements plugins.Api {
+  private readonly emitter: events.Emitter<
+    plugins.InterceptorEvents,
+    plugins.ReactorEvents
+  >;
 
-export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
-  implements Api {
-  private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
-
-  alert!: Alert;
-  ask!: Ask;
-  askFileName!: AskFileName;
-  files!: Files;
-  doc!: Doc;
+  alert!: plugins.Alert;
+  ask!: plugins.Ask;
+  askFileName!: plugins.AskFileName;
+  files!: plugins.Files;
+  doc!: plugins.Doc;
 
   constructor() {
-    const clients = new events.Clients<InterceptorEvents, ReactorEvents>();
+    const clients = new events.Clients<
+      plugins.InterceptorEvents,
+      plugins.ReactorEvents
+    >();
 
     super(clients);
 
-    this.emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
+    this.emitter = new events.Emitter<
+      plugins.InterceptorEvents,
+      plugins.ReactorEvents
+    >(
       clients,
     );
   }
 
-  register(plugin: Plugin): void {
+  register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
 
     if (plugin.initAlert) {
