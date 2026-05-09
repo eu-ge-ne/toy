@@ -26,10 +26,6 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     );
   }
 
-  registerAskFileName(plugin: AskFileName): void {
-    this.askFileName = plugin;
-  }
-
   registerFiles(plugin: Files): void {
     this.files = plugin;
   }
@@ -47,6 +43,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
 
     if (plugin.registerAsk) {
       this.ask = plugin.registerAsk(this);
+    }
+
+    if (plugin.registerAskFileName) {
+      this.askFileName = plugin.registerAskFileName(this);
     }
   }
 

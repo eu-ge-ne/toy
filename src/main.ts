@@ -33,8 +33,8 @@ const host = new plugins.Host();
 
 host.register(alert);
 host.register(ask);
+host.register(askFileName);
 
-askFileName.register(host);
 debug.register(host);
 editor.register(host);
 files.register(host);

@@ -34,7 +34,6 @@ export type Api = {
   doc: Doc;
   files: Files;
 
-  registerAskFileName(plugin: AskFileName): void;
   registerDoc(plugin: Doc): void;
   registerFiles(plugin: Files): void;
 
