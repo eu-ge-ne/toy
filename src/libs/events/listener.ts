@@ -45,28 +45,6 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
     return () => this.#offReact(name, fn);
   }
 
-  /*
-  onIntercept<E extends keyof IE>(name: E, fn: IE[E], order = 0): void {
-    let xx = this.clients.Interceptors[name];
-    if (!xx) {
-      xx = this.clients.Interceptors[name] = [];
-    }
-
-    xx.push({ fn, order });
-    xx.sort((a, b) => a.order - b.order);
-  }
-
-  onReact<E extends keyof RE>(name: E, fn: RE[E], order = 0): void {
-    let xx = this.clients.Reactors[name];
-    if (!xx) {
-      xx = this.clients.Reactors[name] = [];
-    }
-
-    xx.push({ fn, order });
-    xx.sort((a, b) => a.order - b.order);
-  }
-  */
-
   #offIntercept<E extends keyof IE>(name: E, fn: IE[E]): void {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
