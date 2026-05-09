@@ -10,11 +10,11 @@ export default {
 
     let zen = true;
 
-    api.onIntercept("start", async ({ version }) => {
+    api.intercept("start", async ({ version }) => {
       widget.version = version;
     });
 
-    api.onReact("resize", () => {
+    api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(30, 0, columns);
@@ -25,11 +25,11 @@ export default {
       widget.resize(w, h, y, x);
     });
 
-    api.onReact("render", () => widget.render(), 1000);
-    api.onReact("debug.render", (x) => widget.renderElapsed = x);
-    api.onReact("debug.input", (x) => widget.inputElapsed = x);
+    api.reactOrdered("render", 1000, () => widget.render());
+    api.react("debug.render", (x) => widget.renderElapsed = x);
+    api.react("debug.input", (x) => widget.inputElapsed = x);
 
-    api.onIntercept("command", async ({ cmd }) => {
+    api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
         case "Zen":
           zen = !zen;

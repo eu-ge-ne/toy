@@ -17,14 +17,14 @@ export default {
 
     let zen = true;
 
-    api.onIntercept("start", async () => {
+    api.intercept("start", async () => {
       widget.setFocused(true);
 
       widget.resetChanges();
       widget.resetCursor();
     });
 
-    api.onIntercept("stop", async ({ e }) => {
+    api.intercept("stop", async ({ e }) => {
       if (e) {
         return;
       }
@@ -36,7 +36,7 @@ export default {
       }
     });
 
-    api.onReact("resize", () => {
+    api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       if (zen) {
@@ -46,11 +46,11 @@ export default {
       }
     });
 
-    api.onReact("render", () => widget.render());
+    api.react("render", () => widget.render());
 
-    api.onIntercept("key.press", async ({ key }) => widget.onKey(key));
+    api.intercept("key.press", async ({ key }) => widget.onKey(key));
 
-    api.onIntercept("command", async ({ cmd }) => {
+    api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
         case "Zen":
           zen = !zen;

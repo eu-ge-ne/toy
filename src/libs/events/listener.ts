@@ -5,7 +5,19 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
   constructor(private readonly clients: Clients<IE, RE>) {
   }
 
-  onIntercept<E extends keyof IE>(name: E, fn: IE[E], order = 0): void {
+  intercept<E extends keyof IE>(name: E, fn: IE[E]): () => void {
+    return this.interceptOrdered(name, 0, fn);
+  }
+
+  react<E extends keyof RE>(name: E, fn: RE[E]): () => void {
+    return this.reactOrdered(name, 0, fn);
+  }
+
+  interceptOrdered<E extends keyof IE>(
+    name: E,
+    order: number,
+    fn: IE[E],
+  ): () => void {
     let xx = this.clients.Interceptors[name];
     if (!xx) {
       xx = this.clients.Interceptors[name] = [];
@@ -13,9 +25,15 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
 
     xx.push({ fn, order });
     xx.sort((a, b) => a.order - b.order);
+
+    return () => this.#offIntercept(name, fn);
   }
 
-  onReact<E extends keyof RE>(name: E, fn: RE[E], order = 0): void {
+  reactOrdered<E extends keyof RE>(
+    name: E,
+    order: number,
+    fn: RE[E],
+  ): () => void {
     let xx = this.clients.Reactors[name];
     if (!xx) {
       xx = this.clients.Reactors[name] = [];
@@ -23,9 +41,11 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
 
     xx.push({ fn, order });
     xx.sort((a, b) => a.order - b.order);
+
+    return () => this.#offReact(name, fn);
   }
 
-  offIntercept<E extends keyof IE>(name: E, fn: IE[E]): void {
+  #offIntercept<E extends keyof IE>(name: E, fn: IE[E]): void {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
       return;
@@ -37,7 +57,7 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
     }
   }
 
-  offReact<E extends keyof RE>(name: E, fn: RE[E]): void {
+  #offReact<E extends keyof RE>(name: E, fn: RE[E]): void {
     const xx = this.clients.Reactors[name];
     if (!xx) {
       return;

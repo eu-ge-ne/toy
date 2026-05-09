@@ -4,7 +4,7 @@ import * as plugins from "@libs/plugins";
 
 export default {
   init(api: plugins.Api): void {
-    api.onIntercept("key.press", async (data) => {
+    api.interceptOrdered("key.press", -1000, async (data) => {
       const name = commands.ShortcutToCommand[kitty.shortcut(data.key)];
       if (!name) {
         return;
@@ -13,6 +13,6 @@ export default {
       data.cancel = true;
 
       await api.emitCommand({ name } as commands.Command);
-    }, -1000);
+    });
   },
 } satisfies plugins.Plugin;
