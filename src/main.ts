@@ -32,7 +32,8 @@ if (args.version) {
 const host = new plugins.Host();
 
 host.register(alert);
-ask.register(host);
+host.register(ask);
+
 askFileName.register(host);
 debug.register(host);
 editor.register(host);
