@@ -34,9 +34,9 @@ const host = new plugins.Host();
 host.register(alert);
 host.register(ask);
 host.register(askFileName);
+host.register(debug);
+host.register(editor);
 
-debug.register(host);
-editor.register(host);
 files.register(host);
 footer.register(host);
 header.register(host);

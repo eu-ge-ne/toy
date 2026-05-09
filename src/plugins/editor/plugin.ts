@@ -3,9 +3,11 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
+let widget: EditorWidget;
+
 export default {
   register(api: plugins.Api): void {
-    const widget = new EditorWidget({
+    widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
         api.statusDocModified(widget.modified, widget.lineCount),
@@ -92,8 +94,9 @@ export default {
           return;
       }
     });
-
-    api.registerDoc({
+  },
+  registerDoc(): plugins.Doc {
+    return {
       reset(): void {
         widget.resetChanges();
         widget.resetCursor();
@@ -104,6 +107,6 @@ export default {
       read(): Iterable<string> {
         return widget.read();
       },
-    });
+    };
   },
 };

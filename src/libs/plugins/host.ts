@@ -48,6 +48,10 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     if (plugin.registerAskFileName) {
       this.askFileName = plugin.registerAskFileName(this);
     }
+
+    if (plugin.registerDoc) {
+      this.doc = plugin.registerDoc(this);
+    }
   }
 
   resize(): void {
