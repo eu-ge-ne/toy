@@ -1,7 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
+
 import alert from "@plugins/alert";
 import ask from "@plugins/ask";
 import askFileName from "@plugins/ask-file-name";
@@ -14,6 +14,7 @@ import palette from "@plugins/palette";
 import shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
+import { Host } from "./host.ts";
 
 const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
 
@@ -29,7 +30,7 @@ if (args.version) {
   Deno.exit();
 }
 
-const host = new plugins.Host();
+const host = new Host();
 
 host.register(alert);
 host.register(ask);
