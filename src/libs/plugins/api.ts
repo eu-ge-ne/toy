@@ -41,9 +41,9 @@ export type Api = {
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
   emitCommand(cmd: commands.Command): Promise<void>;
 
-  debugInput(elapsed: number): void;
+  emitDebugInput(elapsed: number): void;
 
-  statusDocName(name: string): void;
-  statusDocModified(modified: boolean, lineCount: number): void;
-  statusDocCursor(ln: number, col: number): void;
+  emitStatusDocName(name: string): void;
+  emitStatusDocModified(modified: boolean, lineCount: number): void;
+  emitStatusDocCursor(ln: number, col: number): void;
 } & events.Listener<InterceptorEvents, ReactorEvents>;

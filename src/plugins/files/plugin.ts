@@ -14,7 +14,7 @@ export default {
 
           api.doc.reset();
 
-          api.statusDocName(newFileName);
+          api.emitStatusDocName(newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -56,7 +56,7 @@ export default {
             await files.save(newFileName, api.doc.read());
 
             fileName = newFileName;
-            api.statusDocName(newFileName);
+            api.emitStatusDocName(newFileName);
 
             api.doc.reset();
           } catch (err) {

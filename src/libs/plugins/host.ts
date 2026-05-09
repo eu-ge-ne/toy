@@ -66,7 +66,7 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     vt.buf.flush();
     vt.sync.esu();
 
-    this.debugRender(performance.now() - t0);
+    this.emitter.react("debug.render", performance.now() - t0);
   }
 
   async loop(
@@ -102,23 +102,19 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
     await this.emitter.intercept("command", { cmd });
   }
 
-  debugRender(elapsed: number): void {
-    this.emitter.react("debug.render", elapsed);
-  }
-
-  debugInput(elapsed: number): void {
+  emitDebugInput(elapsed: number): void {
     this.emitter.react("debug.input", elapsed);
   }
 
-  statusDocName(name: string): void {
+  emitStatusDocName(name: string): void {
     this.emitter.react("status.doc.name", name);
   }
 
-  statusDocModified(modified: boolean, lineCount: number): void {
+  emitStatusDocModified(modified: boolean, lineCount: number): void {
     this.emitter.react("status.doc.modified", { modified, lineCount });
   }
 
-  statusDocCursor(ln: number, col: number): void {
+  emitStatusDocCursor(ln: number, col: number): void {
     this.emitter.react("status.doc.cursor", { ln, col });
   }
 }

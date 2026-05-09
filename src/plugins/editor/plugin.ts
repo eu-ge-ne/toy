@@ -10,9 +10,9 @@ export default {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        api.statusDocModified(widget.modified, widget.lineCount),
-      onCursorChange: (x) => api.statusDocCursor(x.ln, x.col),
-      onKeyHandle: (x) => api.debugInput(x),
+        api.emitStatusDocModified(widget.modified, widget.lineCount),
+      onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
+      onKeyHandle: (x) => api.emitDebugInput(x),
     });
 
     let zen = true;
