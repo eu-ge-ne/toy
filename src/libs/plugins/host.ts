@@ -2,33 +2,12 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as vt from "@libs/vt";
 
+import { Plugin } from "@libs/plugins";
+import { Alert, Api, Ask, AskFileName, Doc, Files } from "./api.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
-export interface Alert {
-  open(_: string): Promise<void>;
-}
-
-export interface Ask {
-  open(_: string): Promise<boolean>;
-}
-
-export interface AskFileName {
-  open(_: string): Promise<string | undefined>;
-}
-
-export interface Files {
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-}
-
-export interface Doc {
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
-}
-
-export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
+export class Host extends events.Listener<InterceptorEvents, ReactorEvents>
+  implements Api {
   private readonly emitter: events.Emitter<InterceptorEvents, ReactorEvents>;
 
   alert!: Alert;
@@ -45,31 +24,49 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     this.emitter = new events.Emitter<InterceptorEvents, ReactorEvents>(
       clients,
     );
-
-    Deno.addSignalListener("SIGWINCH", () => {
-      this.#resize();
-      this.#render();
-    });
   }
 
-  registerAlert(plugin: Alert): void {
-    this.alert = plugin;
+  register(plugin: Plugin): void {
+    plugin.register?.(this);
+
+    if (plugin.registerAlert) {
+      this.alert = plugin.registerAlert(this);
+    }
+
+    if (plugin.registerAsk) {
+      this.ask = plugin.registerAsk(this);
+    }
+
+    if (plugin.registerAskFileName) {
+      this.askFileName = plugin.registerAskFileName(this);
+    }
+
+    if (plugin.registerDoc) {
+      this.doc = plugin.registerDoc(this);
+    }
+
+    if (plugin.registerFiles) {
+      this.files = plugin.registerFiles(this);
+    }
   }
 
-  registerAsk(plugin: Ask): void {
-    this.ask = plugin;
+  resize(): void {
+    this.emitter.react("resize");
   }
 
-  registerAskFileName(plugin: AskFileName): void {
-    this.askFileName = plugin;
-  }
+  render(): void {
+    const t0 = performance.now();
 
-  registerFiles(plugin: Files): void {
-    this.files = plugin;
-  }
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
 
-  registerDoc(plugin: Doc): void {
-    this.doc = plugin;
+    this.emitter.react("render");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    this.emitter.react("debug.render", performance.now() - t0);
   }
 
   async loop(
@@ -79,11 +76,11 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
 
     while (ctx.continue) {
       if (ctx.layoutChanged) {
-        this.#resize();
+        this.resize();
         ctx.layoutChanged = false;
       }
 
-      this.#render();
+      this.render();
 
       const key = await vt.readKey();
 
@@ -101,46 +98,23 @@ export class Host extends events.Listener<InterceptorEvents, ReactorEvents> {
     await this.emitter.intercept("stop", { e });
   }
 
-  async command(cmd: commands.Command): Promise<void> {
+  async emitCommand(cmd: commands.Command): Promise<void> {
     await this.emitter.intercept("command", { cmd });
   }
 
-  debugRender(elapsed: number): void {
-    this.emitter.react("debug.render", elapsed);
-  }
-
-  debugInput(elapsed: number): void {
+  emitDebugInput(elapsed: number): void {
     this.emitter.react("debug.input", elapsed);
   }
 
-  statusDocName(name: string): void {
+  emitStatusDocName(name: string): void {
     this.emitter.react("status.doc.name", name);
   }
 
-  statusDocModified(modified: boolean, lineCount: number): void {
+  emitStatusDocModified(modified: boolean, lineCount: number): void {
     this.emitter.react("status.doc.modified", { modified, lineCount });
   }
 
-  statusDocCursor(ln: number, col: number): void {
+  emitStatusDocCursor(ln: number, col: number): void {
     this.emitter.react("status.doc.cursor", { ln, col });
-  }
-
-  #resize(): void {
-    this.emitter.react("resize");
-  }
-
-  #render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.emitter.react("render");
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.debugRender(performance.now() - t0);
   }
 }
