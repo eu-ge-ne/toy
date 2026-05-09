@@ -76,7 +76,7 @@ export class Host
     this.emitter.react("debug.render", performance.now() - t0);
   }
 
-  async run(
+  async runInputLoop(
     iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void> {
     const ctx = { continue: true, layoutChanged: true };

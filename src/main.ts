@@ -89,7 +89,7 @@ if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);
 }
 
-await host.run((ctx) => {
+await host.runInputLoop((ctx) => {
   if (layoutChanged) {
     ctx.layoutChanged = true;
     layoutChanged = false;

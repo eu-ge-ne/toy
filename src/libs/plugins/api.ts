@@ -34,7 +34,7 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   doc: Doc;
   files: Files;
 
-  run(
+  runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;
 
