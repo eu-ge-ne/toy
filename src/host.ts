@@ -12,6 +12,7 @@ export class Host
     plugins.ReactorEvents
   >;
 
+  palette!: plugins.Palette;
   alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
@@ -36,6 +37,10 @@ export class Host
 
   register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
+
+    if (plugin.initPalette) {
+      this.palette = plugin.initPalette(this);
+    }
 
     if (plugin.initAlert) {
       this.alert = plugin.initAlert(this);
