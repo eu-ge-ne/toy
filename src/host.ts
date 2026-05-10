@@ -1,5 +1,6 @@
 import * as commands from "@libs/commands";
 import * as events from "@libs/events";
+import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
@@ -76,8 +77,16 @@ export class Host
     this.emitter.react("debug.render", performance.now() - t0);
   }
 
+  async keyPress(key: kitty.Key): Promise<void> {
+    const t0 = performance.now();
+
+    await this.emitter.intercept("key.press", { key });
+
+    this.emitter.react("debug.key.press", performance.now() - t0);
+  }
+
   async runInputLoop(
-    iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
+    cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void> {
     const ctx = { continue: true, layoutChanged: true };
 
@@ -90,10 +99,9 @@ export class Host
       this.render();
 
       const key = await vt.readKey();
+      await this.keyPress(key);
 
-      await this.emitter.intercept("key.press", { key });
-
-      iter(ctx);
+      cb(ctx);
     }
   }
 
@@ -107,10 +115,6 @@ export class Host
 
   async emitCommand(cmd: commands.Command): Promise<void> {
     await this.emitter.intercept("command", { cmd });
-  }
-
-  emitDebugInput(elapsed: number): void {
-    this.emitter.react("debug.input", elapsed);
   }
 
   emitStatusDocName(name: string): void {
