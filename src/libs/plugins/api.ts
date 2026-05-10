@@ -34,6 +34,8 @@ export type Doc = {
   reset(): void;
   write(_: string): void;
   read(): Iterable<string>;
+  toggleWhitespace(): void;
+  toggleWrap(): void;
 };
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {

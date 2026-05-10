@@ -102,15 +102,15 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       { name: "Undo" },
       CommandToShortcuts["Undo"],
     ),
-    new Option<Command>(
+    new Option(
       "View: Toggle Render Whitespace",
-      { name: "Whitespace" },
-      CommandToShortcuts["Whitespace"],
+      async (api: plugins.Api) => api.doc.toggleWhitespace(),
+      ["F5"],
     ),
-    new Option<Command>(
+    new Option(
       "View: Toggle Line Wrap",
-      { name: "Wrap" },
-      CommandToShortcuts["Wrap"],
+      async (api: plugins.Api) => api.doc.toggleWrap(),
+      ["F6"],
     ),
     new Option(
       "Global: Toggle Zen Mode",
