@@ -6,10 +6,7 @@ import { ConfirmApi } from "./confirm.ts";
 import { DebugApi } from "./debug.ts";
 import { DocApi } from "./doc.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
-
-export type Palette = {
-  open(): Promise<void>;
-};
+import { PaletteApi } from "./palette.ts";
 
 export type AskFileName = {
   open(_: string): Promise<string | undefined>;
@@ -20,9 +17,8 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   doc: DocApi;
   alert: AlertApi;
   confirm: ConfirmApi;
-
-  palette: Palette;
   askFileName: AskFileName;
+  palette: PaletteApi;
 
   runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,

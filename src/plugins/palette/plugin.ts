@@ -4,12 +4,11 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 let widget: PaletteWidget;
+let zen = true;
 
 export default {
   init(api: plugins.Api): void {
     widget = new PaletteWidget();
-
-    let zen = true;
 
     api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -24,7 +23,7 @@ export default {
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
-  initPalette(api: plugins.Api): plugins.Palette {
+  paletteApi(api: plugins.Api): plugins.PaletteApi {
     return {
       async open(): Promise<void> {
         widget.open();
