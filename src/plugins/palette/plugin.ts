@@ -56,7 +56,7 @@ export default {
         },
       );
 
-      await api.run((ctx) => {
+      await api.runInputLoop((ctx) => {
         ctx.continue = widget.opened;
         ctx.layoutChanged = true;
       });
