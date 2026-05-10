@@ -2,6 +2,7 @@ import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
 import { DebugApi } from "./debug.ts";
+import { DocApi } from "./doc.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
 export type Palette = {
@@ -20,30 +21,14 @@ export type AskFileName = {
   open(_: string): Promise<string | undefined>;
 };
 
-export type Doc = {
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
-  toggleWhitespace(): void;
-  toggleWrap(): void;
-  selectAll(): void;
-  undo(): void;
-  redo(): void;
-  copy(): void;
-  cut(): void;
-  paste(): void;
-};
-
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   debug: DebugApi;
+  doc: DocApi;
+
   palette: Palette;
   alert: Alert;
   ask: Ask;
   askFileName: AskFileName;
-  doc: Doc;
 
   runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,

@@ -6,6 +6,7 @@ import { EditorWidget } from "@widgets/editor";
 
 let widget: EditorWidget;
 let fileName: string | undefined;
+let zen = true;
 
 export default {
   init(api: plugins.Api): void {
@@ -15,8 +16,6 @@ export default {
         api.emitStatusDocModified(widget.modified, widget.lineCount),
       onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
     });
-
-    let zen = true;
 
     api.intercept("start", async () => {
       widget.setFocused(true);
@@ -53,7 +52,7 @@ export default {
     api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initDoc(api: plugins.Api): plugins.Doc {
+  initDocApi(api: plugins.Api): plugins.DocApi {
     return {
       async open(newFileName: string): Promise<void> {
         try {

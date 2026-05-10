@@ -13,11 +13,12 @@ export class Host
   >;
 
   debug!: plugins.DebugApi;
+  doc!: plugins.DocApi;
+
   palette!: plugins.Palette;
   alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
-  doc!: plugins.Doc;
 
   constructor() {
     const clients = new events.Clients<
@@ -42,6 +43,10 @@ export class Host
       this.debug = plugin.initDebugApi(this);
     }
 
+    if (plugin.initDocApi) {
+      this.doc = plugin.initDocApi(this);
+    }
+
     if (plugin.initPalette) {
       this.palette = plugin.initPalette(this);
     }
@@ -56,10 +61,6 @@ export class Host
 
     if (plugin.initAskFileName) {
       this.askFileName = plugin.initAskFileName(this);
-    }
-
-    if (plugin.initDoc) {
-      this.doc = plugin.initDoc(this);
     }
   }
 
