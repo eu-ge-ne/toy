@@ -4,7 +4,6 @@ export const ShortcutToCommand: Record<string, Command["name"]> = {
   "F2": "Save",
   "F5": "Whitespace",
   "F6": "Wrap",
-  "F10": "Exit",
 
   "⌃A": "SelectAll",
   "⌘A": "SelectAll",
