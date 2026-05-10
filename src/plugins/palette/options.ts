@@ -4,8 +4,8 @@ import * as plugins from "@libs/plugins";
 export class Option<T> {
   constructor(
     public readonly name: string,
-    public readonly shortcuts: string[] = [],
     public readonly value: T,
+    public readonly shortcuts: string[] = [],
   ) {
   }
 
@@ -20,112 +20,101 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
   [
     new Option<Command>(
       "Edit: Copy",
-      CommandToShortcuts["Copy"],
       { name: "Copy" },
+      CommandToShortcuts["Copy"],
     ),
     new Option<Command>(
       "Edit: Cut",
-      CommandToShortcuts["Cut"],
       { name: "Cut" },
+      CommandToShortcuts["Cut"],
     ),
     new Option(
       "Global: Toggle Debug Panel",
-      undefined,
       async (api: plugins.Api) => api.debug.toggle(),
     ),
     new Option(
       "Global: Exit",
-      ["F10"],
       (api: plugins.Api) => api.emitStop(),
+      ["F10"],
     ),
     new Option<Command>(
       "Edit: Select All",
-      CommandToShortcuts["SelectAll"],
       { name: "SelectAll" },
+      CommandToShortcuts["SelectAll"],
     ),
     new Option<Command>(
       "Edit: Paste",
-      CommandToShortcuts["Paste"],
       { name: "Paste" },
+      CommandToShortcuts["Paste"],
     ),
     new Option<Command>(
       "Edit: Redo",
-      CommandToShortcuts["Redo"],
       { name: "Redo" },
+      CommandToShortcuts["Redo"],
     ),
     new Option<Command>(
       "Global: Save",
-      CommandToShortcuts["Save"],
       { name: "Save" },
+      CommandToShortcuts["Save"],
     ),
     new Option(
       "Theme: Base16",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Base16"),
     ),
     new Option(
       "Theme: Slate",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Slate"),
     ),
     new Option(
       "Theme: Gray",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Gray"),
     ),
     new Option(
       "Theme: Zinc",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Zinc"),
     ),
     new Option(
       "Theme: Neutral",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Neutral"),
     ),
     new Option(
       "Theme: Stone",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Stone"),
     ),
     new Option(
       "Theme: Taupe",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Taupe"),
     ),
     new Option(
       "Theme: Mauve",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Mauve"),
     ),
     new Option(
       "Theme: Mist",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Mist"),
     ),
     new Option(
       "Theme: Olive",
-      undefined,
       async (api: plugins.Api) => api.emitSetTheme("Olive"),
     ),
     new Option<Command>(
       "Edit: Undo",
-      CommandToShortcuts["Undo"],
       { name: "Undo" },
+      CommandToShortcuts["Undo"],
     ),
     new Option<Command>(
       "View: Toggle Render Whitespace",
-      CommandToShortcuts["Whitespace"],
       { name: "Whitespace" },
+      CommandToShortcuts["Whitespace"],
     ),
     new Option<Command>(
       "View: Toggle Line Wrap",
-      CommandToShortcuts["Wrap"],
       { name: "Wrap" },
+      CommandToShortcuts["Wrap"],
     ),
     new Option(
       "Global: Toggle Zen Mode",
-      ["F11"],
       async (api: plugins.Api) => api.emitToggleZen(),
+      ["F11"],
     ),
   ].sort((a, b) => a.name.localeCompare(b.name));
