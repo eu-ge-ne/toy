@@ -56,10 +56,8 @@ export default {
           ctx.layoutChanged = true;
         });
 
-        if (typeof widget.result === "function") {
+        if (typeof widget.result !== "undefined") {
           await widget.result(api);
-        } else if (widget.result) {
-          await api.emitCommand(widget.result);
         }
       },
     };

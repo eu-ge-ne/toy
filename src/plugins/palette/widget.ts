@@ -1,4 +1,3 @@
-import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -12,12 +11,12 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
-  result: commands.Command | ((_: plugins.Api) => Promise<void>) | undefined;
+  result: ((_: plugins.Api) => Promise<void>) | undefined;
 
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
-    list: ListWidget<commands.Command | ((_: plugins.Api) => Promise<void>)>;
+    list: ListWidget<(_: plugins.Api) => Promise<void>>;
   };
 
   constructor() {
@@ -25,7 +24,7 @@ export class PaletteWidget extends widgets.Modal {
 
     this.children = {
       bg: new BgWidget(),
-      list: new ListWidget<commands.Command>({
+      list: new ListWidget<(_: plugins.Api) => Promise<void>>({
         emptyText: "No matching commands",
       }),
       editor: new EditorWidget({ multiLine: false }),

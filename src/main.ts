@@ -7,7 +7,6 @@ import ask from "@plugins/ask";
 import askFileName from "@plugins/ask-file-name";
 import debug from "@plugins/debug";
 import editor from "@plugins/editor";
-import files from "@plugins/files";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
 import palette from "@plugins/palette";
@@ -37,7 +36,6 @@ host.register(ask);
 host.register(askFileName);
 host.register(debug);
 host.register(editor);
-host.register(files);
 host.register(footer);
 host.register(header);
 host.register(palette);
@@ -66,21 +64,13 @@ host.interceptOrdered("stop", 1000, ({ e }) => {
 
 let layoutChanged = false;
 
-host.interceptOrdered("command", 1000, async ({ cmd }) => {
-  switch (cmd.name) {
-    case "Save":
-      await host.files.save();
-      return;
-  }
-});
-
 host.reactOrdered("zen.toggle", 1000, () => layoutChanged = true);
 
 await host.emitStart({ version });
 host.emitSetTheme("Default");
 
 if (typeof args._[0] === "string") {
-  await host.files.open(args._[0]);
+  await host.doc.open(args._[0]);
 }
 
 await host.runInputLoop((ctx) => {
