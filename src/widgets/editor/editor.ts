@@ -103,11 +103,11 @@ export class EditorWidget extends widgets.Widget<Params> {
     this.children.content.setFocused(x);
   }
 
-  toggleWrapped(): void {
+  toggleWrap(): void {
     if (!this.#focused) {
       return;
     }
-    this.children.content.toggleWrapped();
+    this.children.content.toggleWrap();
     this.#cursor.home(false);
   }
 

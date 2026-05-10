@@ -12,8 +12,4 @@ export type Command = {
   name: "SelectAll";
 } | {
   name: "Undo";
-} | {
-  name: "Whitespace";
-} | {
-  name: "Wrap";
 };

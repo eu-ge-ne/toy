@@ -116,7 +116,7 @@ export class Content extends widgets.Widget {
     this.#focused = x;
   }
 
-  toggleWrapped(): void {
+  toggleWrap(): void {
     this.#mode.wrap = !this.#mode.wrap;
   }
 

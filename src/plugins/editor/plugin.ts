@@ -51,14 +51,6 @@ export default {
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
-        case "Whitespace":
-          widget.toggleWhitespace();
-          return;
-
-        case "Wrap":
-          widget.toggleWrapped();
-          return;
-
         case "Copy":
           widget.copy();
           return;
@@ -103,6 +95,12 @@ export default {
       },
       read(): Iterable<string> {
         return widget.read();
+      },
+      toggleWhitespace(): void {
+        widget.toggleWhitespace();
+      },
+      toggleWrap(): void {
+        widget.toggleWrap();
       },
     };
   },
