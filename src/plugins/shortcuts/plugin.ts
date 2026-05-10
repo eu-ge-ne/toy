@@ -2,11 +2,11 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
 const shortcuts: Record<string, (_: plugins.Api) => Promise<void>> = {
-  "F1": (api) => api.palette.open(),
-  "⇧F1": (api) => api.palette.open(),
-  "⌃F1": (api) => api.palette.open(),
-  "⌥F1": (api) => api.palette.open(),
-  "⌘F1": (api) => api.palette.open(),
+  "F1": (api) => api.paletteModal.open(),
+  "⇧F1": (api) => api.paletteModal.open(),
+  "⌃F1": (api) => api.paletteModal.open(),
+  "⌥F1": (api) => api.paletteModal.open(),
+  "⌘F1": (api) => api.paletteModal.open(),
   "F2": (api) => api.doc.save(),
   "F5": async (api) => api.doc.toggleWhitespace(),
   "F6": async (api) => api.doc.toggleWrap(),

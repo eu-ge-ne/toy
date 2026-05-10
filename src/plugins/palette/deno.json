@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/palette",
-  "exports": "./plugin.ts"
-}

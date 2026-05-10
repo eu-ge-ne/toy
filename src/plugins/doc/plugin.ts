@@ -6,6 +6,7 @@ import { EditorWidget } from "@widgets/editor";
 
 let widget: EditorWidget;
 let fileName: string | undefined;
+let zen = true;
 
 export default {
   init(api: plugins.Api): void {
@@ -15,8 +16,6 @@ export default {
         api.emitStatusDocModified(widget.modified, widget.lineCount),
       onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
     });
-
-    let zen = true;
 
     api.intercept("start", async () => {
       widget.setFocused(true);
@@ -29,7 +28,7 @@ export default {
         return;
       }
       if (widget.modified) {
-        if (await api.ask.open("Save changes?")) {
+        if (await api.confirmModal.open("Save changes?")) {
           await api.doc.save();
         }
       }
@@ -53,7 +52,7 @@ export default {
     api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initDoc(api: plugins.Api): plugins.Doc {
+  docApi(api: plugins.Api): plugins.DocApi {
     return {
       async open(newFileName: string): Promise<void> {
         try {
@@ -71,7 +70,7 @@ export default {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alert.open(message);
+            await api.alertModal.open(message);
 
             await api.emitStop();
           }
@@ -89,14 +88,14 @@ export default {
           api.doc.reset();
         } catch (err) {
           const message = Error.isError(err) ? err.message : Deno.inspect(err);
-          await api.alert.open(message);
+          await api.alertModal.open(message);
 
           await api.doc.saveAs();
         }
       },
       async saveAs(): Promise<void> {
         while (true) {
-          const newFileName = await api.askFileName.open(fileName ?? "");
+          const newFileName = await api.fileNameModal.open(fileName ?? "");
           if (!newFileName) {
             return;
           }
@@ -112,7 +111,7 @@ export default {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alert.open(message);
+            await api.alertModal.open(message);
           }
         }
       },

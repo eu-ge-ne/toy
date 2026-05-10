@@ -1,52 +1,21 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
+import { AlertModalApi } from "./alert-modal.ts";
+import { ConfirmModalApi } from "./confirm-modal.ts";
+import { DebugApi } from "./debug.ts";
+import { DocApi } from "./doc.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
-
-export type Palette = {
-  open(): Promise<void>;
-};
-
-export type Debug = {
-  toggle(): void;
-};
-
-export type Alert = {
-  open(_: string): Promise<void>;
-};
-
-export type Ask = {
-  open(_: string): Promise<boolean>;
-};
-
-export type AskFileName = {
-  open(_: string): Promise<string | undefined>;
-};
-
-export type Doc = {
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
-  toggleWhitespace(): void;
-  toggleWrap(): void;
-  selectAll(): void;
-  undo(): void;
-  redo(): void;
-  copy(): void;
-  cut(): void;
-  paste(): void;
-};
+import { FileNameModalApi } from "./file-name-modal.ts";
+import { PaletteModalApi } from "./palette-modal.ts";
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
-  palette: Palette;
-  debug: Debug;
-  alert: Alert;
-  ask: Ask;
-  askFileName: AskFileName;
-  doc: Doc;
+  debug: DebugApi;
+  doc: DocApi;
+  alertModal: AlertModalApi;
+  confirmModal: ConfirmModalApi;
+  fileNameModal: FileNameModalApi;
+  paletteModal: PaletteModalApi;
 
   runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,

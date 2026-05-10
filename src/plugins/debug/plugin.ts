@@ -5,12 +5,11 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 let widget: DebugWidget;
+let zen = true;
 
 export default {
   init(api: plugins.Api): void {
     widget = new DebugWidget();
-
-    let zen = true;
 
     api.intercept("start", async ({ version }) => {
       widget.version = version;
@@ -28,15 +27,19 @@ export default {
     });
 
     api.reactOrdered("render", 1000, () => widget.render());
-    api.react("debug.render", (x) => widget.renderElapsed = x);
-    api.react("debug.key.press", (x) => widget.inputElapsed = x);
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
-  initDebug(): plugins.Debug {
+  debugApi(): plugins.DebugApi {
     return {
       toggle(): void {
         widget.visible = !widget.visible;
+      },
+      render(x): void {
+        widget.renderElapsed = x;
+      },
+      input(x): void {
+        widget.inputElapsed = x;
       },
     };
   },

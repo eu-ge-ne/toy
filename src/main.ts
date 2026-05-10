@@ -2,14 +2,14 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as vt from "@libs/vt";
 
-import alert from "@plugins/alert";
-import ask from "@plugins/ask";
-import askFileName from "@plugins/ask-file-name";
+import alertModal from "@plugins/alert-modal";
+import confirmModal from "@plugins/confirm-modal";
 import debug from "@plugins/debug";
 import doc from "@plugins/doc";
+import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
-import palette from "@plugins/palette";
+import paletteModal from "@plugins/palette-modal";
 import shortcuts from "@plugins/shortcuts";
 
 import deno from "../deno.json" with { type: "json" };
@@ -31,14 +31,14 @@ if (args.version) {
 
 const host = new Host();
 
-host.register(alert);
-host.register(ask);
-host.register(askFileName);
+host.register(alertModal);
+host.register(confirmModal);
+host.register(fileNameModal);
 host.register(debug);
 host.register(doc);
 host.register(footer);
 host.register(header);
-host.register(palette);
+host.register(paletteModal);
 host.register(shortcuts);
 
 Deno.addSignalListener("SIGWINCH", () => {

@@ -2,13 +2,13 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { AskFileNameWidget } from "./widget.ts";
+import { AlertWidget } from "./widget.ts";
 
-let widget: AskFileNameWidget;
+let widget: AlertWidget;
 
 export default {
   init(api: plugins.Api): void {
-    widget = new AskFileNameWidget();
+    widget = new AlertWidget();
 
     api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -23,10 +23,10 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initAskFileName(api: plugins.Api): plugins.AskFileName {
+  alertModalApi(api: plugins.Api): plugins.AlertModalApi {
     return {
-      async open(fileName: string): Promise<string | undefined> {
-        widget.open(fileName);
+      async open(message: string): Promise<void> {
+        widget.open(message);
 
         const offRender = api.reactOrdered(
           "render",
@@ -51,8 +51,6 @@ export default {
         );
 
         await api.runInputLoop((ctx) => ctx.continue = widget.opened);
-
-        return widget.result;
       },
     };
   },

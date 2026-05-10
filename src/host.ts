@@ -12,12 +12,12 @@ export class Host
     plugins.ReactorEvents
   >;
 
-  palette!: plugins.Palette;
-  debug!: plugins.Debug;
-  alert!: plugins.Alert;
-  ask!: plugins.Ask;
-  askFileName!: plugins.AskFileName;
-  doc!: plugins.Doc;
+  debug!: plugins.DebugApi;
+  doc!: plugins.DocApi;
+  alertModal!: plugins.AlertModalApi;
+  confirmModal!: plugins.ConfirmModalApi;
+  fileNameModal!: plugins.FileNameModalApi;
+  paletteModal!: plugins.PaletteModalApi;
 
   constructor() {
     const clients = new events.Clients<
@@ -38,28 +38,28 @@ export class Host
   register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
 
-    if (plugin.initPalette) {
-      this.palette = plugin.initPalette(this);
+    if (plugin.debugApi) {
+      this.debug = plugin.debugApi(this);
     }
 
-    if (plugin.initDebug) {
-      this.debug = plugin.initDebug(this);
+    if (plugin.docApi) {
+      this.doc = plugin.docApi(this);
     }
 
-    if (plugin.initAlert) {
-      this.alert = plugin.initAlert(this);
+    if (plugin.alertModalApi) {
+      this.alertModal = plugin.alertModalApi(this);
     }
 
-    if (plugin.initAsk) {
-      this.ask = plugin.initAsk(this);
+    if (plugin.confirmModalApi) {
+      this.confirmModal = plugin.confirmModalApi(this);
     }
 
-    if (plugin.initAskFileName) {
-      this.askFileName = plugin.initAskFileName(this);
+    if (plugin.fileNameModalApi) {
+      this.fileNameModal = plugin.fileNameModalApi(this);
     }
 
-    if (plugin.initDoc) {
-      this.doc = plugin.initDoc(this);
+    if (plugin.paletteModalApi) {
+      this.paletteModal = plugin.paletteModalApi(this);
     }
   }
 
@@ -79,7 +79,7 @@ export class Host
     vt.buf.flush();
     vt.sync.esu();
 
-    this.emitter.react("debug.render", performance.now() - t0);
+    this.debug.render(performance.now() - t0);
   }
 
   async keyPress(key: kitty.Key): Promise<void> {
@@ -87,7 +87,7 @@ export class Host
 
     await this.emitter.intercept("key.press", { key });
 
-    this.emitter.react("debug.key.press", performance.now() - t0);
+    this.debug.input(performance.now() - t0);
   }
 
   async runInputLoop(

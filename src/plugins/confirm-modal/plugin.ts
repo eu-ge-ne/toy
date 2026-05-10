@@ -1,33 +1,32 @@
 import * as plugins from "@libs/plugins";
+import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { PaletteWidget } from "./widget.ts";
+import { AskWidget } from "./widget.ts";
 
-let widget: PaletteWidget;
+let widget: AskWidget;
 
 export default {
   init(api: plugins.Api): void {
-    widget = new PaletteWidget();
-
-    let zen = true;
+    widget = new AskWidget();
 
     api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
-      if (zen) {
-        widget.resize(columns, rows, 0, 0);
-      } else {
-        widget.resize(columns, rows - 2, 1, 0);
-      }
+      const w = std.clamp(60, 0, columns);
+      const h = std.clamp(7, 0, rows);
+      const y = Math.trunc((rows - h) / 2);
+      const x = Math.trunc((columns - w) / 2);
+
+      widget.resize(w, h, y, x);
     });
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
-    api.react("zen.toggle", () => zen = !zen);
   },
-  initPalette(api: plugins.Api): plugins.Palette {
+  confirmModalApi(api: plugins.Api): plugins.ConfirmModalApi {
     return {
-      async open(): Promise<void> {
-        widget.open();
+      async open(message: string): Promise<boolean> {
+        widget.open(message);
 
         const offRender = api.reactOrdered(
           "render",
@@ -51,14 +50,9 @@ export default {
           },
         );
 
-        await api.runInputLoop((ctx) => {
-          ctx.continue = widget.opened;
-          ctx.layoutChanged = true;
-        });
+        await api.runInputLoop((ctx) => ctx.continue = widget.opened);
 
-        if (typeof widget.result !== "undefined") {
-          await widget.result(api);
-        }
+        return widget.result;
       },
     };
   },
