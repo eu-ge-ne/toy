@@ -1,5 +1,6 @@
 import * as commands from "@libs/commands";
 import * as events from "@libs/events";
+import * as themes from "@libs/themes";
 
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
@@ -51,6 +52,7 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
   emitCommand(cmd: commands.Command): Promise<void>;
   emitToggleZen(): void;
+  emitSetTheme(_: keyof typeof themes.Themes): void;
 
   emitStatusDocName(name: string): void;
   emitStatusDocModified(modified: boolean, lineCount: number): void;

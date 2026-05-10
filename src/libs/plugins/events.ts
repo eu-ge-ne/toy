@@ -1,6 +1,7 @@
 import * as commands from "@libs/commands";
 import { InterceptorData } from "@libs/events";
 import * as kitty from "@libs/kitty";
+import * as themes from "@libs/themes";
 
 export type InterceptorEvents = {
   "start": (_: InterceptorData<{ version: string }>) => Promise<void>;
@@ -20,4 +21,5 @@ export type ReactorEvents = {
   "status.doc.modified": (_: { modified: boolean; lineCount: number }) => void;
   "status.doc.cursor": (_: { ln: number; col: number }) => void;
   "zen.toggle": () => void;
+  "theme.set": (_: keyof typeof themes.Themes) => void;
 };

@@ -51,10 +51,6 @@ export default {
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
-        case "Theme":
-          widget.setTheme(themes.Themes[cmd.data]);
-          return;
-
         case "Whitespace":
           widget.toggleWhitespace();
           return;
@@ -93,6 +89,8 @@ export default {
       zen = !zen;
       widget.toggleIndex();
     });
+
+    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
   initDoc(): plugins.Doc {
     return {

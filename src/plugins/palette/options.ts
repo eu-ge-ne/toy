@@ -58,55 +58,55 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       CommandToShortcuts["Save"],
       { name: "Save" },
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Base16",
       undefined,
-      { name: "Theme", data: "Base16" },
+      async (api: plugins.Api) => api.emitSetTheme("Base16"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Slate",
       undefined,
-      { name: "Theme", data: "Slate" },
+      async (api: plugins.Api) => api.emitSetTheme("Slate"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Gray",
       undefined,
-      { name: "Theme", data: "Gray" },
+      async (api: plugins.Api) => api.emitSetTheme("Gray"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Zinc",
       undefined,
-      { name: "Theme", data: "Zinc" },
+      async (api: plugins.Api) => api.emitSetTheme("Zinc"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Neutral",
       undefined,
-      { name: "Theme", data: "Neutral" },
+      async (api: plugins.Api) => api.emitSetTheme("Neutral"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Stone",
       undefined,
-      { name: "Theme", data: "Stone" },
+      async (api: plugins.Api) => api.emitSetTheme("Stone"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Taupe",
       undefined,
-      { name: "Theme", data: "Taupe" },
+      async (api: plugins.Api) => api.emitSetTheme("Taupe"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Mauve",
       undefined,
-      { name: "Theme", data: "Mauve" },
+      async (api: plugins.Api) => api.emitSetTheme("Mauve"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Mist",
       undefined,
-      { name: "Theme", data: "Mist" },
+      async (api: plugins.Api) => api.emitSetTheme("Mist"),
     ),
-    new Option<Command>(
+    new Option(
       "Theme: Olive",
       undefined,
-      { name: "Theme", data: "Olive" },
+      async (api: plugins.Api) => api.emitSetTheme("Olive"),
     ),
     new Option<Command>(
       "Edit: Undo",

@@ -33,14 +33,7 @@ export default {
       ({ lineCount }) => widget.lineCount = lineCount,
     );
 
-    api.intercept("command", async ({ cmd }) => {
-      switch (cmd.name) {
-        case "Theme":
-          widget.setTheme(themes.Themes[cmd.data]);
-          return;
-      }
-    });
-
+    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => visible = !visible);
   },
 } satisfies plugins.Plugin;

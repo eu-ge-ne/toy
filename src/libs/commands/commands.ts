@@ -1,5 +1,3 @@
-import { Themes } from "@libs/themes";
-
 export type Command = {
   name: "Copy";
 } | {
@@ -12,9 +10,6 @@ export type Command = {
   name: "Save";
 } | {
   name: "SelectAll";
-} | {
-  name: "Theme";
-  data: keyof typeof Themes;
 } | {
   name: "Undo";
 } | {
