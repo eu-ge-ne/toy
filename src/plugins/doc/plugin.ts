@@ -20,7 +20,6 @@ export default {
 
     api.intercept("start", async () => {
       widget.setFocused(true);
-
       widget.resetChanges();
       widget.resetCursor();
     });
@@ -29,7 +28,6 @@ export default {
       if (e) {
         return;
       }
-
       if (widget.modified) {
         if (await api.ask.open("Save changes?")) {
           await api.doc.save();
@@ -39,7 +37,6 @@ export default {
 
     api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
-
       if (zen) {
         widget.resize(columns, rows, 0, 0);
       } else {
