@@ -2,15 +2,6 @@ import { Command } from "./commands.ts";
 
 export const ShortcutToCommand: Record<string, Command["name"]> = {
   "F2": "Save",
-
-  "⌃C": "Copy",
-  "⌘C": "Copy",
-
-  "⌃X": "Cut",
-  "⌘X": "Cut",
-
-  "⌃V": "Paste",
-  "⌘V": "Paste",
 };
 
 export const CommandToShortcuts = Object.fromEntries(

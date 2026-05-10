@@ -39,6 +39,9 @@ export type Doc = {
   selectAll(): void;
   undo(): void;
   redo(): void;
+  copy(): void;
+  cut(): void;
+  paste(): void;
 };
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {

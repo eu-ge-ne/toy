@@ -18,6 +18,12 @@ const shortcuts: Record<string, (_: plugins.Api) => Promise<void>> = {
   "⌘Z": async (api) => api.doc.undo(),
   "⌃Y": async (api) => api.doc.redo(),
   "⌘Y": async (api) => api.doc.redo(),
+  "⌃C": async (api) => api.doc.copy(),
+  "⌘C": async (api) => api.doc.copy(),
+  "⌃X": async (api) => api.doc.cut(),
+  "⌘X": async (api) => api.doc.cut(),
+  "⌃V": async (api) => api.doc.paste(),
+  "⌘V": async (api) => api.doc.paste(),
 };
 
 export default {

@@ -18,15 +18,15 @@ export class Option<T> {
 
 export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
   [
-    new Option<Command>(
+    new Option(
       "Edit: Copy",
-      { name: "Copy" },
-      CommandToShortcuts["Copy"],
+      async (api: plugins.Api) => api.doc.copy(),
+      ["⌃C", "⌘C"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Cut",
-      { name: "Cut" },
-      CommandToShortcuts["Cut"],
+      async (api: plugins.Api) => api.doc.cut(),
+      ["⌃X", "⌘X"],
     ),
     new Option(
       "Global: Toggle Debug Panel",
@@ -42,10 +42,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       async (api: plugins.Api) => api.doc.selectAll(),
       ["⌃A", "⌘A"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Paste",
-      { name: "Paste" },
-      CommandToShortcuts["Paste"],
+      async (api: plugins.Api) => api.doc.paste(),
+      ["⌃V", "⌘V"],
     ),
     new Option(
       "Edit: Redo",
