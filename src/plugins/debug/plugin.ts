@@ -27,7 +27,7 @@ export default {
 
     api.reactOrdered("render", 1000, () => widget.render());
     api.react("debug.render", (x) => widget.renderElapsed = x);
-    api.react("debug.input", (x) => widget.inputElapsed = x);
+    api.react("debug.key.press", (x) => widget.inputElapsed = x);
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {

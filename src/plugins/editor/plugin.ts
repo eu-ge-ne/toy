@@ -12,7 +12,6 @@ export default {
       onTextChange: () =>
         api.emitStatusDocModified(widget.modified, widget.lineCount),
       onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
-      onKeyHandle: (x) => api.emitDebugInput(x),
     });
 
     let zen = true;

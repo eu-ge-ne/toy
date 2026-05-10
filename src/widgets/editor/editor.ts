@@ -14,7 +14,6 @@ interface Params {
   multiLine: boolean;
   onTextChange?: () => void;
   onCursorChange?: (_: { ln: number; col: number }) => void;
-  onKeyHandle?: (_: number) => void;
 }
 
 export class EditorWidget extends widgets.Widget<Params> {
@@ -143,16 +142,12 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    const t0 = performance.now();
-
     const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
     if (!handler) {
       return;
     }
 
     handler[0].call(this, key);
-
-    this.params.onKeyHandle?.(performance.now() - t0);
   }
 
   #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
