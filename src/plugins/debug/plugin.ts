@@ -4,9 +4,11 @@ import * as themes from "@libs/themes";
 
 import { DebugWidget } from "./widget.ts";
 
+let widget: DebugWidget;
+
 export default {
   init(api: plugins.Api): void {
-    const widget = new DebugWidget();
+    widget = new DebugWidget();
 
     let zen = true;
 
@@ -35,14 +37,17 @@ export default {
           zen = !zen;
           return;
 
-        case "Debug":
-          widget.visible = !widget.visible;
-          return;
-
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
           return;
       }
     });
+  },
+  initDebug(): plugins.Debug {
+    return {
+      toggle(): void {
+        widget.visible = !widget.visible;
+      },
+    };
   },
 } satisfies plugins.Plugin;

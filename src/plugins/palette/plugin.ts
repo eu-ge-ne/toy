@@ -65,9 +65,10 @@ export default {
           ctx.layoutChanged = true;
         });
 
-        const cmd = widget.result;
-        if (cmd) {
-          await api.emitCommand(cmd);
+        if (typeof widget.result === "function") {
+          await widget.result(api);
+        } else if (widget.result) {
+          await api.emitCommand(widget.result);
         }
       },
     };

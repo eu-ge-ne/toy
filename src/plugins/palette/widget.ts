@@ -1,5 +1,6 @@
 import * as commands from "@libs/commands";
 import * as kitty from "@libs/kitty";
+import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -11,12 +12,12 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
-  result: commands.Command | undefined;
+  result: commands.Command | ((_: plugins.Api) => Promise<void>) | undefined;
 
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
-    list: ListWidget<commands.Command>;
+    list: ListWidget<commands.Command | ((_: plugins.Api) => Promise<void>)>;
   };
 
   constructor() {

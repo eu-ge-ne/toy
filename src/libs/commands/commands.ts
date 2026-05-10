@@ -5,8 +5,6 @@ export type Command = {
 } | {
   name: "Cut";
 } | {
-  name: "Debug";
-} | {
   name: "Exit";
 } | {
   name: "Paste";
