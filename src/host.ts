@@ -86,7 +86,7 @@ export class Host
   }
 
   async runInputLoop(
-    iter: (_: { continue: boolean; layoutChanged: boolean }) => void,
+    cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void> {
     const ctx = { continue: true, layoutChanged: true };
 
@@ -101,7 +101,7 @@ export class Host
       const key = await vt.readKey();
       await this.keyPress(key);
 
-      iter(ctx);
+      cb(ctx);
     }
   }
 
