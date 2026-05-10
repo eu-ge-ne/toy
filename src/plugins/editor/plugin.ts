@@ -51,11 +51,6 @@ export default {
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
-        case "Zen":
-          zen = !zen;
-          widget.toggleIndex();
-          return;
-
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
           return;
@@ -92,6 +87,11 @@ export default {
           widget.selectAll();
           return;
       }
+    });
+
+    api.react("zen.toggle", () => {
+      zen = !zen;
+      widget.toggleIndex();
     });
   },
   initDoc(): plugins.Doc {

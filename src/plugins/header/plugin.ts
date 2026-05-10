@@ -32,14 +32,12 @@ export default {
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
-        case "Zen":
-          visible = !visible;
-          return;
-
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
           return;
       }
     });
+
+    api.react("zen.toggle", () => visible = !visible);
   },
 } satisfies plugins.Plugin;

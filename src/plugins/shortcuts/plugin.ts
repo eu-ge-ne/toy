@@ -8,6 +8,8 @@ const shortcuts: Record<string, (_: plugins.Api) => Promise<void>> = {
   "⌃F1": (api) => api.palette.open(),
   "⌥F1": (api) => api.palette.open(),
   "⌘F1": (api) => api.palette.open(),
+
+  "F11": async (api) => api.emitToggleZen(),
 };
 
 export default {

@@ -19,4 +19,5 @@ export type ReactorEvents = {
   "status.doc.name": (_: string) => void;
   "status.doc.modified": (_: { modified: boolean; lineCount: number }) => void;
   "status.doc.cursor": (_: { ln: number; col: number }) => void;
+  "zen.toggle": () => void;
 };
