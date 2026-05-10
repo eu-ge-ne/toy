@@ -37,10 +37,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       (api: plugins.Api) => api.emitStop(),
       ["F10"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Select All",
-      { name: "SelectAll" },
-      CommandToShortcuts["SelectAll"],
+      async (api: plugins.Api) => api.doc.selectAll(),
+      ["⌃A", "⌘A"],
     ),
     new Option<Command>(
       "Edit: Paste",

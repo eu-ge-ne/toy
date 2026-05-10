@@ -3,9 +3,6 @@ import { Command } from "./commands.ts";
 export const ShortcutToCommand: Record<string, Command["name"]> = {
   "F2": "Save",
 
-  "⌃A": "SelectAll",
-  "⌘A": "SelectAll",
-
   "⌃C": "Copy",
   "⌘C": "Copy",
 

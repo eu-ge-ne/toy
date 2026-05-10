@@ -70,10 +70,6 @@ export default {
         case "Redo":
           widget.redo();
           return;
-
-        case "SelectAll":
-          widget.selectAll();
-          return;
       }
     });
 
@@ -101,6 +97,9 @@ export default {
       },
       toggleWrap(): void {
         widget.toggleWrap();
+      },
+      selectAll(): void {
+        widget.selectAll();
       },
     };
   },

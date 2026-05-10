@@ -9,7 +9,5 @@ export type Command = {
 } | {
   name: "Save";
 } | {
-  name: "SelectAll";
-} | {
   name: "Undo";
 };
