@@ -14,10 +14,10 @@ export class Host
 
   debug!: plugins.DebugApi;
   doc!: plugins.DocApi;
-  alert!: plugins.AlertApi;
-  confirm!: plugins.ConfirmApi;
-  askFileName!: plugins.AskFileName;
-  palette!: plugins.PaletteApi;
+  alertModal!: plugins.AlertModalApi;
+  confirmModal!: plugins.ConfirmModalApi;
+  fileNameModal!: plugins.FileNameModalApi;
+  paletteModal!: plugins.PaletteModalApi;
 
   constructor() {
     const clients = new events.Clients<
@@ -46,20 +46,20 @@ export class Host
       this.doc = plugin.docApi(this);
     }
 
-    if (plugin.alertApi) {
-      this.alert = plugin.alertApi(this);
+    if (plugin.alertModalApi) {
+      this.alertModal = plugin.alertModalApi(this);
     }
 
-    if (plugin.confirmApi) {
-      this.confirm = plugin.confirmApi(this);
+    if (plugin.confirmModalApi) {
+      this.confirmModal = plugin.confirmModalApi(this);
     }
 
-    if (plugin.initAskFileName) {
-      this.askFileName = plugin.initAskFileName(this);
+    if (plugin.fileNameModalApi) {
+      this.fileNameModal = plugin.fileNameModalApi(this);
     }
 
-    if (plugin.paletteApi) {
-      this.palette = plugin.paletteApi(this);
+    if (plugin.paletteModalApi) {
+      this.paletteModal = plugin.paletteModalApi(this);
     }
   }
 

@@ -28,7 +28,7 @@ export default {
         return;
       }
       if (widget.modified) {
-        if (await api.confirm.open("Save changes?")) {
+        if (await api.confirmModal.open("Save changes?")) {
           await api.doc.save();
         }
       }
@@ -70,7 +70,7 @@ export default {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alert.open(message);
+            await api.alertModal.open(message);
 
             await api.emitStop();
           }
@@ -88,14 +88,14 @@ export default {
           api.doc.reset();
         } catch (err) {
           const message = Error.isError(err) ? err.message : Deno.inspect(err);
-          await api.alert.open(message);
+          await api.alertModal.open(message);
 
           await api.doc.saveAs();
         }
       },
       async saveAs(): Promise<void> {
         while (true) {
-          const newFileName = await api.askFileName.open(fileName ?? "");
+          const newFileName = await api.fileNameModal.open(fileName ?? "");
           if (!newFileName) {
             return;
           }
@@ -111,7 +111,7 @@ export default {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alert.open(message);
+            await api.alertModal.open(message);
           }
         }
       },

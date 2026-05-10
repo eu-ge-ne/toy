@@ -2,19 +2,19 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { AskWidget } from "./widget.ts";
+import { AskFileNameWidget } from "./widget.ts";
 
-let widget: AskWidget;
+let widget: AskFileNameWidget;
 
 export default {
   init(api: plugins.Api): void {
-    widget = new AskWidget();
+    widget = new AskFileNameWidget();
 
     api.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
-      const h = std.clamp(7, 0, rows);
+      const h = std.clamp(10, 0, rows);
       const y = Math.trunc((rows - h) / 2);
       const x = Math.trunc((columns - w) / 2);
 
@@ -23,10 +23,10 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  confirmApi(api: plugins.Api): plugins.ConfirmApi {
+  fileNameModalApi(api: plugins.Api): plugins.FileNameModalApi {
     return {
-      async open(message: string): Promise<boolean> {
-        widget.open(message);
+      async open(fileName: string): Promise<string | undefined> {
+        widget.open(fileName);
 
         const offRender = api.reactOrdered(
           "render",

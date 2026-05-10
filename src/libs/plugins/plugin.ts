@@ -1,16 +1,17 @@
-import { AlertApi } from "./alert.ts";
-import { Api, AskFileName } from "./api.ts";
-import { ConfirmApi } from "./confirm.ts";
+import { AlertModalApi } from "./alert-modal.ts";
+import { Api } from "./api.ts";
+import { ConfirmModalApi } from "./confirm-modal.ts";
 import { DebugApi } from "./debug.ts";
 import { DocApi } from "./doc.ts";
-import { PaletteApi } from "./palette.ts";
+import { FileNameModalApi } from "./file-name-modal.ts";
+import { PaletteModalApi } from "./palette-modal.ts";
 
 export type Plugin = {
   init?(_: Api): void;
   debugApi?(_: Api): DebugApi;
   docApi?(_: Api): DocApi;
-  alertApi?(_: Api): AlertApi;
-  confirmApi?(_: Api): ConfirmApi;
-  initAskFileName?(_: Api): AskFileName;
-  paletteApi?(_: Api): PaletteApi;
+  alertModalApi?(_: Api): AlertModalApi;
+  confirmModalApi?(_: Api): ConfirmModalApi;
+  fileNameModalApi?(_: Api): FileNameModalApi;
+  paletteModalApi?(_: Api): PaletteModalApi;
 };

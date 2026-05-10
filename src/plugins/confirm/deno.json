@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/confirm",
-  "exports": "./plugin.ts"
-}

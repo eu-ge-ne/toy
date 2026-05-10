@@ -1,24 +1,21 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
-import { AlertApi } from "./alert.ts";
-import { ConfirmApi } from "./confirm.ts";
+import { AlertModalApi } from "./alert-modal.ts";
+import { ConfirmModalApi } from "./confirm-modal.ts";
 import { DebugApi } from "./debug.ts";
 import { DocApi } from "./doc.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
-import { PaletteApi } from "./palette.ts";
-
-export type AskFileName = {
-  open(_: string): Promise<string | undefined>;
-};
+import { FileNameModalApi } from "./file-name-modal.ts";
+import { PaletteModalApi } from "./palette-modal.ts";
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   debug: DebugApi;
   doc: DocApi;
-  alert: AlertApi;
-  confirm: ConfirmApi;
-  askFileName: AskFileName;
-  palette: PaletteApi;
+  alertModal: AlertModalApi;
+  confirmModal: ConfirmModalApi;
+  fileNameModal: FileNameModalApi;
+  paletteModal: PaletteModalApi;
 
   runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
