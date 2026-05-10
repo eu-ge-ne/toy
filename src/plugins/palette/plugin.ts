@@ -3,9 +3,11 @@ import * as themes from "@libs/themes";
 
 import { PaletteWidget } from "./widget.ts";
 
+let widget: PaletteWidget;
+
 export default {
   init(api: plugins.Api): void {
-    const widget = new PaletteWidget();
+    widget = new PaletteWidget();
 
     let zen = true;
 
@@ -28,43 +30,46 @@ export default {
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
           return;
-
-        case "Palette":
-          await run();
-          return;
       }
     });
+  },
+  initPalette(api: plugins.Api): plugins.Palette {
+    return {
+      async open(): Promise<void> {
+        widget.open();
 
-    async function run(): Promise<void> {
-      widget.open();
+        const offRender = api.reactOrdered(
+          "render",
+          1000,
+          () => widget.render(),
+        );
 
-      const offRender = api.reactOrdered("render", 1000, () => widget.render());
+        const offKeyPress = api.interceptOrdered(
+          "key.press",
+          -1000,
+          async (data) => {
+            data.cancel = true;
 
-      const offKeyPress = api.interceptOrdered(
-        "key.press",
-        -1000,
-        async (data) => {
-          data.cancel = true;
+            widget.onKeyPress(data.key);
+            if (widget.opened) {
+              return;
+            }
 
-          widget.onKeyPress(data.key);
-          if (widget.opened) {
-            return;
-          }
+            offRender();
+            offKeyPress();
+          },
+        );
 
-          offRender();
-          offKeyPress();
-        },
-      );
+        await api.runInputLoop((ctx) => {
+          ctx.continue = widget.opened;
+          ctx.layoutChanged = true;
+        });
 
-      await api.runInputLoop((ctx) => {
-        ctx.continue = widget.opened;
-        ctx.layoutChanged = true;
-      });
-
-      const cmd = widget.result;
-      if (cmd) {
-        await api.emitCommand(cmd);
-      }
-    }
+        const cmd = widget.result;
+        if (cmd) {
+          await api.emitCommand(cmd);
+        }
+      },
+    };
   },
 } satisfies plugins.Plugin;
