@@ -2,6 +2,7 @@ import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
+import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 
 export class Host
@@ -129,6 +130,10 @@ export class Host
 
   emitToggleZen(): void {
     this.emitter.react("zen.toggle");
+  }
+
+  emitSetTheme(name: keyof typeof themes.Themes): void {
+    this.emitter.react("theme.set", name);
   }
 
   emitStatusDocName(name: string): void {

@@ -77,7 +77,7 @@ host.interceptOrdered("command", 1000, async ({ cmd }) => {
 host.reactOrdered("zen.toggle", 1000, () => layoutChanged = true);
 
 await host.emitStart({ version });
-await host.emitCommand({ name: "Theme", data: "Default" });
+host.emitSetTheme("Default");
 
 if (typeof args._[0] === "string") {
   await host.files.open(args._[0]);

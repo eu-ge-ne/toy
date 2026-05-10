@@ -30,15 +30,7 @@ export default {
     api.reactOrdered("render", 1000, () => widget.render());
     api.react("debug.render", (x) => widget.renderElapsed = x);
     api.react("debug.key.press", (x) => widget.inputElapsed = x);
-
-    api.intercept("command", async ({ cmd }) => {
-      switch (cmd.name) {
-        case "Theme":
-          widget.setTheme(themes.Themes[cmd.data]);
-          return;
-      }
-    });
-
+    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
   initDebug(): plugins.Debug {

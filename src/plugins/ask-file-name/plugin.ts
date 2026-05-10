@@ -21,13 +21,7 @@ export default {
       widget.resize(w, h, y, x);
     });
 
-    api.intercept("command", async ({ cmd }) => {
-      switch (cmd.name) {
-        case "Theme":
-          widget.setTheme(themes.Themes[cmd.data]);
-          return;
-      }
-    });
+    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
   initAskFileName(api: plugins.Api): plugins.AskFileName {
     return {
