@@ -68,10 +68,6 @@ let layoutChanged = false;
 
 host.interceptOrdered("command", 1000, async ({ cmd }) => {
   switch (cmd.name) {
-    case "Exit":
-      await host.emitStop();
-      return;
-
     case "Save":
       await host.files.save();
       return;

@@ -33,10 +33,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       undefined,
       async (api: plugins.Api) => api.debug.toggle(),
     ),
-    new Option<Command>(
+    new Option(
       "Global: Exit",
-      CommandToShortcuts["Exit"],
-      { name: "Exit" },
+      ["F10"],
+      (api: plugins.Api) => api.emitStop(),
     ),
     new Option<Command>(
       "Edit: Select All",
