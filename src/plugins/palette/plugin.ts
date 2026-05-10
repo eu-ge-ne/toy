@@ -23,15 +23,13 @@ export default {
 
     api.intercept("command", async ({ cmd }) => {
       switch (cmd.name) {
-        case "Zen":
-          zen = !zen;
-          return;
-
         case "Theme":
           widget.setTheme(themes.Themes[cmd.data]);
           return;
       }
     });
+
+    api.react("zen.toggle", () => zen = !zen);
   },
   initPalette(api: plugins.Api): plugins.Palette {
     return {

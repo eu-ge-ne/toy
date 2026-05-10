@@ -30,7 +30,7 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
     ),
     new Option(
       "Global: Toggle Debug Panel",
-      [],
+      undefined,
       async (api: plugins.Api) => api.debug.toggle(),
     ),
     new Option<Command>(
@@ -123,9 +123,9 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       CommandToShortcuts["Wrap"],
       { name: "Wrap" },
     ),
-    new Option<Command>(
+    new Option(
       "Global: Toggle Zen Mode",
-      CommandToShortcuts["Zen"],
-      { name: "Zen" },
+      ["F11"],
+      async (api: plugins.Api) => api.emitToggleZen(),
     ),
   ].sort((a, b) => a.name.localeCompare(b.name));

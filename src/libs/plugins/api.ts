@@ -50,6 +50,7 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
 
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
   emitCommand(cmd: commands.Command): Promise<void>;
+  emitToggleZen(): void;
 
   emitStatusDocName(name: string): void;
   emitStatusDocModified(modified: boolean, lineCount: number): void;

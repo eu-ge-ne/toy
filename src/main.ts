@@ -75,12 +75,10 @@ host.interceptOrdered("command", 1000, async ({ cmd }) => {
     case "Save":
       await host.files.save();
       return;
-
-    case "Zen":
-      layoutChanged = true;
-      return;
   }
 });
+
+host.reactOrdered("zen.toggle", 1000, () => layoutChanged = true);
 
 await host.emitStart({ version });
 await host.emitCommand({ name: "Theme", data: "Default" });

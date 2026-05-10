@@ -127,6 +127,10 @@ export class Host
     await this.emitter.intercept("command", { cmd });
   }
 
+  emitToggleZen(): void {
+    this.emitter.react("zen.toggle");
+  }
+
   emitStatusDocName(name: string): void {
     this.emitter.react("status.doc.name", name);
   }

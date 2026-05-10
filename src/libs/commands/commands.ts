@@ -23,6 +23,4 @@ export type Command = {
   name: "Whitespace";
 } | {
   name: "Wrap";
-} | {
-  name: "Zen";
 };
