@@ -37,6 +37,8 @@ export type Doc = {
   toggleWhitespace(): void;
   toggleWrap(): void;
   selectAll(): void;
+  undo(): void;
+  redo(): void;
 };
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {

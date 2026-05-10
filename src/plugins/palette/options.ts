@@ -47,10 +47,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       { name: "Paste" },
       CommandToShortcuts["Paste"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Redo",
-      { name: "Redo" },
-      CommandToShortcuts["Redo"],
+      async (api: plugins.Api) => api.doc.redo(),
+      ["⌃Y", "⌘Y"],
     ),
     new Option<Command>(
       "Global: Save",
@@ -97,10 +97,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       "Theme: Olive",
       async (api: plugins.Api) => api.emitSetTheme("Olive"),
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Undo",
-      { name: "Undo" },
-      CommandToShortcuts["Undo"],
+      async (api: plugins.Api) => api.doc.undo(),
+      ["⌃Z", "⌘Z"],
     ),
     new Option(
       "View: Toggle Render Whitespace",

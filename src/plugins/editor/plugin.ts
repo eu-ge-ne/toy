@@ -62,14 +62,6 @@ export default {
         case "Paste":
           widget.paste();
           return;
-
-        case "Undo":
-          widget.undo();
-          return;
-
-        case "Redo":
-          widget.redo();
-          return;
       }
     });
 
@@ -100,6 +92,12 @@ export default {
       },
       selectAll(): void {
         widget.selectAll();
+      },
+      undo(): void {
+        widget.undo();
+      },
+      redo(): void {
+        widget.redo();
       },
     };
   },

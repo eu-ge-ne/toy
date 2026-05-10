@@ -5,9 +5,5 @@ export type Command = {
 } | {
   name: "Paste";
 } | {
-  name: "Redo";
-} | {
   name: "Save";
-} | {
-  name: "Undo";
 };

@@ -11,12 +11,6 @@ export const ShortcutToCommand: Record<string, Command["name"]> = {
 
   "⌃V": "Paste",
   "⌘V": "Paste",
-
-  "⌃Z": "Undo",
-  "⌘Z": "Undo",
-
-  "⌃Y": "Redo",
-  "⌘Y": "Redo",
 };
 
 export const CommandToShortcuts = Object.fromEntries(
