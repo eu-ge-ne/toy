@@ -13,6 +13,7 @@ export class Host
   >;
 
   palette!: plugins.Palette;
+  debug!: plugins.Debug;
   alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
@@ -40,6 +41,10 @@ export class Host
 
     if (plugin.initPalette) {
       this.palette = plugin.initPalette(this);
+    }
+
+    if (plugin.initDebug) {
+      this.debug = plugin.initDebug(this);
     }
 
     if (plugin.initAlert) {

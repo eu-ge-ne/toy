@@ -7,6 +7,10 @@ export type Palette = {
   open(): Promise<void>;
 };
 
+export type Debug = {
+  toggle(): void;
+};
+
 export type Alert = {
   open(_: string): Promise<void>;
 };
@@ -33,6 +37,7 @@ export type Doc = {
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   palette: Palette;
+  debug: Debug;
   alert: Alert;
   ask: Ask;
   askFileName: AskFileName;
