@@ -12,8 +12,8 @@ export class Host
     plugins.ReactorEvents
   >;
 
+  debug!: plugins.DebugApi;
   palette!: plugins.Palette;
-  debug!: plugins.Debug;
   alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
@@ -38,12 +38,12 @@ export class Host
   register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
 
-    if (plugin.initPalette) {
-      this.palette = plugin.initPalette(this);
+    if (plugin.initDebugApi) {
+      this.debug = plugin.initDebugApi(this);
     }
 
-    if (plugin.initDebug) {
-      this.debug = plugin.initDebug(this);
+    if (plugin.initPalette) {
+      this.palette = plugin.initPalette(this);
     }
 
     if (plugin.initAlert) {
@@ -79,7 +79,7 @@ export class Host
     vt.buf.flush();
     vt.sync.esu();
 
-    this.emitter.react("debug.render", performance.now() - t0);
+    this.debug.render(performance.now() - t0);
   }
 
   async keyPress(key: kitty.Key): Promise<void> {
@@ -87,7 +87,7 @@ export class Host
 
     await this.emitter.intercept("key.press", { key });
 
-    this.emitter.react("debug.key.press", performance.now() - t0);
+    this.debug.input(performance.now() - t0);
   }
 
   async runInputLoop(
