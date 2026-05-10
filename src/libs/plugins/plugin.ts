@@ -1,13 +1,4 @@
-import {
-  Alert,
-  Api,
-  Ask,
-  AskFileName,
-  Debug,
-  Doc,
-  Files,
-  Palette,
-} from "./api.ts";
+import { Alert, Api, Ask, AskFileName, Debug, Doc, Palette } from "./api.ts";
 
 export type Plugin = {
   init?(_: Api): void;
@@ -17,5 +8,4 @@ export type Plugin = {
   initAsk?(_: Api): Ask;
   initAskFileName?(_: Api): AskFileName;
   initDoc?(_: Api): Doc;
-  initFiles?(_: Api): Files;
 };

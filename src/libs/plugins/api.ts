@@ -1,4 +1,3 @@
-import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
@@ -24,13 +23,10 @@ export type AskFileName = {
   open(_: string): Promise<string | undefined>;
 };
 
-export type Files = {
+export type Doc = {
   open(_: string): Promise<void>;
   save(): Promise<void>;
   saveAs(): Promise<void>;
-};
-
-export type Doc = {
   reset(): void;
   write(_: string): void;
   read(): Iterable<string>;
@@ -51,14 +47,12 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   ask: Ask;
   askFileName: AskFileName;
   doc: Doc;
-  files: Files;
 
   runInputLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;
 
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
-  emitCommand(cmd: commands.Command): Promise<void>;
   emitToggleZen(): void;
   emitSetTheme(_: keyof typeof themes.Themes): void;
 

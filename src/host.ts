@@ -1,4 +1,3 @@
-import * as commands from "@libs/commands";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
@@ -18,7 +17,6 @@ export class Host
   alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
-  files!: plugins.Files;
   doc!: plugins.Doc;
 
   constructor() {
@@ -62,10 +60,6 @@ export class Host
 
     if (plugin.initDoc) {
       this.doc = plugin.initDoc(this);
-    }
-
-    if (plugin.initFiles) {
-      this.files = plugin.initFiles(this);
     }
   }
 
@@ -122,10 +116,6 @@ export class Host
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     await this.emitter.intercept("stop", { e });
-  }
-
-  async emitCommand(cmd: commands.Command): Promise<void> {
-    await this.emitter.intercept("command", { cmd });
   }
 
   emitToggleZen(): void {

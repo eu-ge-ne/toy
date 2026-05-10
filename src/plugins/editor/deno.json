@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/editor",
-  "exports": "./plugin.ts"
-}
