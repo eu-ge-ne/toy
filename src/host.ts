@@ -15,9 +15,9 @@ export class Host
   debug!: plugins.DebugApi;
   doc!: plugins.DocApi;
   alert!: plugins.AlertApi;
+  confirm!: plugins.ConfirmApi;
 
   palette!: plugins.Palette;
-  ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
 
   constructor() {
@@ -51,12 +51,12 @@ export class Host
       this.alert = plugin.alertApi(this);
     }
 
-    if (plugin.initPalette) {
-      this.palette = plugin.initPalette(this);
+    if (plugin.confirmApi) {
+      this.confirm = plugin.confirmApi(this);
     }
 
-    if (plugin.initAsk) {
-      this.ask = plugin.initAsk(this);
+    if (plugin.initPalette) {
+      this.palette = plugin.initPalette(this);
     }
 
     if (plugin.initAskFileName) {

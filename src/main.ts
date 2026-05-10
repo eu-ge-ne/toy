@@ -3,7 +3,7 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as vt from "@libs/vt";
 
 import alert from "@plugins/alert";
-import ask from "@plugins/ask";
+import confirm from "@plugins/confirm";
 import askFileName from "@plugins/ask-file-name";
 import debug from "@plugins/debug";
 import doc from "@plugins/doc";
@@ -32,7 +32,7 @@ if (args.version) {
 const host = new Host();
 
 host.register(alert);
-host.register(ask);
+host.register(confirm);
 host.register(askFileName);
 host.register(debug);
 host.register(doc);

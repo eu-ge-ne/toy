@@ -23,7 +23,7 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initAsk(api: plugins.Api): plugins.Ask {
+  confirmApi(api: plugins.Api): plugins.ConfirmApi {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);

@@ -28,7 +28,7 @@ export default {
         return;
       }
       if (widget.modified) {
-        if (await api.ask.open("Save changes?")) {
+        if (await api.confirm.open("Save changes?")) {
           await api.doc.save();
         }
       }

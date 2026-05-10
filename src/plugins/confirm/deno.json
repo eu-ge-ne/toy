@@ -1,4 +1,4 @@
 {
-  "name": "@plugins/ask",
+  "name": "@plugins/confirm",
   "exports": "./plugin.ts"
 }
