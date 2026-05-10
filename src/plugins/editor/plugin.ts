@@ -45,39 +45,13 @@ export default {
       }
     });
 
-    api.react("render", () => widget.render());
-
-    api.intercept("key.press", async ({ key }) => widget.onKey(key));
-
-    api.intercept("command", async ({ cmd }) => {
-      switch (cmd.name) {
-        case "Copy":
-          widget.copy();
-          return;
-
-        case "Cut":
-          widget.cut();
-          return;
-
-        case "Paste":
-          widget.paste();
-          return;
-
-        case "Undo":
-          widget.undo();
-          return;
-
-        case "Redo":
-          widget.redo();
-          return;
-      }
-    });
-
     api.react("zen.toggle", () => {
       zen = !zen;
       widget.toggleIndex();
     });
 
+    api.react("render", () => widget.render());
+    api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
   initDoc(): plugins.Doc {
@@ -100,6 +74,21 @@ export default {
       },
       selectAll(): void {
         widget.selectAll();
+      },
+      undo(): void {
+        widget.undo();
+      },
+      redo(): void {
+        widget.redo();
+      },
+      copy(): void {
+        widget.copy();
+      },
+      cut(): void {
+        widget.cut();
+      },
+      paste(): void {
+        widget.paste();
       },
     };
   },

@@ -18,15 +18,15 @@ export class Option<T> {
 
 export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
   [
-    new Option<Command>(
+    new Option(
       "Edit: Copy",
-      { name: "Copy" },
-      CommandToShortcuts["Copy"],
+      async (api: plugins.Api) => api.doc.copy(),
+      ["⌃C", "⌘C"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Cut",
-      { name: "Cut" },
-      CommandToShortcuts["Cut"],
+      async (api: plugins.Api) => api.doc.cut(),
+      ["⌃X", "⌘X"],
     ),
     new Option(
       "Global: Toggle Debug Panel",
@@ -42,15 +42,15 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       async (api: plugins.Api) => api.doc.selectAll(),
       ["⌃A", "⌘A"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Paste",
-      { name: "Paste" },
-      CommandToShortcuts["Paste"],
+      async (api: plugins.Api) => api.doc.paste(),
+      ["⌃V", "⌘V"],
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Redo",
-      { name: "Redo" },
-      CommandToShortcuts["Redo"],
+      async (api: plugins.Api) => api.doc.redo(),
+      ["⌃Y", "⌘Y"],
     ),
     new Option<Command>(
       "Global: Save",
@@ -97,10 +97,10 @@ export const options: Option<Command | ((_: plugins.Api) => Promise<void>)>[] =
       "Theme: Olive",
       async (api: plugins.Api) => api.emitSetTheme("Olive"),
     ),
-    new Option<Command>(
+    new Option(
       "Edit: Undo",
-      { name: "Undo" },
-      CommandToShortcuts["Undo"],
+      async (api: plugins.Api) => api.doc.undo(),
+      ["⌃Z", "⌘Z"],
     ),
     new Option(
       "View: Toggle Render Whitespace",
