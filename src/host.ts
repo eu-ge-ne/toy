@@ -14,9 +14,9 @@ export class Host
 
   debug!: plugins.DebugApi;
   doc!: plugins.DocApi;
+  alert!: plugins.AlertApi;
 
   palette!: plugins.Palette;
-  alert!: plugins.Alert;
   ask!: plugins.Ask;
   askFileName!: plugins.AskFileName;
 
@@ -39,20 +39,20 @@ export class Host
   register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
 
-    if (plugin.initDebugApi) {
-      this.debug = plugin.initDebugApi(this);
+    if (plugin.debugApi) {
+      this.debug = plugin.debugApi(this);
     }
 
-    if (plugin.initDocApi) {
-      this.doc = plugin.initDocApi(this);
+    if (plugin.docApi) {
+      this.doc = plugin.docApi(this);
+    }
+
+    if (plugin.alertApi) {
+      this.alert = plugin.alertApi(this);
     }
 
     if (plugin.initPalette) {
       this.palette = plugin.initPalette(this);
-    }
-
-    if (plugin.initAlert) {
-      this.alert = plugin.initAlert(this);
     }
 
     if (plugin.initAsk) {

@@ -30,7 +30,7 @@ export default {
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
-  initDebugApi(): plugins.DebugApi {
+  debugApi(): plugins.DebugApi {
     return {
       toggle(): void {
         widget.visible = !widget.visible;

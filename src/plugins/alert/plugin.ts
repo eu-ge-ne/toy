@@ -23,7 +23,7 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initAlert(api: plugins.Api): plugins.Alert {
+  alertApi(api: plugins.Api): plugins.AlertApi {
     return {
       async open(message: string): Promise<void> {
         widget.open(message);

@@ -52,7 +52,7 @@ export default {
     api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  initDocApi(api: plugins.Api): plugins.DocApi {
+  docApi(api: plugins.Api): plugins.DocApi {
     return {
       async open(newFileName: string): Promise<void> {
         try {

@@ -1,16 +1,13 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
+import { AlertApi } from "./alert.ts";
 import { DebugApi } from "./debug.ts";
 import { DocApi } from "./doc.ts";
 import { InterceptorEvents, ReactorEvents } from "./events.ts";
 
 export type Palette = {
   open(): Promise<void>;
-};
-
-export type Alert = {
-  open(_: string): Promise<void>;
 };
 
 export type Ask = {
@@ -24,9 +21,9 @@ export type AskFileName = {
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   debug: DebugApi;
   doc: DocApi;
+  alert: AlertApi;
 
   palette: Palette;
-  alert: Alert;
   ask: Ask;
   askFileName: AskFileName;
 
