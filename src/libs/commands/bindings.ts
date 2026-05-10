@@ -1,12 +1,6 @@
 import { Command } from "./commands.ts";
 
 export const ShortcutToCommand: Record<string, Command["name"]> = {
-  "F1": "Palette",
-  "⇧F1": "Palette",
-  "⌃F1": "Palette",
-  "⌥F1": "Palette",
-  "⌘F1": "Palette",
-
   "F2": "Save",
   "F5": "Whitespace",
   "F6": "Wrap",
