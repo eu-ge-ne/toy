@@ -12,6 +12,9 @@ const shortcuts: Record<string, (_: plugins.Api) => Promise<void>> = {
   "F6": async (api) => api.doc.toggleWrap(),
   "F10": (api) => api.emitStop(),
   "F11": async (api) => api.emitToggleZen(),
+
+  "⌃A": async (api) => api.doc.selectAll(),
+  "⌘A": async (api) => api.doc.selectAll(),
 };
 
 export default {
