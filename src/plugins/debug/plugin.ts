@@ -11,9 +11,7 @@ export default {
   init(api: api.Api): void {
     widget = new DebugWidget();
 
-    api.intercept("start", async ({ version }) => {
-      widget.version = version;
-    });
+    widget.version = api.about.version;
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
