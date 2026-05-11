@@ -4,25 +4,25 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const ioApiClients = new events.Clients<
+const clients = new events.Clients<
   api.IOInterceptorEvents,
   api.IOReactorEvents
 >();
 
-const ioApiEmitter = new events.Emitter<
+const emitter = new events.Emitter<
   api.IOInterceptorEvents,
   api.IOReactorEvents
->(ioApiClients);
+>(clients);
 
-const ioApiListener = new events.Listener<
+const listener = new events.Listener<
   api.IOInterceptorEvents,
   api.IOReactorEvents
->(ioApiClients);
+>(clients);
 
 export default {
   ioApi(api: api.Api): api.IOApi {
     function resize(): void {
-      ioApiEmitter.react("resize");
+      emitter.react("resize");
     }
 
     function render(): void {
@@ -31,7 +31,7 @@ export default {
       vt.sync.bsu();
       vt.buf.write(vt.cursor.hide);
 
-      ioApiEmitter.react("render");
+      emitter.react("render");
 
       vt.buf.write(vt.cursor.show);
       vt.buf.flush();
@@ -43,7 +43,7 @@ export default {
     async function keyPress(key: kitty.Key): Promise<void> {
       const t0 = performance.now();
 
-      await ioApiEmitter.intercept("key.press", { key });
+      await emitter.intercept("key.press", { key });
 
       api.debug.input(performance.now() - t0);
     }
@@ -55,22 +55,19 @@ export default {
 
     api.intercept("start", async () => {
       globalThis.addEventListener("unhandledrejection", (e) => api.emitStop(e));
-
       vt.init();
     });
 
     api.interceptOrdered("stop", 1000, ({ e }) => {
       vt.restore();
-
       if (e) {
         console.log(e.reason);
       }
-
       Deno.exit(0);
     });
 
     return {
-      events: ioApiListener,
+      events: listener,
       async runLoop(
         cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
       ): Promise<void> {
