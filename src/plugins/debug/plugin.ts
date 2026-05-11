@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -8,7 +9,7 @@ let widget: DebugWidget;
 let zen = true;
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new DebugWidget();
 
     api.intercept("start", async ({ version }) => {
@@ -30,7 +31,7 @@ export default {
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
-  debugApi(): plugins.DebugApi {
+  debugApi(): api.DebugApi {
     return {
       toggle(): void {
         widget.visible = !widget.visible;

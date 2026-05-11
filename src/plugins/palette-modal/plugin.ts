@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
@@ -7,7 +8,7 @@ let widget: PaletteWidget;
 let zen = true;
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new PaletteWidget();
 
     api.react("resize", () => {
@@ -23,7 +24,7 @@ export default {
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },
-  paletteModalApi(api: plugins.Api): plugins.PaletteModalApi {
+  paletteModalApi(api: api.Api): api.PaletteModalApi {
     return {
       async open(): Promise<void> {
         widget.open();

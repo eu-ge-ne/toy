@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -7,7 +8,7 @@ import { AskWidget } from "./widget.ts";
 let widget: AskWidget;
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new AskWidget();
 
     api.react("resize", () => {
@@ -23,7 +24,7 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  confirmModalApi(api: plugins.Api): plugins.ConfirmModalApi {
+  confirmModalApi(api: api.Api): api.ConfirmModalApi {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);

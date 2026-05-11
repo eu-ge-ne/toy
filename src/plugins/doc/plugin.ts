@@ -1,3 +1,5 @@
+import * as api from "@libs/api";
+import * as events from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -8,13 +10,30 @@ let widget: EditorWidget;
 let fileName: string | undefined;
 let zen = true;
 
+const clients = new events.Clients<
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
+>();
+
+const emitter = new events.Emitter<
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
+>(
+  clients,
+);
+
+const listener = new events.Listener<
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
+>(clients);
+
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
         api.emitStatusDocModified(widget.modified, widget.lineCount),
-      onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
+      onCursorChange: (x) => emitter.react("change", { ln: x.ln, col: x.col }),
     });
 
     api.intercept("start", async () => {
@@ -52,7 +71,7 @@ export default {
     api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  docApi(api: plugins.Api): plugins.DocApi {
+  docApi(api: api.Api): api.DocApi {
     return {
       async open(newFileName: string): Promise<void> {
         try {
@@ -149,6 +168,11 @@ export default {
       paste(): void {
         widget.paste();
       },
+    };
+  },
+  cursorApi(): api.CursorApi {
+    return {
+      events: listener,
     };
   },
 } satisfies plugins.Plugin;

@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
@@ -5,34 +6,33 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 
 export class Host
-  extends events.Listener<plugins.InterceptorEvents, plugins.ReactorEvents>
-  implements plugins.Api {
+  extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
+  implements api.Api {
   private readonly emitter: events.Emitter<
-    plugins.InterceptorEvents,
-    plugins.ReactorEvents
+    api.InterceptorEvents,
+    api.ReactorEvents
   >;
 
-  debug!: plugins.DebugApi;
-  doc!: plugins.DocApi;
-  alertModal!: plugins.AlertModalApi;
-  confirmModal!: plugins.ConfirmModalApi;
-  fileNameModal!: plugins.FileNameModalApi;
-  paletteModal!: plugins.PaletteModalApi;
+  debug!: api.DebugApi;
+  doc!: api.DocApi;
+  cursor!: api.CursorApi;
+  alertModal!: api.AlertModalApi;
+  confirmModal!: api.ConfirmModalApi;
+  fileNameModal!: api.FileNameModalApi;
+  paletteModal!: api.PaletteModalApi;
 
   constructor() {
     const clients = new events.Clients<
-      plugins.InterceptorEvents,
-      plugins.ReactorEvents
+      api.InterceptorEvents,
+      api.ReactorEvents
     >();
 
     super(clients);
 
     this.emitter = new events.Emitter<
-      plugins.InterceptorEvents,
-      plugins.ReactorEvents
-    >(
-      clients,
-    );
+      api.InterceptorEvents,
+      api.ReactorEvents
+    >(clients);
   }
 
   register(plugin: plugins.Plugin): void {
@@ -40,6 +40,10 @@ export class Host
 
     if (plugin.debugApi) {
       this.debug = plugin.debugApi(this);
+    }
+
+    if (plugin.cursorApi) {
+      this.cursor = plugin.cursorApi(this);
     }
 
     if (plugin.docApi) {
@@ -132,9 +136,5 @@ export class Host
 
   emitStatusDocModified(modified: boolean, lineCount: number): void {
     this.emitter.react("status.doc.modified", { modified, lineCount });
-  }
-
-  emitStatusDocCursor(ln: number, col: number): void {
-    this.emitter.react("status.doc.cursor", { ln, col });
   }
 }
