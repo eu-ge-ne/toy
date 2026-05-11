@@ -129,12 +129,4 @@ export class Host
   emitSetTheme(name: keyof typeof themes.Themes): void {
     this.emitter.react("theme.set", name);
   }
-
-  emitStatusDocName(name: string): void {
-    this.emitter.react("status.doc.name", name);
-  }
-
-  emitStatusDocModified(modified: boolean, lineCount: number): void {
-    this.emitter.react("status.doc.modified", { modified, lineCount });
-  }
 }

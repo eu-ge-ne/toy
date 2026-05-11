@@ -10,30 +10,47 @@ let widget: EditorWidget;
 let fileName: string | undefined;
 let zen = true;
 
-const clients = new events.Clients<
+const docApiClients = new events.Clients<
+  api.DocInterceptorEvents,
+  api.DocReactorEvents
+>();
+
+const docApiEmitter = new events.Emitter<
+  api.DocInterceptorEvents,
+  api.DocReactorEvents
+>(docApiClients);
+
+const docApiListener = new events.Listener<
+  api.DocInterceptorEvents,
+  api.DocReactorEvents
+>(docApiClients);
+
+const cursorApiClients = new events.Clients<
   api.CursorInterceptorEvents,
   api.CursorReactorEvents
 >();
 
-const emitter = new events.Emitter<
+const cursorApiEmitter = new events.Emitter<
   api.CursorInterceptorEvents,
   api.CursorReactorEvents
->(
-  clients,
-);
+>(cursorApiClients);
 
-const listener = new events.Listener<
+const cursorApiListener = new events.Listener<
   api.CursorInterceptorEvents,
   api.CursorReactorEvents
->(clients);
+>(cursorApiClients);
 
 export default {
   init(api: api.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        api.emitStatusDocModified(widget.modified, widget.lineCount),
-      onCursorChange: (x) => emitter.react("change", { ln: x.ln, col: x.col }),
+        docApiEmitter.react("change", {
+          modified: widget.modified,
+          lineCount: widget.lineCount,
+        }),
+      onCursorChange: (x) =>
+        cursorApiEmitter.react("change", { ln: x.ln, col: x.col }),
     });
 
     api.intercept("start", async () => {
@@ -73,6 +90,7 @@ export default {
   },
   docApi(api: api.Api): api.DocApi {
     return {
+      events: docApiListener,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
@@ -81,7 +99,7 @@ export default {
 
           api.doc.reset();
 
-          api.emitStatusDocName(newFileName);
+          docApiEmitter.react("change.name", newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -123,7 +141,7 @@ export default {
             await files.save(newFileName, api.doc.read());
 
             fileName = newFileName;
-            api.emitStatusDocName(newFileName);
+            docApiEmitter.react("change.name", newFileName);
 
             api.doc.reset();
           } catch (err) {
@@ -172,7 +190,7 @@ export default {
   },
   cursorApi(): api.CursorApi {
     return {
-      events: listener,
+      events: cursorApiListener,
     };
   },
 } satisfies plugins.Plugin;

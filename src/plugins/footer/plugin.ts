@@ -29,8 +29,8 @@ export default {
       widget.col = col;
     });
 
-    api.react(
-      "status.doc.modified",
+    api.doc.events.react(
+      "change",
       ({ lineCount }) => widget.lineCount = lineCount,
     );
 
