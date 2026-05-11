@@ -70,7 +70,7 @@ export default {
       }
     });
 
-    api.react("resize", () => {
+    api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
       if (zen) {
         widget.resize(columns, rows, 0, 0);
@@ -84,8 +84,8 @@ export default {
       widget.toggleIndex();
     });
 
-    api.react("render", () => widget.render());
-    api.intercept("key.press", async ({ key }) => widget.onKey(key));
+    api.io.events.react("render", () => widget.render());
+    api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
   docApi(api: api.Api): api.DocApi {

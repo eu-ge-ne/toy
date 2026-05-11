@@ -16,7 +16,7 @@ export default {
       widget.version = version;
     });
 
-    api.react("resize", () => {
+    api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(30, 0, columns);
@@ -27,7 +27,7 @@ export default {
       widget.resize(w, h, y, x);
     });
 
-    api.reactOrdered("render", 1000, () => widget.render());
+    api.io.events.reactOrdered("render", 1000, () => widget.render());
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
     api.react("zen.toggle", () => zen = !zen);
   },

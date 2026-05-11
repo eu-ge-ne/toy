@@ -10,13 +10,13 @@ export default {
 
     let visible = false;
 
-    api.react("resize", () => {
+    api.io.events.react("resize", () => {
       const { columns } = Deno.consoleSize();
 
       widget.resize(columns, 1, 0, 0);
     });
 
-    api.react("render", () => {
+    api.io.events.react("render", () => {
       if (!visible) {
         return;
       }

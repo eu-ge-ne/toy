@@ -1,9 +1,7 @@
 import * as api from "@libs/api";
 import * as events from "@libs/events";
-import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
-import * as vt from "@libs/vt";
 
 export class Host
   extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
@@ -13,6 +11,7 @@ export class Host
     api.ReactorEvents
   >;
 
+  io!: api.IOApi;
   debug!: api.DebugApi;
   doc!: api.DocApi;
   cursor!: api.CursorApi;
@@ -37,6 +36,10 @@ export class Host
 
   register(plugin: plugins.Plugin): void {
     plugin.init?.(this);
+
+    if (plugin.ioApi) {
+      this.io = plugin.ioApi(this);
+    }
 
     if (plugin.debugApi) {
       this.debug = plugin.debugApi(this);
@@ -64,53 +67,6 @@ export class Host
 
     if (plugin.paletteModalApi) {
       this.paletteModal = plugin.paletteModalApi(this);
-    }
-  }
-
-  resize(): void {
-    this.emitter.react("resize");
-  }
-
-  render(): void {
-    const t0 = performance.now();
-
-    vt.sync.bsu();
-    vt.buf.write(vt.cursor.hide);
-
-    this.emitter.react("render");
-
-    vt.buf.write(vt.cursor.show);
-    vt.buf.flush();
-    vt.sync.esu();
-
-    this.debug.render(performance.now() - t0);
-  }
-
-  async keyPress(key: kitty.Key): Promise<void> {
-    const t0 = performance.now();
-
-    await this.emitter.intercept("key.press", { key });
-
-    this.debug.input(performance.now() - t0);
-  }
-
-  async runInputLoop(
-    cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
-  ): Promise<void> {
-    const ctx = { continue: true, layoutChanged: true };
-
-    while (ctx.continue) {
-      if (ctx.layoutChanged) {
-        this.resize();
-        ctx.layoutChanged = false;
-      }
-
-      this.render();
-
-      const key = await vt.readKey();
-      await this.keyPress(key);
-
-      cb(ctx);
     }
   }
 

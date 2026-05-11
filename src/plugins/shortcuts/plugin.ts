@@ -29,7 +29,7 @@ const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
 
 export default {
   init(api: api.Api): void {
-    api.interceptOrdered("key.press", -1000, async (data) => {
+    api.io.events.interceptOrdered("key.press", -1000, async (data) => {
       const apiEntry = shortcuts[kitty.shortcut(data.key)];
       if (!apiEntry) {
         return;
