@@ -21,7 +21,7 @@ export default {
       }
     });
 
-    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
     api.react("zen.toggle", () => zen = !zen);
   },
   paletteModalApi(api: api.Api): api.PaletteModalApi {

@@ -1,7 +1,6 @@
 import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
-import * as themes from "@libs/themes";
 
 export class Host
   extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
@@ -15,10 +14,13 @@ export class Host
   debug!: api.DebugApi;
   doc!: api.DocApi;
   cursor!: api.CursorApi;
+  theme!: api.ThemeApi;
   alertModal!: api.AlertModalApi;
   confirmModal!: api.ConfirmModalApi;
   fileNameModal!: api.FileNameModalApi;
   paletteModal!: api.PaletteModalApi;
+
+  #plugins: plugins.Plugin[] = [];
 
   constructor() {
     const clients = new events.Clients<
@@ -35,7 +37,7 @@ export class Host
   }
 
   register(plugin: plugins.Plugin): void {
-    plugin.init?.(this);
+    this.#plugins.push(plugin);
 
     if (plugin.ioApi) {
       this.io = plugin.ioApi(this);
@@ -51,6 +53,10 @@ export class Host
 
     if (plugin.docApi) {
       this.doc = plugin.docApi(this);
+    }
+
+    if (plugin.themeApi) {
+      this.theme = plugin.themeApi(this);
     }
 
     if (plugin.alertModalApi) {
@@ -70,6 +76,12 @@ export class Host
     }
   }
 
+  run(): void {
+    for (const plugin of this.#plugins) {
+      plugin.init?.(this);
+    }
+  }
+
   async emitStart(data: { version: string }): Promise<void> {
     await this.emitter.intercept("start", data);
   }
@@ -80,9 +92,5 @@ export class Host
 
   emitToggleZen(): void {
     this.emitter.react("zen.toggle");
-  }
-
-  emitSetTheme(name: keyof typeof themes.Themes): void {
-    this.emitter.react("theme.set", name);
   }
 }
