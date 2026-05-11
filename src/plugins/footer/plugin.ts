@@ -8,8 +8,6 @@ export default {
   init(api: api.Api): void {
     const widget = new FooterWidget();
 
-    let visible = false;
-
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
@@ -17,7 +15,7 @@ export default {
     });
 
     api.io.events.react("render", () => {
-      if (!visible) {
+      if (api.zen.enabled) {
         return;
       }
 
@@ -35,6 +33,5 @@ export default {
     );
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
-    api.react("zen.toggle", () => visible = !visible);
   },
 } satisfies plugins.Plugin;

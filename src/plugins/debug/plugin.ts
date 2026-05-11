@@ -6,7 +6,6 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 let widget: DebugWidget;
-let zen = true;
 
 export default {
   init(api: api.Api): void {
@@ -21,7 +20,7 @@ export default {
 
       const w = std.clamp(30, 0, columns);
       const h = std.clamp(10, 0, rows);
-      const y = zen ? rows - h : rows - 1 - h;
+      const y = api.zen.enabled ? rows - h : rows - 1 - h;
       const x = columns - w;
 
       widget.resize(w, h, y, x);
@@ -29,7 +28,6 @@ export default {
 
     api.io.events.reactOrdered("render", 1000, () => widget.render());
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
-    api.react("zen.toggle", () => zen = !zen);
   },
   debugApi(): api.DebugApi {
     return {

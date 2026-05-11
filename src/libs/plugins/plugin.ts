@@ -9,6 +9,7 @@ import {
   IOApi,
   PaletteModalApi,
   ThemeApi,
+  ZenApi,
 } from "@libs/api";
 
 export type Plugin = {
@@ -18,6 +19,7 @@ export type Plugin = {
   cursorApi?(_: Api): CursorApi;
   docApi?(_: Api): DocApi;
   themeApi?(_: Api): ThemeApi;
+  zenApi?(_: Api): ZenApi;
   alertModalApi?(_: Api): AlertModalApi;
   confirmModalApi?(_: Api): ConfirmModalApi;
   fileNameModalApi?(_: Api): FileNameModalApi;

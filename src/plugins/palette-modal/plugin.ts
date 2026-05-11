@@ -5,7 +5,6 @@ import * as themes from "@libs/themes";
 import { PaletteWidget } from "./widget.ts";
 
 let widget: PaletteWidget;
-let zen = true;
 
 export default {
   init(api: api.Api): void {
@@ -14,7 +13,7 @@ export default {
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
-      if (zen) {
+      if (api.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);
@@ -22,7 +21,6 @@ export default {
     });
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
-    api.react("zen.toggle", () => zen = !zen);
   },
   paletteModalApi(api: api.Api): api.PaletteModalApi {
     return {

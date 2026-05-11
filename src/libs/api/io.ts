@@ -12,7 +12,6 @@ export type IOReactorEvents = {
 
 export type IOApi = {
   events: events.Listener<IOInterceptorEvents, IOReactorEvents>;
-
   runLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;

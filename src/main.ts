@@ -11,6 +11,7 @@ import io from "@plugins/io";
 import paletteModal from "@plugins/palette-modal";
 import shortcuts from "@plugins/shortcuts";
 import theme from "@plugins/theme";
+import zen from "@plugins/zen";
 
 import deno from "../deno.json" with { type: "json" };
 import { Host } from "./host.ts";
@@ -41,11 +42,12 @@ host.register(header);
 host.register(paletteModal);
 host.register(shortcuts);
 host.register(theme);
+host.register(zen);
 host.run();
 
 let layoutChanged = false;
 
-host.reactOrdered("zen.toggle", 1000, () => layoutChanged = true);
+host.zen.events.reactOrdered("toggle", 1000, () => layoutChanged = true);
 
 await host.emitStart({ version });
 host.theme.set("Default");
