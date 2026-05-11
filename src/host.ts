@@ -14,6 +14,7 @@ export class Host
 
   debug!: plugins.DebugApi;
   doc!: plugins.DocApi;
+  cursor!: plugins.CursorApi;
   alertModal!: plugins.AlertModalApi;
   confirmModal!: plugins.ConfirmModalApi;
   fileNameModal!: plugins.FileNameModalApi;
@@ -40,6 +41,10 @@ export class Host
 
     if (plugin.debugApi) {
       this.debug = plugin.debugApi(this);
+    }
+
+    if (plugin.cursorApi) {
+      this.cursor = plugin.cursorApi(this);
     }
 
     if (plugin.docApi) {
@@ -132,9 +137,5 @@ export class Host
 
   emitStatusDocModified(modified: boolean, lineCount: number): void {
     this.emitter.react("status.doc.modified", { modified, lineCount });
-  }
-
-  emitStatusDocCursor(ln: number, col: number): void {
-    this.emitter.react("status.doc.cursor", { ln, col });
   }
 }

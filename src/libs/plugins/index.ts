@@ -1,6 +1,7 @@
 export * from "./alert-modal.ts";
 export * from "./api.ts";
 export * from "./confirm-modal.ts";
+export * from "./cursor.ts";
 export * from "./debug.ts";
 export * from "./doc.ts";
 export * from "./events.ts";

@@ -23,7 +23,7 @@ export default {
       widget.render();
     });
 
-    api.react("status.doc.cursor", ({ ln, col }) => {
+    api.cursor.events.react("changed", ({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });

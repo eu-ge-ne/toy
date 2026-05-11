@@ -1,3 +1,4 @@
+import * as events from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -8,13 +9,30 @@ let widget: EditorWidget;
 let fileName: string | undefined;
 let zen = true;
 
+const clients = new events.Clients<
+  plugins.CursorInterceptorEvents,
+  plugins.CursorReactorEvents
+>();
+
+const emitter = new events.Emitter<
+  plugins.CursorInterceptorEvents,
+  plugins.CursorReactorEvents
+>(
+  clients,
+);
+
+const listener = new events.Listener<
+  plugins.CursorInterceptorEvents,
+  plugins.CursorReactorEvents
+>(clients);
+
 export default {
   init(api: plugins.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
         api.emitStatusDocModified(widget.modified, widget.lineCount),
-      onCursorChange: (x) => api.emitStatusDocCursor(x.ln, x.col),
+      onCursorChange: (x) => emitter.react("changed", { ln: x.ln, col: x.col }),
     });
 
     api.intercept("start", async () => {
@@ -149,6 +167,11 @@ export default {
       paste(): void {
         widget.paste();
       },
+    };
+  },
+  cursorApi(): plugins.CursorApi {
+    return {
+      events: listener,
     };
   },
 } satisfies plugins.Plugin;

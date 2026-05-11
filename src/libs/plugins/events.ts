@@ -15,7 +15,6 @@ export type ReactorEvents = {
   "render": () => void;
   "status.doc.name": (_: string) => void;
   "status.doc.modified": (_: { modified: boolean; lineCount: number }) => void;
-  "status.doc.cursor": (_: { ln: number; col: number }) => void;
   "zen.toggle": () => void;
   "theme.set": (_: keyof typeof themes.Themes) => void;
 };
