@@ -112,7 +112,7 @@ export const options: Option<(_: api.Api) => Promise<void>>[] = [
   ),
   new Option(
     "Global: Toggle Zen Mode",
-    async (api: api.Api) => api.emitToggleZen(),
+    async (api: api.Api) => api.zen.toggle(),
     ["F11"],
   ),
 ].sort((a, b) => a.name.localeCompare(b.name));

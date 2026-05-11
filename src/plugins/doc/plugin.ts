@@ -8,7 +8,6 @@ import { EditorWidget } from "@widgets/editor";
 
 let widget: EditorWidget;
 let fileName: string | undefined;
-let zen = true;
 
 const docApiClients = new events.Clients<
   api.DocInterceptorEvents,
@@ -72,18 +71,14 @@ export default {
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
-      if (zen) {
+      if (api.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);
       }
     });
 
-    api.react("zen.toggle", () => {
-      zen = !zen;
-      widget.toggleIndex();
-    });
-
+    api.zen.events.react("toggle", () => widget.toggleIndex());
     api.io.events.react("render", () => widget.render());
     api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));

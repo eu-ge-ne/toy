@@ -10,6 +10,7 @@ import { FileNameModalApi } from "./file-name-modal.ts";
 import { IOApi } from "./io.ts";
 import { PaletteModalApi } from "./palette-modal.ts";
 import { ThemeApi } from "./theme.ts";
+import { ZenApi } from "./zen.ts";
 
 export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   io: IOApi;
@@ -17,11 +18,11 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   cursor: CursorApi;
   doc: DocApi;
   theme: ThemeApi;
+  zen: ZenApi;
   alertModal: AlertModalApi;
   confirmModal: ConfirmModalApi;
   fileNameModal: FileNameModalApi;
   paletteModal: PaletteModalApi;
 
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
-  emitToggleZen(): void;
 };

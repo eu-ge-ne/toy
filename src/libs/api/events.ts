@@ -7,6 +7,4 @@ export type InterceptorEvents = {
   ) => Promise<void>;
 };
 
-export type ReactorEvents = {
-  "zen.toggle": () => void;
-};
+export type ReactorEvents = Record<PropertyKey, never>;

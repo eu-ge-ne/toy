@@ -15,6 +15,7 @@ export class Host
   doc!: api.DocApi;
   cursor!: api.CursorApi;
   theme!: api.ThemeApi;
+  zen!: api.ZenApi;
   alertModal!: api.AlertModalApi;
   confirmModal!: api.ConfirmModalApi;
   fileNameModal!: api.FileNameModalApi;
@@ -59,6 +60,10 @@ export class Host
       this.theme = plugin.themeApi(this);
     }
 
+    if (plugin.zenApi) {
+      this.zen = plugin.zenApi(this);
+    }
+
     if (plugin.alertModalApi) {
       this.alertModal = plugin.alertModalApi(this);
     }
@@ -88,9 +93,5 @@ export class Host
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
     await this.emitter.intercept("stop", { e });
-  }
-
-  emitToggleZen(): void {
-    this.emitter.react("zen.toggle");
   }
 }

@@ -9,6 +9,5 @@ export type ThemeReactorEvents = {
 
 export type ThemeApi = {
   events: events.Listener<ThemeInterceptorEvents, ThemeReactorEvents>;
-
   set(_: keyof typeof themes.Themes): void;
 };
