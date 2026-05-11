@@ -1,4 +1,5 @@
 import {
+  AboutApi,
   AlertModalApi,
   Api,
   ConfirmModalApi,
@@ -20,6 +21,7 @@ export type Plugin = {
   docApi?(_: Api): DocApi;
   themeApi?(_: Api): ThemeApi;
   zenApi?(_: Api): ZenApi;
+  aboutApi?(_: Api): AboutApi;
   alertModalApi?(_: Api): AlertModalApi;
   confirmModalApi?(_: Api): ConfirmModalApi;
   fileNameModalApi?(_: Api): FileNameModalApi;

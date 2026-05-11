@@ -7,7 +7,7 @@ export class Emitter<IE extends InterceptorEvents, RE extends ReactorEvents> {
 
   async intercept<E extends keyof IE>(
     name: E,
-    data: Parameters<IE[E]>[0],
+    data: Parameters<IE[E]>[0]
   ): Promise<void> {
     const xx = this.clients.Interceptors[name];
     if (!xx) {

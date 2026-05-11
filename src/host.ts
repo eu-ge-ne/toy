@@ -16,6 +16,7 @@ export class Host
   cursor!: api.CursorApi;
   theme!: api.ThemeApi;
   zen!: api.ZenApi;
+  about!: api.AboutApi;
   alertModal!: api.AlertModalApi;
   confirmModal!: api.ConfirmModalApi;
   fileNameModal!: api.FileNameModalApi;
@@ -64,6 +65,10 @@ export class Host
       this.zen = plugin.zenApi(this);
     }
 
+    if (plugin.aboutApi) {
+      this.about = plugin.aboutApi(this);
+    }
+
     if (plugin.alertModalApi) {
       this.alertModal = plugin.alertModalApi(this);
     }
@@ -87,8 +92,8 @@ export class Host
     }
   }
 
-  async emitStart(data: { version: string }): Promise<void> {
-    await this.emitter.intercept("start", data);
+  async emitStart(): Promise<void> {
+    await this.emitter.intercept("start", {});
   }
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {

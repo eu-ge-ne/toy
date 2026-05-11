@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import about from "@plugins/about";
 import alertModal from "@plugins/alert-modal";
 import confirmModal from "@plugins/confirm-modal";
 import debug from "@plugins/debug";
@@ -13,22 +14,7 @@ import shortcuts from "@plugins/shortcuts";
 import theme from "@plugins/theme";
 import zen from "@plugins/zen";
 
-import deno from "../deno.json" with { type: "json" };
 import { Host } from "./host.ts";
-
-const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
-
-export const args = parseArgs(Deno.args, {
-  boolean: ["version"],
-  alias: {
-    version: "v",
-  },
-});
-
-if (args.version) {
-  console.log(version);
-  Deno.exit();
-}
 
 const host = new Host();
 host.register(io);
@@ -43,13 +29,27 @@ host.register(paletteModal);
 host.register(shortcuts);
 host.register(theme);
 host.register(zen);
+host.register(about);
+
+export const args = parseArgs(Deno.args, {
+  boolean: ["version"],
+  alias: {
+    version: "v",
+  },
+});
+
+if (args.version) {
+  console.log(host.about.version);
+  Deno.exit();
+}
+
 host.run();
 
 let layoutChanged = false;
 
 host.zen.events.reactOrdered("toggle", 1000, () => layoutChanged = true);
 
-await host.emitStart({ version });
+await host.emitStart();
 host.theme.set("Default");
 
 if (typeof args._[0] === "string") {

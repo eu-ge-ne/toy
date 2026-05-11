@@ -1,5 +1,6 @@
 import * as events from "@libs/events";
 
+import { AboutApi } from "./about.ts";
 import { AlertModalApi } from "./alert-modal.ts";
 import { ConfirmModalApi } from "./confirm-modal.ts";
 import { CursorApi } from "./cursor.ts";
@@ -19,6 +20,7 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   doc: DocApi;
   theme: ThemeApi;
   zen: ZenApi;
+  about: AboutApi;
   alertModal: AlertModalApi;
   confirmModal: ConfirmModalApi;
   fileNameModal: FileNameModalApi;

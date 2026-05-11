@@ -1,3 +1,4 @@
+export * from "./about.ts";
 export * from "./alert-modal.ts";
 export * from "./api.ts";
 export * from "./confirm-modal.ts";
