@@ -6,11 +6,13 @@ import {
   DebugApi,
   DocApi,
   FileNameModalApi,
+  IOApi,
   PaletteModalApi,
 } from "@libs/api";
 
 export type Plugin = {
   init?(_: Api): void;
+  ioApi?(_: Api): IOApi;
   debugApi?(_: Api): DebugApi;
   cursorApi?(_: Api): CursorApi;
   docApi?(_: Api): DocApi;

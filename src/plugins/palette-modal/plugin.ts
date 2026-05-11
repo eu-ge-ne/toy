@@ -11,7 +11,7 @@ export default {
   init(api: api.Api): void {
     widget = new PaletteWidget();
 
-    api.react("resize", () => {
+    api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       if (zen) {
@@ -29,13 +29,13 @@ export default {
       async open(): Promise<void> {
         widget.open();
 
-        const offRender = api.reactOrdered(
+        const offRender = api.io.events.reactOrdered(
           "render",
           1000,
           () => widget.render(),
         );
 
-        const offKeyPress = api.interceptOrdered(
+        const offKeyPress = api.io.events.interceptOrdered(
           "key.press",
           -1000,
           async (data) => {
@@ -51,7 +51,7 @@ export default {
           },
         );
 
-        await api.runInputLoop((ctx) => {
+        await api.io.runLoop((ctx) => {
           ctx.continue = widget.opened;
           ctx.layoutChanged = true;
         });

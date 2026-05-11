@@ -6,4 +6,5 @@ export * from "./debug.ts";
 export * from "./doc.ts";
 export * from "./events.ts";
 export * from "./file-name-modal.ts";
+export * from "./io.ts";
 export * from "./palette-modal.ts";
