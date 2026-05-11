@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -7,7 +8,7 @@ import { AskFileNameWidget } from "./widget.ts";
 let widget: AskFileNameWidget;
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new AskFileNameWidget();
 
     api.react("resize", () => {
@@ -23,7 +24,7 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  fileNameModalApi(api: plugins.Api): plugins.FileNameModalApi {
+  fileNameModalApi(api: api.Api): api.FileNameModalApi {
     return {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);

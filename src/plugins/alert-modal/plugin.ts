@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -7,7 +8,7 @@ import { AlertWidget } from "./widget.ts";
 let widget: AlertWidget;
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new AlertWidget();
 
     api.react("resize", () => {
@@ -23,7 +24,7 @@ export default {
 
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  alertModalApi(api: plugins.Api): plugins.AlertModalApi {
+  alertModalApi(api: api.Api): api.AlertModalApi {
     return {
       async open(message: string): Promise<void> {
         widget.open(message);

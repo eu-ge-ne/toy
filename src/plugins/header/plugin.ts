@@ -1,10 +1,11 @@
+import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     const widget = new HeaderWidget();
 
     let visible = false;

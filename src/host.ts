@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
@@ -5,35 +6,33 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 
 export class Host
-  extends events.Listener<plugins.InterceptorEvents, plugins.ReactorEvents>
-  implements plugins.Api {
+  extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
+  implements api.Api {
   private readonly emitter: events.Emitter<
-    plugins.InterceptorEvents,
-    plugins.ReactorEvents
+    api.InterceptorEvents,
+    api.ReactorEvents
   >;
 
-  debug!: plugins.DebugApi;
-  doc!: plugins.DocApi;
-  cursor!: plugins.CursorApi;
-  alertModal!: plugins.AlertModalApi;
-  confirmModal!: plugins.ConfirmModalApi;
-  fileNameModal!: plugins.FileNameModalApi;
-  paletteModal!: plugins.PaletteModalApi;
+  debug!: api.DebugApi;
+  doc!: api.DocApi;
+  cursor!: api.CursorApi;
+  alertModal!: api.AlertModalApi;
+  confirmModal!: api.ConfirmModalApi;
+  fileNameModal!: api.FileNameModalApi;
+  paletteModal!: api.PaletteModalApi;
 
   constructor() {
     const clients = new events.Clients<
-      plugins.InterceptorEvents,
-      plugins.ReactorEvents
+      api.InterceptorEvents,
+      api.ReactorEvents
     >();
 
     super(clients);
 
     this.emitter = new events.Emitter<
-      plugins.InterceptorEvents,
-      plugins.ReactorEvents
-    >(
-      clients,
-    );
+      api.InterceptorEvents,
+      api.ReactorEvents
+    >(clients);
   }
 
   register(plugin: plugins.Plugin): void {

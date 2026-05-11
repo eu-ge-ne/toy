@@ -1,3 +1,4 @@
+import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
@@ -10,24 +11,24 @@ let fileName: string | undefined;
 let zen = true;
 
 const clients = new events.Clients<
-  plugins.CursorInterceptorEvents,
-  plugins.CursorReactorEvents
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
 >();
 
 const emitter = new events.Emitter<
-  plugins.CursorInterceptorEvents,
-  plugins.CursorReactorEvents
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
 >(
   clients,
 );
 
 const listener = new events.Listener<
-  plugins.CursorInterceptorEvents,
-  plugins.CursorReactorEvents
+  api.CursorInterceptorEvents,
+  api.CursorReactorEvents
 >(clients);
 
 export default {
-  init(api: plugins.Api): void {
+  init(api: api.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -70,7 +71,7 @@ export default {
     api.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
   },
-  docApi(api: plugins.Api): plugins.DocApi {
+  docApi(api: api.Api): api.DocApi {
     return {
       async open(newFileName: string): Promise<void> {
         try {
@@ -169,7 +170,7 @@ export default {
       },
     };
   },
-  cursorApi(): plugins.CursorApi {
+  cursorApi(): api.CursorApi {
     return {
       events: listener,
     };

@@ -7,4 +7,3 @@ export * from "./doc.ts";
 export * from "./events.ts";
 export * from "./file-name-modal.ts";
 export * from "./palette-modal.ts";
-export * from "./plugin.ts";
