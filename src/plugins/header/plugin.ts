@@ -24,10 +24,10 @@ export default {
       widget.render();
     });
 
-    api.react("status.doc.name", (x) => widget.fileName = x);
+    api.doc.events.react("change.name", (x) => widget.fileName = x);
 
-    api.react(
-      "status.doc.modified",
+    api.doc.events.react(
+      "change",
       ({ modified }) => widget.modified = modified,
     );
 
