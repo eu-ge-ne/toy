@@ -24,7 +24,7 @@ export default {
       widget.render();
     });
 
-    api.cursor.events.react("changed", ({ ln, col }) => {
+    api.cursor.events.react("change", ({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });

@@ -33,7 +33,7 @@ export default {
       multiLine: true,
       onTextChange: () =>
         api.emitStatusDocModified(widget.modified, widget.lineCount),
-      onCursorChange: (x) => emitter.react("changed", { ln: x.ln, col: x.col }),
+      onCursorChange: (x) => emitter.react("change", { ln: x.ln, col: x.col }),
     });
 
     api.intercept("start", async () => {
