@@ -26,7 +26,4 @@ export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
   emitStop(e?: PromiseRejectionEvent): Promise<void>;
   emitToggleZen(): void;
   emitSetTheme(_: keyof typeof themes.Themes): void;
-
-  emitStatusDocName(name: string): void;
-  emitStatusDocModified(modified: boolean, lineCount: number): void;
 };
