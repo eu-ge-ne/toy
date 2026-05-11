@@ -31,7 +31,7 @@ export default {
       ({ modified }) => widget.modified = modified,
     );
 
-    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
     api.react("zen.toggle", () => visible = !visible);
   },
 } satisfies plugins.Plugin;

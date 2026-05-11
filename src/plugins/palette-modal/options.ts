@@ -57,43 +57,43 @@ export const options: Option<(_: api.Api) => Promise<void>>[] = [
   ),
   new Option(
     "Theme: Base16",
-    async (api: api.Api) => api.emitSetTheme("Base16"),
+    async (api: api.Api) => api.theme.set("Base16"),
   ),
   new Option(
     "Theme: Slate",
-    async (api: api.Api) => api.emitSetTheme("Slate"),
+    async (api: api.Api) => api.theme.set("Slate"),
   ),
   new Option(
     "Theme: Gray",
-    async (api: api.Api) => api.emitSetTheme("Gray"),
+    async (api: api.Api) => api.theme.set("Gray"),
   ),
   new Option(
     "Theme: Zinc",
-    async (api: api.Api) => api.emitSetTheme("Zinc"),
+    async (api: api.Api) => api.theme.set("Zinc"),
   ),
   new Option(
     "Theme: Neutral",
-    async (api: api.Api) => api.emitSetTheme("Neutral"),
+    async (api: api.Api) => api.theme.set("Neutral"),
   ),
   new Option(
     "Theme: Stone",
-    async (api: api.Api) => api.emitSetTheme("Stone"),
+    async (api: api.Api) => api.theme.set("Stone"),
   ),
   new Option(
     "Theme: Taupe",
-    async (api: api.Api) => api.emitSetTheme("Taupe"),
+    async (api: api.Api) => api.theme.set("Taupe"),
   ),
   new Option(
     "Theme: Mauve",
-    async (api: api.Api) => api.emitSetTheme("Mauve"),
+    async (api: api.Api) => api.theme.set("Mauve"),
   ),
   new Option(
     "Theme: Mist",
-    async (api: api.Api) => api.emitSetTheme("Mist"),
+    async (api: api.Api) => api.theme.set("Mist"),
   ),
   new Option(
     "Theme: Olive",
-    async (api: api.Api) => api.emitSetTheme("Olive"),
+    async (api: api.Api) => api.theme.set("Olive"),
   ),
   new Option(
     "Edit: Undo",

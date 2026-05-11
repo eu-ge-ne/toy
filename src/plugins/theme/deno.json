@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/theme",
+  "exports": "./plugin.ts"
+}

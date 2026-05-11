@@ -10,6 +10,7 @@ import header from "@plugins/header";
 import io from "@plugins/io";
 import paletteModal from "@plugins/palette-modal";
 import shortcuts from "@plugins/shortcuts";
+import theme from "@plugins/theme";
 
 import deno from "../deno.json" with { type: "json" };
 import { Host } from "./host.ts";
@@ -29,7 +30,6 @@ if (args.version) {
 }
 
 const host = new Host();
-
 host.register(io);
 host.register(alertModal);
 host.register(confirmModal);
@@ -40,13 +40,15 @@ host.register(footer);
 host.register(header);
 host.register(paletteModal);
 host.register(shortcuts);
+host.register(theme);
+host.run();
 
 let layoutChanged = false;
 
 host.reactOrdered("zen.toggle", 1000, () => layoutChanged = true);
 
 await host.emitStart({ version });
-host.emitSetTheme("Default");
+host.theme.set("Default");
 
 if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);

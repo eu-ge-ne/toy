@@ -22,7 +22,7 @@ export default {
       widget.resize(w, h, y, x);
     });
 
-    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
   fileNameModalApi(api: api.Api): api.FileNameModalApi {
     return {

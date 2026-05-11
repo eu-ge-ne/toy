@@ -28,7 +28,7 @@ export default {
     });
 
     api.io.events.reactOrdered("render", 1000, () => widget.render());
-    api.react("theme.set", (name) => widget.setTheme(themes.Themes[name]));
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
     api.react("zen.toggle", () => zen = !zen);
   },
   debugApi(): api.DebugApi {
