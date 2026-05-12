@@ -5,8 +5,10 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     const widget = new FooterWidget();
+
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -31,7 +33,5 @@ export default {
       "change",
       ({ lineCount }) => widget.lineCount = lineCount,
     );
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
 } satisfies plugins.Plugin;

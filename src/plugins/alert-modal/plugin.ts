@@ -8,8 +8,10 @@ import { AlertWidget } from "./widget.ts";
 let widget: AlertWidget;
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     widget = new AlertWidget();
+
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -21,8 +23,6 @@ export default {
 
       widget.resize(w, h, y, x);
     });
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
   alertModalApi(api: api.Api): api.AlertModalApi {
     return {

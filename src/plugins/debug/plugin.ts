@@ -8,10 +8,13 @@ import { DebugWidget } from "./widget.ts";
 let widget: DebugWidget;
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     widget = new DebugWidget();
 
     widget.version = api.about.version;
+
+    api.io.events.reactOrdered("render", 1000, () => widget.render());
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -23,19 +26,16 @@ export default {
 
       widget.resize(w, h, y, x);
     });
-
-    api.io.events.reactOrdered("render", 1000, () => widget.render());
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
   debugApi(): api.DebugApi {
     return {
       toggle(): void {
         widget.visible = !widget.visible;
       },
-      render(x): void {
+      setRender(x): void {
         widget.renderElapsed = x;
       },
-      input(x): void {
+      setInput(x): void {
         widget.inputElapsed = x;
       },
     };

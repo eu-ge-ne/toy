@@ -43,14 +43,12 @@ if (args.version) {
   Deno.exit();
 }
 
-host.run();
+host.start();
+host.theme.set("Default");
 
 let layoutChanged = false;
 
 host.zen.events.reactOrdered("toggle", 1000, () => layoutChanged = true);
-
-await host.emitStart();
-host.theme.set("Default");
 
 if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);

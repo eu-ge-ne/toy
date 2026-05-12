@@ -19,43 +19,39 @@ const listener = new events.Listener<
   api.IOReactorEvents
 >(clients);
 
+function resize(): void {
+  emitter.react("resize");
+}
+
+function render(api: api.Api): void {
+  const t0 = performance.now();
+
+  vt.sync.bsu();
+  vt.buf.write(vt.cursor.hide);
+
+  emitter.react("render");
+
+  vt.buf.write(vt.cursor.show);
+  vt.buf.flush();
+  vt.sync.esu();
+
+  api.debug.setRender(performance.now() - t0);
+}
+
+async function keyPress(api: api.Api, key: kitty.Key): Promise<void> {
+  const t0 = performance.now();
+  await emitter.intercept("key.press", { key });
+  api.debug.setInput(performance.now() - t0);
+}
+
 export default {
-  ioApi(api: api.Api): api.IOApi {
-    function resize(): void {
-      emitter.react("resize");
-    }
-
-    function render(): void {
-      const t0 = performance.now();
-
-      vt.sync.bsu();
-      vt.buf.write(vt.cursor.hide);
-
-      emitter.react("render");
-
-      vt.buf.write(vt.cursor.show);
-      vt.buf.flush();
-      vt.sync.esu();
-
-      api.debug.render(performance.now() - t0);
-    }
-
-    async function keyPress(key: kitty.Key): Promise<void> {
-      const t0 = performance.now();
-
-      await emitter.intercept("key.press", { key });
-
-      api.debug.input(performance.now() - t0);
-    }
+  start(api: api.Api): void {
+    globalThis.addEventListener("unhandledrejection", (e) => api.emitStop(e));
+    vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
       resize();
-      render();
-    });
-
-    api.intercept("start", async () => {
-      globalThis.addEventListener("unhandledrejection", (e) => api.emitStop(e));
-      vt.init();
+      render(api);
     });
 
     api.interceptOrdered("stop", 1000, ({ e }) => {
@@ -65,7 +61,8 @@ export default {
       }
       Deno.exit(0);
     });
-
+  },
+  ioApi(api: api.Api): api.IOApi {
     return {
       events: listener,
       async runLoop(
@@ -79,10 +76,10 @@ export default {
             ctx.layoutChanged = false;
           }
 
-          render();
+          render(api);
 
           const key = await vt.readKey();
-          await keyPress(key);
+          await keyPress(api, key);
 
           cb(ctx);
         }

@@ -40,7 +40,7 @@ const cursorApiListener = new events.Listener<
 >(cursorApiClients);
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -52,11 +52,14 @@ export default {
         cursorApiEmitter.react("change", { ln: x.ln, col: x.col }),
     });
 
-    api.intercept("start", async () => {
-      widget.setFocused(true);
-      widget.resetChanges();
-      widget.resetCursor();
-    });
+    widget.setFocused(true);
+    widget.resetChanges();
+    widget.resetCursor();
+
+    api.zen.events.react("toggle", () => widget.toggleIndex());
+    api.io.events.react("render", () => widget.render());
+    api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.intercept("stop", async ({ e }) => {
       if (e) {
@@ -77,11 +80,6 @@ export default {
         widget.resize(columns, rows - 2, 1, 0);
       }
     });
-
-    api.zen.events.react("toggle", () => widget.toggleIndex());
-    api.io.events.react("render", () => widget.render());
-    api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
   docApi(api: api.Api): api.DocApi {
     return {

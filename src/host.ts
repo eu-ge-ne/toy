@@ -86,14 +86,10 @@ export class Host
     }
   }
 
-  run(): void {
+  start(): void {
     for (const plugin of this.#plugins) {
-      plugin.init?.(this);
+      plugin.start?.(this);
     }
-  }
-
-  async emitStart(): Promise<void> {
-    await this.emitter.intercept("start", {});
   }
 
   async emitStop(e?: PromiseRejectionEvent): Promise<void> {
