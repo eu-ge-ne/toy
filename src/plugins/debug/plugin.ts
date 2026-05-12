@@ -27,7 +27,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  debugApi(): api.DebugApi {
+  initDebug(): api.DebugApi {
     return {
       toggle(): void {
         widget.visible = !widget.visible;

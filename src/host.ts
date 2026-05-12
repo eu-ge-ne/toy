@@ -20,52 +20,52 @@ export class Host implements api.Api {
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
-    if (plugin.initRuntimeApi) {
-      this.runtime = plugin.initRuntimeApi(this);
+    if (plugin.initRuntime) {
+      this.runtime = plugin.initRuntime(this);
     }
 
-    if (plugin.ioApi) {
-      this.io = plugin.ioApi(this);
+    if (plugin.initIO) {
+      this.io = plugin.initIO(this);
     }
 
-    if (plugin.debugApi) {
-      this.debug = plugin.debugApi(this);
+    if (plugin.initDebug) {
+      this.debug = plugin.initDebug(this);
     }
 
-    if (plugin.cursorApi) {
-      this.cursor = plugin.cursorApi(this);
+    if (plugin.initCursor) {
+      this.cursor = plugin.initCursor(this);
     }
 
-    if (plugin.docApi) {
-      this.doc = plugin.docApi(this);
+    if (plugin.initDoc) {
+      this.doc = plugin.initDoc(this);
     }
 
-    if (plugin.themeApi) {
-      this.theme = plugin.themeApi(this);
+    if (plugin.initTheme) {
+      this.theme = plugin.initTheme(this);
     }
 
-    if (plugin.zenApi) {
-      this.zen = plugin.zenApi(this);
+    if (plugin.initZen) {
+      this.zen = plugin.initZen(this);
     }
 
-    if (plugin.aboutApi) {
-      this.about = plugin.aboutApi(this);
+    if (plugin.initAbout) {
+      this.about = plugin.initAbout(this);
     }
 
-    if (plugin.alertModalApi) {
-      this.alertModal = plugin.alertModalApi(this);
+    if (plugin.initAlertModal) {
+      this.alertModal = plugin.initAlertModal(this);
     }
 
-    if (plugin.confirmModalApi) {
-      this.confirmModal = plugin.confirmModalApi(this);
+    if (plugin.initConfirmModal) {
+      this.confirmModal = plugin.initConfirmModal(this);
     }
 
-    if (plugin.fileNameModalApi) {
-      this.fileNameModal = plugin.fileNameModalApi(this);
+    if (plugin.initFileNameModal) {
+      this.fileNameModal = plugin.initFileNameModal(this);
     }
 
-    if (plugin.paletteModalApi) {
-      this.paletteModal = plugin.paletteModalApi(this);
+    if (plugin.initPaletteModal) {
+      this.paletteModal = plugin.initPaletteModal(this);
     }
   }
 

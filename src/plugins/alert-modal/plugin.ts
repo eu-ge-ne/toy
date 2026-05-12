@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  alertModalApi(api: api.Api): api.AlertModalApi {
+  initAlertModal(api: api.Api): api.AlertModalApi {
     return {
       async open(message: string): Promise<void> {
         widget.open(message);

@@ -59,7 +59,7 @@ export default {
       vt.restore();
     });
   },
-  ioApi(api: api.Api): api.IOApi {
+  initIO(api: api.Api): api.IOApi {
     return {
       events: listener,
       async runLoop(

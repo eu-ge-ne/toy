@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  confirmModalApi(api: api.Api): api.ConfirmModalApi {
+  initConfirmModal(api: api.Api): api.ConfirmModalApi {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);

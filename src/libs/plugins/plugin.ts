@@ -16,16 +16,16 @@ import {
 
 export type Plugin = {
   init?(_: Api): void;
-  initRuntimeApi?(_: Api): RuntimeApi;
-  ioApi?(_: Api): IOApi;
-  debugApi?(_: Api): DebugApi;
-  cursorApi?(_: Api): CursorApi;
-  docApi?(_: Api): DocApi;
-  themeApi?(_: Api): ThemeApi;
-  zenApi?(_: Api): ZenApi;
-  aboutApi?(_: Api): AboutApi;
-  alertModalApi?(_: Api): AlertModalApi;
-  confirmModalApi?(_: Api): ConfirmModalApi;
-  fileNameModalApi?(_: Api): FileNameModalApi;
-  paletteModalApi?(_: Api): PaletteModalApi;
+  initRuntime?(_: Api): RuntimeApi;
+  initIO?(_: Api): IOApi;
+  initDebug?(_: Api): DebugApi;
+  initCursor?(_: Api): CursorApi;
+  initDoc?(_: Api): DocApi;
+  initTheme?(_: Api): ThemeApi;
+  initZen?(_: Api): ZenApi;
+  initAbout?(_: Api): AboutApi;
+  initAlertModal?(_: Api): AlertModalApi;
+  initConfirmModal?(_: Api): ConfirmModalApi;
+  initFileNameModal?(_: Api): FileNameModalApi;
+  initPaletteModal?(_: Api): PaletteModalApi;
 };

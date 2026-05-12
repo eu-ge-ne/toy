@@ -81,7 +81,12 @@ export default {
       }
     });
   },
-  docApi(api: api.Api): api.DocApi {
+  initCursor(): api.CursorApi {
+    return {
+      events: cursorApiListener,
+    };
+  },
+  initDoc(api: api.Api): api.DocApi {
     return {
       events: docApiListener,
       async open(newFileName: string): Promise<void> {
@@ -179,11 +184,6 @@ export default {
       paste(): void {
         widget.paste();
       },
-    };
-  },
-  cursorApi(): api.CursorApi {
-    return {
-      events: cursorApiListener,
     };
   },
 } satisfies plugins.Plugin;

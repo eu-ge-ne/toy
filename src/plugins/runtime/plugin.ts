@@ -18,7 +18,7 @@ const listener = new events.Listener<
 >(clients);
 
 export default {
-  initRuntimeApi(api: api.Api): api.RuntimeApi {
+  initRuntime(api: api.Api): api.RuntimeApi {
     return {
       events: listener,
       async start(): Promise<void> {

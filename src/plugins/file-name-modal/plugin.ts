@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  fileNameModalApi(api: api.Api): api.FileNameModalApi {
+  initFileNameModal(api: api.Api): api.FileNameModalApi {
     return {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);

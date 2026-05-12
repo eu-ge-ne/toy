@@ -22,7 +22,7 @@ export default {
       }
     });
   },
-  paletteModalApi(api: api.Api): api.PaletteModalApi {
+  initPaletteModal(api: api.Api): api.PaletteModalApi {
     return {
       async open(): Promise<void> {
         widget.open();
