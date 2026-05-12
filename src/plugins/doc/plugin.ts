@@ -61,7 +61,7 @@ export default {
     api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.intercept("stop", async ({ e }) => {
+    api.runtime.events.intercept("stop", async ({ e }) => {
       if (e) {
         return;
       }
@@ -102,7 +102,7 @@ export default {
               : Deno.inspect(err);
             await api.alertModal.open(message);
 
-            await api.emitStop();
+            await api.runtime.stop();
           }
         }
       },

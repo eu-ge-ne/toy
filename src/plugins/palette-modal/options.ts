@@ -32,7 +32,7 @@ export const options: Option<(_: api.Api) => Promise<void>>[] = [
   ),
   new Option(
     "Global: Exit",
-    (api: api.Api) => api.emitStop(),
+    (api: api.Api) => api.runtime.stop(),
     ["F10"],
   ),
   new Option(

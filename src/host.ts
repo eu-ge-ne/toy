@@ -1,15 +1,8 @@
 import * as api from "@libs/api";
-import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-export class Host
-  extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
-  implements api.Api {
-  private readonly emitter: events.Emitter<
-    api.InterceptorEvents,
-    api.ReactorEvents
-  >;
-
+export class Host implements api.Api {
+  runtime!: api.RuntimeApi;
   io!: api.IOApi;
   debug!: api.DebugApi;
   doc!: api.DocApi;
@@ -24,22 +17,12 @@ export class Host
 
   #plugins: plugins.Plugin[] = [];
 
-  constructor() {
-    const clients = new events.Clients<
-      api.InterceptorEvents,
-      api.ReactorEvents
-    >();
-
-    super(clients);
-
-    this.emitter = new events.Emitter<
-      api.InterceptorEvents,
-      api.ReactorEvents
-    >(clients);
-  }
-
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
+
+    if (plugin.runtimeApi) {
+      this.runtime = plugin.runtimeApi(this);
+    }
 
     if (plugin.ioApi) {
       this.io = plugin.ioApi(this);
@@ -90,9 +73,5 @@ export class Host
     for (const plugin of this.#plugins) {
       plugin.start?.(this);
     }
-  }
-
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.emitter.intercept("stop", { e });
   }
 }

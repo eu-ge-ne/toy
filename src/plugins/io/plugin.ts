@@ -46,7 +46,10 @@ async function keyPress(api: api.Api, key: kitty.Key): Promise<void> {
 
 export default {
   start(api: api.Api): void {
-    globalThis.addEventListener("unhandledrejection", (e) => api.emitStop(e));
+    globalThis.addEventListener(
+      "unhandledrejection",
+      (e) => api.runtime.stop(e),
+    );
     vt.init();
 
     Deno.addSignalListener("SIGWINCH", () => {
@@ -54,7 +57,7 @@ export default {
       render(api);
     });
 
-    api.interceptOrdered("stop", 1000, ({ e }) => {
+    api.runtime.events.interceptOrdered("stop", 1000, ({ e }) => {
       vt.restore();
       if (e) {
         console.log(e.reason);

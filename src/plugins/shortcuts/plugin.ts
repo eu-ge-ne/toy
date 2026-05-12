@@ -11,7 +11,7 @@ const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
   "F2": (api) => api.doc.save(),
   "F5": async (api) => api.doc.toggleWhitespace(),
   "F6": async (api) => api.doc.toggleWrap(),
-  "F10": (api) => api.emitStop(),
+  "F10": (api) => api.runtime.stop(),
   "F11": async (api) => api.zen.toggle(),
   "⌃A": async (api) => api.doc.selectAll(),
   "⌘A": async (api) => api.doc.selectAll(),

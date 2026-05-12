@@ -9,12 +9,14 @@ import {
   FileNameModalApi,
   IOApi,
   PaletteModalApi,
+  RuntimeApi,
   ThemeApi,
   ZenApi,
 } from "@libs/api";
 
 export type Plugin = {
   start?(_: Api): void;
+  runtimeApi?(_: Api): RuntimeApi;
   ioApi?(_: Api): IOApi;
   debugApi?(_: Api): DebugApi;
   cursorApi?(_: Api): CursorApi;

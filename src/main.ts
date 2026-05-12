@@ -10,6 +10,7 @@ import footer from "@plugins/footer";
 import header from "@plugins/header";
 import io from "@plugins/io";
 import paletteModal from "@plugins/palette-modal";
+import runtime from "@plugins/runtime";
 import shortcuts from "@plugins/shortcuts";
 import theme from "@plugins/theme";
 import zen from "@plugins/zen";
@@ -17,6 +18,7 @@ import zen from "@plugins/zen";
 import { Host } from "./host.ts";
 
 const host = new Host();
+host.register(runtime);
 host.register(io);
 host.register(alertModal);
 host.register(confirmModal);
