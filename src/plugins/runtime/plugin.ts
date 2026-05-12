@@ -27,14 +27,15 @@ export default {
           (e) => api.runtime.stop(e),
         );
 
-        await emitter.intercept("start", {});
+        await emitter.dispatch("start", {});
       },
       async stop(e?: PromiseRejectionEvent): Promise<void> {
-        await emitter.intercept("stop", { e });
+        await emitter.dispatch("stop", { e });
 
         if (e) {
           console.log(e.reason);
         }
+
         Deno.exit(0);
       },
     };

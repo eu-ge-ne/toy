@@ -20,7 +20,7 @@ const listener = new events.Listener<
 >(clients);
 
 function resize(): void {
-  emitter.react("resize");
+  emitter.broadcast("resize");
 }
 
 function render(api: api.API): void {
@@ -29,7 +29,7 @@ function render(api: api.API): void {
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 
-  emitter.react("render");
+  emitter.broadcast("render");
 
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
@@ -40,7 +40,9 @@ function render(api: api.API): void {
 
 async function keyPress(api: api.API, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
-  await emitter.intercept("key.press", { key });
+
+  await emitter.dispatch("key.press", { key });
+
   api.debug.setInput(performance.now() - t0);
 }
 

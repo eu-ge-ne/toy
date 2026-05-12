@@ -44,12 +44,12 @@ export default {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        docApiEmitter.react("change", {
+        docApiEmitter.broadcast("change", {
           modified: widget.modified,
           lineCount: widget.lineCount,
         }),
       onCursorChange: (x) =>
-        cursorApiEmitter.react("change", { ln: x.ln, col: x.col }),
+        cursorApiEmitter.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
     widget.setFocused(true);
@@ -97,7 +97,7 @@ export default {
 
           api.doc.reset();
 
-          docApiEmitter.react("change.name", newFileName);
+          docApiEmitter.broadcast("change.name", newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -139,7 +139,7 @@ export default {
             await files.save(newFileName, api.doc.read());
 
             fileName = newFileName;
-            docApiEmitter.react("change.name", newFileName);
+            docApiEmitter.broadcast("change.name", newFileName);
 
             api.doc.reset();
           } catch (err) {
