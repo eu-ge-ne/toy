@@ -14,7 +14,7 @@ import {
 } from "@libs/api";
 
 export type Plugin = {
-  init?(_: Api): void;
+  start?(_: Api): void;
   ioApi?(_: Api): IOApi;
   debugApi?(_: Api): DebugApi;
   cursorApi?(_: Api): CursorApi;

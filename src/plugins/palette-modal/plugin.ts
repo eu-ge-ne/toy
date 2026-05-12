@@ -7,8 +7,10 @@ import { PaletteWidget } from "./widget.ts";
 let widget: PaletteWidget;
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     widget = new PaletteWidget();
+
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -19,8 +21,6 @@ export default {
         widget.resize(columns, rows - 2, 1, 0);
       }
     });
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
   paletteModalApi(api: api.Api): api.PaletteModalApi {
     return {

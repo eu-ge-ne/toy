@@ -5,8 +5,11 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export default {
-  init(api: api.Api): void {
+  start(api: api.Api): void {
     const widget = new HeaderWidget();
+
+    api.doc.events.react("change.name", (x) => widget.fileName = x);
+    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
     api.io.events.react("resize", () => {
       const { columns } = Deno.consoleSize();
@@ -22,13 +25,9 @@ export default {
       widget.render();
     });
 
-    api.doc.events.react("change.name", (x) => widget.fileName = x);
-
     api.doc.events.react(
       "change",
       ({ modified }) => widget.modified = modified,
     );
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
   },
 } satisfies plugins.Plugin;
