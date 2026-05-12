@@ -7,7 +7,7 @@ import { PaletteWidget } from "./widget.ts";
 let widget: PaletteWidget;
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new PaletteWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));

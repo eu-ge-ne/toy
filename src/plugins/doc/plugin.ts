@@ -40,7 +40,7 @@ const cursorApiListener = new events.Listener<
 >(cursorApiClients);
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>

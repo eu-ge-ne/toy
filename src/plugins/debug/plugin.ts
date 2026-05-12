@@ -8,7 +8,7 @@ import { DebugWidget } from "./widget.ts";
 let widget: DebugWidget;
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new DebugWidget();
 
     widget.version = api.about.version;

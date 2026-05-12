@@ -45,7 +45,8 @@ if (args.version) {
   Deno.exit();
 }
 
-host.start();
+host.init();
+await host.runtime.start();
 host.theme.set("Default");
 
 let layoutChanged = false;

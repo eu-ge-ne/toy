@@ -20,8 +20,8 @@ export class Host implements api.Api {
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
-    if (plugin.runtimeApi) {
-      this.runtime = plugin.runtimeApi(this);
+    if (plugin.initRuntimeApi) {
+      this.runtime = plugin.initRuntimeApi(this);
     }
 
     if (plugin.ioApi) {
@@ -69,9 +69,9 @@ export class Host implements api.Api {
     }
   }
 
-  start(): void {
+  init(): void {
     for (const plugin of this.#plugins) {
-      plugin.start?.(this);
+      plugin.init?.(this);
     }
   }
 }

@@ -45,24 +45,18 @@ async function keyPress(api: api.Api, key: kitty.Key): Promise<void> {
 }
 
 export default {
-  start(api: api.Api): void {
-    globalThis.addEventListener(
-      "unhandledrejection",
-      (e) => api.runtime.stop(e),
-    );
-    vt.init();
+  init(api: api.Api): void {
+    api.runtime.events.intercept("start", async () => {
+      vt.init();
 
-    Deno.addSignalListener("SIGWINCH", () => {
-      resize();
-      render(api);
+      Deno.addSignalListener("SIGWINCH", () => {
+        resize();
+        render(api);
+      });
     });
 
-    api.runtime.events.interceptOrdered("stop", 1000, ({ e }) => {
+    api.runtime.events.interceptOrdered("stop", 1000, async () => {
       vt.restore();
-      if (e) {
-        console.log(e.reason);
-      }
-      Deno.exit(0);
     });
   },
   ioApi(api: api.Api): api.IOApi {

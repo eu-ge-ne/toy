@@ -8,7 +8,7 @@ import { AskWidget } from "./widget.ts";
 let widget: AskWidget;
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new AskWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));

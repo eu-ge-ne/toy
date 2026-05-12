@@ -8,7 +8,7 @@ import { AlertWidget } from "./widget.ts";
 let widget: AlertWidget;
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new AlertWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));

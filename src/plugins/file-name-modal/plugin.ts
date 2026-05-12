@@ -8,7 +8,7 @@ import { AskFileNameWidget } from "./widget.ts";
 let widget: AskFileNameWidget;
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     widget = new AskFileNameWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));

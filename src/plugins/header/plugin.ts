@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 import { HeaderWidget } from "./widget.ts";
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.Api): void {
     const widget = new HeaderWidget();
 
     api.doc.events.react("change.name", (x) => widget.fileName = x);

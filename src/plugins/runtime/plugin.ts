@@ -18,11 +18,24 @@ const listener = new events.Listener<
 >(clients);
 
 export default {
-  runtimeApi(): api.RuntimeApi {
+  initRuntimeApi(api: api.Api): api.RuntimeApi {
     return {
       events: listener,
+      async start(): Promise<void> {
+        globalThis.addEventListener(
+          "unhandledrejection",
+          (e) => api.runtime.stop(e),
+        );
+
+        await emitter.intercept("start", {});
+      },
       async stop(e?: PromiseRejectionEvent): Promise<void> {
         await emitter.intercept("stop", { e });
+
+        if (e) {
+          console.log(e.reason);
+        }
+        Deno.exit(0);
       },
     };
   },
