@@ -6,7 +6,7 @@ import deno from "../../../deno.json" with { type: "json" };
 const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
 
 export default {
-  initAbout(): api.AboutApi {
+  initAbout(): api.AboutAPI {
     return {
       get version(): string {
         return version;

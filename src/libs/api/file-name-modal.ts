@@ -1,3 +1,3 @@
-export type FileNameModalApi = {
+export type FileNameModalAPI = {
   open(_: string): Promise<string | undefined>;
 };

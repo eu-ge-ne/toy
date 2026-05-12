@@ -2,7 +2,7 @@ import * as api from "@libs/api";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
+const shortcuts: Record<string, (_: api.API) => Promise<void>> = {
   "F1": (api) => api.paletteModal.open(),
   "⇧F1": (api) => api.paletteModal.open(),
   "⌃F1": (api) => api.paletteModal.open(),
@@ -28,7 +28,7 @@ const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
 };
 
 export default {
-  init(api: api.Api): void {
+  init(api: api.API): void {
     api.io.events.interceptOrdered("key.press", -1000, async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 

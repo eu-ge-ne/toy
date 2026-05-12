@@ -1,3 +1,3 @@
-export type PaletteModalApi = {
+export type PaletteModalAPI = {
   open(): Promise<void>;
 };

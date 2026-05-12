@@ -9,7 +9,7 @@ export type RuntimeInterceptorEvents = {
 
 export type RuntimeReactorEvents = Record<PropertyKey, never>;
 
-export type RuntimeApi = {
+export type RuntimeAPI = {
   events: events.Listener<RuntimeInterceptorEvents, RuntimeReactorEvents>;
   start(): Promise<void>;
   stop(e?: PromiseRejectionEvent): Promise<void>;

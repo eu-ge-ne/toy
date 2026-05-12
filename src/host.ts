@@ -1,19 +1,19 @@
 import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 
-export class Host implements api.Api {
-  runtime!: api.RuntimeApi;
-  io!: api.IOApi;
-  debug!: api.DebugApi;
-  doc!: api.DocApi;
-  cursor!: api.CursorApi;
-  theme!: api.ThemeApi;
-  zen!: api.ZenApi;
-  about!: api.AboutApi;
-  alertModal!: api.AlertModalApi;
-  confirmModal!: api.ConfirmModalApi;
-  fileNameModal!: api.FileNameModalApi;
-  paletteModal!: api.PaletteModalApi;
+export class Host implements api.API {
+  runtime!: api.RuntimeAPI;
+  io!: api.IOAPI;
+  debug!: api.DebugAPI;
+  doc!: api.DocAPI;
+  cursor!: api.CursorAPI;
+  theme!: api.ThemeAPI;
+  zen!: api.ZenAPI;
+  about!: api.AboutAPI;
+  alertModal!: api.AlertModalAPI;
+  confirmModal!: api.ConfirmModalAPI;
+  fileNameModal!: api.FileNameModalAPI;
+  paletteModal!: api.PaletteModalAPI;
 
   #plugins: plugins.Plugin[] = [];
 

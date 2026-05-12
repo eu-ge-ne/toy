@@ -8,7 +8,7 @@ import { AskWidget } from "./widget.ts";
 let widget: AskWidget;
 
 export default {
-  init(api: api.Api): void {
+  init(api: api.API): void {
     widget = new AskWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initConfirmModal(api: api.Api): api.ConfirmModalApi {
+  initConfirmModal(api: api.API): api.ConfirmModalAPI {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);

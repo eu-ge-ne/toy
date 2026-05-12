@@ -1,31 +1,31 @@
 import {
-  AboutApi,
-  AlertModalApi,
-  Api,
-  ConfirmModalApi,
-  CursorApi,
-  DebugApi,
-  DocApi,
-  FileNameModalApi,
-  IOApi,
-  PaletteModalApi,
-  RuntimeApi,
-  ThemeApi,
-  ZenApi,
+  AboutAPI,
+  AlertModalAPI,
+  API,
+  ConfirmModalAPI,
+  CursorAPI,
+  DebugAPI,
+  DocAPI,
+  FileNameModalAPI,
+  IOAPI,
+  PaletteModalAPI,
+  RuntimeAPI,
+  ThemeAPI,
+  ZenAPI,
 } from "@libs/api";
 
 export type Plugin = {
-  init?(_: Api): void;
-  initRuntime?(_: Api): RuntimeApi;
-  initIO?(_: Api): IOApi;
-  initDebug?(_: Api): DebugApi;
-  initCursor?(_: Api): CursorApi;
-  initDoc?(_: Api): DocApi;
-  initTheme?(_: Api): ThemeApi;
-  initZen?(_: Api): ZenApi;
-  initAbout?(_: Api): AboutApi;
-  initAlertModal?(_: Api): AlertModalApi;
-  initConfirmModal?(_: Api): ConfirmModalApi;
-  initFileNameModal?(_: Api): FileNameModalApi;
-  initPaletteModal?(_: Api): PaletteModalApi;
+  init?(_: API): void;
+  initRuntime?(_: API): RuntimeAPI;
+  initIO?(_: API): IOAPI;
+  initDebug?(_: API): DebugAPI;
+  initCursor?(_: API): CursorAPI;
+  initDoc?(_: API): DocAPI;
+  initTheme?(_: API): ThemeAPI;
+  initZen?(_: API): ZenAPI;
+  initAbout?(_: API): AboutAPI;
+  initAlertModal?(_: API): AlertModalAPI;
+  initConfirmModal?(_: API): ConfirmModalAPI;
+  initFileNameModal?(_: API): FileNameModalAPI;
+  initPaletteModal?(_: API): PaletteModalAPI;
 };

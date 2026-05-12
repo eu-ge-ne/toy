@@ -7,7 +7,7 @@ export type ThemeReactorEvents = {
   "change": (_: keyof typeof themes.Themes) => void;
 };
 
-export type ThemeApi = {
+export type ThemeAPI = {
   events: events.Listener<ThemeInterceptorEvents, ThemeReactorEvents>;
   set(_: keyof typeof themes.Themes): void;
 };

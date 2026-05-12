@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export default {
-  init(api: api.Api): void {
+  init(api: api.API): void {
     const widget = new FooterWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
