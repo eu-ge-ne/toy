@@ -5,9 +5,9 @@ export class Emitter<IE extends InterceptorEvents, RE extends ReactorEvents> {
   constructor(private readonly clients: Clients<IE, RE>) {
   }
 
-  async intercept<E extends keyof IE>(
+  async dispatch<E extends keyof IE>(
     name: E,
-    data: Parameters<IE[E]>[0]
+    data: Parameters<IE[E]>[0],
   ): Promise<void> {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
@@ -23,7 +23,7 @@ export class Emitter<IE extends InterceptorEvents, RE extends ReactorEvents> {
     }
   }
 
-  react<E extends keyof RE>(name: E, ...data: Parameters<RE[E]>): void {
+  broadcast<E extends keyof RE>(name: E, ...data: Parameters<RE[E]>): void {
     const xx = this.clients.Reactors[name];
     if (!xx) {
       return;

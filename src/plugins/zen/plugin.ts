@@ -28,7 +28,8 @@ export default {
       },
       toggle(): void {
         enabled = !enabled;
-        emitter.react("toggle");
+
+        emitter.broadcast("toggle");
       },
     };
   },

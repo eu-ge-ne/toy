@@ -23,7 +23,7 @@ export default {
     return {
       events: listener,
       set(name: keyof typeof themes.Themes): void {
-        emitter.react("change", name);
+        emitter.broadcast("change", name);
       },
     };
   },
