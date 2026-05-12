@@ -23,7 +23,7 @@ function resize(): void {
   emitter.react("resize");
 }
 
-function render(api: api.Api): void {
+function render(api: api.API): void {
   const t0 = performance.now();
 
   vt.sync.bsu();
@@ -38,31 +38,28 @@ function render(api: api.Api): void {
   api.debug.setRender(performance.now() - t0);
 }
 
-async function keyPress(api: api.Api, key: kitty.Key): Promise<void> {
+async function keyPress(api: api.API, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
   await emitter.intercept("key.press", { key });
   api.debug.setInput(performance.now() - t0);
 }
 
 export default {
-  start(api: api.Api): void {
-    globalThis.addEventListener("unhandledrejection", (e) => api.emitStop(e));
-    vt.init();
+  init(api: api.API): void {
+    api.runtime.events.intercept("start", async () => {
+      vt.init();
 
-    Deno.addSignalListener("SIGWINCH", () => {
-      resize();
-      render(api);
+      Deno.addSignalListener("SIGWINCH", () => {
+        resize();
+        render(api);
+      });
     });
 
-    api.interceptOrdered("stop", 1000, ({ e }) => {
+    api.runtime.events.interceptOrdered("stop", 1000, async () => {
       vt.restore();
-      if (e) {
-        console.log(e.reason);
-      }
-      Deno.exit(0);
     });
   },
-  ioApi(api: api.Api): api.IOApi {
+  initIO(api: api.API): api.IOAPI {
     return {
       events: listener,
       async runLoop(

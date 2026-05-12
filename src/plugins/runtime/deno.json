@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/runtime",
+  "exports": "./plugin.ts"
+}

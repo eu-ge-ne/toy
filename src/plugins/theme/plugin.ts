@@ -19,7 +19,7 @@ const listener = new events.Listener<
 >(clients);
 
 export default {
-  themeApi(): api.ThemeApi {
+  initTheme(): api.ThemeAPI {
     return {
       events: listener,
       set(name: keyof typeof themes.Themes): void {

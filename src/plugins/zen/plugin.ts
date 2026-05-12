@@ -20,7 +20,7 @@ const listener = new events.Listener<
 let enabled = true;
 
 export default {
-  zenApi(): api.ZenApi {
+  initZen(): api.ZenAPI {
     return {
       events: listener,
       get enabled(): boolean {

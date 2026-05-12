@@ -1,30 +1,27 @@
-import * as events from "@libs/events";
+import { AboutAPI } from "./about.ts";
+import { AlertModalAPI } from "./alert-modal.ts";
+import { ConfirmModalAPI } from "./confirm-modal.ts";
+import { CursorAPI } from "./cursor.ts";
+import { DebugAPI } from "./debug.ts";
+import { DocAPI } from "./doc.ts";
+import { FileNameModalAPI } from "./file-name-modal.ts";
+import { IOAPI } from "./io.ts";
+import { PaletteModalAPI } from "./palette-modal.ts";
+import { RuntimeAPI } from "./runtime.ts";
+import { ThemeAPI } from "./theme.ts";
+import { ZenAPI } from "./zen.ts";
 
-import { AboutApi } from "./about.ts";
-import { AlertModalApi } from "./alert-modal.ts";
-import { ConfirmModalApi } from "./confirm-modal.ts";
-import { CursorApi } from "./cursor.ts";
-import { DebugApi } from "./debug.ts";
-import { DocApi } from "./doc.ts";
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
-import { FileNameModalApi } from "./file-name-modal.ts";
-import { IOApi } from "./io.ts";
-import { PaletteModalApi } from "./palette-modal.ts";
-import { ThemeApi } from "./theme.ts";
-import { ZenApi } from "./zen.ts";
-
-export type Api = events.Listener<InterceptorEvents, ReactorEvents> & {
-  io: IOApi;
-  debug: DebugApi;
-  cursor: CursorApi;
-  doc: DocApi;
-  theme: ThemeApi;
-  zen: ZenApi;
-  about: AboutApi;
-  alertModal: AlertModalApi;
-  confirmModal: ConfirmModalApi;
-  fileNameModal: FileNameModalApi;
-  paletteModal: PaletteModalApi;
-
-  emitStop(e?: PromiseRejectionEvent): Promise<void>;
+export type API = {
+  runtime: RuntimeAPI;
+  io: IOAPI;
+  debug: DebugAPI;
+  cursor: CursorAPI;
+  doc: DocAPI;
+  theme: ThemeAPI;
+  zen: ZenAPI;
+  about: AboutAPI;
+  alertModal: AlertModalAPI;
+  confirmModal: ConfirmModalAPI;
+  fileNameModal: FileNameModalAPI;
+  paletteModal: PaletteModalAPI;
 };

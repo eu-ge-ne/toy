@@ -40,7 +40,7 @@ const cursorApiListener = new events.Listener<
 >(cursorApiClients);
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.API): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -61,7 +61,7 @@ export default {
     api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.intercept("stop", async ({ e }) => {
+    api.runtime.events.intercept("stop", async ({ e }) => {
       if (e) {
         return;
       }
@@ -81,7 +81,12 @@ export default {
       }
     });
   },
-  docApi(api: api.Api): api.DocApi {
+  initCursor(): api.CursorAPI {
+    return {
+      events: cursorApiListener,
+    };
+  },
+  initDoc(api: api.API): api.DocAPI {
     return {
       events: docApiListener,
       async open(newFileName: string): Promise<void> {
@@ -102,7 +107,7 @@ export default {
               : Deno.inspect(err);
             await api.alertModal.open(message);
 
-            await api.emitStop();
+            await api.runtime.stop();
           }
         }
       },
@@ -179,11 +184,6 @@ export default {
       paste(): void {
         widget.paste();
       },
-    };
-  },
-  cursorApi(): api.CursorApi {
-    return {
-      events: cursorApiListener,
     };
   },
 } satisfies plugins.Plugin;

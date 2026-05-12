@@ -1,98 +1,77 @@
 import * as api from "@libs/api";
-import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-export class Host
-  extends events.Listener<api.InterceptorEvents, api.ReactorEvents>
-  implements api.Api {
-  private readonly emitter: events.Emitter<
-    api.InterceptorEvents,
-    api.ReactorEvents
-  >;
-
-  io!: api.IOApi;
-  debug!: api.DebugApi;
-  doc!: api.DocApi;
-  cursor!: api.CursorApi;
-  theme!: api.ThemeApi;
-  zen!: api.ZenApi;
-  about!: api.AboutApi;
-  alertModal!: api.AlertModalApi;
-  confirmModal!: api.ConfirmModalApi;
-  fileNameModal!: api.FileNameModalApi;
-  paletteModal!: api.PaletteModalApi;
+export class Host implements api.API {
+  runtime!: api.RuntimeAPI;
+  io!: api.IOAPI;
+  debug!: api.DebugAPI;
+  doc!: api.DocAPI;
+  cursor!: api.CursorAPI;
+  theme!: api.ThemeAPI;
+  zen!: api.ZenAPI;
+  about!: api.AboutAPI;
+  alertModal!: api.AlertModalAPI;
+  confirmModal!: api.ConfirmModalAPI;
+  fileNameModal!: api.FileNameModalAPI;
+  paletteModal!: api.PaletteModalAPI;
 
   #plugins: plugins.Plugin[] = [];
-
-  constructor() {
-    const clients = new events.Clients<
-      api.InterceptorEvents,
-      api.ReactorEvents
-    >();
-
-    super(clients);
-
-    this.emitter = new events.Emitter<
-      api.InterceptorEvents,
-      api.ReactorEvents
-    >(clients);
-  }
 
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
-    if (plugin.ioApi) {
-      this.io = plugin.ioApi(this);
+    if (plugin.initRuntime) {
+      this.runtime = plugin.initRuntime(this);
     }
 
-    if (plugin.debugApi) {
-      this.debug = plugin.debugApi(this);
+    if (plugin.initIO) {
+      this.io = plugin.initIO(this);
     }
 
-    if (plugin.cursorApi) {
-      this.cursor = plugin.cursorApi(this);
+    if (plugin.initDebug) {
+      this.debug = plugin.initDebug(this);
     }
 
-    if (plugin.docApi) {
-      this.doc = plugin.docApi(this);
+    if (plugin.initCursor) {
+      this.cursor = plugin.initCursor(this);
     }
 
-    if (plugin.themeApi) {
-      this.theme = plugin.themeApi(this);
+    if (plugin.initDoc) {
+      this.doc = plugin.initDoc(this);
     }
 
-    if (plugin.zenApi) {
-      this.zen = plugin.zenApi(this);
+    if (plugin.initTheme) {
+      this.theme = plugin.initTheme(this);
     }
 
-    if (plugin.aboutApi) {
-      this.about = plugin.aboutApi(this);
+    if (plugin.initZen) {
+      this.zen = plugin.initZen(this);
     }
 
-    if (plugin.alertModalApi) {
-      this.alertModal = plugin.alertModalApi(this);
+    if (plugin.initAbout) {
+      this.about = plugin.initAbout(this);
     }
 
-    if (plugin.confirmModalApi) {
-      this.confirmModal = plugin.confirmModalApi(this);
+    if (plugin.initAlertModal) {
+      this.alertModal = plugin.initAlertModal(this);
     }
 
-    if (plugin.fileNameModalApi) {
-      this.fileNameModal = plugin.fileNameModalApi(this);
+    if (plugin.initConfirmModal) {
+      this.confirmModal = plugin.initConfirmModal(this);
     }
 
-    if (plugin.paletteModalApi) {
-      this.paletteModal = plugin.paletteModalApi(this);
+    if (plugin.initFileNameModal) {
+      this.fileNameModal = plugin.initFileNameModal(this);
+    }
+
+    if (plugin.initPaletteModal) {
+      this.paletteModal = plugin.initPaletteModal(this);
     }
   }
 
-  start(): void {
+  init(): void {
     for (const plugin of this.#plugins) {
-      plugin.start?.(this);
+      plugin.init?.(this);
     }
-  }
-
-  async emitStop(e?: PromiseRejectionEvent): Promise<void> {
-    await this.emitter.intercept("stop", { e });
   }
 }

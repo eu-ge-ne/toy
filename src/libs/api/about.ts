@@ -1,3 +1,3 @@
-export type AboutApi = {
+export type AboutAPI = {
   get version(): string;
 };

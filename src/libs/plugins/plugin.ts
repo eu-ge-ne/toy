@@ -1,29 +1,17 @@
-import {
-  AboutApi,
-  AlertModalApi,
-  Api,
-  ConfirmModalApi,
-  CursorApi,
-  DebugApi,
-  DocApi,
-  FileNameModalApi,
-  IOApi,
-  PaletteModalApi,
-  ThemeApi,
-  ZenApi,
-} from "@libs/api";
+import * as api from "@libs/api";
 
 export type Plugin = {
-  start?(_: Api): void;
-  ioApi?(_: Api): IOApi;
-  debugApi?(_: Api): DebugApi;
-  cursorApi?(_: Api): CursorApi;
-  docApi?(_: Api): DocApi;
-  themeApi?(_: Api): ThemeApi;
-  zenApi?(_: Api): ZenApi;
-  aboutApi?(_: Api): AboutApi;
-  alertModalApi?(_: Api): AlertModalApi;
-  confirmModalApi?(_: Api): ConfirmModalApi;
-  fileNameModalApi?(_: Api): FileNameModalApi;
-  paletteModalApi?(_: Api): PaletteModalApi;
+  init?(_: api.API): void;
+  initRuntime?(_: api.API): api.RuntimeAPI;
+  initIO?(_: api.API): api.IOAPI;
+  initDebug?(_: api.API): api.DebugAPI;
+  initCursor?(_: api.API): api.CursorAPI;
+  initDoc?(_: api.API): api.DocAPI;
+  initTheme?(_: api.API): api.ThemeAPI;
+  initZen?(_: api.API): api.ZenAPI;
+  initAbout?(_: api.API): api.AboutAPI;
+  initAlertModal?(_: api.API): api.AlertModalAPI;
+  initConfirmModal?(_: api.API): api.ConfirmModalAPI;
+  initFileNameModal?(_: api.API): api.FileNameModalAPI;
+  initPaletteModal?(_: api.API): api.PaletteModalAPI;
 };

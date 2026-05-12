@@ -2,7 +2,7 @@ import * as api from "@libs/api";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
+const shortcuts: Record<string, (_: api.API) => Promise<void>> = {
   "F1": (api) => api.paletteModal.open(),
   "⇧F1": (api) => api.paletteModal.open(),
   "⌃F1": (api) => api.paletteModal.open(),
@@ -11,7 +11,7 @@ const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
   "F2": (api) => api.doc.save(),
   "F5": async (api) => api.doc.toggleWhitespace(),
   "F6": async (api) => api.doc.toggleWrap(),
-  "F10": (api) => api.emitStop(),
+  "F10": (api) => api.runtime.stop(),
   "F11": async (api) => api.zen.toggle(),
   "⌃A": async (api) => api.doc.selectAll(),
   "⌘A": async (api) => api.doc.selectAll(),
@@ -28,16 +28,15 @@ const shortcuts: Record<string, (_: api.Api) => Promise<void>> = {
 };
 
 export default {
-  start(api: api.Api): void {
+  init(api: api.API): void {
     api.io.events.interceptOrdered("key.press", -1000, async (data) => {
-      const apiEntry = shortcuts[kitty.shortcut(data.key)];
-      if (!apiEntry) {
-        return;
+      const entry = shortcuts[kitty.shortcut(data.key)];
+
+      if (entry) {
+        data.cancel = true;
+
+        await entry(api);
       }
-
-      data.cancel = true;
-
-      await apiEntry(api);
     });
   },
 } satisfies plugins.Plugin;
