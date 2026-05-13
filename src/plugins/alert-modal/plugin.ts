@@ -8,13 +8,13 @@ import { AlertWidget } from "./widget.ts";
 export default class AlertModalPlugin extends plugins.Plugin {
   #widget = new AlertWidget();
 
-  override init(api: api.API): void {
-    api.theme.events.react(
+  override init(host: api.API): void {
+    host.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),
     );
 
-    api.io.events.react("resize", () => {
+    host.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -26,25 +26,27 @@ export default class AlertModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initAlertModal(api: api.API): api.AlertModalAPI {
-    return {
-      open: async (message: string) => {
-        this.#widget.open(message);
+  override initAlertModal(host: api.API): api.AlertModalAPI {
+    const plugin = this;
 
-        const offRender = api.io.events.reactOrdered(
+    return new class extends api.AlertModalAPI {
+      async open(message: string): Promise<void> {
+        plugin.#widget.open(message);
+
+        const offRender = host.io.events.reactOrdered(
           "render",
           1000,
-          () => this.#widget.render(),
+          () => plugin.#widget.render(),
         );
 
-        const offKeyPress = api.io.events.interceptOrdered(
+        const offKeyPress = host.io.events.interceptOrdered(
           "key.press",
           -1000,
           async (data) => {
             data.cancel = true;
 
-            this.#widget.onKeyPress(data.key);
-            if (this.#widget.opened) {
+            plugin.#widget.onKeyPress(data.key);
+            if (plugin.#widget.opened) {
               return;
             }
 
@@ -53,8 +55,8 @@ export default class AlertModalPlugin extends plugins.Plugin {
           },
         );
 
-        await api.io.runLoop((ctx) => ctx.continue = this.#widget.opened);
-      },
-    };
+        await host.io.runLoop((ctx) => ctx.continue = plugin.#widget.opened);
+      }
+    }();
   }
 }

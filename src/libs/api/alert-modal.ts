@@ -1,3 +1,3 @@
-export type AlertModalAPI = {
-  open(_: string): Promise<void>;
-};
+export abstract class AlertModalAPI {
+  abstract open(_: string): Promise<void>;
+}

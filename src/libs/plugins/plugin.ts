@@ -8,11 +8,11 @@ export abstract class Plugin {
   initCursor?(_: api.API): api.CursorAPI;
   initDoc?(_: api.API): api.DocAPI;
   initTheme?(_: api.API): api.ThemeAPI;
-  initAlertModal?(_: api.API): api.AlertModalAPI;
   initConfirmModal?(_: api.API): api.ConfirmModalAPI;
   initFileNameModal?(_: api.API): api.FileNameModalAPI;
   initPaletteModal?(_: api.API): api.PaletteModalAPI;
 
   initAbout?(_: api.API): api.AboutAPI;
+  initAlertModal?(_: api.API): api.AlertModalAPI;
   initZen?(_: api.API): api.ZenAPI;
 }
