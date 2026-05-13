@@ -5,13 +5,14 @@ import * as themes from "@libs/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-let widget: AlertWidget;
+export default class AlertModalPlugin extends plugins.Plugin {
+  #widget = new AlertWidget();
 
-export default {
-  init(api: api.API): void {
-    widget = new AlertWidget();
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+  override init(api: api.API): void {
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
@@ -21,18 +22,19 @@ export default {
       const y = Math.trunc((rows - h) / 2);
       const x = Math.trunc((columns - w) / 2);
 
-      widget.resize(w, h, y, x);
+      this.#widget.resize(w, h, y, x);
     });
-  },
-  initAlertModal(api: api.API): api.AlertModalAPI {
+  }
+
+  override initAlertModal(api: api.API): api.AlertModalAPI {
     return {
-      async open(message: string): Promise<void> {
-        widget.open(message);
+      open: async (message: string) => {
+        this.#widget.open(message);
 
         const offRender = api.io.events.reactOrdered(
           "render",
           1000,
-          () => widget.render(),
+          () => this.#widget.render(),
         );
 
         const offKeyPress = api.io.events.interceptOrdered(
@@ -41,8 +43,8 @@ export default {
           async (data) => {
             data.cancel = true;
 
-            widget.onKeyPress(data.key);
-            if (widget.opened) {
+            this.#widget.onKeyPress(data.key);
+            if (this.#widget.opened) {
               return;
             }
 
@@ -51,8 +53,8 @@ export default {
           },
         );
 
-        await api.io.runLoop((ctx) => ctx.continue = widget.opened);
+        await api.io.runLoop((ctx) => ctx.continue = this.#widget.opened);
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

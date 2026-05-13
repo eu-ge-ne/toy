@@ -3,18 +3,18 @@ import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-const { emitter, listener } = events.create<
-  api.ThemeInterceptorEvents,
-  api.ThemeReactorEvents
->();
+export default class ThemePlugin extends plugins.Plugin {
+  #evs = events.create<
+    api.ThemeInterceptorEvents,
+    api.ThemeReactorEvents
+  >();
 
-export default {
-  initTheme(): api.ThemeAPI {
+  override initTheme(): api.ThemeAPI {
     return {
-      events: listener,
-      set(name: keyof typeof themes.Themes): void {
-        emitter.broadcast("change", name);
+      events: this.#evs.listener,
+      set: (name: keyof typeof themes.Themes) => {
+        this.#evs.emitter.broadcast("change", name);
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

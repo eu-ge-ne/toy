@@ -4,30 +4,33 @@ import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export default {
-  init(api: api.API): void {
-    const widget = new HeaderWidget();
+export default class HeaderPlugin extends plugins.Plugin {
+  #widget = new HeaderWidget();
 
-    api.doc.events.react("change.name", (x) => widget.fileName = x);
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+  override init(api: api.API): void {
+    api.doc.events.react("change.name", (x) => this.#widget.fileName = x);
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.io.events.react("resize", () => {
       const { columns } = Deno.consoleSize();
 
-      widget.resize(columns, 1, 0, 0);
+      this.#widget.resize(columns, 1, 0, 0);
     });
 
     api.io.events.react("render", () => {
-      if (api.zen.enabled) {
+      if (api.zen.enabled()) {
         return;
       }
 
-      widget.render();
+      this.#widget.render();
     });
 
     api.doc.events.react(
       "change",
-      ({ modified }) => widget.modified = modified,
+      ({ modified }) => this.#widget.modified = modified,
     );
-  },
-} satisfies plugins.Plugin;
+  }
+}

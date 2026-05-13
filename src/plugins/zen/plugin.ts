@@ -2,25 +2,25 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const { emitter, listener } = events.create<
-  api.ZenInterceptorEvents,
-  api.ZenReactorEvents
->();
+export default class ZenPlugin extends plugins.Plugin {
+  #evs = events.create<
+    api.ZenInterceptorEvents,
+    api.ZenReactorEvents
+  >();
 
-let enabled = true;
+  #enabled = true;
 
-export default {
-  initZen(): api.ZenAPI {
+  override initZen(): api.ZenAPI {
     return {
-      events: listener,
-      get enabled(): boolean {
-        return enabled;
+      events: this.#evs.listener,
+      enabled: () => {
+        return this.#enabled;
       },
-      toggle(): void {
-        enabled = !enabled;
+      toggle: () => {
+        this.#enabled = !this.#enabled;
 
-        emitter.broadcast("toggle");
+        this.#evs.emitter.broadcast("toggle");
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

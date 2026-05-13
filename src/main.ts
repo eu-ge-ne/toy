@@ -1,37 +1,37 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import about from "@plugins/about";
-import alertModal from "@plugins/alert-modal";
-import confirmModal from "@plugins/confirm-modal";
-import debug from "@plugins/debug";
-import doc from "@plugins/doc";
-import fileNameModal from "@plugins/file-name-modal";
-import footer from "@plugins/footer";
-import header from "@plugins/header";
-import io from "@plugins/io";
-import paletteModal from "@plugins/palette-modal";
-import runtime from "@plugins/runtime";
-import shortcuts from "@plugins/shortcuts";
-import theme from "@plugins/theme";
-import zen from "@plugins/zen";
+import AboutPlugin from "@plugins/about";
+import AlertModalPlugin from "@plugins/alert-modal";
+import ConfirmModalPlugin from "@plugins/confirm-modal";
+import DebugPlugin from "@plugins/debug";
+import DocPlugin from "@plugins/doc";
+import FileNameModalPlugin from "@plugins/file-name-modal";
+import FooterPlugin from "@plugins/footer";
+import HeaderPlugin from "@plugins/header";
+import IOPlugin from "@plugins/io";
+import PaletteModalPlugin from "@plugins/palette-modal";
+import RuntimePlugin from "@plugins/runtime";
+import ShortcutsPlugin from "@plugins/shortcuts";
+import ThemePlugin from "@plugins/theme";
+import ZenPlugin from "@plugins/zen";
 
 import { Host } from "./host.ts";
 
 const host = new Host();
-host.register(runtime);
-host.register(io);
-host.register(alertModal);
-host.register(confirmModal);
-host.register(fileNameModal);
-host.register(debug);
-host.register(doc);
-host.register(footer);
-host.register(header);
-host.register(paletteModal);
-host.register(shortcuts);
-host.register(theme);
-host.register(zen);
-host.register(about);
+host.register(new AboutPlugin());
+host.register(new AlertModalPlugin());
+host.register(new ConfirmModalPlugin());
+host.register(new DebugPlugin());
+host.register(new DocPlugin());
+host.register(new FileNameModalPlugin());
+host.register(new FooterPlugin());
+host.register(new HeaderPlugin());
+host.register(new IOPlugin());
+host.register(new PaletteModalPlugin());
+host.register(new RuntimePlugin());
+host.register(new ShortcutsPlugin());
+host.register(new ThemePlugin());
+host.register(new ZenPlugin());
 
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],

@@ -4,34 +4,37 @@ import * as themes from "@libs/themes";
 
 import { FooterWidget } from "./widget.ts";
 
-export default {
-  init(api: api.API): void {
-    const widget = new FooterWidget();
+export default class FooterPlugin extends plugins.Plugin {
+  #widget = new FooterWidget();
 
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+  override init(api: api.API): void {
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
-      widget.resize(columns, 1, rows - 1, 0);
+      this.#widget.resize(columns, 1, rows - 1, 0);
     });
 
     api.io.events.react("render", () => {
-      if (api.zen.enabled) {
+      if (api.zen.enabled()) {
         return;
       }
 
-      widget.render();
+      this.#widget.render();
     });
 
     api.cursor.events.react("change", ({ ln, col }) => {
-      widget.ln = ln;
-      widget.col = col;
+      this.#widget.ln = ln;
+      this.#widget.col = col;
     });
 
     api.doc.events.react(
       "change",
-      ({ lineCount }) => widget.lineCount = lineCount,
+      ({ lineCount }) => this.#widget.lineCount = lineCount,
     );
-  },
-} satisfies plugins.Plugin;
+  }
+}

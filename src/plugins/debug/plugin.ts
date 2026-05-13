@@ -5,39 +5,41 @@ import * as themes from "@libs/themes";
 
 import { DebugWidget } from "./widget.ts";
 
-let widget: DebugWidget;
+export default class DebugPlugin extends plugins.Plugin {
+  #widget = new DebugWidget();
 
-export default {
-  init(api: api.API): void {
-    widget = new DebugWidget();
+  override init(api: api.API): void {
+    this.#widget.version = api.about.version;
 
-    widget.version = api.about.version;
-
-    api.io.events.reactOrdered("render", 1000, () => widget.render());
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    api.io.events.reactOrdered("render", 1000, () => this.#widget.render());
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(30, 0, columns);
       const h = std.clamp(10, 0, rows);
-      const y = api.zen.enabled ? rows - h : rows - 1 - h;
+      const y = api.zen.enabled() ? rows - h : rows - 1 - h;
       const x = columns - w;
 
-      widget.resize(w, h, y, x);
+      this.#widget.resize(w, h, y, x);
     });
-  },
-  initDebug(): api.DebugAPI {
+  }
+
+  override initDebug(): api.DebugAPI {
     return {
-      toggle(): void {
-        widget.visible = !widget.visible;
+      toggle: () => {
+        this.#widget.visible = !this.#widget.visible;
       },
-      setRender(x): void {
-        widget.renderElapsed = x;
+      setRender: (x) => {
+        this.#widget.renderElapsed = x;
       },
-      setInput(x): void {
-        widget.inputElapsed = x;
+      setInput: (x) => {
+        this.#widget.inputElapsed = x;
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

@@ -8,6 +8,6 @@ export type ZenReactorEvents = {
 
 export type ZenAPI = {
   events: events.Listener<ZenInterceptorEvents, ZenReactorEvents>;
-  get enabled(): boolean;
+  enabled(): boolean;
   toggle(): void;
 };

@@ -27,8 +27,8 @@ const shortcuts: Record<string, (_: api.API) => Promise<void>> = {
   "⌘V": async (api) => api.doc.paste(),
 };
 
-export default {
-  init(api: api.API): void {
+export default class ShortcutsPlugin extends plugins.Plugin {
+  override init(api: api.API): void {
     api.io.events.interceptOrdered("key.press", -1000, async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 
@@ -38,5 +38,5 @@ export default {
         await entry(api);
       }
     });
-  },
-} satisfies plugins.Plugin;
+  }
+}

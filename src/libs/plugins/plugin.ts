@@ -1,6 +1,6 @@
 import * as api from "@libs/api";
 
-export type Plugin = {
+export abstract class Plugin {
   init?(_: api.API): void;
   initRuntime?(_: api.API): api.RuntimeAPI;
   initIO?(_: api.API): api.IOAPI;
@@ -14,4 +14,4 @@ export type Plugin = {
   initConfirmModal?(_: api.API): api.ConfirmModalAPI;
   initFileNameModal?(_: api.API): api.FileNameModalAPI;
   initPaletteModal?(_: api.API): api.PaletteModalAPI;
-};
+}

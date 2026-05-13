@@ -4,75 +4,73 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const { emitter, listener } = events.create<
-  api.IOInterceptorEvents,
-  api.IOReactorEvents
->();
+export default class IOPlugin extends plugins.Plugin {
+  #evs = events.create<api.IOInterceptorEvents, api.IOReactorEvents>();
 
-function resize(): void {
-  emitter.broadcast("resize");
-}
-
-function render(api: api.API): void {
-  const t0 = performance.now();
-
-  vt.sync.bsu();
-  vt.buf.write(vt.cursor.hide);
-
-  emitter.broadcast("render");
-
-  vt.buf.write(vt.cursor.show);
-  vt.buf.flush();
-  vt.sync.esu();
-
-  api.debug.setRender(performance.now() - t0);
-}
-
-async function keyPress(api: api.API, key: kitty.Key): Promise<void> {
-  const t0 = performance.now();
-
-  await emitter.dispatch("key.press", { key });
-
-  api.debug.setInput(performance.now() - t0);
-}
-
-export default {
-  init(api: api.API): void {
+  override init(api: api.API): void {
     api.runtime.events.intercept("start", async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
-        resize();
-        render(api);
+        this.#resize();
+        this.#render(api);
       });
     });
 
     api.runtime.events.interceptOrdered("stop", 1000, async () => {
       vt.restore();
     });
-  },
-  initIO(api: api.API): api.IOAPI {
+  }
+
+  override initIO(api: api.API): api.IOAPI {
     return {
-      events: listener,
-      async runLoop(
+      events: this.#evs.listener,
+      runLoop: async (
         cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
-      ): Promise<void> {
+      ) => {
         const ctx = { continue: true, layoutChanged: true };
 
         while (ctx.continue) {
           if (ctx.layoutChanged) {
-            resize();
+            this.#resize();
             ctx.layoutChanged = false;
           }
 
-          render(api);
+          this.#render(api);
 
           const key = await vt.readKey();
-          await keyPress(api, key);
+          await this.#keyPress(api, key);
 
           cb(ctx);
         }
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+
+  #resize(): void {
+    this.#evs.emitter.broadcast("resize");
+  }
+
+  #render(api: api.API): void {
+    const t0 = performance.now();
+
+    vt.sync.bsu();
+    vt.buf.write(vt.cursor.hide);
+
+    this.#evs.emitter.broadcast("render");
+
+    vt.buf.write(vt.cursor.show);
+    vt.buf.flush();
+    vt.sync.esu();
+
+    api.debug.setRender(performance.now() - t0);
+  }
+
+  async #keyPress(api: api.API, key: kitty.Key): Promise<void> {
+    const t0 = performance.now();
+
+    await this.#evs.emitter.dispatch("key.press", { key });
+
+    api.debug.setInput(performance.now() - t0);
+  }
+}

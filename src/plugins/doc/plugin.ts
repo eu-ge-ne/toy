@@ -6,46 +6,48 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-let widget: EditorWidget;
-let fileName: string | undefined;
+export default class DocPlugin extends plugins.Plugin {
+  #docEvents = events.create<api.DocInterceptorEvents, api.DocReactorEvents>();
 
-const docEvents = events.create<
-  api.DocInterceptorEvents,
-  api.DocReactorEvents
->();
+  #cursorEvents = events.create<
+    api.CursorInterceptorEvents,
+    api.CursorReactorEvents
+  >();
 
-const cursorEvents = events.create<
-  api.CursorInterceptorEvents,
-  api.CursorReactorEvents
->();
+  #fileName: string | undefined;
 
-export default {
-  init(api: api.API): void {
-    widget = new EditorWidget({
-      multiLine: true,
-      onTextChange: () =>
-        docEvents.emitter.broadcast("change", {
-          modified: widget.modified,
-          lineCount: widget.lineCount,
-        }),
-      onCursorChange: (x) =>
-        cursorEvents.emitter.broadcast("change", { ln: x.ln, col: x.col }),
-    });
+  #widget = new EditorWidget({
+    multiLine: true,
+    onTextChange: () =>
+      this.#docEvents.emitter.broadcast("change", {
+        modified: this.#widget.modified,
+        lineCount: this.#widget.lineCount,
+      }),
+    onCursorChange: (x) =>
+      this.#cursorEvents.emitter.broadcast("change", { ln: x.ln, col: x.col }),
+  });
 
-    widget.setFocused(true);
-    widget.resetChanges();
-    widget.resetCursor();
+  override init(api: api.API): void {
+    this.#widget.setFocused(true);
+    this.#widget.resetChanges();
+    this.#widget.resetCursor();
 
-    api.zen.events.react("toggle", () => widget.toggleIndex());
-    api.io.events.react("render", () => widget.render());
-    api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    api.zen.events.react("toggle", () => this.#widget.toggleIndex());
+    api.io.events.react("render", () => this.#widget.render());
+    api.io.events.intercept(
+      "key.press",
+      async ({ key }) => this.#widget.onKey(key),
+    );
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.runtime.events.intercept("stop", async ({ e }) => {
       if (e) {
         return;
       }
-      if (widget.modified) {
+      if (this.#widget.modified) {
         if (await api.confirmModal.open("Save changes?")) {
           await api.doc.save();
         }
@@ -54,22 +56,24 @@ export default {
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
-      if (api.zen.enabled) {
-        widget.resize(columns, rows, 0, 0);
+      if (api.zen.enabled()) {
+        this.#widget.resize(columns, rows, 0, 0);
       } else {
-        widget.resize(columns, rows - 2, 1, 0);
+        this.#widget.resize(columns, rows - 2, 1, 0);
       }
     });
-  },
-  initCursor(): api.CursorAPI {
+  }
+
+  override initCursor(): api.CursorAPI {
     return {
-      events: cursorEvents.listener,
+      events: this.#cursorEvents.listener,
     };
-  },
-  initDoc(api: api.API): api.DocAPI {
+  }
+
+  override initDoc(api: api.API): api.DocAPI {
     return {
-      events: docEvents.listener,
-      async open(newFileName: string): Promise<void> {
+      events: this.#docEvents.listener,
+      open: async (newFileName: string) => {
         try {
           for await (const chunk of files.load(newFileName)) {
             api.doc.write(chunk);
@@ -77,9 +81,9 @@ export default {
 
           api.doc.reset();
 
-          docEvents.emitter.broadcast("change.name", newFileName);
+          this.#docEvents.emitter.broadcast("change.name", newFileName);
 
-          fileName = newFileName;
+          this.#fileName = newFileName;
         } catch (err) {
           if (!(err instanceof Deno.errors.NotFound)) {
             const message = Error.isError(err)
@@ -91,14 +95,14 @@ export default {
           }
         }
       },
-      async save(): Promise<void> {
-        if (!fileName) {
+      save: async () => {
+        if (!this.#fileName) {
           await api.doc.saveAs();
           return;
         }
 
         try {
-          await files.save(fileName, api.doc.read());
+          await files.save(this.#fileName, api.doc.read());
 
           api.doc.reset();
         } catch (err) {
@@ -108,9 +112,11 @@ export default {
           await api.doc.saveAs();
         }
       },
-      async saveAs(): Promise<void> {
+      saveAs: async () => {
         while (true) {
-          const newFileName = await api.fileNameModal.open(fileName ?? "");
+          const newFileName = await api.fileNameModal.open(
+            this.#fileName ?? "",
+          );
           if (!newFileName) {
             return;
           }
@@ -118,8 +124,8 @@ export default {
           try {
             await files.save(newFileName, api.doc.read());
 
-            fileName = newFileName;
-            docEvents.emitter.broadcast("change.name", newFileName);
+            this.#fileName = newFileName;
+            this.#docEvents.emitter.broadcast("change.name", newFileName);
 
             api.doc.reset();
           } catch (err) {
@@ -130,40 +136,40 @@ export default {
           }
         }
       },
-      reset(): void {
-        widget.resetChanges();
-        widget.resetCursor();
+      reset: () => {
+        this.#widget.resetChanges();
+        this.#widget.resetCursor();
       },
-      write(chunk: string): void {
-        widget.append(chunk);
+      write: (chunk: string) => {
+        this.#widget.append(chunk);
       },
-      read(): Iterable<string> {
-        return widget.read();
+      read: () => {
+        return this.#widget.read();
       },
-      toggleWhitespace(): void {
-        widget.toggleWhitespace();
+      toggleWhitespace: () => {
+        this.#widget.toggleWhitespace();
       },
-      toggleWrap(): void {
-        widget.toggleWrap();
+      toggleWrap: () => {
+        this.#widget.toggleWrap();
       },
-      selectAll(): void {
-        widget.selectAll();
+      selectAll: () => {
+        this.#widget.selectAll();
       },
-      undo(): void {
-        widget.undo();
+      undo: () => {
+        this.#widget.undo();
       },
-      redo(): void {
-        widget.redo();
+      redo: () => {
+        this.#widget.redo();
       },
-      copy(): void {
-        widget.copy();
+      copy: () => {
+        this.#widget.copy();
       },
-      cut(): void {
-        widget.cut();
+      cut: () => {
+        this.#widget.cut();
       },
-      paste(): void {
-        widget.paste();
+      paste: () => {
+        this.#widget.paste();
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

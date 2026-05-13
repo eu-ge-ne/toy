@@ -4,33 +4,35 @@ import * as themes from "@libs/themes";
 
 import { PaletteWidget } from "./widget.ts";
 
-let widget: PaletteWidget;
+export default class PaletteModalPlugin extends plugins.Plugin {
+  #widget = new PaletteWidget();
 
-export default {
-  init(api: api.API): void {
-    widget = new PaletteWidget();
-
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+  override init(api: api.API): void {
+    api.theme.events.react(
+      "change",
+      (x) => this.#widget.setTheme(themes.Themes[x]),
+    );
 
     api.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
-      if (api.zen.enabled) {
-        widget.resize(columns, rows, 0, 0);
+      if (api.zen.enabled()) {
+        this.#widget.resize(columns, rows, 0, 0);
       } else {
-        widget.resize(columns, rows - 2, 1, 0);
+        this.#widget.resize(columns, rows - 2, 1, 0);
       }
     });
-  },
-  initPaletteModal(api: api.API): api.PaletteModalAPI {
+  }
+
+  override initPaletteModal(api: api.API): api.PaletteModalAPI {
     return {
-      async open(): Promise<void> {
-        widget.open();
+      open: async () => {
+        this.#widget.open();
 
         const offRender = api.io.events.reactOrdered(
           "render",
           1000,
-          () => widget.render(),
+          () => this.#widget.render(),
         );
 
         const offKeyPress = api.io.events.interceptOrdered(
@@ -39,8 +41,8 @@ export default {
           async (data) => {
             data.cancel = true;
 
-            widget.onKeyPress(data.key);
-            if (widget.opened) {
+            this.#widget.onKeyPress(data.key);
+            if (this.#widget.opened) {
               return;
             }
 
@@ -50,14 +52,14 @@ export default {
         );
 
         await api.io.runLoop((ctx) => {
-          ctx.continue = widget.opened;
+          ctx.continue = this.#widget.opened;
           ctx.layoutChanged = true;
         });
 
-        if (typeof widget.result !== "undefined") {
-          await widget.result(api);
+        if (typeof this.#widget.result !== "undefined") {
+          await this.#widget.result(api);
         }
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}

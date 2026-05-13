@@ -2,25 +2,25 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const { emitter, listener } = events.create<
-  api.RuntimeInterceptorEvents,
-  api.RuntimeReactorEvents
->();
+export default class RuntimePlugin extends plugins.Plugin {
+  #evs = events.create<
+    api.RuntimeInterceptorEvents,
+    api.RuntimeReactorEvents
+  >();
 
-export default {
-  initRuntime(api: api.API): api.RuntimeAPI {
+  override initRuntime(api: api.API): api.RuntimeAPI {
     return {
-      events: listener,
-      async start(): Promise<void> {
+      events: this.#evs.listener,
+      start: async () => {
         globalThis.addEventListener(
           "unhandledrejection",
           (e) => api.runtime.stop(e),
         );
 
-        await emitter.dispatch("start", {});
+        await this.#evs.emitter.dispatch("start", {});
       },
-      async stop(e?: PromiseRejectionEvent): Promise<void> {
-        await emitter.dispatch("stop", { e });
+      stop: async (e?: PromiseRejectionEvent) => {
+        await this.#evs.emitter.dispatch("stop", { e });
 
         if (e) {
           console.log(e.reason);
@@ -29,5 +29,5 @@ export default {
         Deno.exit(0);
       },
     };
-  },
-} satisfies plugins.Plugin;
+  }
+}
