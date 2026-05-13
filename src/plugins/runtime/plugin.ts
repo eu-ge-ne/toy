@@ -8,7 +8,7 @@ export default class RuntimePlugin extends plugins.Plugin {
     api.RuntimeReactorEvents
   >();
 
-  override initRuntime(api: api.API): api.RuntimeAPI {
+  override initRuntime(api: api.Host): api.RuntimeAPI {
     return {
       events: this.#evs.listener,
       start: async () => {

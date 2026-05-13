@@ -7,7 +7,7 @@ import { HeaderWidget } from "./widget.ts";
 export default class HeaderPlugin extends plugins.Plugin {
   #widget = new HeaderWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.doc.events.react("change.name", (x) => this.#widget.fileName = x);
     api.theme.events.react(
       "change",

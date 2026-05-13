@@ -8,7 +8,7 @@ import { AskFileNameWidget } from "./widget.ts";
 export default class FileNameModalPlugin extends plugins.Plugin {
   #widget = new AskFileNameWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),
@@ -26,7 +26,7 @@ export default class FileNameModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initFileNameModal(api: api.API): api.FileNameModalAPI {
+  override initFileNameModal(api: api.Host): api.FileNameModalAPI {
     return {
       open: async (fileName: string) => {
         this.#widget.open(fileName);

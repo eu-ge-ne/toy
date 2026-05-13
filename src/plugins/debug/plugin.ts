@@ -8,7 +8,7 @@ import { DebugWidget } from "./widget.ts";
 export default class DebugPlugin extends plugins.Plugin {
   #widget = new DebugWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     this.#widget.version = api.about.version;
 
     api.io.events.reactOrdered("render", 1000, () => this.#widget.render());

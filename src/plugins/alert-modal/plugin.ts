@@ -8,7 +8,7 @@ import { AlertWidget } from "./widget.ts";
 export default class AlertModalPlugin extends plugins.Plugin {
   #widget = new AlertWidget();
 
-  override init(host: api.API): void {
+  override init(host: api.Host): void {
     host.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),
@@ -26,7 +26,7 @@ export default class AlertModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initAlertModal(host: api.API): api.AlertModalAPI {
+  override initAlertModal(host: api.Host): api.AlertModalAPI {
     const plugin = this;
 
     return new class extends api.AlertModalAPI {

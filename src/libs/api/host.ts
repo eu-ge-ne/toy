@@ -1,4 +1,4 @@
-import { AboutAPI } from "./about.ts";
+import { About } from "./about.ts";
 import { AlertModalAPI } from "./alert-modal.ts";
 import { ConfirmModalAPI } from "./confirm-modal.ts";
 import { CursorAPI } from "./cursor.ts";
@@ -11,7 +11,8 @@ import { RuntimeAPI } from "./runtime.ts";
 import { ThemeAPI } from "./theme.ts";
 import { ZenAPI } from "./zen.ts";
 
-export type API = {
+export type Host = {
+  about: About;
   runtime: RuntimeAPI;
   io: IOAPI;
   debug: DebugAPI;
@@ -19,7 +20,6 @@ export type API = {
   doc: DocAPI;
   theme: ThemeAPI;
   zen: ZenAPI;
-  about: AboutAPI;
   alertModal: AlertModalAPI;
   confirmModal: ConfirmModalAPI;
   fileNameModal: FileNameModalAPI;

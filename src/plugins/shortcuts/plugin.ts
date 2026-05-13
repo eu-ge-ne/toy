@@ -2,7 +2,7 @@ import * as api from "@libs/api";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-const shortcuts: Record<string, (_: api.API) => Promise<void>> = {
+const shortcuts: Record<string, (_: api.Host) => Promise<void>> = {
   "F1": (api) => api.paletteModal.open(),
   "⇧F1": (api) => api.paletteModal.open(),
   "⌃F1": (api) => api.paletteModal.open(),
@@ -28,7 +28,7 @@ const shortcuts: Record<string, (_: api.API) => Promise<void>> = {
 };
 
 export default class ShortcutsPlugin extends plugins.Plugin {
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.io.events.interceptOrdered("key.press", -1000, async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 

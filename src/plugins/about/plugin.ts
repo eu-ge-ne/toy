@@ -6,8 +6,8 @@ import deno from "../../../deno.json" with { type: "json" };
 const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
 
 export default class AboutPlugin extends plugins.Plugin {
-  override initAbout(): api.AboutAPI {
-    return new class extends api.AboutAPI {
+  override initAbout(): api.About {
+    return new class extends api.About {
       get version(): string {
         return version;
       }

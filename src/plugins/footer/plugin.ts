@@ -7,7 +7,7 @@ import { FooterWidget } from "./widget.ts";
 export default class FooterPlugin extends plugins.Plugin {
   #widget = new FooterWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),

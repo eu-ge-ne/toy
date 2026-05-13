@@ -7,7 +7,7 @@ import * as vt from "@libs/vt";
 export default class IOPlugin extends plugins.Plugin {
   #evs = events.create<api.IOInterceptorEvents, api.IOReactorEvents>();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.runtime.events.intercept("start", async () => {
       vt.init();
 
@@ -22,7 +22,7 @@ export default class IOPlugin extends plugins.Plugin {
     });
   }
 
-  override initIO(api: api.API): api.IOAPI {
+  override initIO(api: api.Host): api.IOAPI {
     return {
       events: this.#evs.listener,
       runLoop: async (
@@ -51,7 +51,7 @@ export default class IOPlugin extends plugins.Plugin {
     this.#evs.emitter.broadcast("resize");
   }
 
-  #render(api: api.API): void {
+  #render(api: api.Host): void {
     const t0 = performance.now();
 
     vt.sync.bsu();
@@ -66,7 +66,7 @@ export default class IOPlugin extends plugins.Plugin {
     api.debug.setRender(performance.now() - t0);
   }
 
-  async #keyPress(api: api.API, key: kitty.Key): Promise<void> {
+  async #keyPress(api: api.Host, key: kitty.Key): Promise<void> {
     const t0 = performance.now();
 
     await this.#evs.emitter.dispatch("key.press", { key });

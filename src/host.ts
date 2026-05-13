@@ -1,7 +1,8 @@
 import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 
-export class Host implements api.API {
+export class Host implements api.Host {
+  about!: api.About;
   runtime!: api.RuntimeAPI;
   io!: api.IOAPI;
   debug!: api.DebugAPI;
@@ -9,7 +10,6 @@ export class Host implements api.API {
   cursor!: api.CursorAPI;
   theme!: api.ThemeAPI;
   zen!: api.ZenAPI;
-  about!: api.AboutAPI;
   alertModal!: api.AlertModalAPI;
   confirmModal!: api.ConfirmModalAPI;
   fileNameModal!: api.FileNameModalAPI;
@@ -19,6 +19,10 @@ export class Host implements api.API {
 
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
+
+    if (plugin.initAbout) {
+      this.about = plugin.initAbout(this);
+    }
 
     if (plugin.initRuntime) {
       this.runtime = plugin.initRuntime(this);
@@ -46,10 +50,6 @@ export class Host implements api.API {
 
     if (plugin.initZen) {
       this.zen = plugin.initZen(this);
-    }
-
-    if (plugin.initAbout) {
-      this.about = plugin.initAbout(this);
     }
 
     if (plugin.initAlertModal) {

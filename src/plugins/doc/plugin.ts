@@ -27,7 +27,7 @@ export default class DocPlugin extends plugins.Plugin {
       this.#cursorEvents.emitter.broadcast("change", { ln: x.ln, col: x.col }),
   });
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     this.#widget.setFocused(true);
     this.#widget.resetChanges();
     this.#widget.resetCursor();
@@ -70,7 +70,7 @@ export default class DocPlugin extends plugins.Plugin {
     };
   }
 
-  override initDoc(api: api.API): api.DocAPI {
+  override initDoc(api: api.Host): api.DocAPI {
     return {
       events: this.#docEvents.listener,
       open: async (newFileName: string) => {

@@ -8,7 +8,7 @@ import { AskWidget } from "./widget.ts";
 export default class ConfirmModalPlugin extends plugins.Plugin {
   #widget = new AskWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),
@@ -26,7 +26,7 @@ export default class ConfirmModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initConfirmModal(api: api.API): api.ConfirmModalAPI {
+  override initConfirmModal(api: api.Host): api.ConfirmModalAPI {
     return {
       open: async (message: string) => {
         this.#widget.open(message);

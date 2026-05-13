@@ -7,7 +7,7 @@ import { PaletteWidget } from "./widget.ts";
 export default class PaletteModalPlugin extends plugins.Plugin {
   #widget = new PaletteWidget();
 
-  override init(api: api.API): void {
+  override init(api: api.Host): void {
     api.theme.events.react(
       "change",
       (x) => this.#widget.setTheme(themes.Themes[x]),
@@ -24,7 +24,7 @@ export default class PaletteModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initPaletteModal(api: api.API): api.PaletteModalAPI {
+  override initPaletteModal(api: api.Host): api.PaletteModalAPI {
     return {
       open: async () => {
         this.#widget.open();
