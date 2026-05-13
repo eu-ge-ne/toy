@@ -1,3 +1,3 @@
-export type AboutAPI = {
-  get version(): string;
-};
+export abstract class AboutAPI {
+  abstract get version(): string;
+}

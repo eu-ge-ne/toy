@@ -22,7 +22,8 @@
         "explicit-function-return-type"
       ],
       "exclude": [
-        "require-await"
+        "require-await",
+        "no-this-alias"
       ]
     }
   },

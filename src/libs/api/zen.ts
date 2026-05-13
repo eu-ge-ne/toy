@@ -1,13 +1,25 @@
 import * as events from "@libs/events";
 
-export type ZenInterceptorEvents = Record<PropertyKey, never>;
+type ZenInterceptorEvents = Record<PropertyKey, never>;
 
-export type ZenReactorEvents = {
+type ZenReactorEvents = {
   "toggle": () => void;
 };
 
-export type ZenAPI = {
-  events: events.Listener<ZenInterceptorEvents, ZenReactorEvents>;
-  enabled(): boolean;
-  toggle(): void;
-};
+export abstract class ZenAPI
+  extends events.Listener<ZenInterceptorEvents, ZenReactorEvents> {
+  protected emitter: events.Emitter<ZenInterceptorEvents, ZenReactorEvents>;
+
+  constructor() {
+    const { emitter, clients } = events.create<
+      ZenInterceptorEvents,
+      ZenReactorEvents
+    >();
+    super(clients);
+
+    this.emitter = emitter;
+  }
+
+  abstract enabled(): boolean;
+  abstract toggle(): void;
+}

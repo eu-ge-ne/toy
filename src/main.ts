@@ -51,7 +51,7 @@ host.theme.set("Default");
 
 let layoutChanged = false;
 
-host.zen.events.reactOrdered("toggle", 1000, () => layoutChanged = true);
+host.zen.reactOrdered("toggle", 1000, () => layoutChanged = true);
 
 if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);

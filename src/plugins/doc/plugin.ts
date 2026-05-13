@@ -32,7 +32,7 @@ export default class DocPlugin extends plugins.Plugin {
     this.#widget.resetChanges();
     this.#widget.resetCursor();
 
-    api.zen.events.react("toggle", () => this.#widget.toggleIndex());
+    api.zen.react("toggle", () => this.#widget.toggleIndex());
     api.io.events.react("render", () => this.#widget.render());
     api.io.events.intercept(
       "key.press",

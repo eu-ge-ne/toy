@@ -7,10 +7,10 @@ const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
 
 export default class AboutPlugin extends plugins.Plugin {
   override initAbout(): api.AboutAPI {
-    return {
+    return new class extends api.AboutAPI {
       get version(): string {
         return version;
-      },
-    };
+      }
+    }();
   }
 }
