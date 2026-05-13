@@ -1,20 +1,20 @@
-type CancellableData = { cancel?: boolean };
+type Cancellable = { cancel?: boolean };
 
 // deno-lint-ignore no-explicit-any
-export type InterceptorData<T = Record<string, any>> =
-  & CancellableData
+export type DispatchData<T = Record<string, any>> =
+  & Cancellable
   & T;
 
 // deno-lint-ignore no-explicit-any
-type _InterceptorData = any;
+type _DispatchData = any;
 
 // deno-lint-ignore no-explicit-any
-type _ReactorData = any[];
+type _BroadcastData = any[];
 
-export type InterceptorEvents = {
-  [key: string]: (data: _InterceptorData) => Promise<void>;
+export type DispatchedEvents = {
+  [key: string]: (data: _DispatchData) => Promise<void>;
 };
 
-export type ReactorEvents = {
-  [key: string]: (...data: _ReactorData) => void | Promise<void>;
+export type BroadcastedEvents = {
+  [key: string]: (...data: _BroadcastData) => void | Promise<void>;
 };

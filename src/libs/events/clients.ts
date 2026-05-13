@@ -1,14 +1,14 @@
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
+import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 
-type Interceptors<Events extends InterceptorEvents> = {
-  [Name in keyof Events]?: { fn: Events[Name]; order: number }[];
-};
+export class Clients<
+  DE extends DispatchedEvents,
+  BE extends BroadcastedEvents,
+> {
+  Interceptors: {
+    [E in keyof DE]?: { fn: DE[E]; order: number }[];
+  } = {};
 
-type Reactors<Events extends ReactorEvents> = {
-  [Name in keyof Events]?: { fn: Events[Name]; order: number }[];
-};
-
-export class Clients<IE extends InterceptorEvents, RE extends ReactorEvents> {
-  Interceptors: Interceptors<IE> = {};
-  Reactors: Reactors<RE> = {};
+  Reactors: {
+    [E in keyof BE]?: { fn: BE[E]; order: number }[];
+  } = {};
 }

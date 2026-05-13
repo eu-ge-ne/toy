@@ -4,20 +4,10 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const clients = new events.Clients<
+const { emitter, listener } = events.create<
   api.IOInterceptorEvents,
   api.IOReactorEvents
 >();
-
-const emitter = new events.Emitter<
-  api.IOInterceptorEvents,
-  api.IOReactorEvents
->(clients);
-
-const listener = new events.Listener<
-  api.IOInterceptorEvents,
-  api.IOReactorEvents
->(clients);
 
 function resize(): void {
   emitter.broadcast("resize");

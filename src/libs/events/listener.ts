@@ -1,22 +1,25 @@
 import { Clients } from "./clients.ts";
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
+import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 
-export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
-  constructor(private readonly clients: Clients<IE, RE>) {
+export class Listener<
+  DE extends DispatchedEvents,
+  BE extends BroadcastedEvents,
+> {
+  constructor(private readonly clients: Clients<DE, BE>) {
   }
 
-  intercept<E extends keyof IE>(name: E, fn: IE[E]): () => void {
+  intercept<E extends keyof DE>(name: E, fn: DE[E]): () => void {
     return this.interceptOrdered(name, 0, fn);
   }
 
-  react<E extends keyof RE>(name: E, fn: RE[E]): () => void {
+  react<E extends keyof BE>(name: E, fn: BE[E]): () => void {
     return this.reactOrdered(name, 0, fn);
   }
 
-  interceptOrdered<E extends keyof IE>(
+  interceptOrdered<E extends keyof DE>(
     name: E,
     order: number,
-    fn: IE[E],
+    fn: DE[E],
   ): () => void {
     let xx = this.clients.Interceptors[name];
     if (!xx) {
@@ -29,10 +32,10 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
     return () => this.#offIntercept(name, fn);
   }
 
-  reactOrdered<E extends keyof RE>(
+  reactOrdered<E extends keyof BE>(
     name: E,
     order: number,
-    fn: RE[E],
+    fn: BE[E],
   ): () => void {
     let xx = this.clients.Reactors[name];
     if (!xx) {
@@ -45,7 +48,7 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
     return () => this.#offReact(name, fn);
   }
 
-  #offIntercept<E extends keyof IE>(name: E, fn: IE[E]): void {
+  #offIntercept<E extends keyof DE>(name: E, fn: DE[E]): void {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
       return;
@@ -57,7 +60,7 @@ export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
     }
   }
 
-  #offReact<E extends keyof RE>(name: E, fn: RE[E]): void {
+  #offReact<E extends keyof BE>(name: E, fn: BE[E]): void {
     const xx = this.clients.Reactors[name];
     if (!xx) {
       return;
