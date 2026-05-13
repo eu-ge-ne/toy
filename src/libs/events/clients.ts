@@ -1,14 +1,14 @@
 import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 
 export class Clients<
-  IE extends DispatchedEvents,
-  RE extends BroadcastedEvents,
+  DE extends DispatchedEvents,
+  BE extends BroadcastedEvents,
 > {
   Interceptors: {
-    [Name in keyof IE]?: { fn: IE[Name]; order: number }[];
+    [E in keyof DE]?: { fn: DE[E]; order: number }[];
   } = {};
 
   Reactors: {
-    [Name in keyof RE]?: { fn: RE[Name]; order: number }[];
+    [E in keyof BE]?: { fn: BE[E]; order: number }[];
   } = {};
 }

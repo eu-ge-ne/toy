@@ -4,13 +4,13 @@ import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 import { Listener } from "./listener.ts";
 
 export function create<
-  IE extends DispatchedEvents,
-  RE extends BroadcastedEvents,
->(): { emitter: Emitter<IE, RE>; listener: Listener<IE, RE> } {
-  const clients = new Clients<IE, RE>();
+  DE extends DispatchedEvents,
+  BE extends BroadcastedEvents,
+>(): { emitter: Emitter<DE, BE>; listener: Listener<DE, BE> } {
+  const clients = new Clients<DE, BE>();
 
   return {
-    emitter: new Emitter<IE, RE>(clients),
-    listener: new Listener<IE, RE>(clients),
+    emitter: new Emitter<DE, BE>(clients),
+    listener: new Listener<DE, BE>(clients),
   };
 }

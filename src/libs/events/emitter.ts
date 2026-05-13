@@ -2,15 +2,15 @@ import { Clients } from "./clients.ts";
 import { BroadcastedEvents, DispatchData, DispatchedEvents } from "./events.ts";
 
 export class Emitter<
-  IE extends DispatchedEvents,
-  RE extends BroadcastedEvents,
+  DE extends DispatchedEvents,
+  BE extends BroadcastedEvents,
 > {
-  constructor(private readonly clients: Clients<IE, RE>) {
+  constructor(private readonly clients: Clients<DE, BE>) {
   }
 
-  async dispatch<E extends keyof IE>(
+  async dispatch<E extends keyof DE>(
     name: E,
-    data: Parameters<IE[E]>[0],
+    data: Parameters<DE[E]>[0],
   ): Promise<void> {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
@@ -26,7 +26,7 @@ export class Emitter<
     }
   }
 
-  broadcast<E extends keyof RE>(name: E, ...data: Parameters<RE[E]>): void {
+  broadcast<E extends keyof BE>(name: E, ...data: Parameters<BE[E]>): void {
     const xx = this.clients.Reactors[name];
     if (!xx) {
       return;

@@ -1,8 +1,8 @@
-type CancellableData = { cancel?: boolean };
+type Cancellable = { cancel?: boolean };
 
 // deno-lint-ignore no-explicit-any
 export type DispatchData<T = Record<string, any>> =
-  & CancellableData
+  & Cancellable
   & T;
 
 // deno-lint-ignore no-explicit-any
