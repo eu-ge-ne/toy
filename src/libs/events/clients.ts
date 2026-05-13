@@ -1,6 +1,9 @@
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
+import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 
-export class Clients<IE extends InterceptorEvents, RE extends ReactorEvents> {
+export class Clients<
+  IE extends DispatchedEvents,
+  RE extends BroadcastedEvents,
+> {
   Interceptors: {
     [Name in keyof IE]?: { fn: IE[Name]; order: number }[];
   } = {};

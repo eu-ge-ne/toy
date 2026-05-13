@@ -1,7 +1,10 @@
 import { Clients } from "./clients.ts";
-import { InterceptorEvents, ReactorEvents } from "./events.ts";
+import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
 
-export class Listener<IE extends InterceptorEvents, RE extends ReactorEvents> {
+export class Listener<
+  IE extends DispatchedEvents,
+  RE extends BroadcastedEvents,
+> {
   constructor(private readonly clients: Clients<IE, RE>) {
   }
 

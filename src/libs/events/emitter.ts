@@ -1,7 +1,10 @@
 import { Clients } from "./clients.ts";
-import { InterceptorData, InterceptorEvents, ReactorEvents } from "./events.ts";
+import { BroadcastedEvents, DispatchData, DispatchedEvents } from "./events.ts";
 
-export class Emitter<IE extends InterceptorEvents, RE extends ReactorEvents> {
+export class Emitter<
+  IE extends DispatchedEvents,
+  RE extends BroadcastedEvents,
+> {
   constructor(private readonly clients: Clients<IE, RE>) {
   }
 
@@ -17,7 +20,7 @@ export class Emitter<IE extends InterceptorEvents, RE extends ReactorEvents> {
     for (const { fn } of xx) {
       await fn(data);
 
-      if ((data as InterceptorData).cancel) {
+      if ((data as DispatchData).cancel) {
         return;
       }
     }
