@@ -2,20 +2,10 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const clients = new events.Clients<
+const { emitter, listener } = events.create<
   api.ZenInterceptorEvents,
   api.ZenReactorEvents
 >();
-
-const emitter = new events.Emitter<
-  api.ZenInterceptorEvents,
-  api.ZenReactorEvents
->(clients);
-
-const listener = new events.Listener<
-  api.ZenInterceptorEvents,
-  api.ZenReactorEvents
->(clients);
 
 let enabled = true;
 

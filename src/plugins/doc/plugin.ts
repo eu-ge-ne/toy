@@ -9,47 +9,27 @@ import { EditorWidget } from "@widgets/editor";
 let widget: EditorWidget;
 let fileName: string | undefined;
 
-const docApiClients = new events.Clients<
+const docEvents = events.create<
   api.DocInterceptorEvents,
   api.DocReactorEvents
 >();
 
-const docApiEmitter = new events.Emitter<
-  api.DocInterceptorEvents,
-  api.DocReactorEvents
->(docApiClients);
-
-const docApiListener = new events.Listener<
-  api.DocInterceptorEvents,
-  api.DocReactorEvents
->(docApiClients);
-
-const cursorApiClients = new events.Clients<
+const cursorEvents = events.create<
   api.CursorInterceptorEvents,
   api.CursorReactorEvents
 >();
-
-const cursorApiEmitter = new events.Emitter<
-  api.CursorInterceptorEvents,
-  api.CursorReactorEvents
->(cursorApiClients);
-
-const cursorApiListener = new events.Listener<
-  api.CursorInterceptorEvents,
-  api.CursorReactorEvents
->(cursorApiClients);
 
 export default {
   init(api: api.API): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        docApiEmitter.broadcast("change", {
+        docEvents.emitter.broadcast("change", {
           modified: widget.modified,
           lineCount: widget.lineCount,
         }),
       onCursorChange: (x) =>
-        cursorApiEmitter.broadcast("change", { ln: x.ln, col: x.col }),
+        cursorEvents.emitter.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
     widget.setFocused(true);
@@ -83,12 +63,12 @@ export default {
   },
   initCursor(): api.CursorAPI {
     return {
-      events: cursorApiListener,
+      events: cursorEvents.listener,
     };
   },
   initDoc(api: api.API): api.DocAPI {
     return {
-      events: docApiListener,
+      events: docEvents.listener,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
@@ -97,7 +77,7 @@ export default {
 
           api.doc.reset();
 
-          docApiEmitter.broadcast("change.name", newFileName);
+          docEvents.emitter.broadcast("change.name", newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -139,7 +119,7 @@ export default {
             await files.save(newFileName, api.doc.read());
 
             fileName = newFileName;
-            docApiEmitter.broadcast("change.name", newFileName);
+            docEvents.emitter.broadcast("change.name", newFileName);
 
             api.doc.reset();
           } catch (err) {
