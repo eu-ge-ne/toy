@@ -2,10 +2,7 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const emitter = new events.Emitter<
-  api.RuntimeEvents,
-  api.RuntimeNotifications
->();
+const emitter = new events.EventEmitter<api.RuntimeEvents>();
 
 export default {
   initRuntime(host: api.Host): api.Runtime {

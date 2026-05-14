@@ -49,7 +49,7 @@ export default {
       }
     });
 
-    host.io.events.react("resize", () => {
+    host.io.signals.on("resize", () => {
       const { columns, rows } = Deno.consoleSize();
       if (host.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
