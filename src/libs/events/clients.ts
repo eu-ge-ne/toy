@@ -1,7 +1,7 @@
 import { Events } from "./events.ts";
-import { Notifications } from "./notifications.ts";
+import { Signals } from "./signals.ts";
 
-export class Clients<EE extends Events, NN extends Notifications> {
+export class Clients<EE extends Events, NN extends Signals> {
   Interceptors: {
     [E in keyof EE]?: { fn: EE[E]; order: number }[];
   } = {};

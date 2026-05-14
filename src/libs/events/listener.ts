@@ -1,8 +1,8 @@
 import { Clients } from "./clients.ts";
 import { Events } from "./events.ts";
-import { Notifications } from "./notifications.ts";
+import { Signals } from "./signals.ts";
 
-export class Listener<EE extends Events, NN extends Notifications> {
+export class Listener<EE extends Events, NN extends Signals> {
   constructor(private readonly clients: Clients<EE, NN>) {
   }
 

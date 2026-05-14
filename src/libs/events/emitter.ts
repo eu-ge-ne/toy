@@ -1,9 +1,9 @@
 import { Clients } from "./clients.ts";
 import { EventData, Events } from "./events.ts";
 import { Listener } from "./listener.ts";
-import { Notifications } from "./notifications.ts";
+import { Signals } from "./signals.ts";
 
-export class Emitter<EE extends Events, NN extends Notifications> {
+export class Emitter<EE extends Events, NN extends Signals> {
   readonly #clients = new Clients<EE, NN>();
   readonly events = new Listener<EE, NN>(this.#clients);
 
