@@ -2,25 +2,25 @@ import { EventClients, SignalClients } from "./clients.ts";
 import { Events } from "./events.ts";
 import { Signals } from "./signals.ts";
 
-export class Listener<EE extends Events, NN extends Signals> {
+export class Listener<T1 extends Events, T2 extends Signals> {
   constructor(
-    private readonly eventClients: EventClients<EE>,
-    private readonly signalClients: SignalClients<NN>,
+    private readonly eventClients: EventClients<T1>,
+    private readonly signalClients: SignalClients<T2>,
   ) {
   }
 
-  intercept<E extends keyof EE>(name: E, fn: EE[E]): () => void {
+  intercept<E extends keyof T1>(name: E, fn: T1[E]): () => void {
     return this.interceptOrdered(name, 0, fn);
   }
 
-  react<N extends keyof NN>(name: N, fn: NN[N]): () => void {
+  react<N extends keyof T2>(name: N, fn: T2[N]): () => void {
     return this.reactOrdered(name, 0, fn);
   }
 
-  interceptOrdered<E extends keyof EE>(
+  interceptOrdered<E extends keyof T1>(
     name: E,
     order: number,
-    fn: EE[E],
+    fn: T1[E],
   ): () => void {
     let xx = this.eventClients[name];
     if (!xx) {
@@ -33,10 +33,10 @@ export class Listener<EE extends Events, NN extends Signals> {
     return () => this.#offIntercept(name, fn);
   }
 
-  reactOrdered<N extends keyof NN>(
+  reactOrdered<N extends keyof T2>(
     name: N,
     order: number,
-    fn: NN[N],
+    fn: T2[N],
   ): () => void {
     let xx = this.signalClients[name];
     if (!xx) {
@@ -49,7 +49,7 @@ export class Listener<EE extends Events, NN extends Signals> {
     return () => this.#offReact(name, fn);
   }
 
-  #offIntercept<E extends keyof EE>(name: E, fn: EE[E]): void {
+  #offIntercept<E extends keyof T1>(name: E, fn: T1[E]): void {
     const xx = this.eventClients[name];
     if (!xx) {
       return;
@@ -61,7 +61,7 @@ export class Listener<EE extends Events, NN extends Signals> {
     }
   }
 
-  #offReact<N extends keyof NN>(name: N, fn: NN[N]): void {
+  #offReact<N extends keyof T2>(name: N, fn: T2[N]): void {
     const xx = this.signalClients[name];
     if (!xx) {
       return;
