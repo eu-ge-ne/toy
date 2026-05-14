@@ -7,33 +7,33 @@ import { PaletteWidget } from "./widget.ts";
 let widget: PaletteWidget;
 
 export default {
-  init(api: api.Host): void {
+  init(host: api.Host): void {
     widget = new PaletteWidget();
 
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.io.events.react("resize", () => {
+    host.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
-      if (api.zen.enabled) {
+      if (host.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);
       }
     });
   },
-  initPaletteModal(api: api.Host): api.PaletteModal {
+  initPaletteModal(host: api.Host): api.PaletteModal {
     return {
       async open(): Promise<void> {
         widget.open();
 
-        const offRender = api.io.events.reactOrdered(
+        const offRender = host.io.events.reactOrdered(
           "render",
           1000,
           () => widget.render(),
         );
 
-        const offKeyPress = api.io.events.interceptOrdered(
+        const offKeyPress = host.io.events.interceptOrdered(
           "key.press",
           -1000,
           async (data) => {
@@ -49,13 +49,13 @@ export default {
           },
         );
 
-        await api.io.runLoop((ctx) => {
+        await host.io.runLoop((ctx) => {
           ctx.continue = widget.opened;
           ctx.layoutChanged = true;
         });
 
         if (typeof widget.result !== "undefined") {
-          await widget.result(api);
+          await widget.result(host);
         }
       },
     };

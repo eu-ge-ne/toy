@@ -28,14 +28,14 @@ const shortcuts: Record<string, (_: api.Host) => Promise<void>> = {
 };
 
 export default {
-  init(api: api.Host): void {
-    api.io.events.interceptOrdered("key.press", -1000, async (data) => {
+  init(host: api.Host): void {
+    host.io.events.interceptOrdered("key.press", -1000, async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 
       if (entry) {
         data.cancel = true;
 
-        await entry(api);
+        await entry(host);
       }
     });
   },

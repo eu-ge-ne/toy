@@ -5,31 +5,31 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export default {
-  init(api: api.Host): void {
+  init(host: api.Host): void {
     const widget = new FooterWidget();
 
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.io.events.react("resize", () => {
+    host.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       widget.resize(columns, 1, rows - 1, 0);
     });
 
-    api.io.events.react("render", () => {
-      if (api.zen.enabled) {
+    host.io.events.react("render", () => {
+      if (host.zen.enabled) {
         return;
       }
 
       widget.render();
     });
 
-    api.cursor.events.react("change", ({ ln, col }) => {
+    host.cursor.events.react("change", ({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });
 
-    api.doc.events.react(
+    host.doc.events.react(
       "change",
       ({ lineCount }) => widget.lineCount = lineCount,
     );

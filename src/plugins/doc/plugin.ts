@@ -20,7 +20,7 @@ const cursorEvents = events.create<
 >();
 
 export default {
-  init(api: api.Host): void {
+  init(host: api.Host): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -36,25 +36,25 @@ export default {
     widget.resetChanges();
     widget.resetCursor();
 
-    api.zen.events.react("toggle", () => widget.toggleIndex());
-    api.io.events.react("render", () => widget.render());
-    api.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.zen.events.react("toggle", () => widget.toggleIndex());
+    host.io.events.react("render", () => widget.render());
+    host.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
+    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.runtime.events.intercept("stop", async ({ e }) => {
+    host.runtime.events.intercept("stop", async ({ e }) => {
       if (e) {
         return;
       }
       if (widget.modified) {
-        if (await api.confirmModal.open("Save changes?")) {
-          await api.doc.save();
+        if (await host.confirmModal.open("Save changes?")) {
+          await host.doc.save();
         }
       }
     });
 
-    api.io.events.react("resize", () => {
+    host.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
-      if (api.zen.enabled) {
+      if (host.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);
@@ -66,16 +66,16 @@ export default {
       events: cursorEvents.listener,
     };
   },
-  initDoc(api: api.Host): api.Doc {
+  initDoc(host: api.Host): api.Doc {
     return {
       events: docEvents.listener,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
-            api.doc.write(chunk);
+            host.doc.write(chunk);
           }
 
-          api.doc.reset();
+          host.doc.reset();
 
           docEvents.emitter.broadcast("change.name", newFileName);
 
@@ -85,48 +85,48 @@ export default {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alertModal.open(message);
+            await host.alertModal.open(message);
 
-            await api.runtime.stop();
+            await host.runtime.stop();
           }
         }
       },
       async save(): Promise<void> {
         if (!fileName) {
-          await api.doc.saveAs();
+          await host.doc.saveAs();
           return;
         }
 
         try {
-          await files.save(fileName, api.doc.read());
+          await files.save(fileName, host.doc.read());
 
-          api.doc.reset();
+          host.doc.reset();
         } catch (err) {
           const message = Error.isError(err) ? err.message : Deno.inspect(err);
-          await api.alertModal.open(message);
+          await host.alertModal.open(message);
 
-          await api.doc.saveAs();
+          await host.doc.saveAs();
         }
       },
       async saveAs(): Promise<void> {
         while (true) {
-          const newFileName = await api.fileNameModal.open(fileName ?? "");
+          const newFileName = await host.fileNameModal.open(fileName ?? "");
           if (!newFileName) {
             return;
           }
 
           try {
-            await files.save(newFileName, api.doc.read());
+            await files.save(newFileName, host.doc.read());
 
             fileName = newFileName;
             docEvents.emitter.broadcast("change.name", newFileName);
 
-            api.doc.reset();
+            host.doc.reset();
           } catch (err) {
             const message = Error.isError(err)
               ? err.message
               : Deno.inspect(err);
-            await api.alertModal.open(message);
+            await host.alertModal.open(message);
           }
         }
       },

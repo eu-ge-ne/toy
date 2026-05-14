@@ -8,12 +8,12 @@ import { AskWidget } from "./widget.ts";
 let widget: AskWidget;
 
 export default {
-  init(api: api.Host): void {
+  init(host: api.Host): void {
     widget = new AskWidget();
 
-    api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    api.io.events.react("resize", () => {
+    host.io.events.react("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -24,18 +24,18 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initConfirmModal(api: api.Host): api.ConfirmModal {
+  initConfirmModal(host: api.Host): api.ConfirmModal {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);
 
-        const offRender = api.io.events.reactOrdered(
+        const offRender = host.io.events.reactOrdered(
           "render",
           1000,
           () => widget.render(),
         );
 
-        const offKeyPress = api.io.events.interceptOrdered(
+        const offKeyPress = host.io.events.interceptOrdered(
           "key.press",
           -1000,
           async (data) => {
@@ -51,7 +51,7 @@ export default {
           },
         );
 
-        await api.io.runLoop((ctx) => ctx.continue = widget.opened);
+        await host.io.runLoop((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },
