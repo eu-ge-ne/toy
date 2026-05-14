@@ -20,9 +20,11 @@ export class Host implements api.Host {
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
-    if (plugin.initAbout) {
-      this.about = plugin.initAbout(this);
+    if (plugin.about) {
+      this.about = new plugin.about(this);
     }
+
+    // TODO
 
     if (plugin.initRuntime) {
       this.runtime = plugin.initRuntime(this);

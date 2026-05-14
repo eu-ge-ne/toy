@@ -2,7 +2,7 @@ import * as api from "@libs/api";
 
 export abstract class Plugin {
   init?(_: api.Host): void;
-  initAbout?(_: api.Host): api.About;
+  about?: new (_: api.Host) => api.About;
 
   initRuntime?(_: api.Host): api.RuntimeAPI;
   initIO?(_: api.Host): api.IOAPI;
