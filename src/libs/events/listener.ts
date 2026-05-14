@@ -1,15 +1,16 @@
 import { Clients } from "./clients.ts";
-import { BroadcastedEvents, Events } from "./events.ts";
+import { Events } from "./events.ts";
+import { Notifications } from "./notifications.ts";
 
-export class Listener<EE extends Events, BE extends BroadcastedEvents> {
-  constructor(private readonly clients: Clients<EE, BE>) {
+export class Listener<EE extends Events, NN extends Notifications> {
+  constructor(private readonly clients: Clients<EE, NN>) {
   }
 
   intercept<E extends keyof EE>(name: E, fn: EE[E]): () => void {
     return this.interceptOrdered(name, 0, fn);
   }
 
-  react<E extends keyof BE>(name: E, fn: BE[E]): () => void {
+  react<N extends keyof NN>(name: N, fn: NN[N]): () => void {
     return this.reactOrdered(name, 0, fn);
   }
 
@@ -29,10 +30,10 @@ export class Listener<EE extends Events, BE extends BroadcastedEvents> {
     return () => this.#offIntercept(name, fn);
   }
 
-  reactOrdered<E extends keyof BE>(
-    name: E,
+  reactOrdered<N extends keyof NN>(
+    name: N,
     order: number,
-    fn: BE[E],
+    fn: NN[N],
   ): () => void {
     let xx = this.clients.Reactors[name];
     if (!xx) {
@@ -57,7 +58,7 @@ export class Listener<EE extends Events, BE extends BroadcastedEvents> {
     }
   }
 
-  #offReact<E extends keyof BE>(name: E, fn: BE[E]): void {
+  #offReact<N extends keyof NN>(name: N, fn: NN[N]): void {
     const xx = this.clients.Reactors[name];
     if (!xx) {
       return;

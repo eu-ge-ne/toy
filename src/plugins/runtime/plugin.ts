@@ -4,7 +4,7 @@ import * as plugins from "@libs/plugins";
 
 const emitter = new events.Emitter<
   api.RuntimeEvents,
-  api.RuntimeReactorEvents
+  api.RuntimeNotifications
 >();
 
 export default {

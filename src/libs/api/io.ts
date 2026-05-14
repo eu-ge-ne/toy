@@ -5,13 +5,13 @@ export type IOEvents = {
   "key.press": (_: events.EventData<{ key: kitty.Key }>) => Promise<void>;
 };
 
-export type IOReactorEvents = {
+export type IONotifications = {
   "resize": () => void;
   "render": () => void;
 };
 
 export type IO = {
-  events: events.Listener<IOEvents, IOReactorEvents>;
+  events: events.Listener<IOEvents, IONotifications>;
   runLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;

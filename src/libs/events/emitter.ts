@@ -1,10 +1,11 @@
 import { Clients } from "./clients.ts";
-import { BroadcastedEvents, EventData, Events } from "./events.ts";
+import { EventData, Events } from "./events.ts";
 import { Listener } from "./listener.ts";
+import { Notifications } from "./notifications.ts";
 
-export class Emitter<EE extends Events, BE extends BroadcastedEvents> {
-  readonly #clients = new Clients<EE, BE>();
-  readonly events = new Listener<EE, BE>(this.#clients);
+export class Emitter<EE extends Events, NN extends Notifications> {
+  readonly #clients = new Clients<EE, NN>();
+  readonly events = new Listener<EE, NN>(this.#clients);
 
   async dispatch<E extends keyof EE>(
     name: E,
@@ -24,7 +25,7 @@ export class Emitter<EE extends Events, BE extends BroadcastedEvents> {
     }
   }
 
-  broadcast<E extends keyof BE>(name: E, ...data: Parameters<BE[E]>): void {
+  broadcast<N extends keyof NN>(name: N, ...data: Parameters<NN[N]>): void {
     const xx = this.#clients.Reactors[name];
     if (!xx) {
       return;

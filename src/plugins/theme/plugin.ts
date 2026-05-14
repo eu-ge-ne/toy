@@ -3,7 +3,7 @@ import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-const emitter = new events.Emitter<api.ThemeEvents, api.ThemeReactorEvents>();
+const emitter = new events.Emitter<api.ThemeEvents, api.ThemeNotifications>();
 
 export default {
   initTheme(): api.Theme {

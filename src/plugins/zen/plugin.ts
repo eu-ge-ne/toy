@@ -2,7 +2,7 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const emitter = new events.Emitter<api.ZenEvents, api.ZenReactorEvents>();
+const emitter = new events.Emitter<api.ZenEvents, api.ZenNotifications>();
 
 let enabled = true;
 
