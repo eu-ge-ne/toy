@@ -1,3 +1,3 @@
-export { Emitter } from "./emitters.ts";
+export { EventEmitter, SignalEmitter } from "./emitters.ts";
 export type { EventData } from "./events.ts";
-export { Listener } from "./listeners.ts";
+export { EventListener, SignalListener } from "./listeners.ts";
