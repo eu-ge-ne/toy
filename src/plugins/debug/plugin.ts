@@ -13,10 +13,10 @@ export default {
 
     widget.version = host.about.version;
 
-    host.io.signals.on("render", () => widget.render(), 1000);
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.io.signals.on("render", 1000)(() => widget.render());
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(30, 0, columns);

@@ -51,7 +51,7 @@ host.theme.set("Default");
 
 let layoutChanged = false;
 
-host.zen.signals.on("toggle", () => layoutChanged = true, 1000);
+host.zen.signals.on("toggle", 1000)(() => layoutChanged = true);
 
 if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);

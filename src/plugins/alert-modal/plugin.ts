@@ -11,9 +11,9 @@ export default {
   init(host: api.Host): void {
     widget = new AlertWidget();
 
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -29,14 +29,11 @@ export default {
       async open(message: string): Promise<void> {
         widget.open(message);
 
-        const offRender = host.io.signals.on(
-          "render",
-          () => widget.render(),
-          1000,
+        const offRender = host.io.signals.on("render", 1000)(() =>
+          widget.render()
         );
 
-        const offKeyPress = host.io.events.on(
-          "key.press",
+        const offKeyPress = host.io.events.on("key.press", -1000)(
           async (data) => {
             data.cancel = true;
 
@@ -48,7 +45,6 @@ export default {
             offRender();
             offKeyPress();
           },
-          -1000,
         );
 
         await host.io.runLoop((ctx) => ctx.continue = widget.opened);

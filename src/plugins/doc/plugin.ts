@@ -29,12 +29,12 @@ export default {
     widget.resetChanges();
     widget.resetCursor();
 
-    host.zen.signals.on("toggle", () => widget.toggleIndex());
-    host.io.signals.on("render", () => widget.render());
-    host.io.events.on("key.press", async ({ key }) => widget.onKey(key));
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.zen.signals.on("toggle")(() => widget.toggleIndex());
+    host.io.signals.on("render")(() => widget.render());
+    host.io.events.on("key.press")(async ({ key }) => widget.onKey(key));
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.runtime.events.on("stop", async ({ e }) => {
+    host.runtime.events.on("stop")(async ({ e }) => {
       if (e) {
         return;
       }
@@ -45,7 +45,7 @@ export default {
       }
     });
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
       if (host.zen.enabled) {
         widget.resize(columns, rows, 0, 0);

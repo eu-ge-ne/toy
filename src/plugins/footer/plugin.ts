@@ -8,15 +8,15 @@ export default {
   init(host: api.Host): void {
     const widget = new FooterWidget();
 
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       widget.resize(columns, 1, rows - 1, 0);
     });
 
-    host.io.signals.on("render", () => {
+    host.io.signals.on("render")(() => {
       if (host.zen.enabled) {
         return;
       }
@@ -24,13 +24,12 @@ export default {
       widget.render();
     });
 
-    host.cursor.signals.on("change", ({ ln, col }) => {
+    host.cursor.signals.on("change")(({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });
 
-    host.doc.signals.on(
-      "change",
+    host.doc.signals.on("change")(
       ({ lineCount }) => widget.lineCount = lineCount,
     );
   },
