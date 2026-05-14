@@ -34,11 +34,11 @@ export default {
     widget.resetCursor();
 
     host.zen.signals.on("toggle", () => widget.toggleIndex());
-    host.io.events.react("render", () => widget.render());
-    host.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
-    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.io.signals.on("render", () => widget.render());
+    host.io.events.on("key.press", async ({ key }) => widget.onKey(key));
+    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    host.runtime.events.intercept("stop", async ({ e }) => {
+    host.runtime.events.on("stop", async ({ e }) => {
       if (e) {
         return;
       }

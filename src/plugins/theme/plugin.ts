@@ -3,12 +3,12 @@ import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-const emitter = new events.Emitter<api.ThemeEvents, api.ThemeNotifications>();
+const emitter = new events.SignalEmitter<api.ThemeSignals>();
 
 export default {
   initTheme(): api.Theme {
     return {
-      events: emitter.events,
+      signals: emitter.signals,
       set(name: keyof typeof themes.Themes): void {
         emitter.broadcast("change", name);
       },

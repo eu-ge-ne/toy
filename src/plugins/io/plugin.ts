@@ -35,7 +35,7 @@ async function keyPress(api: api.Host, key: kitty.Key): Promise<void> {
 
 export default {
   init(host: api.Host): void {
-    host.runtime.events.intercept("start", async () => {
+    host.runtime.events.on("start", async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
@@ -44,7 +44,7 @@ export default {
       });
     });
 
-    host.runtime.events.interceptOrdered("stop", 1000, async () => {
+    host.runtime.events.onOrdered("stop", 1000, async () => {
       vt.restore();
     });
   },
