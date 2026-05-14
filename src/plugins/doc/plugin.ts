@@ -9,13 +9,10 @@ import { EditorWidget } from "@widgets/editor";
 let widget: EditorWidget;
 let fileName: string | undefined;
 
-const docEmitter = new events.Emitter<
-  api.DocInterceptorEvents,
-  api.DocReactorEvents
->();
+const docEmitter = new events.Emitter<api.DocEvents, api.DocReactorEvents>();
 
 const cursorEmitter = new events.Emitter<
-  api.CursorInterceptorEvents,
+  api.CursorEvents,
   api.CursorReactorEvents
 >();
 

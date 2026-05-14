@@ -1,6 +1,6 @@
 import * as events from "@libs/events";
 
-export type DocInterceptorEvents = Record<PropertyKey, never>;
+export type DocEvents = Record<PropertyKey, never>;
 
 export type DocReactorEvents = {
   "change": (_: { modified: boolean; lineCount: number }) => void;
@@ -8,7 +8,7 @@ export type DocReactorEvents = {
 };
 
 export type Doc = {
-  events: events.Listener<DocInterceptorEvents, DocReactorEvents>;
+  events: events.Listener<DocEvents, DocReactorEvents>;
 
   open(_: string): Promise<void>;
   save(): Promise<void>;

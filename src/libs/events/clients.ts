@@ -1,11 +1,8 @@
-import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
+import { BroadcastedEvents, Events } from "./events.ts";
 
-export class Clients<
-  DE extends DispatchedEvents,
-  BE extends BroadcastedEvents,
-> {
+export class Clients<EE extends Events, BE extends BroadcastedEvents> {
   Interceptors: {
-    [E in keyof DE]?: { fn: DE[E]; order: number }[];
+    [E in keyof EE]?: { fn: EE[E]; order: number }[];
   } = {};
 
   Reactors: {

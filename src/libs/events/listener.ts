@@ -1,14 +1,11 @@
 import { Clients } from "./clients.ts";
-import { BroadcastedEvents, DispatchedEvents } from "./events.ts";
+import { BroadcastedEvents, Events } from "./events.ts";
 
-export class Listener<
-  DE extends DispatchedEvents,
-  BE extends BroadcastedEvents,
-> {
-  constructor(private readonly clients: Clients<DE, BE>) {
+export class Listener<EE extends Events, BE extends BroadcastedEvents> {
+  constructor(private readonly clients: Clients<EE, BE>) {
   }
 
-  intercept<E extends keyof DE>(name: E, fn: DE[E]): () => void {
+  intercept<E extends keyof EE>(name: E, fn: EE[E]): () => void {
     return this.interceptOrdered(name, 0, fn);
   }
 
@@ -16,10 +13,10 @@ export class Listener<
     return this.reactOrdered(name, 0, fn);
   }
 
-  interceptOrdered<E extends keyof DE>(
+  interceptOrdered<E extends keyof EE>(
     name: E,
     order: number,
-    fn: DE[E],
+    fn: EE[E],
   ): () => void {
     let xx = this.clients.Interceptors[name];
     if (!xx) {
@@ -48,7 +45,7 @@ export class Listener<
     return () => this.#offReact(name, fn);
   }
 
-  #offIntercept<E extends keyof DE>(name: E, fn: DE[E]): void {
+  #offIntercept<E extends keyof EE>(name: E, fn: EE[E]): void {
     const xx = this.clients.Interceptors[name];
     if (!xx) {
       return;

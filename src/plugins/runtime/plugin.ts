@@ -3,7 +3,7 @@ import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
 const emitter = new events.Emitter<
-  api.RuntimeInterceptorEvents,
+  api.RuntimeEvents,
   api.RuntimeReactorEvents
 >();
 

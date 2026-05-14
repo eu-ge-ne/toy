@@ -1,21 +1,14 @@
 import { Clients } from "./clients.ts";
-import {
-  BroadcastedEvents,
-  DispatchedData,
-  DispatchedEvents,
-} from "./events.ts";
+import { BroadcastedEvents, EventData, Events } from "./events.ts";
 import { Listener } from "./listener.ts";
 
-export class Emitter<
-  DE extends DispatchedEvents,
-  BE extends BroadcastedEvents,
-> {
-  readonly #clients = new Clients<DE, BE>();
-  readonly events = new Listener<DE, BE>(this.#clients);
+export class Emitter<EE extends Events, BE extends BroadcastedEvents> {
+  readonly #clients = new Clients<EE, BE>();
+  readonly events = new Listener<EE, BE>(this.#clients);
 
-  async dispatch<E extends keyof DE>(
+  async dispatch<E extends keyof EE>(
     name: E,
-    data: Parameters<DE[E]>[0],
+    data: Parameters<EE[E]>[0],
   ): Promise<void> {
     const xx = this.#clients.Interceptors[name];
     if (!xx) {
@@ -25,7 +18,7 @@ export class Emitter<
     for (const { fn } of xx) {
       await fn(data);
 
-      if ((data as DispatchedData).cancel) {
+      if ((data as EventData).cancel) {
         return;
       }
     }

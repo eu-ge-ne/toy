@@ -4,10 +4,7 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const emitter = new events.Emitter<
-  api.IOInterceptorEvents,
-  api.IOReactorEvents
->();
+const emitter = new events.Emitter<api.IOEvents, api.IOReactorEvents>();
 
 function resize(): void {
   emitter.broadcast("resize");
