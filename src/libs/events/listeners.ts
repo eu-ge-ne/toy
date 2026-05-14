@@ -9,18 +9,18 @@ export class Listener<T1 extends Events, T2 extends Signals> {
   ) {
   }
 
-  intercept<E extends keyof T1>(name: E, fn: T1[E]): () => void {
+  intercept<K extends keyof T1>(name: K, fn: T1[K]): () => void {
     return this.interceptOrdered(name, 0, fn);
   }
 
-  react<N extends keyof T2>(name: N, fn: T2[N]): () => void {
+  react<K extends keyof T2>(name: K, fn: T2[K]): () => void {
     return this.reactOrdered(name, 0, fn);
   }
 
-  interceptOrdered<E extends keyof T1>(
-    name: E,
+  interceptOrdered<K extends keyof T1>(
+    name: K,
     order: number,
-    fn: T1[E],
+    fn: T1[K],
   ): () => void {
     let xx = this.eventClients[name];
     if (!xx) {
@@ -33,10 +33,10 @@ export class Listener<T1 extends Events, T2 extends Signals> {
     return () => this.#offIntercept(name, fn);
   }
 
-  reactOrdered<N extends keyof T2>(
-    name: N,
+  reactOrdered<K extends keyof T2>(
+    name: K,
     order: number,
-    fn: T2[N],
+    fn: T2[K],
   ): () => void {
     let xx = this.signalClients[name];
     if (!xx) {
@@ -49,7 +49,7 @@ export class Listener<T1 extends Events, T2 extends Signals> {
     return () => this.#offReact(name, fn);
   }
 
-  #offIntercept<E extends keyof T1>(name: E, fn: T1[E]): void {
+  #offIntercept<K extends keyof T1>(name: K, fn: T1[K]): void {
     const xx = this.eventClients[name];
     if (!xx) {
       return;
@@ -61,7 +61,7 @@ export class Listener<T1 extends Events, T2 extends Signals> {
     }
   }
 
-  #offReact<N extends keyof T2>(name: N, fn: T2[N]): void {
+  #offReact<K extends keyof T2>(name: K, fn: T2[K]): void {
     const xx = this.signalClients[name];
     if (!xx) {
       return;

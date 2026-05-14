@@ -12,9 +12,9 @@ export class Emitter<T1 extends Events, T2 extends Signals> {
     this.#signalClients,
   );
 
-  async dispatch<E extends keyof T1>(
-    name: E,
-    data: Parameters<T1[E]>[0],
+  async dispatch<K extends keyof T1>(
+    name: K,
+    data: Parameters<T1[K]>[0],
   ): Promise<void> {
     const xx = this.#eventClients[name];
     if (!xx) {
@@ -30,7 +30,7 @@ export class Emitter<T1 extends Events, T2 extends Signals> {
     }
   }
 
-  broadcast<N extends keyof T2>(name: N, ...data: Parameters<T2[N]>): void {
+  broadcast<K extends keyof T2>(name: K, ...data: Parameters<T2[K]>): void {
     const xx = this.#signalClients[name];
     if (!xx) {
       return;
