@@ -33,7 +33,7 @@ export default {
     widget.resetChanges();
     widget.resetCursor();
 
-    host.zen.events.react("toggle", () => widget.toggleIndex());
+    host.zen.signals.on("toggle", () => widget.toggleIndex());
     host.io.events.react("render", () => widget.render());
     host.io.events.intercept("key.press", async ({ key }) => widget.onKey(key));
     host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
