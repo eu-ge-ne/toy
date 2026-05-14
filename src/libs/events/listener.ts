@@ -1,9 +1,12 @@
-import { Clients } from "./clients.ts";
+import { EventClients, SignalClients } from "./clients.ts";
 import { Events } from "./events.ts";
 import { Signals } from "./signals.ts";
 
 export class Listener<EE extends Events, NN extends Signals> {
-  constructor(private readonly clients: Clients<EE, NN>) {
+  constructor(
+    private readonly eventClients: EventClients<EE>,
+    private readonly signalClients: SignalClients<NN>,
+  ) {
   }
 
   intercept<E extends keyof EE>(name: E, fn: EE[E]): () => void {
@@ -19,9 +22,9 @@ export class Listener<EE extends Events, NN extends Signals> {
     order: number,
     fn: EE[E],
   ): () => void {
-    let xx = this.clients.Interceptors[name];
+    let xx = this.eventClients[name];
     if (!xx) {
-      xx = this.clients.Interceptors[name] = [];
+      xx = this.eventClients[name] = [];
     }
 
     xx.push({ fn, order });
@@ -35,9 +38,9 @@ export class Listener<EE extends Events, NN extends Signals> {
     order: number,
     fn: NN[N],
   ): () => void {
-    let xx = this.clients.Reactors[name];
+    let xx = this.signalClients[name];
     if (!xx) {
-      xx = this.clients.Reactors[name] = [];
+      xx = this.signalClients[name] = [];
     }
 
     xx.push({ fn, order });
@@ -47,7 +50,7 @@ export class Listener<EE extends Events, NN extends Signals> {
   }
 
   #offIntercept<E extends keyof EE>(name: E, fn: EE[E]): void {
-    const xx = this.clients.Interceptors[name];
+    const xx = this.eventClients[name];
     if (!xx) {
       return;
     }
@@ -59,7 +62,7 @@ export class Listener<EE extends Events, NN extends Signals> {
   }
 
   #offReact<N extends keyof NN>(name: N, fn: NN[N]): void {
-    const xx = this.clients.Reactors[name];
+    const xx = this.signalClients[name];
     if (!xx) {
       return;
     }
