@@ -8,13 +8,13 @@ const { emitter, listener } = events.create<
 >();
 
 export default {
-  initRuntime(api: api.API): api.RuntimeAPI {
+  initRuntime(host: api.Host): api.Runtime {
     return {
       events: listener,
       async start(): Promise<void> {
         globalThis.addEventListener(
           "unhandledrejection",
-          (e) => api.runtime.stop(e),
+          (e) => host.runtime.stop(e),
         );
 
         await emitter.dispatch("start", {});

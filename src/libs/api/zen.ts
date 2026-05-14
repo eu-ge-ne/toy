@@ -6,7 +6,7 @@ export type ZenReactorEvents = {
   "toggle": () => void;
 };
 
-export type ZenAPI = {
+export type Zen = {
   events: events.Listener<ZenInterceptorEvents, ZenReactorEvents>;
   get enabled(): boolean;
   toggle(): void;

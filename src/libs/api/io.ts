@@ -10,7 +10,7 @@ export type IOReactorEvents = {
   "render": () => void;
 };
 
-export type IOAPI = {
+export type IO = {
   events: events.Listener<IOInterceptorEvents, IOReactorEvents>;
   runLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,

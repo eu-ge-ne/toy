@@ -9,7 +9,7 @@ const { emitter, listener } = events.create<
 >();
 
 export default {
-  initTheme(): api.ThemeAPI {
+  initTheme(): api.Theme {
     return {
       events: listener,
       set(name: keyof typeof themes.Themes): void {

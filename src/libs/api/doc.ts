@@ -7,7 +7,7 @@ export type DocReactorEvents = {
   "change.name": (_: string) => void;
 };
 
-export type DocAPI = {
+export type Doc = {
   events: events.Listener<DocInterceptorEvents, DocReactorEvents>;
 
   open(_: string): Promise<void>;

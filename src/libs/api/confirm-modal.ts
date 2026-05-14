@@ -1,3 +1,3 @@
-export type ConfirmModalAPI = {
+export type ConfirmModal = {
   open(_: string): Promise<boolean>;
 };

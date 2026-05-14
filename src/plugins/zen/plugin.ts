@@ -10,7 +10,7 @@ const { emitter, listener } = events.create<
 let enabled = true;
 
 export default {
-  initZen(): api.ZenAPI {
+  initZen(): api.Zen {
     return {
       events: listener,
       get enabled(): boolean {
