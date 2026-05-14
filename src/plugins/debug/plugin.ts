@@ -13,7 +13,7 @@ export default {
 
     widget.version = host.about.version;
 
-    host.io.signals.onOrdered("render", 1000, () => widget.render());
+    host.io.signals.on("render", () => widget.render(), 1000);
     host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
 
     host.io.signals.on("resize", () => {

@@ -6,7 +6,7 @@ export type RuntimeEvents = {
 };
 
 export type Runtime = {
-  events: events.EventListener<RuntimeEvents>;
+  events: events.Listener<RuntimeEvents>;
   start(): Promise<void>;
   stop(e?: PromiseRejectionEvent): Promise<void>;
 };

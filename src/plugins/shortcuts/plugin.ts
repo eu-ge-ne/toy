@@ -29,7 +29,7 @@ const shortcuts: Record<string, (_: api.Host) => Promise<void>> = {
 
 export default {
   init(host: api.Host): void {
-    host.io.events.onOrdered("key.press", -1000, async (data) => {
+    host.io.events.on("key.press", async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 
       if (entry) {
@@ -37,6 +37,6 @@ export default {
 
         await entry(host);
       }
-    });
+    }, -1000);
   },
 } satisfies plugins.Plugin;

@@ -1,12 +1,12 @@
-import { EventClients, SignalClients } from "./clients.ts";
+import { Clients } from "./clients.ts";
 import { EventData, Events } from "./events.ts";
-import { EventListener, SignalListener } from "./listeners.ts";
+import { Listener } from "./listener.ts";
 import { Signals } from "./signals.ts";
 
 export class EventEmitter<T extends Events> {
-  readonly #clients: EventClients<T> = {};
+  readonly #clients: Clients<T> = {};
 
-  readonly events = new EventListener<T>(this.#clients);
+  readonly events = new Listener<T>(this.#clients);
 
   async dispatch<K extends keyof T>(
     name: K,
@@ -28,9 +28,9 @@ export class EventEmitter<T extends Events> {
 }
 
 export class SignalEmitter<T extends Signals> {
-  readonly #clients: SignalClients<T> = {};
+  readonly #clients: Clients<T> = {};
 
-  readonly signals = new SignalListener<T>(this.#clients);
+  readonly signals = new Listener<T>(this.#clients);
 
   broadcast<K extends keyof T>(name: K, ...data: Parameters<T[K]>): void {
     const xx = this.#clients[name];

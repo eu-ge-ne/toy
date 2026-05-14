@@ -5,5 +5,5 @@ export type CursorSignals = {
 };
 
 export type Cursor = {
-  signals: events.SignalListener<CursorSignals>;
+  signals: events.Listener<CursorSignals>;
 };

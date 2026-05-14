@@ -45,9 +45,7 @@ export default {
       });
     });
 
-    host.runtime.events.onOrdered("stop", 1000, async () => {
-      vt.restore();
-    });
+    host.runtime.events.on("stop", async () => vt.restore(), 1000);
   },
   initIO(host: api.Host): api.IO {
     return {

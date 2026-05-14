@@ -27,15 +27,14 @@ export default {
       async open(): Promise<void> {
         widget.open();
 
-        const offRender = host.io.signals.onOrdered(
+        const offRender = host.io.signals.on(
           "render",
-          1000,
           () => widget.render(),
+          1000,
         );
 
-        const offKeyPress = host.io.events.onOrdered(
+        const offKeyPress = host.io.events.on(
           "key.press",
-          -1000,
           async (data) => {
             data.cancel = true;
 
@@ -47,6 +46,7 @@ export default {
             offRender();
             offKeyPress();
           },
+          -1000,
         );
 
         await host.io.runLoop((ctx) => {
