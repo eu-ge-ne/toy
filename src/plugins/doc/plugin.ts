@@ -9,12 +9,8 @@ import { EditorWidget } from "@widgets/editor";
 let widget: EditorWidget;
 let fileName: string | undefined;
 
-const docEmitter = new events.Emitter<api.DocEvents, api.DocNotifications>();
-
-const cursorEmitter = new events.Emitter<
-  api.CursorEvents,
-  api.CursorNotifications
->();
+const docEmitter = new events.SignalEmitter<api.DocSignals>();
+const cursorEmitter = new events.SignalEmitter<api.CursorSignals>();
 
 export default {
   init(host: api.Host): void {
@@ -60,12 +56,12 @@ export default {
   },
   initCursor(): api.Cursor {
     return {
-      events: cursorEmitter.events,
+      signals: cursorEmitter.signals,
     };
   },
   initDoc(host: api.Host): api.Doc {
     return {
-      events: docEmitter.events,
+      signals: docEmitter.signals,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {

@@ -4,10 +4,11 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const emitter = new events.Emitter<api.IOEvents, api.IONotifications>();
+const eventEmitter = new events.EventEmitter<api.IOEvents>();
+const signalEmitter = new events.SignalEmitter<api.IOSignals>();
 
 function resize(): void {
-  emitter.broadcast("resize");
+  signalEmitter.broadcast("resize");
 }
 
 function render(api: api.Host): void {
@@ -16,7 +17,7 @@ function render(api: api.Host): void {
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 
-  emitter.broadcast("render");
+  signalEmitter.broadcast("render");
 
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
@@ -28,7 +29,7 @@ function render(api: api.Host): void {
 async function keyPress(api: api.Host, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
-  await emitter.dispatch("key.press", { key });
+  await eventEmitter.dispatch("key.press", { key });
 
   api.debug.setInput(performance.now() - t0);
 }
@@ -50,7 +51,8 @@ export default {
   },
   initIO(host: api.Host): api.IO {
     return {
-      events: emitter.events,
+      events: eventEmitter.events,
+      signals: signalEmitter.signals,
       async runLoop(
         cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
       ): Promise<void> {
