@@ -1,14 +1,12 @@
 import * as events from "@libs/events";
 
-export type DocEvents = Record<PropertyKey, never>;
-
-export type DocNotifications = {
+export type DocSignals = {
   "change": (_: { modified: boolean; lineCount: number }) => void;
   "change.name": (_: string) => void;
 };
 
 export type Doc = {
-  events: events.Listener<DocEvents, DocNotifications>;
+  signals: events.SignalListener<DocSignals>;
 
   open(_: string): Promise<void>;
   save(): Promise<void>;

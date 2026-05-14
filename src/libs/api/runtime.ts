@@ -5,10 +5,8 @@ export type RuntimeEvents = {
   stop: (_: events.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
 };
 
-export type RuntimeNotifications = Record<PropertyKey, never>;
-
 export type Runtime = {
-  events: events.Listener<RuntimeEvents, RuntimeNotifications>;
+  events: events.EventListener<RuntimeEvents>;
   start(): Promise<void>;
   stop(e?: PromiseRejectionEvent): Promise<void>;
 };
