@@ -1,6 +1,6 @@
 import { About } from "./about.ts";
-import { AlertModalAPI } from "./alert-modal.ts";
-import { ConfirmModalAPI } from "./confirm-modal.ts";
+import { AlertModal } from "./alert-modal.ts";
+import { ConfirmModal } from "./confirm-modal.ts";
 import { CursorAPI } from "./cursor.ts";
 import { DebugAPI } from "./debug.ts";
 import { DocAPI } from "./doc.ts";
@@ -13,6 +13,9 @@ import { ZenAPI } from "./zen.ts";
 
 export type Host = {
   about: About;
+  alertModal: AlertModal;
+  confirmModal: ConfirmModal;
+
   runtime: RuntimeAPI;
   io: IOAPI;
   debug: DebugAPI;
@@ -20,8 +23,6 @@ export type Host = {
   doc: DocAPI;
   theme: ThemeAPI;
   zen: ZenAPI;
-  alertModal: AlertModalAPI;
-  confirmModal: ConfirmModalAPI;
   fileNameModal: FileNameModalAPI;
   paletteModal: PaletteModalAPI;
 };

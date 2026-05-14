@@ -3,6 +3,9 @@ import * as plugins from "@libs/plugins";
 
 export class Host implements api.Host {
   about!: api.About;
+  alertModal!: api.AlertModal;
+  confirmModal!: api.ConfirmModal;
+
   runtime!: api.RuntimeAPI;
   io!: api.IOAPI;
   debug!: api.DebugAPI;
@@ -10,8 +13,6 @@ export class Host implements api.Host {
   cursor!: api.CursorAPI;
   theme!: api.ThemeAPI;
   zen!: api.ZenAPI;
-  alertModal!: api.AlertModalAPI;
-  confirmModal!: api.ConfirmModalAPI;
   fileNameModal!: api.FileNameModalAPI;
   paletteModal!: api.PaletteModalAPI;
 
@@ -20,8 +21,16 @@ export class Host implements api.Host {
   register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
-    if (plugin.about) {
-      this.about = new plugin.about(this);
+    if (plugin.initAbout) {
+      this.about = plugin.initAbout(this);
+    }
+
+    if (plugin.initAlertModal) {
+      this.alertModal = plugin.initAlertModal(this);
+    }
+
+    if (plugin.initConfirmModal) {
+      this.confirmModal = plugin.initConfirmModal(this);
     }
 
     // TODO
@@ -52,14 +61,6 @@ export class Host implements api.Host {
 
     if (plugin.initZen) {
       this.zen = plugin.initZen(this);
-    }
-
-    if (plugin.initAlertModal) {
-      this.alertModal = plugin.initAlertModal(this);
-    }
-
-    if (plugin.initConfirmModal) {
-      this.confirmModal = plugin.initConfirmModal(this);
     }
 
     if (plugin.initFileNameModal) {

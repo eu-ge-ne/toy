@@ -26,10 +26,10 @@ export default class AlertModalPlugin extends plugins.Plugin {
     });
   }
 
-  override initAlertModal(host: api.Host): api.AlertModalAPI {
+  override initAlertModal(host: api.Host): api.AlertModal {
     const plugin = this;
 
-    return new class extends api.AlertModalAPI {
+    return new class extends api.AlertModal {
       async open(message: string): Promise<void> {
         plugin.#widget.open(message);
 
