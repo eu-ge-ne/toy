@@ -1,22 +1,18 @@
 import { EventClients, SignalClients } from "./clients.ts";
 import { EventData, Events } from "./events.ts";
-import { Listener } from "./listeners.ts";
+import { EventListener, SignalListener } from "./listeners.ts";
 import { Signals } from "./signals.ts";
 
-export class Emitter<T1 extends Events, T2 extends Signals> {
-  readonly #eventClients: EventClients<T1> = {};
-  readonly #signalClients: SignalClients<T2> = {};
+export class EventEmitter<T extends Events> {
+  readonly #clients: EventClients<T> = {};
 
-  readonly events = new Listener<T1, T2>(
-    this.#eventClients,
-    this.#signalClients,
-  );
+  readonly events = new EventListener<T>(this.#clients);
 
-  async dispatch<K extends keyof T1>(
+  async dispatch<K extends keyof T>(
     name: K,
-    data: Parameters<T1[K]>[0],
+    data: Parameters<T[K]>[0],
   ): Promise<void> {
-    const xx = this.#eventClients[name];
+    const xx = this.#clients[name];
     if (!xx) {
       return;
     }
@@ -29,9 +25,15 @@ export class Emitter<T1 extends Events, T2 extends Signals> {
       }
     }
   }
+}
 
-  broadcast<K extends keyof T2>(name: K, ...data: Parameters<T2[K]>): void {
-    const xx = this.#signalClients[name];
+export class SignalEmitter<T extends Signals> {
+  readonly #clients: SignalClients<T> = {};
+
+  readonly signals = new SignalListener<T>(this.#clients);
+
+  broadcast<K extends keyof T>(name: K, ...data: Parameters<T[K]>): void {
+    const xx = this.#clients[name];
     if (!xx) {
       return;
     }
