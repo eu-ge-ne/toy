@@ -1,3 +1,3 @@
-export type AlertModalAPI = {
+export type AlertModal = {
   open(_: string): Promise<void>;
 };

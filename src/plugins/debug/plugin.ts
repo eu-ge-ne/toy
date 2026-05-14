@@ -8,7 +8,7 @@ import { DebugWidget } from "./widget.ts";
 let widget: DebugWidget;
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     widget = new DebugWidget();
 
     widget.version = api.about.version;
@@ -27,7 +27,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initDebug(): api.DebugAPI {
+  initDebug(): api.Debug {
     return {
       toggle(): void {
         widget.visible = !widget.visible;

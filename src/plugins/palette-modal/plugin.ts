@@ -7,7 +7,7 @@ import { PaletteWidget } from "./widget.ts";
 let widget: PaletteWidget;
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     widget = new PaletteWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
@@ -22,7 +22,7 @@ export default {
       }
     });
   },
-  initPaletteModal(api: api.API): api.PaletteModalAPI {
+  initPaletteModal(api: api.Host): api.PaletteModal {
     return {
       async open(): Promise<void> {
         widget.open();

@@ -13,7 +13,7 @@ function resize(): void {
   emitter.broadcast("resize");
 }
 
-function render(api: api.API): void {
+function render(api: api.Host): void {
   const t0 = performance.now();
 
   vt.sync.bsu();
@@ -28,7 +28,7 @@ function render(api: api.API): void {
   api.debug.setRender(performance.now() - t0);
 }
 
-async function keyPress(api: api.API, key: kitty.Key): Promise<void> {
+async function keyPress(api: api.Host, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
   await emitter.dispatch("key.press", { key });
@@ -37,7 +37,7 @@ async function keyPress(api: api.API, key: kitty.Key): Promise<void> {
 }
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     api.runtime.events.intercept("start", async () => {
       vt.init();
 
@@ -51,7 +51,7 @@ export default {
       vt.restore();
     });
   },
-  initIO(api: api.API): api.IOAPI {
+  initIO(api: api.Host): api.IO {
     return {
       events: listener,
       async runLoop(

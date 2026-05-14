@@ -6,6 +6,6 @@ export type CursorReactorEvents = {
   "change": (_: { ln: number; col: number }) => void;
 };
 
-export type CursorAPI = {
+export type Cursor = {
   events: events.Listener<CursorInterceptorEvents, CursorReactorEvents>;
 };

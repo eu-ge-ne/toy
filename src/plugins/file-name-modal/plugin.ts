@@ -8,7 +8,7 @@ import { AskFileNameWidget } from "./widget.ts";
 let widget: AskFileNameWidget;
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     widget = new AskFileNameWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initFileNameModal(api: api.API): api.FileNameModalAPI {
+  initFileNameModal(api: api.Host): api.FileNameModal {
     return {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);

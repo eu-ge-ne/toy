@@ -8,7 +8,7 @@ const { emitter, listener } = events.create<
 >();
 
 export default {
-  initRuntime(api: api.API): api.RuntimeAPI {
+  initRuntime(api: api.Host): api.Runtime {
     return {
       events: listener,
       async start(): Promise<void> {

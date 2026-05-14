@@ -20,7 +20,7 @@ const cursorEvents = events.create<
 >();
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
@@ -61,12 +61,12 @@ export default {
       }
     });
   },
-  initCursor(): api.CursorAPI {
+  initCursor(): api.Cursor {
     return {
       events: cursorEvents.listener,
     };
   },
-  initDoc(api: api.API): api.DocAPI {
+  initDoc(api: api.Host): api.Doc {
     return {
       events: docEvents.listener,
       async open(newFileName: string): Promise<void> {

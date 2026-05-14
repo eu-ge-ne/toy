@@ -8,7 +8,7 @@ import { AlertWidget } from "./widget.ts";
 let widget: AlertWidget;
 
 export default {
-  init(api: api.API): void {
+  init(api: api.Host): void {
     widget = new AlertWidget();
 
     api.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
@@ -24,7 +24,7 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initAlertModal(api: api.API): api.AlertModalAPI {
+  initAlertModal(api: api.Host): api.AlertModal {
     return {
       async open(message: string): Promise<void> {
         widget.open(message);
