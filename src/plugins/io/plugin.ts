@@ -4,7 +4,7 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const { emitter, listener } = events.create<
+const emitter = new events.Emitter<
   api.IOInterceptorEvents,
   api.IOReactorEvents
 >();
@@ -53,7 +53,7 @@ export default {
   },
   initIO(host: api.Host): api.IO {
     return {
-      events: listener,
+      events: emitter.events,
       async runLoop(
         cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
       ): Promise<void> {

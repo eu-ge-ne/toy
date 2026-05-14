@@ -1,9 +1,9 @@
 import * as events from "@libs/events";
 
 export type RuntimeInterceptorEvents = {
-  start: (_: events.DispatchData) => Promise<void>;
+  start: (_: events.DispatchedData) => Promise<void>;
   stop: (
-    _: events.DispatchData<{ e?: PromiseRejectionEvent }>,
+    _: events.DispatchedData<{ e?: PromiseRejectionEvent }>,
   ) => Promise<void>;
 };
 

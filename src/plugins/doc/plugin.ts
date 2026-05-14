@@ -9,12 +9,12 @@ import { EditorWidget } from "@widgets/editor";
 let widget: EditorWidget;
 let fileName: string | undefined;
 
-const docEvents = events.create<
+const docEmitter = new events.Emitter<
   api.DocInterceptorEvents,
   api.DocReactorEvents
 >();
 
-const cursorEvents = events.create<
+const cursorEmitter = new events.Emitter<
   api.CursorInterceptorEvents,
   api.CursorReactorEvents
 >();
@@ -24,12 +24,12 @@ export default {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        docEvents.emitter.broadcast("change", {
+        docEmitter.broadcast("change", {
           modified: widget.modified,
           lineCount: widget.lineCount,
         }),
       onCursorChange: (x) =>
-        cursorEvents.emitter.broadcast("change", { ln: x.ln, col: x.col }),
+        cursorEmitter.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
     widget.setFocused(true);
@@ -63,12 +63,12 @@ export default {
   },
   initCursor(): api.Cursor {
     return {
-      events: cursorEvents.listener,
+      events: cursorEmitter.events,
     };
   },
   initDoc(host: api.Host): api.Doc {
     return {
-      events: docEvents.listener,
+      events: docEmitter.events,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
@@ -77,7 +77,7 @@ export default {
 
           host.doc.reset();
 
-          docEvents.emitter.broadcast("change.name", newFileName);
+          docEmitter.broadcast("change.name", newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -119,7 +119,7 @@ export default {
             await files.save(newFileName, host.doc.read());
 
             fileName = newFileName;
-            docEvents.emitter.broadcast("change.name", newFileName);
+            docEmitter.broadcast("change.name", newFileName);
 
             host.doc.reset();
           } catch (err) {

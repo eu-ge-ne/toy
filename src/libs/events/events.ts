@@ -1,20 +1,20 @@
 type Cancellable = { cancel?: boolean };
 
 // deno-lint-ignore no-explicit-any
-export type DispatchData<T = Record<string, any>> =
+export type DispatchedData<T = Record<string, any>> =
   & Cancellable
   & T;
 
 // deno-lint-ignore no-explicit-any
-type _DispatchData = any;
+type _DispatchedData = any;
 
 // deno-lint-ignore no-explicit-any
-type _BroadcastData = any[];
+type _BroadcastedData = any[];
 
 export type DispatchedEvents = {
-  [key: string]: (data: _DispatchData) => Promise<void>;
+  [key: string]: (data: _DispatchedData) => Promise<void>;
 };
 
 export type BroadcastedEvents = {
-  [key: string]: (...data: _BroadcastData) => void | Promise<void>;
+  [key: string]: (...data: _BroadcastedData) => void | Promise<void>;
 };

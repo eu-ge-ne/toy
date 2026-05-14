@@ -3,7 +3,7 @@ import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-const { emitter, listener } = events.create<
+const emitter = new events.Emitter<
   api.ThemeInterceptorEvents,
   api.ThemeReactorEvents
 >();
@@ -11,7 +11,7 @@ const { emitter, listener } = events.create<
 export default {
   initTheme(): api.Theme {
     return {
-      events: listener,
+      events: emitter.events,
       set(name: keyof typeof themes.Themes): void {
         emitter.broadcast("change", name);
       },

@@ -2,7 +2,7 @@ import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
 export type IOInterceptorEvents = {
-  "key.press": (_: events.DispatchData<{ key: kitty.Key }>) => Promise<void>;
+  "key.press": (_: events.DispatchedData<{ key: kitty.Key }>) => Promise<void>;
 };
 
 export type IOReactorEvents = {
