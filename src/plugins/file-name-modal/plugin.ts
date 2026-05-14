@@ -11,9 +11,9 @@ export default {
   init(host: api.Host): void {
     widget = new AskFileNameWidget();
 
-    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.events.react("resize", () => {
+    host.io.signals.on("resize", () => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -29,13 +29,13 @@ export default {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);
 
-        const offRender = host.io.events.reactOrdered(
+        const offRender = host.io.signals.onOrdered(
           "render",
           1000,
           () => widget.render(),
         );
 
-        const offKeyPress = host.io.events.interceptOrdered(
+        const offKeyPress = host.io.events.onOrdered(
           "key.press",
           -1000,
           async (data) => {
