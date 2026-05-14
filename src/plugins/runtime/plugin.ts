@@ -2,15 +2,12 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const { emitter, listener } = events.create<
-  api.RuntimeInterceptorEvents,
-  api.RuntimeReactorEvents
->();
+const emitter = new events.EventEmitter<api.RuntimeEvents>();
 
 export default {
   initRuntime(host: api.Host): api.Runtime {
     return {
-      events: listener,
+      events: emitter.events,
       async start(): Promise<void> {
         globalThis.addEventListener(
           "unhandledrejection",

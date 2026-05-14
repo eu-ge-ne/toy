@@ -1,17 +1,18 @@
 import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 
-export type IOInterceptorEvents = {
-  "key.press": (_: events.DispatchData<{ key: kitty.Key }>) => Promise<void>;
+export type IOEvents = {
+  "key.press": (_: events.EventData<{ key: kitty.Key }>) => Promise<void>;
 };
 
-export type IOReactorEvents = {
+export type IOSignals = {
   "resize": () => void;
   "render": () => void;
 };
 
 export type IO = {
-  events: events.Listener<IOInterceptorEvents, IOReactorEvents>;
+  events: events.EventListener<IOEvents>;
+  signals: events.SignalListener<IOSignals>;
   runLoop(
     iter: (ctx: { continue: boolean; layoutChanged: boolean }) => void,
   ): Promise<void>;

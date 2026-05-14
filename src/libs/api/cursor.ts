@@ -1,11 +1,9 @@
 import * as events from "@libs/events";
 
-export type CursorInterceptorEvents = Record<PropertyKey, never>;
-
-export type CursorReactorEvents = {
+export type CursorSignals = {
   "change": (_: { ln: number; col: number }) => void;
 };
 
 export type Cursor = {
-  events: events.Listener<CursorInterceptorEvents, CursorReactorEvents>;
+  signals: events.SignalListener<CursorSignals>;
 };

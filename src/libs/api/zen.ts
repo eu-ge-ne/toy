@@ -1,13 +1,11 @@
 import * as events from "@libs/events";
 
-export type ZenInterceptorEvents = Record<PropertyKey, never>;
-
-export type ZenReactorEvents = {
+export type ZenSignals = {
   "toggle": () => void;
 };
 
 export type Zen = {
-  events: events.Listener<ZenInterceptorEvents, ZenReactorEvents>;
+  signals: events.SignalListener<ZenSignals>;
   get enabled(): boolean;
   toggle(): void;
 };

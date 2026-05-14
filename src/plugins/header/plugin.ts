@@ -8,16 +8,16 @@ export default {
   init(host: api.Host): void {
     const widget = new HeaderWidget();
 
-    host.doc.events.react("change.name", (x) => widget.fileName = x);
-    host.theme.events.react("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.doc.signals.on("change.name", (x) => widget.fileName = x);
+    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.events.react("resize", () => {
+    host.io.signals.on("resize", () => {
       const { columns } = Deno.consoleSize();
 
       widget.resize(columns, 1, 0, 0);
     });
 
-    host.io.events.react("render", () => {
+    host.io.signals.on("render", () => {
       if (host.zen.enabled) {
         return;
       }
@@ -25,7 +25,7 @@ export default {
       widget.render();
     });
 
-    host.doc.events.react(
+    host.doc.signals.on(
       "change",
       ({ modified }) => widget.modified = modified,
     );

@@ -1,13 +1,11 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
-export type ThemeInterceptorEvents = Record<PropertyKey, never>;
-
-export type ThemeReactorEvents = {
+export type ThemeSignals = {
   "change": (_: keyof typeof themes.Themes) => void;
 };
 
 export type Theme = {
-  events: events.Listener<ThemeInterceptorEvents, ThemeReactorEvents>;
+  signals: events.SignalListener<ThemeSignals>;
   set(_: keyof typeof themes.Themes): void;
 };

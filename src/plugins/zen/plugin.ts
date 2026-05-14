@@ -2,17 +2,14 @@ import * as api from "@libs/api";
 import * as events from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-const { emitter, listener } = events.create<
-  api.ZenInterceptorEvents,
-  api.ZenReactorEvents
->();
+const emitter = new events.SignalEmitter<api.ZenSignals>();
 
 let enabled = true;
 
 export default {
   initZen(): api.Zen {
     return {
-      events: listener,
+      signals: emitter.signals,
       get enabled(): boolean {
         return enabled;
       },
