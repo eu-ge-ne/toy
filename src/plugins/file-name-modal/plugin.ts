@@ -8,12 +8,12 @@ import { AskFileNameWidget } from "./widget.ts";
 let widget: AskFileNameWidget;
 
 export default {
-  init(host: api.Host): void {
+  init(toy: api.Toy): void {
     widget = new AskFileNameWidget();
 
-    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize")(() => {
+    toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -24,14 +24,14 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initFileNameModal(host: api.Host): api.FileNameModal {
+  initFileNameModal(toy: api.Toy): api.FileNameModal {
     return {
       async open(fileName: string): Promise<string | undefined> {
         widget.open(fileName);
 
-        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
+        const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = host.io.events.on("key.press", -1000)(
+        const offKeyPress = toy.io.events.on("key.press", -1000)(
           async (data) => {
             data.cancel = true;
 
@@ -45,7 +45,7 @@ export default {
           },
         );
 
-        await host.io.loop((ctx) => ctx.continue = widget.opened);
+        await toy.io.loop((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },

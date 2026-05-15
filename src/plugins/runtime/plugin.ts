@@ -2,14 +2,15 @@ import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 
+const MIB = Math.pow(1024, 2);
 const events = new libEvents.EventEmitter<api.RuntimeEvents>();
 
 export default {
-  initRuntime(host: api.Host): api.Runtime {
+  initRuntime(toy: api.Toy): api.Runtime {
     return {
       events: events.listener,
       async start(): Promise<void> {
-        globalThis.addEventListener("unhandledrejection", (e) => host.runtime.stop(e));
+        globalThis.addEventListener("unhandledrejection", (e) => toy.runtime.stop(e));
 
         await events.dispatch("start", {});
       },
@@ -21,6 +22,16 @@ export default {
         }
 
         Deno.exit(0);
+      },
+      memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number } {
+        const mem = Deno.memoryUsage();
+
+        return {
+          rss: mem.rss / MIB,
+          heapTotal: mem.heapTotal / MIB,
+          heapUsed: mem.heapUsed / MIB,
+          external: mem.external / MIB,
+        };
       },
     };
   },

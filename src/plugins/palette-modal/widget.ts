@@ -11,12 +11,12 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
-  result: ((_: api.Host) => Promise<void>) | undefined;
+  result: ((_: api.Toy) => Promise<void>) | undefined;
 
   protected override children: {
     bg: BgWidget;
     editor: EditorWidget;
-    list: ListWidget<(_: api.Host) => Promise<void>>;
+    list: ListWidget<(_: api.Toy) => Promise<void>>;
   };
 
   constructor() {
@@ -24,7 +24,7 @@ export class PaletteWidget extends widgets.Modal {
 
     this.children = {
       bg: new BgWidget(),
-      list: new ListWidget<(_: api.Host) => Promise<void>>({
+      list: new ListWidget<(_: api.Toy) => Promise<void>>({
         emptyText: "No matching commands",
       }),
       editor: new EditorWidget({ multiLine: false }),

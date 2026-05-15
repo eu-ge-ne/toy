@@ -8,12 +8,12 @@ import { AskWidget } from "./widget.ts";
 let widget: AskWidget;
 
 export default {
-  init(host: api.Host): void {
+  init(toy: api.Toy): void {
     widget = new AskWidget();
 
-    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize")(() => {
+    toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -24,14 +24,14 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initConfirmModal(host: api.Host): api.ConfirmModal {
+  initConfirmModal(toy: api.Toy): api.ConfirmModal {
     return {
       async open(message: string): Promise<boolean> {
         widget.open(message);
 
-        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
+        const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = host.io.events.on("key.press", -1000)(
+        const offKeyPress = toy.io.events.on("key.press", -1000)(
           async (data) => {
             data.cancel = true;
 
@@ -45,7 +45,7 @@ export default {
           },
         );
 
-        await host.io.loop((ctx) => ctx.continue = widget.opened);
+        await toy.io.loop((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },

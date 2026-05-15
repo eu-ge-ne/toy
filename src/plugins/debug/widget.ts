@@ -4,13 +4,15 @@ import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { TextWidget } from "@widgets/text";
 
-const MIB = Math.pow(1024, 2);
-
 export class DebugWidget extends widgets.Widget {
   visible = false;
   version = "";
   renderElapsed = 0;
   inputElapsed = 0;
+  rss = "";
+  heapTotal = "";
+  heapUsed = "";
+  externalMem = "";
 
   protected override children: {
     bg: BgWidget;
@@ -56,12 +58,6 @@ export class DebugWidget extends widgets.Widget {
 
     vt.buf.write(vt.cursor.save);
 
-    const mem = Deno.memoryUsage();
-    const rss = (mem.rss / MIB).toFixed();
-    const heap_total = (mem.heapTotal / MIB).toFixed();
-    const heap_used = (mem.heapUsed / MIB).toFixed();
-    const external_mem = (mem.external / MIB).toFixed();
-
     this.children.bg.render();
 
     this.children.line1.value = this.version;
@@ -75,13 +71,13 @@ export class DebugWidget extends widgets.Widget {
     this.children.line3.value = `Render   : ${r} ms`;
     this.children.line3.render();
 
-    this.children.line4.value = `RSS      : ${rss} MiB`;
+    this.children.line4.value = `RSS      : ${this.rss} MiB`;
     this.children.line4.render();
 
-    this.children.line5.value = `Heap     : ${heap_used}/${heap_total} MiB`;
+    this.children.line5.value = `Heap     : ${this.heapUsed}/${this.heapTotal} MiB`;
     this.children.line5.render();
 
-    this.children.line6.value = `External : ${external_mem} MiB`;
+    this.children.line6.value = `External : ${this.externalMem} MiB`;
     this.children.line6.render();
 
     vt.buf.write(vt.cursor.restore);
