@@ -1,7 +1,7 @@
 import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 
-export class Host implements api.Host {
+export class Host implements api.Toy {
   #plugins: plugins.Plugin[] = [];
 
   about!: api.About;

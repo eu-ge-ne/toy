@@ -11,7 +11,7 @@ import { Runtime } from "./runtime.ts";
 import { Theme } from "./theme.ts";
 import { Zen } from "./zen.ts";
 
-export type Host = {
+export type Toy = {
   about: About;
   alertModal: AlertModal;
   confirmModal: ConfirmModal;

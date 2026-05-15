@@ -11,7 +11,7 @@ function resize(): void {
   signals.broadcast("resize");
 }
 
-function render(host: api.Host): void {
+function render(toy: api.Toy): void {
   const t0 = performance.now();
 
   vt.sync.bsu();
@@ -23,31 +23,31 @@ function render(host: api.Host): void {
   vt.buf.flush();
   vt.sync.esu();
 
-  host.debug.setRender(performance.now() - t0);
+  toy.debug.setRender(performance.now() - t0);
 }
 
-async function keyPress(host: api.Host, key: kitty.Key): Promise<void> {
+async function keyPress(toy: api.Toy, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
   await events.dispatch("key.press", { key });
 
-  host.debug.setInput(performance.now() - t0);
+  toy.debug.setInput(performance.now() - t0);
 }
 
 export default {
-  init(host: api.Host): void {
-    host.runtime.events.on("start")(async () => {
+  init(toy: api.Toy): void {
+    toy.runtime.events.on("start")(async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
         resize();
-        render(host);
+        render(toy);
       });
     });
 
-    host.runtime.events.on("stop", 1000)(async () => vt.restore());
+    toy.runtime.events.on("stop", 1000)(async () => vt.restore());
   },
-  initIO(host: api.Host): api.IO {
+  initIO(toy: api.Toy): api.IO {
     return {
       events: events.listener,
       signals: signals.listener,
@@ -60,10 +60,10 @@ export default {
             ctx.layoutChanged = false;
           }
 
-          render(host);
+          render(toy);
 
           const key = await vt.readKey();
-          await keyPress(host, key);
+          await keyPress(toy, key);
 
           cb(ctx);
         }

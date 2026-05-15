@@ -5,27 +5,27 @@ import * as themes from "@libs/themes";
 import { FooterWidget } from "./widget.ts";
 
 export default {
-  init(host: api.Host): void {
+  init(toy: api.Toy): void {
     const widget = new FooterWidget();
 
-    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    host.doc.signals.on("change")(({ lineCount }) => widget.lineCount = lineCount);
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    toy.doc.signals.on("change")(({ lineCount }) => widget.lineCount = lineCount);
 
-    host.io.signals.on("resize")(() => {
+    toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       widget.resize(columns, 1, rows - 1, 0);
     });
 
-    host.io.signals.on("render")(() => {
-      if (host.zen.enabled) {
+    toy.io.signals.on("render")(() => {
+      if (toy.zen.enabled) {
         return;
       }
 
       widget.render();
     });
 
-    host.cursor.signals.on("change")(({ ln, col }) => {
+    toy.cursor.signals.on("change")(({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });
