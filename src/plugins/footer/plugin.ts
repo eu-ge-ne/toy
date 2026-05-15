@@ -9,6 +9,7 @@ export default {
     const widget = new FooterWidget();
 
     host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    host.doc.signals.on("change")(({ lineCount }) => widget.lineCount = lineCount);
 
     host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
@@ -28,9 +29,5 @@ export default {
       widget.ln = ln;
       widget.col = col;
     });
-
-    host.doc.signals.on("change")(
-      ({ lineCount }) => widget.lineCount = lineCount,
-    );
   },
 } satisfies plugins.Plugin;
