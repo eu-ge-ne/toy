@@ -62,9 +62,7 @@ export class Content extends widgets.Widget {
 
     const textWidth = this.width - indexWidth;
 
-    graphemes.settings.width = this.#mode.wrap
-      ? textWidth
-      : Number.MAX_SAFE_INTEGER;
+    graphemes.settings.width = this.#mode.wrap ? textWidth : Number.MAX_SAFE_INTEGER;
     graphemes.settings.y = this.#cursorY = this.y;
     graphemes.settings.x = this.#cursorX = this.x + indexWidth;
 
@@ -183,8 +181,7 @@ export class Content extends widgets.Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell =
-      this.gDoc.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+    const cell = this.gDoc.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }

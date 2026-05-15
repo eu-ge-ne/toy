@@ -10,9 +10,9 @@ export default {
   init(host: api.Host): void {
     widget = new PaletteWidget();
 
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       if (host.zen.enabled) {
@@ -27,15 +27,9 @@ export default {
       async open(): Promise<void> {
         widget.open();
 
-        const offRender = host.io.signals.onOrdered(
-          "render",
-          1000,
-          () => widget.render(),
-        );
+        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = host.io.events.onOrdered(
-          "key.press",
-          -1000,
+        const offKeyPress = host.io.events.on("key.press", -1000)(
           async (data) => {
             data.cancel = true;
 
@@ -49,7 +43,7 @@ export default {
           },
         );
 
-        await host.io.runLoop((ctx) => {
+        await host.io.loop((ctx) => {
           ctx.continue = widget.opened;
           ctx.layoutChanged = true;
         });

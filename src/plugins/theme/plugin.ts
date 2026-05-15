@@ -1,16 +1,16 @@
 import * as api from "@libs/api";
-import * as events from "@libs/events";
+import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-const emitter = new events.SignalEmitter<api.ThemeSignals>();
+const signals = new libEvents.SignalEmitter<api.ThemeSignals>();
 
 export default {
   initTheme(): api.Theme {
     return {
-      signals: emitter.signals,
+      signals: signals.listener,
       set(name: keyof typeof themes.Themes): void {
-        emitter.broadcast("change", name);
+        signals.broadcast("change", name);
       },
     };
   },

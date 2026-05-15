@@ -51,13 +51,13 @@ host.theme.set("Default");
 
 let layoutChanged = false;
 
-host.zen.signals.onOrdered("toggle", 1000, () => layoutChanged = true);
+host.zen.signals.on("toggle", 1000)(() => layoutChanged = true);
 
 if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);
 }
 
-await host.io.runLoop((ctx) => {
+await host.io.loop((ctx) => {
   if (layoutChanged) {
     ctx.layoutChanged = true;
     layoutChanged = false;

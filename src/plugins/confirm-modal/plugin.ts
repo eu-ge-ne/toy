@@ -11,9 +11,9 @@ export default {
   init(host: api.Host): void {
     widget = new AskWidget();
 
-    host.theme.signals.on("change", (x) => widget.setTheme(themes.Themes[x]));
+    host.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    host.io.signals.on("resize", () => {
+    host.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -29,15 +29,9 @@ export default {
       async open(message: string): Promise<boolean> {
         widget.open(message);
 
-        const offRender = host.io.signals.onOrdered(
-          "render",
-          1000,
-          () => widget.render(),
-        );
+        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = host.io.events.onOrdered(
-          "key.press",
-          -1000,
+        const offKeyPress = host.io.events.on("key.press", -1000)(
           async (data) => {
             data.cancel = true;
 
@@ -51,7 +45,7 @@ export default {
           },
         );
 
-        await host.io.runLoop((ctx) => ctx.continue = widget.opened);
+        await host.io.loop((ctx) => ctx.continue = widget.opened);
 
         return widget.result;
       },

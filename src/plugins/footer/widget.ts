@@ -37,9 +37,7 @@ export class FooterWidget extends widgets.Widget {
 
     const ln = this.ln + 1;
     const col = this.col + 1;
-    const pct = this.lineCount === 0
-      ? 0
-      : ((this.ln / this.lineCount) * 100).toFixed(0);
+    const pct = this.lineCount === 0 ? 0 : ((this.ln / this.lineCount) * 100).toFixed(0);
 
     this.children.text.value = `${ln} ${col}  ${pct}% `;
 

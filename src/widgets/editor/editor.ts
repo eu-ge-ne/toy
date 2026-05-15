@@ -359,9 +359,7 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     this.#gDoc.insert(this.#cursor, text);
 
-    const grms = [...this.#sgr.segment(text)].map((x) =>
-      graphemes.graphemes.get(x.segment)
-    );
+    const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
     const eol_count = grms.filter((x) => x.isEol).length;
 
     if (eol_count === 0) {

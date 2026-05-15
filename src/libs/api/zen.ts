@@ -5,7 +5,7 @@ export type ZenSignals = {
 };
 
 export type Zen = {
-  signals: events.SignalListener<ZenSignals>;
+  signals: events.Listener<ZenSignals>;
   get enabled(): boolean;
   toggle(): void;
 };

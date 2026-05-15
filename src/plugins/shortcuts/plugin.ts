@@ -3,33 +3,33 @@ import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
 const shortcuts: Record<string, (_: api.Host) => Promise<void>> = {
-  "F1": (api) => api.paletteModal.open(),
-  "⇧F1": (api) => api.paletteModal.open(),
-  "⌃F1": (api) => api.paletteModal.open(),
-  "⌥F1": (api) => api.paletteModal.open(),
-  "⌘F1": (api) => api.paletteModal.open(),
-  "F2": (api) => api.doc.save(),
-  "F5": async (api) => api.doc.toggleWhitespace(),
-  "F6": async (api) => api.doc.toggleWrap(),
-  "F10": (api) => api.runtime.stop(),
-  "F11": async (api) => api.zen.toggle(),
-  "⌃A": async (api) => api.doc.selectAll(),
-  "⌘A": async (api) => api.doc.selectAll(),
-  "⌃Z": async (api) => api.doc.undo(),
-  "⌘Z": async (api) => api.doc.undo(),
-  "⌃Y": async (api) => api.doc.redo(),
-  "⌘Y": async (api) => api.doc.redo(),
-  "⌃C": async (api) => api.doc.copy(),
-  "⌘C": async (api) => api.doc.copy(),
-  "⌃X": async (api) => api.doc.cut(),
-  "⌘X": async (api) => api.doc.cut(),
-  "⌃V": async (api) => api.doc.paste(),
-  "⌘V": async (api) => api.doc.paste(),
+  "F1": (x) => x.paletteModal.open(),
+  "⇧F1": (x) => x.paletteModal.open(),
+  "⌃F1": (x) => x.paletteModal.open(),
+  "⌥F1": (x) => x.paletteModal.open(),
+  "⌘F1": (x) => x.paletteModal.open(),
+  "F2": (x) => x.doc.save(),
+  "F5": async (x) => x.doc.toggleWhitespace(),
+  "F6": async (x) => x.doc.toggleWrap(),
+  "F10": (x) => x.runtime.stop(),
+  "F11": async (x) => x.zen.toggle(),
+  "⌃A": async (x) => x.doc.selectAll(),
+  "⌘A": async (x) => x.doc.selectAll(),
+  "⌃Z": async (x) => x.doc.undo(),
+  "⌘Z": async (x) => x.doc.undo(),
+  "⌃Y": async (x) => x.doc.redo(),
+  "⌘Y": async (x) => x.doc.redo(),
+  "⌃C": async (x) => x.doc.copy(),
+  "⌘C": async (x) => x.doc.copy(),
+  "⌃X": async (x) => x.doc.cut(),
+  "⌘X": async (x) => x.doc.cut(),
+  "⌃V": async (x) => x.doc.paste(),
+  "⌘V": async (x) => x.doc.paste(),
 };
 
 export default {
   init(host: api.Host): void {
-    host.io.events.onOrdered("key.press", -1000, async (data) => {
+    host.io.events.on("key.press", -1000)(async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 
       if (entry) {

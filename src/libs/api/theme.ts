@@ -6,6 +6,6 @@ export type ThemeSignals = {
 };
 
 export type Theme = {
-  signals: events.SignalListener<ThemeSignals>;
+  signals: events.Listener<ThemeSignals>;
   set(_: keyof typeof themes.Themes): void;
 };

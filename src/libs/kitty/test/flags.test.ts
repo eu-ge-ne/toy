@@ -1,9 +1,4 @@
-import {
-  assertParseFlags,
-  assertPopFlags,
-  assertPushFlags,
-  assertSetFlags,
-} from "./assert.ts";
+import { assertParseFlags, assertPopFlags, assertPushFlags, assertSetFlags } from "./assert.ts";
 
 import { FlagsMode } from "../flags.ts";
 

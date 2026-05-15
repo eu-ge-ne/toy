@@ -6,7 +6,7 @@ export type DocSignals = {
 };
 
 export type Doc = {
-  signals: events.SignalListener<DocSignals>;
+  signals: events.Listener<DocSignals>;
 
   open(_: string): Promise<void>;
   save(): Promise<void>;
