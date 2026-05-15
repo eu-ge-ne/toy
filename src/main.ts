@@ -57,7 +57,7 @@ if (typeof args._[0] === "string") {
   await host.doc.open(args._[0]);
 }
 
-await host.io.runLoop((ctx) => {
+await host.io.loop((ctx) => {
   if (layoutChanged) {
     ctx.layoutChanged = true;
     layoutChanged = false;

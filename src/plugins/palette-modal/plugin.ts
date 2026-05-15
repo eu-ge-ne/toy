@@ -27,9 +27,7 @@ export default {
       async open(): Promise<void> {
         widget.open();
 
-        const offRender = host.io.signals.on("render", 1000)(
-          () => widget.render(),
-        );
+        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
 
         const offKeyPress = host.io.events.on("key.press", -1000)(
           async (data) => {
@@ -45,7 +43,7 @@ export default {
           },
         );
 
-        await host.io.runLoop((ctx) => {
+        await host.io.loop((ctx) => {
           ctx.continue = widget.opened;
           ctx.layoutChanged = true;
         });

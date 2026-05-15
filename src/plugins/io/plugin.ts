@@ -51,9 +51,7 @@ export default {
     return {
       events: eventEmitter.events,
       signals: signalEmitter.signals,
-      async runLoop(
-        cb: (_: { continue: boolean; layoutChanged: boolean }) => void,
-      ): Promise<void> {
+      async loop(cb: (_: { continue: boolean; layoutChanged: boolean }) => void): Promise<void> {
         const ctx = { continue: true, layoutChanged: true };
 
         while (ctx.continue) {

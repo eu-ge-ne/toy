@@ -29,9 +29,7 @@ export default {
       async open(message: string): Promise<void> {
         widget.open(message);
 
-        const offRender = host.io.signals.on("render", 1000)(() =>
-          widget.render()
-        );
+        const offRender = host.io.signals.on("render", 1000)(() => widget.render());
 
         const offKeyPress = host.io.events.on("key.press", -1000)(
           async (data) => {
@@ -47,7 +45,7 @@ export default {
           },
         );
 
-        await host.io.runLoop((ctx) => ctx.continue = widget.opened);
+        await host.io.loop((ctx) => ctx.continue = widget.opened);
       },
     };
   },
