@@ -1,14 +1,14 @@
 import * as api from "@libs/api";
-import * as events from "@libs/events";
+import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-const eventEmitter = new events.EventEmitter<api.IOEvents>();
-const signalEmitter = new events.SignalEmitter<api.IOSignals>();
+const events = new libEvents.EventEmitter<api.IOEvents>();
+const signals = new libEvents.SignalEmitter<api.IOSignals>();
 
 function resize(): void {
-  signalEmitter.broadcast("resize");
+  signals.broadcast("resize");
 }
 
 function render(host: api.Host): void {
@@ -17,7 +17,7 @@ function render(host: api.Host): void {
   vt.sync.bsu();
   vt.buf.write(vt.cursor.hide);
 
-  signalEmitter.broadcast("render");
+  signals.broadcast("render");
 
   vt.buf.write(vt.cursor.show);
   vt.buf.flush();
@@ -29,7 +29,7 @@ function render(host: api.Host): void {
 async function keyPress(host: api.Host, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
-  await eventEmitter.dispatch("key.press", { key });
+  await events.dispatch("key.press", { key });
 
   host.debug.setInput(performance.now() - t0);
 }
@@ -49,8 +49,8 @@ export default {
   },
   initIO(host: api.Host): api.IO {
     return {
-      events: eventEmitter.events,
-      signals: signalEmitter.signals,
+      events: events.listener,
+      signals: signals.listener,
       async loop(cb: (_: { continue: boolean; layoutChanged: boolean }) => void): Promise<void> {
         const ctx = { continue: true, layoutChanged: true };
 

@@ -1,13 +1,13 @@
 import * as api from "@libs/api";
-import * as events from "@libs/events";
+import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-const docEmitter = new events.SignalEmitter<api.DocSignals>();
-const cursorEmitter = new events.SignalEmitter<api.CursorSignals>();
+const docSignals = new libEvents.SignalEmitter<api.DocSignals>();
+const cursorSignals = new libEvents.SignalEmitter<api.CursorSignals>();
 
 let widget: EditorWidget;
 let fileName: string | undefined;
@@ -17,8 +17,8 @@ export default {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        docEmitter.broadcast("change", { modified: widget.modified, lineCount: widget.lineCount }),
-      onCursorChange: (x) => cursorEmitter.broadcast("change", { ln: x.ln, col: x.col }),
+        docSignals.broadcast("change", { modified: widget.modified, lineCount: widget.lineCount }),
+      onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
     widget.setFocused(true);
@@ -52,12 +52,12 @@ export default {
   },
   initCursor(): api.Cursor {
     return {
-      signals: cursorEmitter.signals,
+      signals: cursorSignals.listener,
     };
   },
   initDoc(host: api.Host): api.Doc {
     return {
-      signals: docEmitter.signals,
+      signals: docSignals.listener,
       async open(newFileName: string): Promise<void> {
         try {
           for await (const chunk of files.load(newFileName)) {
@@ -66,7 +66,7 @@ export default {
 
           host.doc.reset();
 
-          docEmitter.broadcast("change.name", newFileName);
+          docSignals.broadcast("change.name", newFileName);
 
           fileName = newFileName;
         } catch (err) {
@@ -106,7 +106,7 @@ export default {
             await files.save(newFileName, host.doc.read());
 
             fileName = newFileName;
-            docEmitter.broadcast("change.name", newFileName);
+            docSignals.broadcast("change.name", newFileName);
 
             host.doc.reset();
           } catch (err) {
