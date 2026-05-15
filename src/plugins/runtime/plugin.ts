@@ -9,10 +9,7 @@ export default {
     return {
       events: emitter.events,
       async start(): Promise<void> {
-        globalThis.addEventListener(
-          "unhandledrejection",
-          (e) => host.runtime.stop(e),
-        );
+        globalThis.addEventListener("unhandledrejection", (e) => host.runtime.stop(e));
 
         await emitter.dispatch("start", {});
       },

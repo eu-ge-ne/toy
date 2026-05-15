@@ -11,7 +11,7 @@ function resize(): void {
   signalEmitter.broadcast("resize");
 }
 
-function render(api: api.Host): void {
+function render(host: api.Host): void {
   const t0 = performance.now();
 
   vt.sync.bsu();
@@ -23,15 +23,15 @@ function render(api: api.Host): void {
   vt.buf.flush();
   vt.sync.esu();
 
-  api.debug.setRender(performance.now() - t0);
+  host.debug.setRender(performance.now() - t0);
 }
 
-async function keyPress(api: api.Host, key: kitty.Key): Promise<void> {
+async function keyPress(host: api.Host, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
   await eventEmitter.dispatch("key.press", { key });
 
-  api.debug.setInput(performance.now() - t0);
+  host.debug.setInput(performance.now() - t0);
 }
 
 export default {
