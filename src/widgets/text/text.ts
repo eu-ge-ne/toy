@@ -3,8 +3,7 @@ import * as widgets from "@libs/widgets";
 
 const encoder = new TextEncoder();
 
-export class TextWidget
-  extends widgets.Widget<{ align: "left" | "center" | "right" }> {
+export class TextWidget extends widgets.Widget<{ align: "left" | "center" | "right" }> {
   color = new Uint8Array();
   value = "";
 
@@ -33,8 +32,7 @@ export class TextWidget
   }
 }
 
-export class MultiLineText
-  extends widgets.Widget<{ align: "left" | "center" }> {
+export class MultiLineText extends widgets.Widget<{ align: "left" | "center" }> {
   color = new Uint8Array();
   value = "";
 
