@@ -6,23 +6,19 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-let widget: EditorWidget;
-let fileName: string | undefined;
-
 const docEmitter = new events.SignalEmitter<api.DocSignals>();
 const cursorEmitter = new events.SignalEmitter<api.CursorSignals>();
+
+let widget: EditorWidget;
+let fileName: string | undefined;
 
 export default {
   init(host: api.Host): void {
     widget = new EditorWidget({
       multiLine: true,
       onTextChange: () =>
-        docEmitter.broadcast("change", {
-          modified: widget.modified,
-          lineCount: widget.lineCount,
-        }),
-      onCursorChange: (x) =>
-        cursorEmitter.broadcast("change", { ln: x.ln, col: x.col }),
+        docEmitter.broadcast("change", { modified: widget.modified, lineCount: widget.lineCount }),
+      onCursorChange: (x) => cursorEmitter.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
     widget.setFocused(true);
@@ -75,9 +71,7 @@ export default {
           fileName = newFileName;
         } catch (err) {
           if (!(err instanceof Deno.errors.NotFound)) {
-            const message = Error.isError(err)
-              ? err.message
-              : Deno.inspect(err);
+            const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await host.alertModal.open(message);
 
             await host.runtime.stop();
@@ -116,9 +110,7 @@ export default {
 
             host.doc.reset();
           } catch (err) {
-            const message = Error.isError(err)
-              ? err.message
-              : Deno.inspect(err);
+            const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await host.alertModal.open(message);
           }
         }
