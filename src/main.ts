@@ -19,8 +19,6 @@ const toy = await Toy.load();
 
 await toy.runtime.start();
 
-toy.theme.set("Default");
-
 if (typeof args._[0] === "string") {
   await toy.doc.open(args._[0]);
 }
