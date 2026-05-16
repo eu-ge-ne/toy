@@ -2,7 +2,6 @@ import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 
 const paths = [
-  "@plugins/about",
   "@plugins/alert-modal",
   "@plugins/confirm-modal",
   "@plugins/debug",

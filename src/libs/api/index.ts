@@ -1,4 +1,3 @@
-export * from "./about.ts";
 export * from "./alert-modal.ts";
 export * from "./confirm-modal.ts";
 export * from "./cursor.ts";
