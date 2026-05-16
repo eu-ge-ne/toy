@@ -6,6 +6,9 @@ import * as themes from "@libs/themes";
 const signals = new libEvents.SignalEmitter<api.ThemeSignals>();
 
 export default {
+  init(toy: api.Toy): void {
+    toy.theme.set("Mauve");
+  },
   register: {
     theme(): api.Theme {
       return {
