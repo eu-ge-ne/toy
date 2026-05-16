@@ -7,17 +7,19 @@ const signals = new libEvents.SignalEmitter<api.ZenSignals>();
 let enabled = true;
 
 export default {
-  initZen(): api.Zen {
-    return {
-      signals: signals.listener,
-      get enabled(): boolean {
-        return enabled;
-      },
-      toggle(): void {
-        enabled = !enabled;
+  register: {
+    zen(): api.Zen {
+      return {
+        signals: signals.listener,
+        get enabled(): boolean {
+          return enabled;
+        },
+        toggle(): void {
+          enabled = !enabled;
 
-        signals.broadcast("toggle");
-      },
-    };
+          signals.broadcast("toggle");
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

@@ -18,6 +18,19 @@ function resize(toy: api.Toy): void {
   widget.resize(w, h, y, x);
 }
 
+const MIB = Math.pow(1024, 2);
+
+function memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number } {
+  const mem = Deno.memoryUsage();
+
+  return {
+    rss: mem.rss / MIB,
+    heapTotal: mem.heapTotal / MIB,
+    heapUsed: mem.heapUsed / MIB,
+    external: mem.external / MIB,
+  };
+}
+
 export default {
   init(toy: api.Toy): void {
     widget = new DebugWidget();
@@ -28,37 +41,39 @@ export default {
     toy.io.signals.on("render", 1000)(() => widget.render());
     toy.io.signals.on("resize")(() => resize(toy));
   },
-  initDebug(toy: api.Toy): api.Debug {
-    let timer: number;
+  register: {
+    debug(_: api.Toy): api.Debug {
+      let timer: number;
 
-    function updateMemUsage(): void {
-      const mem = toy.runtime.memUsage();
+      function updateMemUsage(): void {
+        const mem = memUsage();
 
-      widget.rss = mem.rss.toFixed();
-      widget.heapTotal = mem.heapTotal.toFixed();
-      widget.heapUsed = mem.heapUsed.toFixed();
-      widget.externalMem = mem.external.toFixed();
+        widget.rss = mem.rss.toFixed();
+        widget.heapTotal = mem.heapTotal.toFixed();
+        widget.heapUsed = mem.heapUsed.toFixed();
+        widget.externalMem = mem.external.toFixed();
 
-      widget.render();
-    }
+        widget.render();
+      }
 
-    return {
-      toggle(): void {
-        widget.visible = !widget.visible;
+      return {
+        toggle(): void {
+          widget.visible = !widget.visible;
 
-        if (widget.visible) {
-          updateMemUsage();
-          timer = setInterval(updateMemUsage, 1000);
-        } else {
-          clearInterval(timer);
-        }
-      },
-      setRender(x): void {
-        widget.renderElapsed = x;
-      },
-      setInput(x): void {
-        widget.inputElapsed = x;
-      },
-    };
+          if (widget.visible) {
+            updateMemUsage();
+            timer = setInterval(updateMemUsage, 1000);
+          } else {
+            clearInterval(timer);
+          }
+        },
+        setRender(x): void {
+          widget.renderElapsed = x;
+        },
+        setInput(x): void {
+          widget.inputElapsed = x;
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

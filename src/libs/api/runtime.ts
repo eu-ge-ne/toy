@@ -9,5 +9,4 @@ export type Runtime = {
   events: events.Listener<RuntimeEvents>;
   start(): Promise<void>;
   stop(e?: PromiseRejectionEvent): Promise<void>;
-  memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number };
 };
