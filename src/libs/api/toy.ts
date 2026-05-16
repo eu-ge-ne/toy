@@ -1,4 +1,3 @@
-import { About } from "./about.ts";
 import { AlertModal } from "./alert-modal.ts";
 import { ConfirmModal } from "./confirm-modal.ts";
 import { Cursor } from "./cursor.ts";
@@ -12,7 +11,6 @@ import { Theme } from "./theme.ts";
 import { Zen } from "./zen.ts";
 
 export abstract class Toy {
-  readonly about!: About;
   readonly alertModal!: AlertModal;
   readonly confirmModal!: ConfirmModal;
   readonly cursor!: Cursor;

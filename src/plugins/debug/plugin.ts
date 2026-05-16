@@ -35,7 +35,7 @@ export default {
   init(toy: api.Toy): void {
     widget = new DebugWidget();
 
-    widget.version = toy.about.version;
+    widget.version = std.version;
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
     toy.io.signals.on("render", 1000)(() => widget.render());
