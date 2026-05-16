@@ -26,6 +26,5 @@ if (typeof args._[0] === "string") {
 }
 
 toy.io.resize();
-toy.zen.signals.on("toggle", 1000)(() => toy.io.resize());
 
 await toy.io.loop(() => {});

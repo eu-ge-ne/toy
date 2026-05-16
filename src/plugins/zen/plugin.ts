@@ -8,7 +8,7 @@ let enabled = true;
 
 export default {
   register: {
-    zen(): api.Zen {
+    zen(toy: api.Toy): api.Zen {
       return {
         signals: signals.listener,
         get enabled(): boolean {
@@ -18,6 +18,8 @@ export default {
           enabled = !enabled;
 
           signals.broadcast("toggle");
+
+          toy.io.resize();
         },
       };
     },
