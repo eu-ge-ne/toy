@@ -52,21 +52,14 @@ export default {
       return {
         events: events.listener,
         signals: signals.listener,
-        async loop(cb: (_: { continue: boolean; layoutChanged: boolean }) => void): Promise<void> {
-          const ctx = { continue: true, layoutChanged: true };
-
-          while (ctx.continue) {
-            if (ctx.layoutChanged) {
-              resize();
-              ctx.layoutChanged = false;
-            }
-
+        resize,
+        async loop(stop: () => unknown): Promise<void> {
+          while (!stop()) {
             render(toy);
 
             const key = await vt.readKey();
-            await keyPress(toy, key);
 
-            cb(ctx);
+            await keyPress(toy, key);
           }
         },
       };

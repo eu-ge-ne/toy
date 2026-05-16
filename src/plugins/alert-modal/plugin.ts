@@ -46,7 +46,7 @@ export default {
             },
           );
 
-          await toy.io.loop((ctx) => ctx.continue = widget.opened);
+          await toy.io.loop(() => !widget.opened);
         },
       };
     },

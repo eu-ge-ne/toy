@@ -13,5 +13,6 @@ export type IOSignals = {
 export type IO = {
   events: events.Listener<IOEvents>;
   signals: events.Listener<IOSignals>;
-  loop(_: (ctx: { continue: boolean; layoutChanged: boolean }) => void): Promise<void>;
+  resize(): void;
+  loop(_: () => unknown): Promise<void>;
 };

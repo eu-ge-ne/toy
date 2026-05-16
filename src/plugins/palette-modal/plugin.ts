@@ -44,9 +44,9 @@ export default {
             },
           );
 
-          await toy.io.loop((ctx) => {
-            ctx.continue = widget.opened;
-            ctx.layoutChanged = true;
+          await toy.io.loop(() => {
+            toy.io.resize();
+            return !widget.opened;
           });
 
           if (typeof widget.result !== "undefined") {

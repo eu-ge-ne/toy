@@ -21,16 +21,10 @@ await toy.runtime.start();
 
 toy.theme.set("Default");
 
-let layoutChanged = false;
-toy.zen.signals.on("toggle", 1000)(() => layoutChanged = true);
-
 if (typeof args._[0] === "string") {
   await toy.doc.open(args._[0]);
 }
 
-await toy.io.loop((ctx) => {
-  if (layoutChanged) {
-    ctx.layoutChanged = true;
-    layoutChanged = false;
-  }
-});
+toy.io.resize();
+
+await toy.io.loop(() => {});
