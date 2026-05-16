@@ -2,9 +2,7 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import { Toy } from "./toy.ts";
 
-const toy = new Toy();
-
-await toy.load();
+const toy = await Toy.load();
 
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],

@@ -21,27 +21,35 @@ const paths = [
 export class Toy extends api.Toy {
   #plugins: plugins.Plugin[] = [];
 
-  async load(): Promise<void> {
-    // deno-lint-ignore no-explicit-any
-    const rawThis = this as any;
+  private constructor() {
+    super();
+  }
 
-    await Promise.all(paths.map(async (x) => {
-      const plugin = (await import(x)).default as plugins.Plugin;
+  static async load(): Promise<Toy> {
+    const toy = new Toy();
 
-      this.#plugins.push(plugin);
+    await Promise.all(paths.map(async (x) => toy.#register((await import(x)).default)));
 
-      for (const [apiName, apiFn] of Object.entries(plugin.register ?? {})) {
-        if (rawThis[apiName]) {
-          throw new Error("API conflict");
-        }
-        rawThis[apiName] = apiFn(this);
-      }
-    }));
+    return toy;
   }
 
   init(): void {
     for (const plugin of this.#plugins) {
       plugin.init?.(this);
+    }
+  }
+
+  #register(plugin: plugins.Plugin): void {
+    this.#plugins.push(plugin);
+
+    // deno-lint-ignore no-explicit-any
+    const rawThis = this as any;
+
+    for (const [apiName, apiFn] of Object.entries(plugin.register ?? {})) {
+      if (rawThis[apiName]) {
+        throw new Error("API conflict");
+      }
+      rawThis[apiName] = apiFn(this);
     }
   }
 }
