@@ -12,16 +12,16 @@ import { Theme } from "./theme.ts";
 import { Zen } from "./zen.ts";
 
 export abstract class Toy {
-  about!: About;
-  alertModal!: AlertModal;
-  confirmModal!: ConfirmModal;
-  cursor!: Cursor;
-  debug!: Debug;
-  doc!: Doc;
-  fileNameModal!: FileNameModal;
-  io!: IO;
-  paletteModal!: PaletteModal;
-  runtime!: Runtime;
-  theme!: Theme;
-  zen!: Zen;
+  readonly about!: About;
+  readonly alertModal!: AlertModal;
+  readonly confirmModal!: ConfirmModal;
+  readonly cursor!: Cursor;
+  readonly debug!: Debug;
+  readonly doc!: Doc;
+  readonly fileNameModal!: FileNameModal;
+  readonly io!: IO;
+  readonly paletteModal!: PaletteModal;
+  readonly runtime!: Runtime;
+  readonly theme!: Theme;
+  readonly zen!: Zen;
 }
