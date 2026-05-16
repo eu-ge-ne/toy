@@ -1,8 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import { Toy } from "./toy.ts";
-
-const toy = await Toy.load();
+import { Toy } from "@libs/toy";
+import * as version from "@libs/version";
 
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],
@@ -12,11 +11,11 @@ export const args = parseArgs(Deno.args, {
 });
 
 if (args.version) {
-  console.log(toy.about.version);
+  console.log(version.version);
   Deno.exit();
 }
 
-toy.init();
+const toy = await Toy.load();
 
 await toy.runtime.start();
 toy.theme.set("Default");

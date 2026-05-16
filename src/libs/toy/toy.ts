@@ -27,13 +27,13 @@ export class Toy extends api.Toy {
 
   static async load(): Promise<Toy> {
     const toy = new Toy();
-
-    await Promise.all(paths.map(async (x) => toy.#register((await import(x)).default)));
-
+    await toy.#load();
     return toy;
   }
 
-  init(): void {
+  async #load(): Promise<void> {
+    await Promise.all(paths.map(async (x) => this.#register((await import(x)).default)));
+
     for (const plugin of this.#plugins) {
       plugin.init?.(this);
     }
