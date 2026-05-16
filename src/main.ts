@@ -18,10 +18,10 @@ if (args.version) {
 const toy = await Toy.load();
 
 await toy.runtime.start();
+
 toy.theme.set("Default");
 
 let layoutChanged = false;
-
 toy.zen.signals.on("toggle", 1000)(() => layoutChanged = true);
 
 if (typeof args._[0] === "string") {
