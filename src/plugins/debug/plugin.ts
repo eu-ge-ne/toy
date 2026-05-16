@@ -28,37 +28,39 @@ export default {
     toy.io.signals.on("render", 1000)(() => widget.render());
     toy.io.signals.on("resize")(() => resize(toy));
   },
-  initDebug(toy: api.Toy): api.Debug {
-    let timer: number;
+  register: {
+    debug(toy: api.Toy): api.Debug {
+      let timer: number;
 
-    function updateMemUsage(): void {
-      const mem = toy.runtime.memUsage();
+      function updateMemUsage(): void {
+        const mem = toy.runtime.memUsage();
 
-      widget.rss = mem.rss.toFixed();
-      widget.heapTotal = mem.heapTotal.toFixed();
-      widget.heapUsed = mem.heapUsed.toFixed();
-      widget.externalMem = mem.external.toFixed();
+        widget.rss = mem.rss.toFixed();
+        widget.heapTotal = mem.heapTotal.toFixed();
+        widget.heapUsed = mem.heapUsed.toFixed();
+        widget.externalMem = mem.external.toFixed();
 
-      widget.render();
-    }
+        widget.render();
+      }
 
-    return {
-      toggle(): void {
-        widget.visible = !widget.visible;
+      return {
+        toggle(): void {
+          widget.visible = !widget.visible;
 
-        if (widget.visible) {
-          updateMemUsage();
-          timer = setInterval(updateMemUsage, 1000);
-        } else {
-          clearInterval(timer);
-        }
-      },
-      setRender(x): void {
-        widget.renderElapsed = x;
-      },
-      setInput(x): void {
-        widget.inputElapsed = x;
-      },
-    };
+          if (widget.visible) {
+            updateMemUsage();
+            timer = setInterval(updateMemUsage, 1000);
+          } else {
+            clearInterval(timer);
+          }
+        },
+        setRender(x): void {
+          widget.renderElapsed = x;
+        },
+        setInput(x): void {
+          widget.inputElapsed = x;
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

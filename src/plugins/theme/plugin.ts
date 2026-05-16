@@ -6,12 +6,14 @@ import * as themes from "@libs/themes";
 const signals = new libEvents.SignalEmitter<api.ThemeSignals>();
 
 export default {
-  initTheme(): api.Theme {
-    return {
-      signals: signals.listener,
-      set(name: keyof typeof themes.Themes): void {
-        signals.broadcast("change", name);
-      },
-    };
+  register: {
+    theme(): api.Theme {
+      return {
+        signals: signals.listener,
+        set(name: keyof typeof themes.Themes): void {
+          signals.broadcast("change", name);
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

@@ -24,31 +24,33 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initFileNameModal(toy: api.Toy): api.FileNameModal {
-    return {
-      async open(fileName: string): Promise<string | undefined> {
-        widget.open(fileName);
+  register: {
+    fileNameModal(toy: api.Toy): api.FileNameModal {
+      return {
+        async open(fileName: string): Promise<string | undefined> {
+          widget.open(fileName);
 
-        const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = toy.io.events.on("key.press", -1000)(
-          async (data) => {
-            data.cancel = true;
+          const offKeyPress = toy.io.events.on("key.press", -1000)(
+            async (data) => {
+              data.cancel = true;
 
-            widget.onKeyPress(data.key);
-            if (widget.opened) {
-              return;
-            }
+              widget.onKeyPress(data.key);
+              if (widget.opened) {
+                return;
+              }
 
-            offRender();
-            offKeyPress();
-          },
-        );
+              offRender();
+              offKeyPress();
+            },
+          );
 
-        await toy.io.loop((ctx) => ctx.continue = widget.opened);
+          await toy.io.loop((ctx) => ctx.continue = widget.opened);
 
-        return widget.result;
-      },
-    };
+          return widget.result;
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

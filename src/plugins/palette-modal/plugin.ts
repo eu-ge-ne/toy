@@ -22,36 +22,38 @@ export default {
       }
     });
   },
-  initPaletteModal(toy: api.Toy): api.PaletteModal {
-    return {
-      async open(): Promise<void> {
-        widget.open();
+  register: {
+    paletteModal(toy: api.Toy): api.PaletteModal {
+      return {
+        async open(): Promise<void> {
+          widget.open();
 
-        const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = toy.io.events.on("key.press", -1000)(
-          async (data) => {
-            data.cancel = true;
+          const offKeyPress = toy.io.events.on("key.press", -1000)(
+            async (data) => {
+              data.cancel = true;
 
-            widget.onKeyPress(data.key);
-            if (widget.opened) {
-              return;
-            }
+              widget.onKeyPress(data.key);
+              if (widget.opened) {
+                return;
+              }
 
-            offRender();
-            offKeyPress();
-          },
-        );
+              offRender();
+              offKeyPress();
+            },
+          );
 
-        await toy.io.loop((ctx) => {
-          ctx.continue = widget.opened;
-          ctx.layoutChanged = true;
-        });
+          await toy.io.loop((ctx) => {
+            ctx.continue = widget.opened;
+            ctx.layoutChanged = true;
+          });
 
-        if (typeof widget.result !== "undefined") {
-          await widget.result(toy);
-        }
-      },
-    };
+          if (typeof widget.result !== "undefined") {
+            await widget.result(toy);
+          }
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

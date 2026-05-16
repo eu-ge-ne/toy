@@ -47,27 +47,29 @@ export default {
 
     toy.runtime.events.on("stop", 1000)(async () => vt.restore());
   },
-  initIO(toy: api.Toy): api.IO {
-    return {
-      events: events.listener,
-      signals: signals.listener,
-      async loop(cb: (_: { continue: boolean; layoutChanged: boolean }) => void): Promise<void> {
-        const ctx = { continue: true, layoutChanged: true };
+  register: {
+    io(toy: api.Toy): api.IO {
+      return {
+        events: events.listener,
+        signals: signals.listener,
+        async loop(cb: (_: { continue: boolean; layoutChanged: boolean }) => void): Promise<void> {
+          const ctx = { continue: true, layoutChanged: true };
 
-        while (ctx.continue) {
-          if (ctx.layoutChanged) {
-            resize();
-            ctx.layoutChanged = false;
+          while (ctx.continue) {
+            if (ctx.layoutChanged) {
+              resize();
+              ctx.layoutChanged = false;
+            }
+
+            render(toy);
+
+            const key = await vt.readKey();
+            await keyPress(toy, key);
+
+            cb(ctx);
           }
-
-          render(toy);
-
-          const key = await vt.readKey();
-          await keyPress(toy, key);
-
-          cb(ctx);
-        }
-      },
-    };
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

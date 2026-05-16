@@ -24,29 +24,31 @@ export default {
       widget.resize(w, h, y, x);
     });
   },
-  initAlertModal(toy: api.Toy): api.AlertModal {
-    return {
-      async open(message: string): Promise<void> {
-        widget.open(message);
+  register: {
+    alertModal(toy: api.Toy): api.AlertModal {
+      return {
+        async open(message: string): Promise<void> {
+          widget.open(message);
 
-        const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
-        const offKeyPress = toy.io.events.on("key.press", -1000)(
-          async (data) => {
-            data.cancel = true;
+          const offKeyPress = toy.io.events.on("key.press", -1000)(
+            async (data) => {
+              data.cancel = true;
 
-            widget.onKeyPress(data.key);
-            if (widget.opened) {
-              return;
-            }
+              widget.onKeyPress(data.key);
+              if (widget.opened) {
+                return;
+              }
 
-            offRender();
-            offKeyPress();
-          },
-        );
+              offRender();
+              offKeyPress();
+            },
+          );
 
-        await toy.io.loop((ctx) => ctx.continue = widget.opened);
-      },
-    };
+          await toy.io.loop((ctx) => ctx.continue = widget.opened);
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;

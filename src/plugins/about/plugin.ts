@@ -6,11 +6,13 @@ import deno from "../../../deno.json" with { type: "json" };
 const version = `toy ${deno.version} (deno ${Deno.version.deno})`;
 
 export default {
-  initAbout(): api.About {
-    return {
-      get version(): string {
-        return version;
-      },
-    };
+  register: {
+    about(_: api.Toy): api.About {
+      return {
+        get version(): string {
+          return version;
+        },
+      };
+    },
   },
 } satisfies plugins.Plugin;
