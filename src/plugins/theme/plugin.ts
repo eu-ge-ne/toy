@@ -7,7 +7,7 @@ const signals = new libEvents.SignalEmitter<api.ThemeSignals>();
 
 export default {
   init(toy: api.Toy): void {
-    toy.theme.set("Mauve");
+    toy.runtime.events.on("start")(async () => toy.theme.set("Mauve"));
   },
   register: {
     theme(): api.Theme {
