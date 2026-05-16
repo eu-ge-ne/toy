@@ -32,7 +32,7 @@ export class Toy extends api.Toy {
 
       for (const [apiName, apiFn] of Object.entries(plugin.register ?? {})) {
         if (rawThis[apiName]) {
-          throw new Error("API coflict");
+          throw new Error("API conflict");
         }
         rawThis[apiName] = apiFn(this);
       }
