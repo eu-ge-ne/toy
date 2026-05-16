@@ -18,6 +18,19 @@ function resize(toy: api.Toy): void {
   widget.resize(w, h, y, x);
 }
 
+const MIB = Math.pow(1024, 2);
+
+function memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number } {
+  const mem = Deno.memoryUsage();
+
+  return {
+    rss: mem.rss / MIB,
+    heapTotal: mem.heapTotal / MIB,
+    heapUsed: mem.heapUsed / MIB,
+    external: mem.external / MIB,
+  };
+}
+
 export default {
   init(toy: api.Toy): void {
     widget = new DebugWidget();
@@ -29,11 +42,11 @@ export default {
     toy.io.signals.on("resize")(() => resize(toy));
   },
   register: {
-    debug(toy: api.Toy): api.Debug {
+    debug(_: api.Toy): api.Debug {
       let timer: number;
 
       function updateMemUsage(): void {
-        const mem = toy.runtime.memUsage();
+        const mem = memUsage();
 
         widget.rss = mem.rss.toFixed();
         widget.heapTotal = mem.heapTotal.toFixed();
