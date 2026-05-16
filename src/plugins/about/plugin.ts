@@ -1,13 +1,13 @@
 import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
-import * as version from "@libs/version";
+import * as std from "@libs/std";
 
 export default {
   register: {
     about(_: api.Toy): api.About {
       return {
         get version(): string {
-          return version.version;
+          return std.version;
         },
       };
     },

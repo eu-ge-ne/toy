@@ -1,7 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as std from "@libs/std";
 import { Toy } from "@libs/toy";
-import * as version from "@libs/version";
 
 export const args = parseArgs(Deno.args, {
   boolean: ["version"],
@@ -11,7 +11,7 @@ export const args = parseArgs(Deno.args, {
 });
 
 if (args.version) {
-  console.log(version.version);
+  console.log(std.version);
   Deno.exit();
 }
 

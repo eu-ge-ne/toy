@@ -1,4 +1,0 @@
-{
-  "name": "@libs/version",
-  "exports": "./version.ts"
-}
