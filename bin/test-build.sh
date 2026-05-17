@@ -1,8 +1,6 @@
 #!/bin/bash
 
-APP_V=$(deno bin/version.ts)
-DENO_V=$(deno -v)
-EXPECTED="toy $APP_V ($DENO_V)"
+EXPECTED=$(deno bin/version.ts)
 
 deno compile --quiet --frozen --reload --output tmp/toy -ERW src/main.ts
 
