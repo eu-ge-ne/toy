@@ -112,6 +112,8 @@ export default {
               docSignals.broadcast("change.name", newFileName);
 
               toy.doc.reset();
+
+              return;
             } catch (err) {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
               await toy.alertModal.open(message);
