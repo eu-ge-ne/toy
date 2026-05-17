@@ -71,7 +71,9 @@ export default {
 
             fileName = newFileName;
           } catch (err) {
-            if (!(err instanceof Deno.errors.NotFound)) {
+            if (err instanceof Deno.errors.NotFound) {
+              fileName = newFileName;
+            } else {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
               await toy.alertModal.open(message);
 
