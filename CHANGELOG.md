@@ -1,10 +1,11 @@
 # Changelog
 
-## 0.0.28-rc
+## 0.0.28
 
 - @eu-ge-ne/kitty-keys incorporated into @lib/kitty
 - Improved input handling
 - @eu-ge-ne/text incorporated into @lib/text-buf
+- Introduced API/Plugin architecture
 
 ## v0.0.27
 
