@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.29
+
+- Fix build
+
 ## 0.0.28
 
 - @eu-ge-ne/kitty-keys incorporated into @lib/kitty
