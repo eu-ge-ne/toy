@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.30
+
+- Fix file saving
+
 ## 0.0.29
 
 - Fix build
