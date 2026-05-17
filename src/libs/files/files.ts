@@ -37,12 +37,15 @@ export async function save(
     truncate: true,
   });
 
-  const encoder = new TextEncoderStream();
-  const writer = encoder.writable.getWriter();
+  const encoder = new TextEncoder();
 
-  encoder.readable.pipeTo(file.writable);
+  for (const chunk of text) {
+    const bytes = encoder.encode(chunk);
 
-  for (const t of text) {
-    await writer.write(t);
+    let n = 0;
+
+    while (n < bytes.length) {
+      n += await file.write(bytes.subarray(n));
+    }
   }
 }

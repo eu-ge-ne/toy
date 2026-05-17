@@ -19,10 +19,10 @@ const toy = await Toy.load();
 
 await toy.runtime.start();
 
+toy.io.resize();
+
 if (typeof args._[0] === "string") {
   await toy.doc.open(args._[0]);
 }
-
-toy.io.resize();
 
 await toy.io.loop(() => {});

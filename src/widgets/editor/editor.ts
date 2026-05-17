@@ -83,7 +83,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
   }
 
-  read(): Generator<string> {
+  read(): Iterable<string> {
     return this.#doc.read(0);
   }
 
