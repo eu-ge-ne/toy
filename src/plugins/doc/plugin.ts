@@ -60,18 +60,20 @@ export default {
       return {
         signals: docSignals.listener,
         async open(newFileName: string): Promise<void> {
+          fileName = newFileName;
+
+          docSignals.broadcast("change.name", newFileName);
+
           try {
             for await (const chunk of files.load(newFileName)) {
               toy.doc.write(chunk);
             }
 
             toy.doc.reset();
-
-            docSignals.broadcast("change.name", newFileName);
-
-            fileName = newFileName;
           } catch (err) {
-            if (!(err instanceof Deno.errors.NotFound)) {
+            if (err instanceof Deno.errors.NotFound) {
+              // ignore
+            } else {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
               await toy.alertModal.open(message);
 

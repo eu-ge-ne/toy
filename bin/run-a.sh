@@ -2,5 +2,5 @@
 
 deno --allow-env \
     --allow-read=./ \
-    --deny-write \
+    --allow-write \
     src/main.ts "$1"
