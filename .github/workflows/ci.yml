@@ -8,7 +8,7 @@ on:
     types: ["opened", "synchronize", "reopened"]
 
 jobs:
-  lint:
+  setup:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -17,6 +17,13 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
       - run: ./bin/lint.sh
 
   test:
