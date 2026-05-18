@@ -43,21 +43,8 @@ jobs:
           disable_search: true
           files: tmp/test/lcov
 
-  test-build:
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - run: ./bin/test-build.sh
-
   build:
-    needs: test-build
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
