@@ -5,14 +5,12 @@ import { Cursor } from "./cursor.ts";
 
 export class History {
   #docHistory = new history.History<documents.Node>();
-
-  #entries: { ln: number; col: number }[] = [];
-  #i!: number;
+  #cursorHistory = new history.History<{ ln: number; col: number }>();
 
   onChange?: () => void;
 
   get changed(): boolean {
-    return this.#i > 0;
+    return !this.#docHistory.empty;
   }
 
   constructor(
@@ -26,8 +24,7 @@ export class History {
     this.#docHistory.reset(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
-    this.#entries = [{ ln, col }];
-    this.#i = 0;
+    this.#cursorHistory.reset({ ln, col });
 
     this.onChange?.();
   }
@@ -35,44 +32,36 @@ export class History {
   push(): void {
     this.#docHistory.push(this.doc.tree.root);
 
-    this.#i += 1;
     const { ln, col } = this.cursor;
-    this.#entries[this.#i] = { ln, col };
-    this.#entries.length = this.#i + 1;
+    this.#cursorHistory.push({ ln, col });
 
     this.onChange?.();
   }
 
   undo(): void {
-    const entry = this.#docHistory.undo();
-    if (entry) {
-      this.doc.tree.root = entry;
+    const docEntry = this.#docHistory.undo();
+    if (docEntry) {
+      this.doc.tree.root = docEntry;
     }
 
-    if (this.#i < 1) {
-      return;
+    const cursorEntry = this.#cursorHistory.undo();
+    if (cursorEntry) {
+      this.cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.#i -= 1;
-    const { ln, col } = this.#entries[this.#i]!;
-    this.cursor.set(ln, col, false);
 
     this.onChange?.();
   }
 
   redo(): void {
-    const entry = this.#docHistory.redo();
-    if (entry) {
-      this.doc.tree.root = entry;
+    const docEntry = this.#docHistory.redo();
+    if (docEntry) {
+      this.doc.tree.root = docEntry;
     }
 
-    if (this.#i >= (this.#entries.length - 1)) {
-      return;
+    const cursorEntry = this.#cursorHistory.redo();
+    if (cursorEntry) {
+      this.cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.#i += 1;
-    const { ln, col } = this.#entries[this.#i]!;
-    this.cursor.set(ln, col, false);
 
     this.onChange?.();
   }

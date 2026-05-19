@@ -2,6 +2,10 @@ export class History<T> {
   #entries: T[] = [];
   #i!: number;
 
+  get empty(): boolean {
+    return this.#i < 1;
+  }
+
   reset(entry: T): void {
     this.#entries = [structuredClone(entry)];
     this.#i = 0;
