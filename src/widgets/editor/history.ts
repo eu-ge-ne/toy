@@ -1,8 +1,11 @@
 import * as documents from "@libs/documents";
+import * as history from "@libs/history";
 
 import { Cursor } from "./cursor.ts";
 
 export class History {
+  #docHistory = new history.History<documents.Node>();
+
   #entries: { ln: number; col: number }[] = [];
   #i!: number;
 
@@ -20,7 +23,7 @@ export class History {
   }
 
   reset(): void {
-    this.doc.resetHistory();
+    this.#docHistory.reset(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
     this.#entries = [{ ln, col }];
@@ -30,7 +33,7 @@ export class History {
   }
 
   push(): void {
-    this.doc.pushHistory();
+    this.#docHistory.push(this.doc.tree.root);
 
     this.#i += 1;
     const { ln, col } = this.cursor;
@@ -41,7 +44,10 @@ export class History {
   }
 
   undo(): void {
-    this.doc.undoHistory();
+    const entry = this.#docHistory.undo();
+    if (entry) {
+      this.doc.tree.root = entry;
+    }
 
     if (this.#i < 1) {
       return;
@@ -55,7 +61,10 @@ export class History {
   }
 
   redo(): void {
-    this.doc.redoHistory();
+    const entry = this.#docHistory.redo();
+    if (entry) {
+      this.doc.tree.root = entry;
+    }
 
     if (this.#i >= (this.#entries.length - 1)) {
       return;

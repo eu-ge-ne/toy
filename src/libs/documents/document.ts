@@ -1,7 +1,5 @@
-import * as history from "@libs/history";
-
 import { Content } from "./content.ts";
-import { bubble, find, NIL, Node, successor } from "./node.ts";
+import { bubble, find, NIL, successor } from "./node.ts";
 import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
@@ -15,7 +13,6 @@ export class Document {
   tree: Tree = new Tree();
 
   #content = new Content();
-  #history = new history.History<Node>();
 
   constructor(text?: string) {
     if (text && text.length > 0) {
@@ -40,28 +37,6 @@ export class Document {
     this.delete(0);
 
     this.insert(0, x);
-  }
-
-  resetHistory(): void {
-    this.#history.reset(this.tree.root);
-  }
-
-  pushHistory(): void {
-    this.#history.push(this.tree.root);
-  }
-
-  undoHistory(): void {
-    const entry = this.#history.undo();
-    if (entry) {
-      this.tree.root = entry;
-    }
-  }
-
-  redoHistory(): void {
-    const entry = this.#history.redo();
-    if (entry) {
-      this.tree.root = entry;
-    }
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
