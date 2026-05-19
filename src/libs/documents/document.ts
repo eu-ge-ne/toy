@@ -1,3 +1,5 @@
+import * as history from "@libs/history";
+
 import { Content } from "./content.ts";
 import { bubble, find, NIL, Node, successor } from "./node.ts";
 import { Tree } from "./tree.ts";
@@ -13,8 +15,7 @@ export class Document {
   tree: Tree = new Tree();
 
   #content = new Content();
-  #history: Node[] = [];
-  #historyIndex!: number;
+  #history = new history.History<Node>();
 
   constructor(text?: string) {
     if (text && text.length > 0) {
@@ -42,32 +43,25 @@ export class Document {
   }
 
   resetHistory(): void {
-    this.#history = [structuredClone(this.tree.root)];
-    this.#historyIndex = 0;
+    this.#history.reset(this.tree.root);
   }
 
   pushHistory(): void {
-    this.#historyIndex += 1;
-    this.#history[this.#historyIndex] = structuredClone(this.tree.root);
-    this.#history.length = this.#historyIndex + 1;
+    this.#history.push(this.tree.root);
   }
 
   undoHistory(): void {
-    if (this.#historyIndex < 1) {
-      return;
+    const entry = this.#history.undo();
+    if (entry) {
+      this.tree.root = entry;
     }
-
-    this.#historyIndex -= 1;
-    this.tree.root = structuredClone(this.#history[this.#historyIndex]!);
   }
 
   redoHistory(): void {
-    if (this.#historyIndex >= (this.#history.length - 1)) {
-      return;
+    const entry = this.#history.redo();
+    if (entry) {
+      this.tree.root = entry;
     }
-
-    this.#historyIndex += 1;
-    this.tree.root = structuredClone(this.#history[this.#historyIndex]!);
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
