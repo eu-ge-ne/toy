@@ -210,7 +210,7 @@ export class Document {
       return;
     }
 
-    const i = this.#find_line_start(pos[0]);
+    const i = this.#findLineStart(pos[0]);
     if (typeof i !== "number") {
       return;
     }
@@ -218,7 +218,7 @@ export class Document {
     return i + pos[1];
   }
 
-  #find_line_start(ln: number): number | undefined {
+  #findLineStart(ln: number): number | undefined {
     if (ln === 0) {
       return 0;
     }
