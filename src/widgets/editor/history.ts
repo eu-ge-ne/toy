@@ -41,7 +41,7 @@ export class History {
   }
 
   undo(): void {
-    if (this.#i <= 0) {
+    if (this.#i < 1) {
       return;
     }
 
