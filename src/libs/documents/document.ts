@@ -67,6 +67,10 @@ export class Document {
     yield* this.read(i, this.#posToIndex(end));
   }
 
+  append(text: string): void {
+    this.insert(this.charCount, text);
+  }
+
   insert(i: number, text: string): void {
     if (i > this.charCount) {
       return;
@@ -138,10 +142,6 @@ export class Document {
     }
 
     this.insert(i, text);
-  }
-
-  append(text: string): void {
-    this.insert(this.charCount, text);
   }
 
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {
