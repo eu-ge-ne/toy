@@ -1,5 +1,5 @@
 import { Content } from "./content.ts";
-import { bubble, find, NIL, successor } from "./node.ts";
+import { bubble, find, NIL, type Node, successor } from "./node.ts";
 import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
@@ -39,6 +39,14 @@ export class Document {
     this.insert(0, x);
   }
 
+  save(): Node {
+    return structuredClone(this.tree.root);
+  }
+
+  restore(node: Node): void {
+    this.tree.root = structuredClone(node);
+  }
+
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
     const first = find(this.tree.root, start);
     if (!first) {
@@ -51,16 +59,12 @@ export class Document {
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
-    const i = this.#posToIndex(start);
+    const i = this.#pos_to_index(start);
     if (typeof i !== "number") {
       return;
     }
 
-    yield* this.read(i, this.#posToIndex(end));
-  }
-
-  append(text: string): void {
-    this.insert(this.charCount, text);
+    yield* this.read(i, this.#pos_to_index(end));
   }
 
   insert(i: number, text: string): void {
@@ -128,12 +132,16 @@ export class Document {
   }
 
   insert2(pos: [number, number], text: string): void {
-    const i = this.#posToIndex(pos);
+    const i = this.#pos_to_index(pos);
     if (typeof i !== "number") {
       return;
     }
 
     this.insert(i, text);
+  }
+
+  append(text: string): void {
+    this.insert(this.charCount, text);
   }
 
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {
@@ -189,20 +197,20 @@ export class Document {
   }
 
   delete2(start: [number, number], end?: [number, number]): void {
-    const i = this.#posToIndex(start);
+    const i = this.#pos_to_index(start);
     if (typeof i !== "number") {
       return;
     }
 
-    this.delete(i, this.#posToIndex(end));
+    this.delete(i, this.#pos_to_index(end));
   }
 
-  #posToIndex(pos?: [number, number]): number | undefined {
+  #pos_to_index(pos?: [number, number]): number | undefined {
     if (!pos) {
       return;
     }
 
-    const i = this.#findLineStart(pos[0]);
+    const i = this.#find_line_start(pos[0]);
     if (typeof i !== "number") {
       return;
     }
@@ -210,7 +218,7 @@ export class Document {
     return i + pos[1];
   }
 
-  #findLineStart(ln: number): number | undefined {
+  #find_line_start(ln: number): number | undefined {
     if (ln === 0) {
       return 0;
     }
