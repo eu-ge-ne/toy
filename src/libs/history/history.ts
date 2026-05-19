@@ -8,11 +8,13 @@ export class History<T> {
 
   reset(entry: T): void {
     this.#entries = [structuredClone(entry)];
+
     this.#i = 0;
   }
 
   push(entry: T): void {
     this.#i += 1;
+
     this.#entries[this.#i] = structuredClone(entry);
     this.#entries.length = this.#i + 1;
   }
