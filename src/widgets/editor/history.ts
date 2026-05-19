@@ -3,7 +3,7 @@ import * as documents from "@libs/documents";
 import { Cursor } from "./cursor.ts";
 
 export class History {
-  #entries: { ln: number; col: number; snapshot: documents.Node }[] = [];
+  #entries: { ln: number; col: number }[] = [];
   #i!: number;
 
   onChange?: () => void;
@@ -20,52 +20,51 @@ export class History {
   }
 
   reset(): void {
-    const { ln, col } = this.cursor;
-    const snapshot = this.doc.save();
+    this.doc.resetHistory();
 
-    this.#entries = [{ ln, col, snapshot }];
+    const { ln, col } = this.cursor;
+    this.#entries = [{ ln, col }];
     this.#i = 0;
 
     this.onChange?.();
   }
 
   push(): void {
-    const { ln, col } = this.cursor;
-    const snapshot = this.doc.save();
+    this.doc.pushHistory();
 
     this.#i += 1;
-    this.#entries[this.#i] = { ln, col, snapshot };
+    const { ln, col } = this.cursor;
+    this.#entries[this.#i] = { ln, col };
     this.#entries.length = this.#i + 1;
 
     this.onChange?.();
   }
 
   undo(): void {
+    this.doc.undoHistory();
+
     if (this.#i < 1) {
       return;
     }
 
     this.#i -= 1;
-    this.#restore();
+    const { ln, col } = this.#entries[this.#i]!;
+    this.cursor.set(ln, col, false);
 
     this.onChange?.();
   }
 
   redo(): void {
+    this.doc.redoHistory();
+
     if (this.#i >= (this.#entries.length - 1)) {
       return;
     }
 
     this.#i += 1;
-    this.#restore();
+    const { ln, col } = this.#entries[this.#i]!;
+    this.cursor.set(ln, col, false);
 
     this.onChange?.();
-  }
-
-  #restore(): void {
-    const { ln, col, snapshot } = this.#entries[this.#i]!;
-
-    this.doc.restore(snapshot);
-    this.cursor.set(ln, col, false);
   }
 }

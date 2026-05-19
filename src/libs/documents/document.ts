@@ -1,5 +1,5 @@
 import { Content } from "./content.ts";
-import { bubble, find, NIL, type Node, successor } from "./node.ts";
+import { bubble, find, NIL, Node, successor } from "./node.ts";
 import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
@@ -13,6 +13,8 @@ export class Document {
   tree: Tree = new Tree();
 
   #content = new Content();
+  #history: Node[] = [];
+  #historyIndex!: number;
 
   constructor(text?: string) {
     if (text && text.length > 0) {
@@ -39,12 +41,33 @@ export class Document {
     this.insert(0, x);
   }
 
-  save(): Node {
-    return structuredClone(this.tree.root);
+  resetHistory(): void {
+    this.#history = [structuredClone(this.tree.root)];
+    this.#historyIndex = 0;
   }
 
-  restore(node: Node): void {
-    this.tree.root = structuredClone(node);
+  pushHistory(): void {
+    this.#historyIndex += 1;
+    this.#history[this.#historyIndex] = structuredClone(this.tree.root);
+    this.#history.length = this.#historyIndex + 1;
+  }
+
+  undoHistory(): void {
+    if (this.#historyIndex < 1) {
+      return;
+    }
+
+    this.#historyIndex -= 1;
+    this.tree.root = structuredClone(this.#history[this.#historyIndex]!);
+  }
+
+  redoHistory(): void {
+    if (this.#historyIndex >= (this.#history.length - 1)) {
+      return;
+    }
+
+    this.#historyIndex += 1;
+    this.tree.root = structuredClone(this.#history[this.#historyIndex]!);
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
