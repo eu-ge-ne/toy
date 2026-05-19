@@ -26,7 +26,7 @@ export class History {
     this.#entries = [{ ln, col, snapshot }];
     this.#index = 0;
 
-    this.#emitChange();
+    this.onChange?.();
   }
 
   push(): void {
@@ -37,31 +37,29 @@ export class History {
     this.#entries[this.#index] = { ln, col, snapshot };
     this.#entries.length = this.#index + 1;
 
-    this.#emitChange();
+    this.onChange?.();
   }
 
-  undo(): boolean {
+  undo(): void {
     if (this.#index <= 0) {
-      return false;
+      return;
     }
 
     this.#index -= 1;
     this.#restore();
-    this.#emitChange();
 
-    return true;
+    this.onChange?.();
   }
 
-  redo(): boolean {
+  redo(): void {
     if (this.#index >= (this.#entries.length - 1)) {
-      return false;
+      return;
     }
 
     this.#index += 1;
     this.#restore();
-    this.#emitChange();
 
-    return true;
+    this.onChange?.();
   }
 
   #restore(): void {
@@ -69,9 +67,5 @@ export class History {
 
     this.doc.restore(snapshot);
     this.cursor.set(ln, col, false);
-  }
-
-  #emitChange(): void {
-    this.onChange?.();
   }
 }
