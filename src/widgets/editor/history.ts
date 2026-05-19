@@ -9,8 +9,8 @@ export class History {
 
   onChange?: () => void;
 
-  get changed(): boolean {
-    return !this.#docHistory.empty;
+  get empty(): boolean {
+    return this.#docHistory.empty;
   }
 
   constructor(

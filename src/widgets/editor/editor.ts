@@ -30,7 +30,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   get modified(): boolean {
-    return this.#history.changed;
+    return !this.#history.empty;
   }
 
   get text(): string {
