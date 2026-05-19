@@ -59,12 +59,12 @@ export class Document {
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
-    const i = this.#pos_to_index(start);
+    const i = this.#posToIndex(start);
     if (typeof i !== "number") {
       return;
     }
 
-    yield* this.read(i, this.#pos_to_index(end));
+    yield* this.read(i, this.#posToIndex(end));
   }
 
   insert(i: number, text: string): void {
@@ -132,7 +132,7 @@ export class Document {
   }
 
   insert2(pos: [number, number], text: string): void {
-    const i = this.#pos_to_index(pos);
+    const i = this.#posToIndex(pos);
     if (typeof i !== "number") {
       return;
     }
@@ -197,15 +197,15 @@ export class Document {
   }
 
   delete2(start: [number, number], end?: [number, number]): void {
-    const i = this.#pos_to_index(start);
+    const i = this.#posToIndex(start);
     if (typeof i !== "number") {
       return;
     }
 
-    this.delete(i, this.#pos_to_index(end));
+    this.delete(i, this.#posToIndex(end));
   }
 
-  #pos_to_index(pos?: [number, number]): number | undefined {
+  #posToIndex(pos?: [number, number]): number | undefined {
     if (!pos) {
       return;
     }
