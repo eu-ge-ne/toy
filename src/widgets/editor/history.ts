@@ -3,8 +3,8 @@ import * as documents from "@libs/documents";
 import { Cursor } from "./cursor.ts";
 
 export class History {
+  history: { ln: number; col: number; snapshot: documents.Node }[] = [];
   #index = 0;
-  #entries: { ln: number; col: number; snapshot: documents.Node }[] = [];
 
   onChange?: () => void;
 
@@ -23,7 +23,7 @@ export class History {
     const { ln, col } = this.cursor;
     const snapshot = this.doc.save();
 
-    this.#entries = [{ ln, col, snapshot }];
+    this.history = [{ ln, col, snapshot }];
     this.#index = 0;
 
     this.onChange?.();
@@ -34,8 +34,8 @@ export class History {
     const snapshot = this.doc.save();
 
     this.#index += 1;
-    this.#entries[this.#index] = { ln, col, snapshot };
-    this.#entries.length = this.#index + 1;
+    this.history[this.#index] = { ln, col, snapshot };
+    this.history.length = this.#index + 1;
 
     this.onChange?.();
   }
@@ -52,7 +52,7 @@ export class History {
   }
 
   redo(): void {
-    if (this.#index >= (this.#entries.length - 1)) {
+    if (this.#index >= (this.history.length - 1)) {
       return;
     }
 
@@ -63,7 +63,7 @@ export class History {
   }
 
   #restore(): void {
-    const { ln, col, snapshot } = this.#entries[this.#index]!;
+    const { ln, col, snapshot } = this.history[this.#index]!;
 
     this.doc.restore(snapshot);
     this.cursor.set(ln, col, false);
