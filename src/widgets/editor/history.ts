@@ -4,7 +4,7 @@ import { Cursor } from "./cursor.ts";
 
 export class History {
   #entries: { ln: number; col: number; snapshot: documents.Node }[] = [];
-  #i = 0;
+  #i = -1;
 
   onChange?: () => void;
 
