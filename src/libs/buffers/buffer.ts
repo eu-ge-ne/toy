@@ -7,6 +7,8 @@ export class Buffer {
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
 
+  onChange?: () => void;
+
   get lineCount(): number {
     return this.#doc.lineCount;
   }
@@ -51,6 +53,8 @@ export class Buffer {
     fn();
 
     this.#history.push(this.#doc.tree.root);
+
+    this.onChange?.();
   }
 
   undo(): void {
@@ -58,6 +62,8 @@ export class Buffer {
     if (entry) {
       this.#doc.tree.root = entry;
     }
+
+    this.onChange?.();
   }
 
   redo(): void {
@@ -65,9 +71,13 @@ export class Buffer {
     if (entry) {
       this.#doc.tree.root = entry;
     }
+
+    this.onChange?.();
   }
 
   resetHistory(): void {
     this.#history.reset(this.#doc.tree.root);
+
+    this.onChange?.();
   }
 }

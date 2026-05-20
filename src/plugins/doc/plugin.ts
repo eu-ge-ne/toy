@@ -17,11 +17,11 @@ let fileName: string | undefined;
 export default {
   init(toy: api.Toy): void {
     buffer = new buffers.Buffer();
+    buffer.onChange = () =>
+      docSignals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount });
 
     widget = new EditorWidget(buffer, {
       multiLine: true,
-      onTextChange: () =>
-        docSignals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount }),
       onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
     });
 

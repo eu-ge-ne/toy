@@ -12,7 +12,6 @@ import { Cursor } from "./cursor.ts";
 
 interface Params {
   multiLine: boolean;
-  onTextChange?: () => void;
   onCursorChange?: (_: { ln: number; col: number }) => void;
 }
 
@@ -101,8 +100,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.reset({ ln, col });
-
-    this.params.onTextChange?.();
   }
 
   resetCursor(): void {
@@ -349,7 +346,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
-    this.params.onTextChange?.();
   }
 
   #backspace(): void {
@@ -371,7 +367,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
-    this.params.onTextChange?.();
   }
 
   #deleteChar(): void {
@@ -381,7 +376,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
-    this.params.onTextChange?.();
   }
 
   #deleteSelection(): void {
@@ -395,7 +389,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
-    this.params.onTextChange?.();
   }
 
   copy(): void {
@@ -467,8 +460,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     if (cursorEntry) {
       this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.params.onTextChange?.();
   }
 
   redo(): void {
@@ -482,8 +473,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     if (cursorEntry) {
       this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.params.onTextChange?.();
   }
 
   selectAll(): void {
