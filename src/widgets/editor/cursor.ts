@@ -146,10 +146,7 @@ export class Cursor {
   }
 
   #setRange(): void {
-    if (
-      (this.#ln0 > this.ln) ||
-      (this.#ln0 === this.ln && this.#col0 > this.col)
-    ) {
+    if ((this.#ln0 > this.ln) || (this.#ln0 === this.ln && this.#col0 > this.col)) {
       this.from.ln = this.ln;
       this.from.col = this.col;
       this.to.ln = this.#ln0;

@@ -76,6 +76,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     if (!this.#focused) {
       return;
     }
+
     this.children.content.toggleWrap();
     this.#cursor.home(false);
   }
@@ -84,6 +85,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     if (!this.#focused) {
       return;
     }
+
     this.children.content.toggleWhitespace();
   }
 
@@ -91,6 +93,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     if (!this.#focused) {
       return;
     }
+
     this.children.content.toggleIndex();
   }
 
@@ -121,106 +124,43 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
-    [
-      this.#onKeyText,
-      (x) => typeof x.text === "string",
-    ],
-    [
-      this.#onKeyBackspace,
-      (x) => x.name === "BACKSPACE",
-    ],
-    [
-      this.#onKeyBottom,
-      (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super),
-    ],
-    [
-      this.#onKeyCopy,
-      (x) => x.name === "c" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyCut,
-      (x) => x.name === "x" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyDelete,
-      (x) => x.name === "DELETE",
-    ],
-    [
-      this.#onKeyDown,
-      (x) => this.params.multiLine && x.name === "DOWN",
-    ],
-    [
-      this.#onKeyEnd,
-      (x) => {
-        if (x.name === "END") {
-          return true;
-        }
-        if (x.name === "RIGHT" && x.super) {
-          return true;
-        }
-        return false;
-      },
-    ],
-    [
-      this.#onKeyEnter,
-      (x) => this.params.multiLine && x.name === "ENTER",
-    ],
-    [
-      this.#onKeyHome,
-      (x) => {
-        if (x.name === "HOME") {
-          return true;
-        }
-        if (x.name === "LEFT" && x.super) {
-          return true;
-        }
-        return false;
-      },
-    ],
-    [
-      this.#onKeyLeft,
-      (x) => x.name === "LEFT",
-    ],
-    [
-      this.#onKeyPageDown,
-      (x) => this.params.multiLine && x.name === "PAGE_DOWN",
-    ],
-    [
-      this.#onKeyPageUp,
-      (x) => this.params.multiLine && x.name === "PAGE_UP",
-    ],
-    [
-      this.#onKeyPaste,
-      (x) => x.name === "v" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyRedo,
-      (x) => x.name === "y" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyRight,
-      (x) => x.name === "RIGHT",
-    ],
-    [
-      this.#onKeySelectAll,
-      (x) => x.name === "a" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyTab,
-      (x) => x.name === "TAB",
-    ],
-    [
-      this.#onKeyTop,
-      (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super),
-    ],
-    [
-      this.#onKeyUndo,
-      (x) => x.name === "z" && Boolean(x.ctrl || x.super),
-    ],
-    [
-      this.#onKeyUp,
-      (x) => this.params.multiLine && x.name === "UP",
-    ],
+    [this.#onKeyText, (x) => typeof x.text === "string"],
+    [this.#onKeyBackspace, (x) => x.name === "BACKSPACE"],
+    [this.#onKeyBottom, (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super)],
+    [this.#onKeyCopy, (x) => x.name === "c" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyCut, (x) => x.name === "x" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyDelete, (x) => x.name === "DELETE"],
+    [this.#onKeyDown, (x) => this.params.multiLine && x.name === "DOWN"],
+    [this.#onKeyEnd, (x) => {
+      if (x.name === "END") {
+        return true;
+      }
+      if (x.name === "RIGHT" && x.super) {
+        return true;
+      }
+      return false;
+    }],
+    [this.#onKeyEnter, (x) => this.params.multiLine && x.name === "ENTER"],
+    [this.#onKeyHome, (x) => {
+      if (x.name === "HOME") {
+        return true;
+      }
+      if (x.name === "LEFT" && x.super) {
+        return true;
+      }
+      return false;
+    }],
+    [this.#onKeyLeft, (x) => x.name === "LEFT"],
+    [this.#onKeyPageDown, (x) => this.params.multiLine && x.name === "PAGE_DOWN"],
+    [this.#onKeyPageUp, (x) => this.params.multiLine && x.name === "PAGE_UP"],
+    [this.#onKeyPaste, (x) => x.name === "v" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyRedo, (x) => x.name === "y" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyRight, (x) => x.name === "RIGHT"],
+    [this.#onKeySelectAll, (x) => x.name === "a" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyTab, (x) => x.name === "TAB"],
+    [this.#onKeyTop, (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super)],
+    [this.#onKeyUndo, (x) => x.name === "z" && Boolean(x.ctrl || x.super)],
+    [this.#onKeyUp, (x) => this.params.multiLine && x.name === "UP"],
   ];
 
   #onKeyText(key: kitty.Key): void {

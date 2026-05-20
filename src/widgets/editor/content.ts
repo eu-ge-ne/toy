@@ -79,33 +79,15 @@ export class Content extends widgets.Widget {
   setTheme(theme: themes.Theme): void {
     this.#color.bg = new Uint8Array(theme.bgMain);
     this.#color.void = new Uint8Array(theme.bgDark0);
-    this.#color.index = new Uint8Array([
-      ...theme.bgLight0,
-      ...theme.fgDark0,
-    ]);
+    this.#color.index = new Uint8Array([...theme.bgLight0, ...theme.fgDark0]);
     this.#color.char = {
       [CharColor.Undefined]: new Uint8Array(),
-      [CharColor.Visible]: new Uint8Array([
-        ...theme.bgMain,
-        ...theme.fgLight1,
-      ]),
-      [CharColor.Whitespace]: new Uint8Array([
-        ...theme.bgMain,
-        ...theme.fgDark0,
-      ]),
+      [CharColor.Visible]: new Uint8Array([...theme.bgMain, ...theme.fgLight1]),
+      [CharColor.Whitespace]: new Uint8Array([...theme.bgMain, ...theme.fgDark0]),
       [CharColor.Empty]: new Uint8Array([...theme.bgMain, ...theme.fgMain]),
-      [CharColor.VisibleSelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgLight1,
-      ]),
-      [CharColor.WhitespaceSelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgDark1,
-      ]),
-      [CharColor.EmptySelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgDark1,
-      ]),
+      [CharColor.VisibleSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgLight1]),
+      [CharColor.WhitespaceSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
+      [CharColor.EmptySelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
     };
   }
 
@@ -235,11 +217,7 @@ export class Content extends widgets.Widget {
         if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
-            vt.writeText(
-              vt.buf,
-              [indexWidth],
-              `${ln + 1} `.padStart(indexWidth),
-            );
+            vt.writeText(vt.buf, [indexWidth], `${ln + 1} `.padStart(indexWidth));
           } else {
             vt.buf.write(this.#color.bg);
             vt.writeSpaces(vt.buf, indexWidth);
@@ -253,11 +231,7 @@ export class Content extends widgets.Widget {
         continue;
       }
 
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.#mode.whitespace,
-      );
+      const color = charColor(this.cursor.isSelected(ln, i), isVisible, this.#mode.whitespace);
 
       if (color !== currentColor) {
         currentColor = color;
@@ -273,11 +247,7 @@ export class Content extends widgets.Widget {
   }
 }
 
-function charColor(
-  isSelected: boolean,
-  isVisible: boolean,
-  whitespaceEnabled: boolean,
-): CharColor {
+function charColor(isSelected: boolean, isVisible: boolean, whitespaceEnabled: boolean): CharColor {
   if (isSelected) {
     if (isVisible) {
       return CharColor.VisibleSelected;
