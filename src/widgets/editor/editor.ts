@@ -54,8 +54,6 @@ export class EditorWidget extends widgets.Widget<Params> {
       content: new Content(this.#doc, this.#gDoc, this.#cursor),
     };
 
-    this.#history.onChange = params.onTextChange;
-
     this.#cursor.onChange = () =>
       params.onCursorChange?.({
         ln: this.#cursor.ln,
@@ -126,7 +124,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetChanges(): void {
-    this.#history.reset();
+    this.#history.reset2();
+    this.params.onTextChange?.();
   }
 
   resetCursor(): void {
@@ -369,7 +368,8 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
-    this.#history.push();
+    this.#history.push2();
+    this.params.onTextChange?.();
   }
 
   #backspace(): void {
@@ -397,7 +397,8 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.left(false);
     }
 
-    this.#history.push();
+    this.#history.push2();
+    this.params.onTextChange?.();
   }
 
   #deleteChar(): void {
@@ -406,7 +407,8 @@ export class EditorWidget extends widgets.Widget<Params> {
       col: this.#cursor.col + 1,
     });
 
-    this.#history.push();
+    this.#history.push2();
+    this.params.onTextChange?.();
   }
 
   #deleteSelection(): void {
@@ -416,7 +418,8 @@ export class EditorWidget extends widgets.Widget<Params> {
     });
     this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
-    this.#history.push();
+    this.#history.push2();
+    this.params.onTextChange?.();
   }
 
   copy(): void {
@@ -486,14 +489,17 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#history.undo();
+    this.#history.undo2();
+    this.params.onTextChange?.();
   }
 
   redo(): void {
     if (!this.#focused) {
       return;
     }
-    this.#history.redo();
+
+    this.#history.redo2();
+    this.params.onTextChange?.();
   }
 
   selectAll(): void {

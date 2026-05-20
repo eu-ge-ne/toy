@@ -7,8 +7,6 @@ export class History {
   #docHistory = new history.History<documents.Node>();
   #cursorHistory = new history.History<{ ln: number; col: number }>();
 
-  onChange?: () => void;
-
   get empty(): boolean {
     return this.#docHistory.empty;
   }
@@ -17,28 +15,24 @@ export class History {
     private readonly doc: documents.Document,
     private readonly cursor: Cursor,
   ) {
-    this.reset();
+    this.reset2();
   }
 
-  reset(): void {
+  reset2(): void {
     this.#docHistory.reset(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
     this.#cursorHistory.reset({ ln, col });
-
-    this.onChange?.();
   }
 
-  push(): void {
+  push2(): void {
     this.#docHistory.push(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
     this.#cursorHistory.push({ ln, col });
-
-    this.onChange?.();
   }
 
-  undo(): void {
+  undo2(): void {
     const docEntry = this.#docHistory.undo();
     if (docEntry) {
       this.doc.tree.root = docEntry;
@@ -48,11 +42,9 @@ export class History {
     if (cursorEntry) {
       this.cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.onChange?.();
   }
 
-  redo(): void {
+  redo2(): void {
     const docEntry = this.#docHistory.redo();
     if (docEntry) {
       this.doc.tree.root = docEntry;
@@ -62,7 +54,5 @@ export class History {
     if (cursorEntry) {
       this.cursor.set(cursorEntry.ln, cursorEntry.col, false);
     }
-
-    this.onChange?.();
   }
 }
