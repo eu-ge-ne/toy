@@ -429,8 +429,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     vt.copyToClipboard(vt.sync, this.#clipboard);
-
-    return;
   }
 
   cut(): void {
@@ -455,8 +453,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     vt.copyToClipboard(vt.sync, this.#clipboard);
-
-    return;
   }
 
   paste(): void {
