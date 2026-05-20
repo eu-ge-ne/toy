@@ -35,10 +35,6 @@ export class Buffer {
     this.#doc.append(text);
   }
 
-  resetHistory(): void {
-    this.#history.reset(this.#doc.tree.root);
-  }
-
   gDelete(start: graphemes.Pos, end: graphemes.Pos): void {
     this.#gDoc.delete(start, end);
   }
@@ -69,5 +65,9 @@ export class Buffer {
     if (entry) {
       this.#doc.tree.root = entry;
     }
+  }
+
+  resetHistory(): void {
+    this.#history.reset(this.#doc.tree.root);
   }
 }
