@@ -124,7 +124,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetChanges(): void {
-    this.#history.reset2();
+    this.#history.reset();
     this.params.onTextChange?.();
   }
 
@@ -368,7 +368,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
-    this.#history.push2();
+    this.#history.push();
     this.params.onTextChange?.();
   }
 
@@ -397,7 +397,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.left(false);
     }
 
-    this.#history.push2();
+    this.#history.push();
     this.params.onTextChange?.();
   }
 
@@ -407,7 +407,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       col: this.#cursor.col + 1,
     });
 
-    this.#history.push2();
+    this.#history.push();
     this.params.onTextChange?.();
   }
 
@@ -418,7 +418,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     });
     this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
-    this.#history.push2();
+    this.#history.push();
     this.params.onTextChange?.();
   }
 
@@ -489,7 +489,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#history.undo2();
+    this.#history.undo();
     this.params.onTextChange?.();
   }
 
@@ -498,7 +498,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#history.redo2();
+    this.#history.redo();
     this.params.onTextChange?.();
   }
 

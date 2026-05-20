@@ -15,24 +15,24 @@ export class History {
     private readonly doc: documents.Document,
     private readonly cursor: Cursor,
   ) {
-    this.reset2();
+    this.reset();
   }
 
-  reset2(): void {
+  reset(): void {
     this.#docHistory.reset(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
     this.#cursorHistory.reset({ ln, col });
   }
 
-  push2(): void {
+  push(): void {
     this.#docHistory.push(this.doc.tree.root);
 
     const { ln, col } = this.cursor;
     this.#cursorHistory.push({ ln, col });
   }
 
-  undo2(): void {
+  undo(): void {
     const docEntry = this.#docHistory.undo();
     if (docEntry) {
       this.doc.tree.root = docEntry;
@@ -44,7 +44,7 @@ export class History {
     }
   }
 
-  redo2(): void {
+  redo(): void {
     const docEntry = this.#docHistory.redo();
     if (docEntry) {
       this.doc.tree.root = docEntry;
