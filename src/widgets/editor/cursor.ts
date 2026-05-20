@@ -121,7 +121,7 @@ export class Cursor {
   #setCol(col: number): void {
     let len = 0;
 
-    for (const { gr } of this.buffer.gLine(this.ln)) {
+    for (const { gr } of this.buffer.line(this.ln)) {
       if (gr.isEol) {
         break;
       }

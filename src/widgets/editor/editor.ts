@@ -381,7 +381,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   #backspace(): void {
     this.#buffer.edit(() => {
       if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-        const len = this.#buffer.gLine(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
+        const len = this.#buffer.line(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
         if (len === 1) {
           this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
           this.#cursor.left(false);

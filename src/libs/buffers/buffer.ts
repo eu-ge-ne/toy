@@ -11,10 +11,6 @@ export class Buffer {
     return this.#doc.lineCount;
   }
 
-  gLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
-    return this.#gDoc.line(ln, extra);
-  }
-
   get modified(): boolean {
     return !this.#history.empty;
   }
@@ -33,6 +29,10 @@ export class Buffer {
 
   slice(start: graphemes.Pos, end: graphemes.Pos): string {
     return this.#gDoc.read(start, end);
+  }
+
+  line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
+    return this.#gDoc.line(ln, extra);
   }
 
   append(text: string): void {

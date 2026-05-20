@@ -160,8 +160,7 @@ export class Content extends widgets.Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
-      this.buffer.gLine(ln)
-        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
+      this.buffer.line(ln).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
     let i = 0;
@@ -180,7 +179,7 @@ export class Content extends widgets.Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell = this.buffer.gLine(this.cursor.ln, true).drop(this.cursor.col).next().value;
+    const cell = this.buffer.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -196,7 +195,7 @@ export class Content extends widgets.Widget {
 
     // After?
 
-    const xs = this.buffer.gLine(this.cursor.ln, true)
+    const xs = this.buffer.line(this.cursor.ln, true)
       .drop(this.cursor.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -220,7 +219,7 @@ export class Content extends widgets.Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const xs = this.buffer.gLine(ln);
+    const xs = this.buffer.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {
