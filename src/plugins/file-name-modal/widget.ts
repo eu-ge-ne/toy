@@ -54,7 +54,6 @@ export class AskFileNameWidget extends widgets.Modal {
   open(path: string): void {
     const { editor } = this.children;
 
-    editor.setFocused();
     this.#buffer.data = path;
     editor.resetHistoryAndCursor();
 

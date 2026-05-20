@@ -25,7 +25,6 @@ export default {
       onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
-    widget.setFocused();
     widget.resetHistoryAndCursor();
 
     toy.zen.signals.on("toggle")(() => widget.toggleIndex());

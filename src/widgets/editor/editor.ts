@@ -16,8 +16,6 @@ interface Params {
 }
 
 export class EditorWidget extends widgets.Widget<Params> {
-  #focused = false;
-
   readonly #cursor: Cursor;
   readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
@@ -54,10 +52,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     bg.render();
     content.render();
-
-    if (!this.#focused) {
-      vt.buf.write(vt.cursor.restore);
-    }
   }
 
   setTheme(theme: themes.Theme): void {
@@ -67,33 +61,16 @@ export class EditorWidget extends widgets.Widget<Params> {
     content.setTheme(theme);
   }
 
-  setFocused(): void {
-    this.#focused = true;
-    this.children.content.setFocused(true);
-  }
-
   toggleWrap(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.children.content.toggleWrap();
     this.#cursor.home(false);
   }
 
   toggleWhitespace(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.children.content.toggleWhitespace();
   }
 
   toggleIndex(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.children.content.toggleIndex();
   }
 
@@ -111,10 +88,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   onKey(key: kitty.Key): void {
-    if (!this.#focused) {
-      return;
-    }
-
     const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
     if (!handler) {
       return;
@@ -329,10 +302,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   copy(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     if (this.#cursor.selecting) {
       this.#clipboard = this.buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
@@ -351,10 +320,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   cut(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     if (this.#cursor.selecting) {
       this.#clipboard = this.buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
@@ -375,10 +340,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   paste(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     if (!this.#clipboard) {
       return;
     }
@@ -387,10 +348,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   undo(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.buffer.undo();
 
     const cursorEntry = this.#cursorHistory.undo();
@@ -400,10 +357,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   redo(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.buffer.redo();
 
     const cursorEntry = this.#cursorHistory.redo();
@@ -413,10 +366,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   selectAll(): void {
-    if (!this.#focused) {
-      return;
-    }
-
     this.#cursor.set(0, 0, false);
     this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
   }

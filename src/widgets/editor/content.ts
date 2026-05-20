@@ -18,8 +18,6 @@ const enum CharColor {
 }
 
 export class Content extends widgets.Widget {
-  #focused = false;
-
   #mode = {
     index: false,
     whitespace: false,
@@ -71,9 +69,7 @@ export class Content extends widgets.Widget {
       this.#renderLines(indexWidth);
     }
 
-    if (this.#focused) {
-      vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
-    }
+    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -89,10 +85,6 @@ export class Content extends widgets.Widget {
       [CharColor.WhitespaceSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
       [CharColor.EmptySelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
     };
-  }
-
-  setFocused(x: boolean): void {
-    this.#focused = x;
   }
 
   toggleWrap(): void {

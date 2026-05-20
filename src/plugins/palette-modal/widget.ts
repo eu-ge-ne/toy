@@ -73,7 +73,6 @@ export class PaletteWidget extends widgets.Modal {
   open(): void {
     const { editor, list } = this.children;
 
-    editor.setFocused();
     this.#buffer.data = "";
     editor.resetHistoryAndCursor();
 
