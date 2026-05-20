@@ -26,14 +26,13 @@ export class EditorWidget extends widgets.Widget<Params> {
     super(params);
 
     this.#cursor = new Cursor(buffer);
+    this.#cursor.onChange = () =>
+      params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
 
     this.children = {
       bg: new BgWidget(),
       content: new Content(buffer, this.#cursor),
     };
-
-    this.#cursor.onChange = () =>
-      params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
 
   protected override children: {
