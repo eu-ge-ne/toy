@@ -15,11 +15,11 @@ export class Buffer {
     return !this.#history.empty;
   }
 
-  get text(): string {
+  get data(): string {
     return this.#doc.text;
   }
 
-  set text(x: string) {
+  set data(x: string) {
     this.#doc.text = x;
   }
 

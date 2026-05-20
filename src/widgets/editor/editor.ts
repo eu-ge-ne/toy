@@ -23,14 +23,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
-  get text(): string {
-    return this.buffer.text;
-  }
-
-  set text(x: string) {
-    this.buffer.text = x;
-  }
-
   protected override children: {
     bg: BgWidget;
     content: Content;

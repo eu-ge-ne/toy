@@ -74,7 +74,7 @@ export class PaletteWidget extends widgets.Modal {
     const { editor, list } = this.children;
 
     editor.setFocused(true);
-    editor.text = "";
+    this.#buffer.data = "";
     editor.resetChanges();
     editor.resetCursor();
 
@@ -116,11 +116,11 @@ export class PaletteWidget extends widgets.Modal {
   }
 
   #filter(): void {
-    const { editor, list } = this.children;
+    const { list } = this.children;
 
     list.index = 0;
 
-    const text = editor.text.toUpperCase();
+    const text = this.#buffer.data.toUpperCase();
 
     if (!text) {
       list.items = options;

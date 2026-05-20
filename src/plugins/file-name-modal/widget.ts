@@ -55,7 +55,7 @@ export class AskFileNameWidget extends widgets.Modal {
     const { editor } = this.children;
 
     editor.setFocused(true);
-    editor.text = path;
+    this.#buffer.data = path;
     editor.resetChanges();
     editor.resetCursor();
 
@@ -71,7 +71,7 @@ export class AskFileNameWidget extends widgets.Modal {
         this.opened = false;
         return;
       case "ENTER": {
-        const path = editor.text;
+        const path = this.#buffer.data;
         if (path) {
           this.result = path;
           this.opened = false;
