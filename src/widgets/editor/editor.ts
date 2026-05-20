@@ -19,13 +19,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   #focused = false;
 
   readonly #cursor: Cursor;
-  #cursorHistory = new history.History<{ ln: number; col: number }>();
+  readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
-
-  protected override children: {
-    bg: BgWidget;
-    content: Content;
-  };
 
   constructor(private readonly buffer: buffers.Buffer, params: Params) {
     super(params);
@@ -40,6 +35,11 @@ export class EditorWidget extends widgets.Widget<Params> {
     this.#cursor.onChange = () =>
       params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
+
+  protected override children: {
+    bg: BgWidget;
+    content: Content;
+  };
 
   override resizeChildren(): void {
     const { bg, content } = this.children;
