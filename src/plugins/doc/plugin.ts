@@ -21,7 +21,7 @@ export default {
     widget = new EditorWidget(buffer, {
       multiLine: true,
       onTextChange: () =>
-        docSignals.broadcast("change", { modified: widget.modified, lineCount: widget.lineCount }),
+        docSignals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount }),
       onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
@@ -38,7 +38,7 @@ export default {
       if (e) {
         return;
       }
-      if (widget.modified) {
+      if (buffer.modified) {
         if (await toy.confirmModal.open("Save changes?")) {
           await toy.doc.save();
         }

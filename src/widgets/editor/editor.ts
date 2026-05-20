@@ -23,14 +23,6 @@ export class EditorWidget extends widgets.Widget<Params> {
   #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
-  get lineCount(): number {
-    return this.buffer.lineCount;
-  }
-
-  get modified(): boolean {
-    return this.buffer.modified;
-  }
-
   get text(): string {
     return this.buffer.text;
   }
