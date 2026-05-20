@@ -51,7 +51,9 @@ export class Buffer {
     return this.#gDoc.read(start, end);
   }
 
-  pushHistory(): void {
+  edit(fn: () => void): void {
+    fn();
+
     this.#history.push(this.#doc.tree.root);
   }
 
