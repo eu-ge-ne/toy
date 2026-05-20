@@ -129,10 +129,10 @@ export default {
           widget.resetCursor();
         },
         write(chunk: string): void {
-          widget.append(chunk);
+          buffer.append(chunk);
         },
         read(): Iterable<string> {
-          return widget.read();
+          return buffer.read();
         },
         toggleWhitespace(): void {
           widget.toggleWhitespace();

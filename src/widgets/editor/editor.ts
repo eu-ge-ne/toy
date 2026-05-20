@@ -73,14 +73,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
   }
 
-  read(): Iterable<string> {
-    return this.buffer.read();
-  }
-
-  append(text: string): void {
-    this.buffer.append(text);
-  }
-
   setTheme(theme: themes.Theme): void {
     const { bg, content } = this.children;
 
