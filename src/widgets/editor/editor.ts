@@ -500,7 +500,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#buffer.undoHistory();
+    this.#buffer.undo();
 
     const cursorEntry = this.#cursorHistory.undo();
     if (cursorEntry) {
@@ -515,7 +515,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#buffer.redoHistory();
+    this.#buffer.redo();
 
     const cursorEntry = this.#cursorHistory.redo();
     if (cursorEntry) {

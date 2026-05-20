@@ -55,14 +55,14 @@ export class Buffer {
     this.#history.push(this.#doc.tree.root);
   }
 
-  undoHistory(): void {
+  undo(): void {
     const entry = this.#history.undo();
     if (entry) {
       this.#doc.tree.root = entry;
     }
   }
 
-  redoHistory(): void {
+  redo(): void {
     const entry = this.#history.redo();
     if (entry) {
       this.#doc.tree.root = entry;
