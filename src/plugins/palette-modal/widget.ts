@@ -1,4 +1,5 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
@@ -11,6 +12,8 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
+  #buffer = new buffers.Buffer();
+
   result: ((_: api.Toy) => Promise<void>) | undefined;
 
   protected override children: {
@@ -27,7 +30,7 @@ export class PaletteWidget extends widgets.Modal {
       list: new ListWidget<(_: api.Toy) => Promise<void>>({
         emptyText: "No matching commands",
       }),
-      editor: new EditorWidget({ multiLine: false }),
+      editor: new EditorWidget(this.#buffer, { multiLine: false }),
     };
   }
 

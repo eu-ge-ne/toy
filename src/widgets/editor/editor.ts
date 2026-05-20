@@ -19,25 +19,24 @@ interface Params {
 export class EditorWidget extends widgets.Widget<Params> {
   #focused = false;
 
-  readonly #buffer = new buffers.Buffer();
-  readonly #cursor = new Cursor(this.#buffer);
+  readonly #cursor: Cursor;
   #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
   get lineCount(): number {
-    return this.#buffer.lineCount;
+    return this.buffer.lineCount;
   }
 
   get modified(): boolean {
-    return this.#buffer.modified;
+    return this.buffer.modified;
   }
 
   get text(): string {
-    return this.#buffer.text;
+    return this.buffer.text;
   }
 
   set text(x: string) {
-    this.#buffer.text = x;
+    this.buffer.text = x;
   }
 
   protected override children: {
@@ -45,12 +44,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     content: Content;
   };
 
-  constructor(params: Params) {
+  constructor(private readonly buffer: buffers.Buffer, params: Params) {
     super(params);
+
+    this.#cursor = new Cursor(buffer);
 
     this.children = {
       bg: new BgWidget(),
-      content: new Content(this.#buffer, this.#cursor),
+      content: new Content(buffer, this.#cursor),
     };
 
     this.#cursor.onChange = () =>
@@ -81,11 +82,11 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   read(): Iterable<string> {
-    return this.#buffer.read();
+    return this.buffer.read();
   }
 
   append(text: string): void {
-    this.#buffer.append(text);
+    this.buffer.append(text);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -123,7 +124,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetChanges(): void {
-    this.#buffer.resetHistory();
+    this.buffer.resetHistory();
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.reset({ ln, col });
@@ -350,9 +351,9 @@ export class EditorWidget extends widgets.Widget<Params> {
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
-    this.#buffer.edit(() => {
+    this.buffer.edit(() => {
       if (this.#cursor.selecting) {
-        this.#buffer.delete(this.#cursor.from, {
+        this.buffer.delete(this.#cursor.from, {
           ln: this.#cursor.to.ln,
           col: this.#cursor.to.col + 1,
         });
@@ -360,7 +361,7 @@ export class EditorWidget extends widgets.Widget<Params> {
         this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
       }
 
-      this.#buffer.insert(this.#cursor, text);
+      this.buffer.insert(this.#cursor, text);
 
       const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
       const eol_count = grms.filter((x) => x.isEol).length;
@@ -379,18 +380,18 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #backspace(): void {
-    this.#buffer.edit(() => {
+    this.buffer.edit(() => {
       if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-        const len = this.#buffer.line(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
+        const len = this.buffer.line(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
         if (len === 1) {
-          this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
           this.#cursor.left(false);
         } else {
           this.#cursor.left(false);
-          this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
         }
       } else {
-        this.#buffer.delete({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
+        this.buffer.delete({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
         this.#cursor.left(false);
       }
     });
@@ -401,8 +402,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #deleteChar(): void {
-    this.#buffer.edit(() => {
-      this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+    this.buffer.edit(() => {
+      this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
     });
 
     const { ln, col } = this.#cursor;
@@ -411,8 +412,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #deleteSelection(): void {
-    this.#buffer.edit(() => {
-      this.#buffer.delete(this.#cursor.from, {
+    this.buffer.edit(() => {
+      this.buffer.delete(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
@@ -430,14 +431,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#buffer.slice(this.#cursor.from, {
+      this.#clipboard = this.buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#buffer.slice(this.#cursor, {
+      this.#clipboard = this.buffer.slice(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -454,14 +455,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#buffer.slice(this.#cursor.from, {
+      this.#clipboard = this.buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#buffer.slice(this.#cursor, {
+      this.#clipboard = this.buffer.slice(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -491,7 +492,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#buffer.undo();
+    this.buffer.undo();
 
     const cursorEntry = this.#cursorHistory.undo();
     if (cursorEntry) {
@@ -506,7 +507,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#buffer.redo();
+    this.buffer.redo();
 
     const cursorEntry = this.#cursorHistory.redo();
     if (cursorEntry) {

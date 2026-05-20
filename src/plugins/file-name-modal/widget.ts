@@ -1,3 +1,4 @@
+import * as buffers from "@libs/buffers";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
@@ -6,6 +7,8 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget extends widgets.Modal {
+  #buffer = new buffers.Buffer();
+
   result: string | undefined;
 
   protected override children: {
@@ -22,7 +25,7 @@ export class AskFileNameWidget extends widgets.Modal {
       bg: new BgWidget(),
       header: new TextWidget({ align: "center" }),
       footer: new TextWidget({ align: "center" }),
-      editor: new EditorWidget({ multiLine: false }),
+      editor: new EditorWidget(this.#buffer, { multiLine: false }),
     };
 
     this.children.header.value = "Save As";

@@ -1,4 +1,5 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
@@ -9,12 +10,15 @@ import { EditorWidget } from "@widgets/editor";
 const docSignals = new libEvents.SignalEmitter<api.DocSignals>();
 const cursorSignals = new libEvents.SignalEmitter<api.CursorSignals>();
 
+let buffer: buffers.Buffer;
 let widget: EditorWidget;
 let fileName: string | undefined;
 
 export default {
   init(toy: api.Toy): void {
-    widget = new EditorWidget({
+    buffer = new buffers.Buffer();
+
+    widget = new EditorWidget(buffer, {
       multiLine: true,
       onTextChange: () =>
         docSignals.broadcast("change", { modified: widget.modified, lineCount: widget.lineCount }),
