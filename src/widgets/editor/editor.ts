@@ -1,5 +1,6 @@
 import * as documents from "@libs/documents";
 import * as graphemes from "@libs/graphemes";
+import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
@@ -8,7 +9,6 @@ import { BgWidget } from "@widgets/bg";
 
 import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
-import { History } from "./history.ts";
 
 interface Params {
   multiLine: boolean;
@@ -22,7 +22,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   readonly #doc = new documents.Document();
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #cursor = new Cursor(this.#doc, this.#gDoc);
-  readonly #history = new History(this.#doc, this.#cursor);
+  #docHistory = new history.History<documents.Node>();
+  #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
   get lineCount(): number {
@@ -30,7 +31,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   get modified(): boolean {
-    return !this.#history.empty;
+    return !this.#docHistory.empty;
   }
 
   get text(): string {
@@ -124,7 +125,11 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetChanges(): void {
-    this.#history.reset();
+    this.#docHistory.reset(this.#doc.tree.root);
+
+    const { ln, col } = this.#cursor;
+    this.#cursorHistory.reset({ ln, col });
+
     this.params.onTextChange?.();
   }
 
@@ -368,7 +373,9 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
-    this.#history.push();
+    this.#docHistory.push(this.#doc.tree.root);
+    const { ln, col } = this.#cursor;
+    this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
@@ -397,7 +404,9 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.left(false);
     }
 
-    this.#history.push();
+    this.#docHistory.push(this.#doc.tree.root);
+    const { ln, col } = this.#cursor;
+    this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
@@ -407,7 +416,9 @@ export class EditorWidget extends widgets.Widget<Params> {
       col: this.#cursor.col + 1,
     });
 
-    this.#history.push();
+    this.#docHistory.push(this.#doc.tree.root);
+    const { ln, col } = this.#cursor;
+    this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
@@ -418,7 +429,9 @@ export class EditorWidget extends widgets.Widget<Params> {
     });
     this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
-    this.#history.push();
+    this.#docHistory.push(this.#doc.tree.root);
+    const { ln, col } = this.#cursor;
+    this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
@@ -489,7 +502,16 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#history.undo();
+    const docEntry = this.#docHistory.undo();
+    if (docEntry) {
+      this.#doc.tree.root = docEntry;
+    }
+
+    const cursorEntry = this.#cursorHistory.undo();
+    if (cursorEntry) {
+      this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
+    }
+
     this.params.onTextChange?.();
   }
 
@@ -498,7 +520,16 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    this.#history.redo();
+    const docEntry = this.#docHistory.redo();
+    if (docEntry) {
+      this.#doc.tree.root = docEntry;
+    }
+
+    const cursorEntry = this.#cursorHistory.redo();
+    if (cursorEntry) {
+      this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
+    }
+
     this.params.onTextChange?.();
   }
 
