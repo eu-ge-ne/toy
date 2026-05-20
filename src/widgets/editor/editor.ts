@@ -360,7 +360,7 @@ export class EditorWidget extends widgets.Widget<Params> {
         this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
       }
 
-      this.#buffer.gInsert(this.#cursor, text);
+      this.#buffer.insert(this.#cursor, text);
 
       const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
       const eol_count = grms.filter((x) => x.isEol).length;

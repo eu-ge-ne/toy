@@ -31,16 +31,16 @@ export class Buffer {
     return this.#doc.read(0);
   }
 
+  gRead(start: graphemes.Pos, end: graphemes.Pos): string {
+    return this.#gDoc.read(start, end);
+  }
+
   append(text: string): void {
     this.#doc.append(text);
   }
 
-  gInsert(pos: graphemes.Pos, text: string): void {
+  insert(pos: graphemes.Pos, text: string): void {
     this.#gDoc.insert(pos, text);
-  }
-
-  gRead(start: graphemes.Pos, end: graphemes.Pos): string {
-    return this.#gDoc.read(start, end);
   }
 
   delete(start: graphemes.Pos, end: graphemes.Pos): void {
