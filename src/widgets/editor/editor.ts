@@ -39,10 +39,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     };
 
     this.#cursor.onChange = () =>
-      params.onCursorChange?.({
-        ln: this.#cursor.ln,
-        col: this.#cursor.col,
-      });
+      params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
 
   override resizeChildren(): void {
