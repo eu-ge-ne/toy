@@ -352,7 +352,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   #insertText(text: string): void {
     this.#buffer.edit(() => {
       if (this.#cursor.selecting) {
-        this.#buffer.gDelete(this.#cursor.from, {
+        this.#buffer.delete(this.#cursor.from, {
           ln: this.#cursor.to.ln,
           col: this.#cursor.to.col + 1,
         });
@@ -383,14 +383,14 @@ export class EditorWidget extends widgets.Widget<Params> {
       if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
         const len = this.#buffer.gLine(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
         if (len === 1) {
-          this.#buffer.gDelete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
           this.#cursor.left(false);
         } else {
           this.#cursor.left(false);
-          this.#buffer.gDelete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
         }
       } else {
-        this.#buffer.gDelete({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
+        this.#buffer.delete({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
         this.#cursor.left(false);
       }
     });
@@ -402,7 +402,7 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   #deleteChar(): void {
     this.#buffer.edit(() => {
-      this.#buffer.gDelete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+      this.#buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
     });
 
     const { ln, col } = this.#cursor;
@@ -412,7 +412,7 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   #deleteSelection(): void {
     this.#buffer.edit(() => {
-      this.#buffer.gDelete(this.#cursor.from, {
+      this.#buffer.delete(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });

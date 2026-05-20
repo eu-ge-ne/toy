@@ -35,16 +35,16 @@ export class Buffer {
     this.#doc.append(text);
   }
 
-  gDelete(start: graphemes.Pos, end: graphemes.Pos): void {
-    this.#gDoc.delete(start, end);
-  }
-
   gInsert(pos: graphemes.Pos, text: string): void {
     this.#gDoc.insert(pos, text);
   }
 
   gRead(start: graphemes.Pos, end: graphemes.Pos): string {
     return this.#gDoc.read(start, end);
+  }
+
+  delete(start: graphemes.Pos, end: graphemes.Pos): void {
+    this.#gDoc.delete(start, end);
   }
 
   edit(fn: () => void): void {
