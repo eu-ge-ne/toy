@@ -26,8 +26,7 @@ export default {
     });
 
     widget.setFocused(true);
-    widget.resetChanges();
-    widget.resetCursor();
+    widget.resetHistoryAndCursor();
 
     toy.zen.signals.on("toggle")(() => widget.toggleIndex());
     toy.io.signals.on("render")(() => widget.render());
@@ -125,8 +124,7 @@ export default {
           }
         },
         reset(): void {
-          widget.resetChanges();
-          widget.resetCursor();
+          widget.resetHistoryAndCursor();
         },
         write(chunk: string): void {
           buffer.append(chunk);

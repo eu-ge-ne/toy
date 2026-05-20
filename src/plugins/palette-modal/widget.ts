@@ -75,8 +75,7 @@ export class PaletteWidget extends widgets.Modal {
 
     editor.setFocused(true);
     this.#buffer.data = "";
-    editor.resetChanges();
-    editor.resetCursor();
+    editor.resetHistoryAndCursor();
 
     list.items = options;
 

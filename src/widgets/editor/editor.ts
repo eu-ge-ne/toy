@@ -94,14 +94,12 @@ export class EditorWidget extends widgets.Widget<Params> {
     this.children.content.toggleIndex();
   }
 
-  resetChanges(): void {
+  resetHistoryAndCursor(): void {
     this.buffer.resetHistory();
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.reset({ ln, col });
-  }
 
-  resetCursor(): void {
     if (this.params.multiLine) {
       this.#cursor.set(0, 0, false);
     } else {
