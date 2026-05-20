@@ -430,14 +430,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#buffer.gRead(this.#cursor.from, {
+      this.#clipboard = this.#buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#buffer.gRead(this.#cursor, {
+      this.#clipboard = this.#buffer.slice(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -454,14 +454,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#buffer.gRead(this.#cursor.from, {
+      this.#clipboard = this.#buffer.slice(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#buffer.gRead(this.#cursor, {
+      this.#clipboard = this.#buffer.slice(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });

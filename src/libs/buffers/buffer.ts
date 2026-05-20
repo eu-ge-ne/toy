@@ -31,7 +31,7 @@ export class Buffer {
     return this.#doc.read(0);
   }
 
-  gRead(start: graphemes.Pos, end: graphemes.Pos): string {
+  slice(start: graphemes.Pos, end: graphemes.Pos): string {
     return this.#gDoc.read(start, end);
   }
 
