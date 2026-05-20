@@ -67,9 +67,9 @@ export class EditorWidget extends widgets.Widget<Params> {
     content.setTheme(theme);
   }
 
-  setFocused(x: boolean): void {
-    this.#focused = x;
-    this.children.content.setFocused(x);
+  setFocused(): void {
+    this.#focused = true;
+    this.children.content.setFocused(true);
   }
 
   toggleWrap(): void {
