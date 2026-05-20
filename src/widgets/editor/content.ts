@@ -1,4 +1,4 @@
-import * as documents from "@libs/documents";
+import * as buffers from "@libs/buffers";
 import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -18,8 +18,6 @@ const enum CharColor {
 }
 
 export class Content extends widgets.Widget {
-  #focused = false;
-
   #mode = {
     index: false,
     whitespace: false,
@@ -47,8 +45,7 @@ export class Content extends widgets.Widget {
   #cursorX = 0;
 
   constructor(
-    private readonly doc: documents.Document,
-    private readonly gDoc: graphemes.Document,
+    private readonly buffer: buffers.Buffer,
     private readonly cursor: Cursor,
   ) {
     super();
@@ -56,8 +53,8 @@ export class Content extends widgets.Widget {
 
   render(): void {
     let indexWidth = 0;
-    if (this.#mode.index && (this.doc.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.doc.lineCount)) + 3;
+    if (this.#mode.index && (this.buffer.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
     }
 
     const textWidth = this.width - indexWidth;
@@ -72,46 +69,22 @@ export class Content extends widgets.Widget {
       this.#renderLines(indexWidth);
     }
 
-    if (this.#focused) {
-      vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
-    }
+    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
   setTheme(theme: themes.Theme): void {
     this.#color.bg = new Uint8Array(theme.bgMain);
     this.#color.void = new Uint8Array(theme.bgDark0);
-    this.#color.index = new Uint8Array([
-      ...theme.bgLight0,
-      ...theme.fgDark0,
-    ]);
+    this.#color.index = new Uint8Array([...theme.bgLight0, ...theme.fgDark0]);
     this.#color.char = {
       [CharColor.Undefined]: new Uint8Array(),
-      [CharColor.Visible]: new Uint8Array([
-        ...theme.bgMain,
-        ...theme.fgLight1,
-      ]),
-      [CharColor.Whitespace]: new Uint8Array([
-        ...theme.bgMain,
-        ...theme.fgDark0,
-      ]),
+      [CharColor.Visible]: new Uint8Array([...theme.bgMain, ...theme.fgLight1]),
+      [CharColor.Whitespace]: new Uint8Array([...theme.bgMain, ...theme.fgDark0]),
       [CharColor.Empty]: new Uint8Array([...theme.bgMain, ...theme.fgMain]),
-      [CharColor.VisibleSelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgLight1,
-      ]),
-      [CharColor.WhitespaceSelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgDark1,
-      ]),
-      [CharColor.EmptySelected]: new Uint8Array([
-        ...theme.bgLight2,
-        ...theme.fgDark1,
-      ]),
+      [CharColor.VisibleSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgLight1]),
+      [CharColor.WhitespaceSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
+      [CharColor.EmptySelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
     };
-  }
-
-  setFocused(x: boolean): void {
-    this.#focused = x;
   }
 
   toggleWrap(): void {
@@ -130,7 +103,7 @@ export class Content extends widgets.Widget {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.doc.lineCount) {
+      if (ln < this.buffer.lineCount) {
         row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -161,8 +134,7 @@ export class Content extends widgets.Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
-      this.gDoc.line(ln)
-        .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
+      this.buffer.line(ln).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
     let i = 0;
@@ -181,7 +153,7 @@ export class Content extends widgets.Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell = this.gDoc.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+    const cell = this.buffer.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -197,7 +169,7 @@ export class Content extends widgets.Widget {
 
     // After?
 
-    const xs = this.gDoc.line(this.cursor.ln, true)
+    const xs = this.buffer.line(this.cursor.ln, true)
       .drop(this.cursor.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -221,7 +193,7 @@ export class Content extends widgets.Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const xs = this.gDoc.line(ln);
+    const xs = this.buffer.line(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {
@@ -237,11 +209,7 @@ export class Content extends widgets.Widget {
         if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
-            vt.writeText(
-              vt.buf,
-              [indexWidth],
-              `${ln + 1} `.padStart(indexWidth),
-            );
+            vt.writeText(vt.buf, [indexWidth], `${ln + 1} `.padStart(indexWidth));
           } else {
             vt.buf.write(this.#color.bg);
             vt.writeSpaces(vt.buf, indexWidth);
@@ -255,11 +223,7 @@ export class Content extends widgets.Widget {
         continue;
       }
 
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.#mode.whitespace,
-      );
+      const color = charColor(this.cursor.isSelected(ln, i), isVisible, this.#mode.whitespace);
 
       if (color !== currentColor) {
         currentColor = color;
@@ -275,11 +239,7 @@ export class Content extends widgets.Widget {
   }
 }
 
-function charColor(
-  isSelected: boolean,
-  isVisible: boolean,
-  whitespaceEnabled: boolean,
-): CharColor {
+function charColor(isSelected: boolean, isVisible: boolean, whitespaceEnabled: boolean): CharColor {
   if (isSelected) {
     if (isVisible) {
       return CharColor.VisibleSelected;

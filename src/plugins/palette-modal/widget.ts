@@ -1,4 +1,5 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
@@ -11,6 +12,8 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
+  #buffer = new buffers.Buffer();
+
   result: ((_: api.Toy) => Promise<void>) | undefined;
 
   protected override children: {
@@ -27,7 +30,7 @@ export class PaletteWidget extends widgets.Modal {
       list: new ListWidget<(_: api.Toy) => Promise<void>>({
         emptyText: "No matching commands",
       }),
-      editor: new EditorWidget({ multiLine: false }),
+      editor: new EditorWidget(this.#buffer, { multiLine: false }),
     };
   }
 
@@ -70,10 +73,8 @@ export class PaletteWidget extends widgets.Modal {
   open(): void {
     const { editor, list } = this.children;
 
-    editor.setFocused(true);
-    editor.text = "";
-    editor.resetChanges();
-    editor.resetCursor();
+    this.#buffer.data = "";
+    editor.resetHistoryAndCursor();
 
     list.items = options;
 
@@ -113,11 +114,11 @@ export class PaletteWidget extends widgets.Modal {
   }
 
   #filter(): void {
-    const { editor, list } = this.children;
+    const { list } = this.children;
 
     list.index = 0;
 
-    const text = editor.text.toUpperCase();
+    const text = this.#buffer.data.toUpperCase();
 
     if (!text) {
       list.items = options;
