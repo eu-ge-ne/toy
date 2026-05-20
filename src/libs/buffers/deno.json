@@ -1,0 +1,4 @@
+{
+  "name": "@libs/buffers",
+  "exports": "./buffer.ts"
+}

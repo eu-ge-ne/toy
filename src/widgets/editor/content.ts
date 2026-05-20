@@ -1,4 +1,4 @@
-import * as documents from "@libs/documents";
+import * as buffers from "@libs/buffers";
 import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -47,8 +47,7 @@ export class Content extends widgets.Widget {
   #cursorX = 0;
 
   constructor(
-    private readonly doc: documents.Document,
-    private readonly gDoc: graphemes.Document,
+    private readonly buffer: buffers.Buffer,
     private readonly cursor: Cursor,
   ) {
     super();
@@ -56,8 +55,8 @@ export class Content extends widgets.Widget {
 
   render(): void {
     let indexWidth = 0;
-    if (this.#mode.index && (this.doc.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.doc.lineCount)) + 3;
+    if (this.#mode.index && (this.buffer.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
     }
 
     const textWidth = this.width - indexWidth;
@@ -130,7 +129,7 @@ export class Content extends widgets.Widget {
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.doc.lineCount) {
+      if (ln < this.buffer.lineCount) {
         row = this.#renderLine(indexWidth, ln, row);
       } else {
         vt.cursor.set(vt.buf, row, this.x);
@@ -161,7 +160,7 @@ export class Content extends widgets.Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
-      this.gDoc.line(ln)
+      this.buffer.gLine(ln)
         .reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -181,7 +180,7 @@ export class Content extends widgets.Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell = this.gDoc.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+    const cell = this.buffer.gLine(this.cursor.ln, true).drop(this.cursor.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -197,7 +196,7 @@ export class Content extends widgets.Widget {
 
     // After?
 
-    const xs = this.gDoc.line(this.cursor.ln, true)
+    const xs = this.buffer.gLine(this.cursor.ln, true)
       .drop(this.cursor.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -221,7 +220,7 @@ export class Content extends widgets.Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const xs = this.gDoc.line(ln);
+    const xs = this.buffer.gLine(ln);
 
     for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
       if (col === 0) {

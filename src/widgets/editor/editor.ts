@@ -1,4 +1,4 @@
-import * as documents from "@libs/documents";
+import * as buffers from "@libs/buffers";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
@@ -19,27 +19,25 @@ interface Params {
 export class EditorWidget extends widgets.Widget<Params> {
   #focused = false;
 
-  readonly #doc = new documents.Document();
-  readonly #gDoc = new graphemes.Document(this.#doc);
-  readonly #cursor = new Cursor(this.#doc, this.#gDoc);
-  #docHistory = new history.History<documents.Node>();
+  readonly #buffer = new buffers.Buffer();
+  readonly #cursor = new Cursor(this.#buffer);
   #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
   get lineCount(): number {
-    return this.#doc.lineCount;
+    return this.#buffer.lineCount;
   }
 
   get modified(): boolean {
-    return !this.#docHistory.empty;
+    return this.#buffer.modified;
   }
 
   get text(): string {
-    return this.#doc.text;
+    return this.#buffer.text;
   }
 
   set text(x: string) {
-    this.#doc.text = x;
+    this.#buffer.text = x;
   }
 
   protected override children: {
@@ -52,7 +50,7 @@ export class EditorWidget extends widgets.Widget<Params> {
 
     this.children = {
       bg: new BgWidget(),
-      content: new Content(this.#doc, this.#gDoc, this.#cursor),
+      content: new Content(this.#buffer, this.#cursor),
     };
 
     this.#cursor.onChange = () =>
@@ -83,11 +81,11 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   read(): Iterable<string> {
-    return this.#doc.read(0);
+    return this.#buffer.read();
   }
 
   append(text: string): void {
-    this.#doc.append(text);
+    this.#buffer.append(text);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -125,7 +123,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetChanges(): void {
-    this.#docHistory.reset(this.#doc.tree.root);
+    this.#buffer.resetHistory();
 
     const { ln, col } = this.#cursor;
     this.#cursorHistory.reset({ ln, col });
@@ -353,7 +351,7 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   #insertText(text: string): void {
     if (this.#cursor.selecting) {
-      this.#gDoc.delete(this.#cursor.from, {
+      this.#buffer.gDelete(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
@@ -361,7 +359,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     }
 
-    this.#gDoc.insert(this.#cursor, text);
+    this.#buffer.gInsert(this.#cursor, text);
 
     const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
     const eol_count = grms.filter((x) => x.isEol).length;
@@ -373,7 +371,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       this.#cursor.set(this.#cursor.ln + eol_count, col, false);
     }
 
-    this.#docHistory.push(this.#doc.tree.root);
+    this.#buffer.pushHistory();
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
@@ -381,55 +379,55 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   #backspace(): void {
     if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-      const len = this.#gDoc.line(this.#cursor.ln).take(2)
+      const len = this.#buffer.gLine(this.#cursor.ln).take(2)
         .reduce((a) => a + 1, 0);
       if (len === 1) {
-        this.#gDoc.delete(this.#cursor, {
+        this.#buffer.gDelete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
         this.#cursor.left(false);
       } else {
         this.#cursor.left(false);
-        this.#gDoc.delete(this.#cursor, {
+        this.#buffer.gDelete(this.#cursor, {
           ln: this.#cursor.ln,
           col: this.#cursor.col + 1,
         });
       }
     } else {
-      this.#gDoc.delete({
+      this.#buffer.gDelete({
         ln: this.#cursor.ln,
         col: this.#cursor.col - 1,
       }, this.#cursor);
       this.#cursor.left(false);
     }
 
-    this.#docHistory.push(this.#doc.tree.root);
+    this.#buffer.pushHistory();
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
   #deleteChar(): void {
-    this.#gDoc.delete(this.#cursor, {
+    this.#buffer.gDelete(this.#cursor, {
       ln: this.#cursor.ln,
       col: this.#cursor.col + 1,
     });
 
-    this.#docHistory.push(this.#doc.tree.root);
+    this.#buffer.pushHistory();
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
   }
 
   #deleteSelection(): void {
-    this.#gDoc.delete(this.#cursor.from, {
+    this.#buffer.gDelete(this.#cursor.from, {
       ln: this.#cursor.to.ln,
       col: this.#cursor.to.col + 1,
     });
     this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
 
-    this.#docHistory.push(this.#doc.tree.root);
+    this.#buffer.pushHistory();
     const { ln, col } = this.#cursor;
     this.#cursorHistory.push({ ln, col });
     this.params.onTextChange?.();
@@ -441,14 +439,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#gDoc.read(this.#cursor.from, {
+      this.#clipboard = this.#buffer.gRead(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
     } else {
-      this.#clipboard = this.#gDoc.read(this.#cursor, {
+      this.#clipboard = this.#buffer.gRead(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -465,14 +463,14 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     if (this.#cursor.selecting) {
-      this.#clipboard = this.#gDoc.read(this.#cursor.from, {
+      this.#clipboard = this.#buffer.gRead(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
 
       this.#deleteSelection();
     } else {
-      this.#clipboard = this.#gDoc.read(this.#cursor, {
+      this.#clipboard = this.#buffer.gRead(this.#cursor, {
         ln: this.#cursor.ln,
         col: this.#cursor.col + 1,
       });
@@ -502,10 +500,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    const docEntry = this.#docHistory.undo();
-    if (docEntry) {
-      this.#doc.tree.root = docEntry;
-    }
+    this.#buffer.undoHistory();
 
     const cursorEntry = this.#cursorHistory.undo();
     if (cursorEntry) {
@@ -520,10 +515,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       return;
     }
 
-    const docEntry = this.#docHistory.redo();
-    if (docEntry) {
-      this.#doc.tree.root = docEntry;
-    }
+    this.#buffer.redoHistory();
 
     const cursorEntry = this.#cursorHistory.redo();
     if (cursorEntry) {

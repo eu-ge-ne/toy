@@ -2,7 +2,7 @@ import * as documents from "@libs/documents";
 
 import { Segment, segments } from "./segmenter.ts";
 
-interface Pos {
+export interface Pos {
   ln: number;
   col: number;
 }
