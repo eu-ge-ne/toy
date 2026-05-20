@@ -1,0 +1,4 @@
+{
+  "name": "@libs/history",
+  "exports": "./history.ts"
+}
