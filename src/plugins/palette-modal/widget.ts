@@ -74,7 +74,8 @@ export class PaletteWidget extends widgets.Modal {
     const { editor, list } = this.children;
 
     this.#buffer.data = "";
-    editor.resetHistoryAndCursor();
+    this.#buffer.resetHistory();
+    editor.resetCursor();
 
     list.items = options;
 
@@ -108,7 +109,7 @@ export class PaletteWidget extends widgets.Modal {
         return;
     }
 
-    editor.onKey(key);
+    editor.onKeyPress(key);
 
     this.#filter();
   }

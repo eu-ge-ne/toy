@@ -25,11 +25,12 @@ export default {
       onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
     });
 
-    widget.resetHistoryAndCursor();
+    buffer.resetHistory();
+    widget.resetCursor();
 
     toy.zen.signals.on("toggle")(() => widget.toggleIndex());
     toy.io.signals.on("render")(() => widget.render());
-    toy.io.events.on("key.press")(async ({ key }) => widget.onKey(key));
+    toy.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
     toy.runtime.events.on("stop")(async ({ e }) => {
@@ -123,7 +124,8 @@ export default {
           }
         },
         reset(): void {
-          widget.resetHistoryAndCursor();
+          buffer.resetHistory();
+          widget.resetCursor();
         },
         write(chunk: string): void {
           buffer.append(chunk);
