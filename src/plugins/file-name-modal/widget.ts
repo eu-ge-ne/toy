@@ -7,11 +7,11 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget extends widgets.Modal {
-  #buffer = new buffers.Buffer();
+  buffer = new buffers.Buffer();
 
   result: string | undefined;
 
-  protected override children: {
+  override children: {
     bg: BgWidget;
     header: TextWidget;
     editor: EditorWidget;
@@ -25,7 +25,7 @@ export class AskFileNameWidget extends widgets.Modal {
       bg: new BgWidget(),
       header: new TextWidget({ align: "center" }),
       footer: new TextWidget({ align: "center" }),
-      editor: new EditorWidget(this.#buffer, { multiLine: false }),
+      editor: new EditorWidget(this.buffer, { multiLine: false }),
     };
 
     this.children.header.value = "Save As";
@@ -54,31 +54,13 @@ export class AskFileNameWidget extends widgets.Modal {
   open(path: string): void {
     const { editor } = this.children;
 
-    this.#buffer.data = path;
-    this.#buffer.resetHistory();
+    this.buffer.data = path;
+    this.buffer.resetHistory();
     editor.resetCursor();
 
     this.opened = true;
   }
 
-  onKeyPress(key: kitty.Key): void {
-    const { editor } = this.children;
-
-    switch (key.name) {
-      case "ESC":
-        this.result = undefined;
-        this.opened = false;
-        return;
-      case "ENTER": {
-        const path = this.#buffer.data;
-        if (path) {
-          this.result = path;
-          this.opened = false;
-          return;
-        }
-      }
-    }
-
-    editor.onKeyPress(key);
+  onKeyPress(_: kitty.Key): void {
   }
 }

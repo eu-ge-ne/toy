@@ -36,7 +36,23 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
+              switch (data.key.name) {
+                case "ESC":
+                  widget.result = undefined;
+                  widget.opened = false;
+                  break;
+                case "ENTER": {
+                  const path = widget.buffer.data;
+                  if (path) {
+                    widget.result = path;
+                    widget.opened = false;
+                  }
+                  break;
+                }
+                default:
+                  widget.children.editor.onKeyPress(data.key);
+              }
+
               if (widget.opened) {
                 return;
               }
