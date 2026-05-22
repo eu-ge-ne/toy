@@ -4,7 +4,7 @@ import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
 export class AlertWidget extends widgets.Modal {
-  protected override children: {
+  override children: {
     bg: BgWidget;
     text: MultiLineText;
     footer: TextWidget;
@@ -37,11 +37,5 @@ export class AlertWidget extends widgets.Modal {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
-  }
-
-  open(text: string): void {
-    this.children.text.value = text;
-
-    this.opened = true;
   }
 }

@@ -28,7 +28,9 @@ export default {
     alertModal(toy: api.Toy): api.AlertModal {
       return {
         async open(message: string): Promise<void> {
-          widget.open(message);
+          let opened = true;
+
+          widget.children.text.value = message;
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -39,10 +41,10 @@ export default {
               switch (data.key.name) {
                 case "ESC":
                 case "ENTER":
-                  widget.opened = false;
+                  opened = false;
               }
 
-              if (widget.opened) {
+              if (opened) {
                 return;
               }
 
@@ -51,7 +53,7 @@ export default {
             },
           );
 
-          await toy.io.loop(() => !widget.opened);
+          await toy.io.loop(() => !opened);
         },
       };
     },
