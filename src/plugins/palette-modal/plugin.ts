@@ -1,15 +1,18 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
+let buffer: buffers.Buffer;
 let widget: PaletteWidget;
 
 export default {
   init(toy: api.Toy): void {
-    widget = new PaletteWidget();
+    buffer = new buffers.Buffer();
+    widget = new PaletteWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
@@ -30,8 +33,8 @@ export default {
           let opened = true;
           let result: ((_: api.Toy) => Promise<void>) | undefined;
 
-          widget.buffer.data = "";
-          widget.buffer.resetHistory();
+          buffer.data = "";
+          buffer.resetHistory();
           widget.children.editor.resetCursor();
           widget.children.list.items = options;
 

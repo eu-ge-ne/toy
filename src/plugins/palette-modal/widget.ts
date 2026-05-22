@@ -11,22 +11,18 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
-  buffer = new buffers.Buffer();
-
   override children: {
     bg: BgWidget;
     editor: EditorWidget;
     list: ListWidget<(_: api.Toy) => Promise<void>>;
   };
 
-  constructor() {
+  constructor(private readonly buffer: buffers.Buffer) {
     super();
 
     this.children = {
       bg: new BgWidget(),
-      list: new ListWidget<(_: api.Toy) => Promise<void>>({
-        emptyText: "No matching commands",
-      }),
+      list: new ListWidget<(_: api.Toy) => Promise<void>>({ emptyText: "No matching commands" }),
       editor: new EditorWidget(this.buffer, { multiLine: false }),
     };
   }
