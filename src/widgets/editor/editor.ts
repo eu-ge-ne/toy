@@ -85,8 +85,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
   }
 
-  // TODO
-
   onKeyPress(key: kitty.Key): void {
     const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
     if (!handler) {
