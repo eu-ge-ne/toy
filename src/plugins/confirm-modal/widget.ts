@@ -1,4 +1,3 @@
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -46,8 +45,5 @@ export class AskWidget extends widgets.Modal {
     this.children.text.value = text;
 
     this.opened = true;
-  }
-
-  onKeyPress(_: kitty.Key): void {
   }
 }

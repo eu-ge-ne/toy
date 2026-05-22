@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -59,8 +58,5 @@ export class AskFileNameWidget extends widgets.Modal {
     editor.resetCursor();
 
     this.opened = true;
-  }
-
-  onKeyPress(_: kitty.Key): void {
   }
 }

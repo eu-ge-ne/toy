@@ -1,4 +1,3 @@
-import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
 import { Widget } from "./widget.ts";
@@ -18,6 +17,4 @@ export abstract class Modal<T = void> extends Widget<T> {
     vt.buf.flush();
     vt.sync.esu();
   }
-
-  abstract onKeyPress(key: kitty.Key): void;
 }

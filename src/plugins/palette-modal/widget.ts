@@ -1,6 +1,5 @@
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -80,9 +79,6 @@ export class PaletteWidget extends widgets.Modal {
     list.items = options;
 
     this.opened = true;
-  }
-
-  onKeyPress(_: kitty.Key): void {
   }
 
   filter(): void {
