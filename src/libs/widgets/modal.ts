@@ -3,8 +3,6 @@ import * as vt from "@libs/vt";
 import { Widget } from "./widget.ts";
 
 export abstract class Modal<T = void> extends Widget<T> {
-  opened = false;
-
   render(): void {
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);

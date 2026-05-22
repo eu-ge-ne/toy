@@ -69,18 +69,6 @@ export class PaletteWidget extends widgets.Modal {
     this.children.editor.setTheme(theme);
   }
 
-  open(): void {
-    const { editor, list } = this.children;
-
-    this.buffer.data = "";
-    this.buffer.resetHistory();
-    editor.resetCursor();
-
-    list.items = options;
-
-    this.opened = true;
-  }
-
   filter(): void {
     const { list } = this.children;
 

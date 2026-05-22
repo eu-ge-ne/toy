@@ -2,6 +2,7 @@ import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
+import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
 let widget: PaletteWidget;
@@ -26,7 +27,12 @@ export default {
     paletteModal(toy: api.Toy): api.PaletteModal {
       return {
         async open(): Promise<void> {
-          widget.open();
+          let opened = true;
+
+          widget.buffer.data = "";
+          widget.buffer.resetHistory();
+          widget.children.editor.resetCursor();
+          widget.children.list.items = options;
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -37,11 +43,11 @@ export default {
               switch (data.key.name) {
                 case "ESC":
                   widget.result = undefined;
-                  widget.opened = false;
+                  opened = false;
                   break;
                 case "ENTER":
                   widget.result = widget.children.list.items[widget.children.list.index]?.value;
-                  widget.opened = false;
+                  opened = false;
                   break;
                 case "UP":
                   if (widget.children.list.items.length > 0) {
@@ -61,7 +67,7 @@ export default {
                   widget.filter();
               }
 
-              if (widget.opened) {
+              if (opened) {
                 return;
               }
 
@@ -72,7 +78,7 @@ export default {
 
           await toy.io.loop(() => {
             toy.io.resize();
-            return !widget.opened;
+            return !opened;
           });
 
           if (typeof widget.result !== "undefined") {
