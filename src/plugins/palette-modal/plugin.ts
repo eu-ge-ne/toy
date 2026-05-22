@@ -34,7 +34,33 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
+              switch (data.key.name) {
+                case "ESC":
+                  widget.result = undefined;
+                  widget.opened = false;
+                  break;
+                case "ENTER":
+                  widget.result = widget.children.list.items[widget.children.list.index]?.value;
+                  widget.opened = false;
+                  break;
+                case "UP":
+                  if (widget.children.list.items.length > 0) {
+                    widget.children.list.index = Math.max(widget.children.list.index - 1, 0);
+                  }
+                  break;
+                case "DOWN":
+                  if (widget.children.list.items.length > 0) {
+                    widget.children.list.index = Math.min(
+                      widget.children.list.index + 1,
+                      widget.children.list.items.length - 1,
+                    );
+                  }
+                  break;
+                default:
+                  widget.children.editor.onKeyPress(data.key);
+                  widget.filter();
+              }
+
               if (widget.opened) {
                 return;
               }
