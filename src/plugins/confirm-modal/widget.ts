@@ -6,7 +6,7 @@ import { MultiLineText, TextWidget } from "@widgets/text";
 export class AskWidget extends widgets.Modal {
   result = false;
 
-  protected override children: {
+  override children: {
     bg: BgWidget;
     text: MultiLineText;
     footer: TextWidget;
@@ -39,11 +39,5 @@ export class AskWidget extends widgets.Modal {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
-  }
-
-  open(text: string): void {
-    this.children.text.value = text;
-
-    this.opened = true;
   }
 }
