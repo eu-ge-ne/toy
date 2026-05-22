@@ -36,7 +36,12 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
+              switch (data.key.name) {
+                case "ESC":
+                case "ENTER":
+                  widget.opened = false;
+              }
+
               if (widget.opened) {
                 return;
               }

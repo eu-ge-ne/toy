@@ -46,11 +46,6 @@ export class AlertWidget extends widgets.Modal {
     this.opened = true;
   }
 
-  onKeyPress(key: kitty.Key): void {
-    switch (key.name) {
-      case "ESC":
-      case "ENTER":
-        this.opened = false;
-    }
+  onKeyPress(_: kitty.Key): void {
   }
 }
