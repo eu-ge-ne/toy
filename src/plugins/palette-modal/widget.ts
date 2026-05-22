@@ -13,8 +13,6 @@ const maxListSize = 10;
 export class PaletteWidget extends widgets.Modal {
   buffer = new buffers.Buffer();
 
-  result: ((_: api.Toy) => Promise<void>) | undefined;
-
   override children: {
     bg: BgWidget;
     editor: EditorWidget;

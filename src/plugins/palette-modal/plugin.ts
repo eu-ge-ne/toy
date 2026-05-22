@@ -28,6 +28,7 @@ export default {
       return {
         async open(): Promise<void> {
           let opened = true;
+          let result: ((_: api.Toy) => Promise<void>) | undefined;
 
           widget.buffer.data = "";
           widget.buffer.resetHistory();
@@ -42,11 +43,11 @@ export default {
 
               switch (data.key.name) {
                 case "ESC":
-                  widget.result = undefined;
+                  result = undefined;
                   opened = false;
                   break;
                 case "ENTER":
-                  widget.result = widget.children.list.items[widget.children.list.index]?.value;
+                  result = widget.children.list.items[widget.children.list.index]?.value;
                   opened = false;
                   break;
                 case "UP":
@@ -81,8 +82,8 @@ export default {
             return !opened;
           });
 
-          if (typeof widget.result !== "undefined") {
-            await widget.result(toy);
+          if (typeof result !== "undefined") {
+            await result(toy);
           }
         },
       };
