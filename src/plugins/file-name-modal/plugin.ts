@@ -1,15 +1,18 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
+let buffer: buffers.Buffer;
 let widget: AskFileNameWidget;
 
 export default {
   init(toy: api.Toy): void {
-    widget = new AskFileNameWidget();
+    buffer = new buffers.Buffer();
+    widget = new AskFileNameWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
@@ -31,8 +34,8 @@ export default {
           let opened = true;
           let result: string | undefined;
 
-          widget.buffer.data = fileName;
-          widget.buffer.resetHistory();
+          buffer.data = fileName;
+          buffer.resetHistory();
           widget.children.editor.resetCursor();
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
@@ -47,7 +50,7 @@ export default {
                   opened = false;
                   break;
                 case "ENTER": {
-                  const path = widget.buffer.data;
+                  const path = buffer.data;
                   if (path) {
                     result = path;
                     opened = false;

@@ -6,8 +6,6 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget extends widgets.Modal {
-  buffer = new buffers.Buffer();
-
   override children: {
     bg: BgWidget;
     header: TextWidget;
@@ -15,7 +13,7 @@ export class AskFileNameWidget extends widgets.Modal {
     footer: TextWidget;
   };
 
-  constructor() {
+  constructor(private readonly buffer: buffers.Buffer) {
     super();
 
     this.children = {
