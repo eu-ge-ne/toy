@@ -49,14 +49,4 @@ export class AskFileNameWidget extends widgets.Modal {
     this.children.footer.color = text;
     this.children.editor.setTheme(theme);
   }
-
-  open(path: string): void {
-    const { editor } = this.children;
-
-    this.buffer.data = path;
-    this.buffer.resetHistory();
-    editor.resetCursor();
-
-    this.opened = true;
-  }
 }

@@ -28,7 +28,11 @@ export default {
     fileNameModal(toy: api.Toy): api.FileNameModal {
       return {
         async open(fileName: string): Promise<string | undefined> {
-          widget.open(fileName);
+          let opened = true;
+
+          widget.buffer.data = fileName;
+          widget.buffer.resetHistory();
+          widget.children.editor.resetCursor();
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -39,13 +43,13 @@ export default {
               switch (data.key.name) {
                 case "ESC":
                   widget.result = undefined;
-                  widget.opened = false;
+                  opened = false;
                   break;
                 case "ENTER": {
                   const path = widget.buffer.data;
                   if (path) {
                     widget.result = path;
-                    widget.opened = false;
+                    opened = false;
                   }
                   break;
                 }
@@ -53,7 +57,7 @@ export default {
                   widget.children.editor.onKeyPress(data.key);
               }
 
-              if (widget.opened) {
+              if (opened) {
                 return;
               }
 
@@ -62,7 +66,7 @@ export default {
             },
           );
 
-          await toy.io.loop(() => !widget.opened);
+          await toy.io.loop(() => !opened);
 
           return widget.result;
         },
