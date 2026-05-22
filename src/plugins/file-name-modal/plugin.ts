@@ -29,6 +29,7 @@ export default {
       return {
         async open(fileName: string): Promise<string | undefined> {
           let opened = true;
+          let result: string | undefined;
 
           widget.buffer.data = fileName;
           widget.buffer.resetHistory();
@@ -42,13 +43,13 @@ export default {
 
               switch (data.key.name) {
                 case "ESC":
-                  widget.result = undefined;
+                  result = undefined;
                   opened = false;
                   break;
                 case "ENTER": {
                   const path = widget.buffer.data;
                   if (path) {
-                    widget.result = path;
+                    result = path;
                     opened = false;
                   }
                   break;
@@ -68,7 +69,7 @@ export default {
 
           await toy.io.loop(() => !opened);
 
-          return widget.result;
+          return result;
         },
       };
     },

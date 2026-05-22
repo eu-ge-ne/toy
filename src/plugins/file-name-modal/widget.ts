@@ -8,8 +8,6 @@ import { TextWidget } from "@widgets/text";
 export class AskFileNameWidget extends widgets.Modal {
   buffer = new buffers.Buffer();
 
-  result: string | undefined;
-
   override children: {
     bg: BgWidget;
     header: TextWidget;
