@@ -48,16 +48,6 @@ export class AskWidget extends widgets.Modal {
     this.opened = true;
   }
 
-  onKeyPress(key: kitty.Key): void {
-    switch (key.name) {
-      case "ESC":
-        this.result = false;
-        this.opened = false;
-        return;
-      case "ENTER":
-        this.result = true;
-        this.opened = false;
-        return;
-    }
+  onKeyPress(_: kitty.Key): void {
   }
 }
