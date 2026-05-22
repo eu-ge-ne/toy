@@ -28,7 +28,10 @@ export default {
     confirmModal(toy: api.Toy): api.ConfirmModal {
       return {
         async open(message: string): Promise<boolean> {
-          widget.open(message);
+          let opened = true;
+          let result = false;
+
+          widget.children.text.value = message;
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -36,8 +39,18 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
-              if (widget.opened) {
+              switch (data.key.name) {
+                case "ESC":
+                  result = false;
+                  opened = false;
+                  break;
+                case "ENTER":
+                  result = true;
+                  opened = false;
+                  break;
+              }
+
+              if (opened) {
                 return;
               }
 
@@ -46,9 +59,9 @@ export default {
             },
           );
 
-          await toy.io.loop(() => !widget.opened);
+          await toy.io.loop(() => !opened);
 
-          return widget.result;
+          return result;
         },
       };
     },

@@ -1,6 +1,5 @@
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -12,25 +11,19 @@ import { options } from "./options.ts";
 const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
-  #buffer = new buffers.Buffer();
-
-  result: ((_: api.Toy) => Promise<void>) | undefined;
-
-  protected override children: {
+  override children: {
     bg: BgWidget;
     editor: EditorWidget;
     list: ListWidget<(_: api.Toy) => Promise<void>>;
   };
 
-  constructor() {
+  constructor(private readonly buffer: buffers.Buffer) {
     super();
 
     this.children = {
       bg: new BgWidget(),
-      list: new ListWidget<(_: api.Toy) => Promise<void>>({
-        emptyText: "No matching commands",
-      }),
-      editor: new EditorWidget(this.#buffer, { multiLine: false }),
+      list: new ListWidget<(_: api.Toy) => Promise<void>>({ emptyText: "No matching commands" }),
+      editor: new EditorWidget(this.buffer, { multiLine: false }),
     };
   }
 
@@ -70,56 +63,12 @@ export class PaletteWidget extends widgets.Modal {
     this.children.editor.setTheme(theme);
   }
 
-  open(): void {
-    const { editor, list } = this.children;
-
-    this.#buffer.data = "";
-    this.#buffer.resetHistory();
-    editor.resetCursor();
-
-    list.items = options;
-
-    this.opened = true;
-  }
-
-  onKeyPress(key: kitty.Key): void {
-    const { list, editor } = this.children;
-
-    switch (key.name) {
-      case "ESC":
-        this.result = undefined;
-        this.opened = false;
-        return;
-      case "ENTER":
-        this.result = list.items[list.index]?.value;
-        this.opened = false;
-        return;
-      case "UP":
-        if (list.items.length > 0) {
-          list.index = Math.max(list.index - 1, 0);
-        }
-        return;
-      case "DOWN":
-        if (list.items.length > 0) {
-          list.index = Math.min(
-            list.index + 1,
-            list.items.length - 1,
-          );
-        }
-        return;
-    }
-
-    editor.onKeyPress(key);
-
-    this.#filter();
-  }
-
-  #filter(): void {
+  filter(): void {
     const { list } = this.children;
 
     list.index = 0;
 
-    const text = this.#buffer.data.toUpperCase();
+    const text = this.buffer.data.toUpperCase();
 
     if (!text) {
       list.items = options;

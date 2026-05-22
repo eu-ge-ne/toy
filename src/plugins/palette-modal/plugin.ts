@@ -1,14 +1,18 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
+import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
+let buffer: buffers.Buffer;
 let widget: PaletteWidget;
 
 export default {
   init(toy: api.Toy): void {
-    widget = new PaletteWidget();
+    buffer = new buffers.Buffer();
+    widget = new PaletteWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
@@ -26,7 +30,13 @@ export default {
     paletteModal(toy: api.Toy): api.PaletteModal {
       return {
         async open(): Promise<void> {
-          widget.open();
+          let opened = true;
+          let result: ((_: api.Toy) => Promise<void>) | undefined;
+
+          buffer.data = "";
+          buffer.resetHistory();
+          widget.children.editor.resetCursor();
+          widget.children.list.items = options;
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -34,8 +44,34 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
-              if (widget.opened) {
+              switch (data.key.name) {
+                case "ESC":
+                  result = undefined;
+                  opened = false;
+                  break;
+                case "ENTER":
+                  result = widget.children.list.items[widget.children.list.index]?.value;
+                  opened = false;
+                  break;
+                case "UP":
+                  if (widget.children.list.items.length > 0) {
+                    widget.children.list.index = Math.max(widget.children.list.index - 1, 0);
+                  }
+                  break;
+                case "DOWN":
+                  if (widget.children.list.items.length > 0) {
+                    widget.children.list.index = Math.min(
+                      widget.children.list.index + 1,
+                      widget.children.list.items.length - 1,
+                    );
+                  }
+                  break;
+                default:
+                  widget.children.editor.onKeyPress(data.key);
+                  widget.filter();
+              }
+
+              if (opened) {
                 return;
               }
 
@@ -46,11 +82,11 @@ export default {
 
           await toy.io.loop(() => {
             toy.io.resize();
-            return !widget.opened;
+            return !opened;
           });
 
-          if (typeof widget.result !== "undefined") {
-            await widget.result(toy);
+          if (typeof result !== "undefined") {
+            await result(toy);
           }
         },
       };

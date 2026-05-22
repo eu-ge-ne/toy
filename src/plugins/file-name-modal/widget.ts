@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
@@ -7,25 +6,21 @@ import { EditorWidget } from "@widgets/editor";
 import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget extends widgets.Modal {
-  #buffer = new buffers.Buffer();
-
-  result: string | undefined;
-
-  protected override children: {
+  override children: {
     bg: BgWidget;
     header: TextWidget;
     editor: EditorWidget;
     footer: TextWidget;
   };
 
-  constructor() {
+  constructor(private readonly buffer: buffers.Buffer) {
     super();
 
     this.children = {
       bg: new BgWidget(),
       header: new TextWidget({ align: "center" }),
       footer: new TextWidget({ align: "center" }),
-      editor: new EditorWidget(this.#buffer, { multiLine: false }),
+      editor: new EditorWidget(this.buffer, { multiLine: false }),
     };
 
     this.children.header.value = "Save As";
@@ -49,36 +44,5 @@ export class AskFileNameWidget extends widgets.Modal {
     this.children.header.color = text;
     this.children.footer.color = text;
     this.children.editor.setTheme(theme);
-  }
-
-  open(path: string): void {
-    const { editor } = this.children;
-
-    this.#buffer.data = path;
-    this.#buffer.resetHistory();
-    editor.resetCursor();
-
-    this.opened = true;
-  }
-
-  onKeyPress(key: kitty.Key): void {
-    const { editor } = this.children;
-
-    switch (key.name) {
-      case "ESC":
-        this.result = undefined;
-        this.opened = false;
-        return;
-      case "ENTER": {
-        const path = this.#buffer.data;
-        if (path) {
-          this.result = path;
-          this.opened = false;
-          return;
-        }
-      }
-    }
-
-    editor.onKeyPress(key);
   }
 }

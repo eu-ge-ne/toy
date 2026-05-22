@@ -1,15 +1,18 @@
 import * as api from "@libs/api";
+import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
+let buffer: buffers.Buffer;
 let widget: AskFileNameWidget;
 
 export default {
   init(toy: api.Toy): void {
-    widget = new AskFileNameWidget();
+    buffer = new buffers.Buffer();
+    widget = new AskFileNameWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
@@ -28,7 +31,12 @@ export default {
     fileNameModal(toy: api.Toy): api.FileNameModal {
       return {
         async open(fileName: string): Promise<string | undefined> {
-          widget.open(fileName);
+          let opened = true;
+          let result: string | undefined;
+
+          buffer.data = fileName;
+          buffer.resetHistory();
+          widget.children.editor.resetCursor();
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 
@@ -36,8 +44,24 @@ export default {
             async (data) => {
               data.cancel = true;
 
-              widget.onKeyPress(data.key);
-              if (widget.opened) {
+              switch (data.key.name) {
+                case "ESC":
+                  result = undefined;
+                  opened = false;
+                  break;
+                case "ENTER": {
+                  const path = buffer.data;
+                  if (path) {
+                    result = path;
+                    opened = false;
+                  }
+                  break;
+                }
+                default:
+                  widget.children.editor.onKeyPress(data.key);
+              }
+
+              if (opened) {
                 return;
               }
 
@@ -46,9 +70,9 @@ export default {
             },
           );
 
-          await toy.io.loop(() => !widget.opened);
+          await toy.io.loop(() => !opened);
 
-          return widget.result;
+          return result;
         },
       };
     },

@@ -1,11 +1,10 @@
-import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
 export class AlertWidget extends widgets.Modal {
-  protected override children: {
+  override children: {
     bg: BgWidget;
     text: MultiLineText;
     footer: TextWidget;
@@ -38,19 +37,5 @@ export class AlertWidget extends widgets.Modal {
     this.children.bg.color = bg;
     this.children.text.color = text;
     this.children.footer.color = text;
-  }
-
-  open(text: string): void {
-    this.children.text.value = text;
-
-    this.opened = true;
-  }
-
-  onKeyPress(key: kitty.Key): void {
-    switch (key.name) {
-      case "ESC":
-      case "ENTER":
-        this.opened = false;
-    }
   }
 }
