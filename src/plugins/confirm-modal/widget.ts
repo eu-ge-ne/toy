@@ -4,8 +4,6 @@ import { BgWidget } from "@widgets/bg";
 import { MultiLineText, TextWidget } from "@widgets/text";
 
 export class AskWidget extends widgets.Modal {
-  result = false;
-
   override children: {
     bg: BgWidget;
     text: MultiLineText;

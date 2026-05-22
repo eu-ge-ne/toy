@@ -29,6 +29,7 @@ export default {
       return {
         async open(message: string): Promise<boolean> {
           let opened = true;
+          let result = false;
 
           widget.children.text.value = message;
 
@@ -40,11 +41,11 @@ export default {
 
               switch (data.key.name) {
                 case "ESC":
-                  widget.result = false;
+                  result = false;
                   opened = false;
                   break;
                 case "ENTER":
-                  widget.result = true;
+                  result = true;
                   opened = false;
                   break;
               }
@@ -60,7 +61,7 @@ export default {
 
           await toy.io.loop(() => !opened);
 
-          return widget.result;
+          return result;
         },
       };
     },
