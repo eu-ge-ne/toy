@@ -74,9 +74,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     this.children.content.toggleIndex();
   }
 
-  resetHistoryAndCursor(): void {
-    this.buffer.resetHistory();
-
+  resetCursor(): void {
     const { ln, col } = this.#cursor;
     this.#cursorHistory.reset({ ln, col });
 
@@ -87,7 +85,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
   }
 
-  onKey(key: kitty.Key): void {
+  onKeyPress(key: kitty.Key): void {
     const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
     if (!handler) {
       return;

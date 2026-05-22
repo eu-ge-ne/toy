@@ -55,7 +55,8 @@ export class AskFileNameWidget extends widgets.Modal {
     const { editor } = this.children;
 
     this.#buffer.data = path;
-    editor.resetHistoryAndCursor();
+    this.#buffer.resetHistory();
+    editor.resetCursor();
 
     this.opened = true;
   }
@@ -78,6 +79,6 @@ export class AskFileNameWidget extends widgets.Modal {
       }
     }
 
-    editor.onKey(key);
+    editor.onKeyPress(key);
   }
 }
