@@ -128,7 +128,7 @@ export default {
           widget.resetCursor();
         },
         write(chunk: string): void {
-          buffer.append(chunk);
+          buffer.write(chunk);
         },
         read(): Iterable<string> {
           return buffer.read();

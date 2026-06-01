@@ -43,7 +43,7 @@ export default {
   },
   register: {
     debug(_: api.Toy): api.Debug {
-      let timer: number;
+      let timer: NodeJS.Timeout;
 
       function updateMemUsage(): void {
         const mem = memUsage();

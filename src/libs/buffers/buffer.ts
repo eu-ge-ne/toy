@@ -25,6 +25,10 @@ export class Buffer {
     this.#doc.text = x;
   }
 
+  write(text: string): void {
+    this.#doc.append(text);
+  }
+
   read(): Iterable<string> {
     return this.#doc.read(0);
   }
@@ -37,20 +41,24 @@ export class Buffer {
     return this.#gDoc.line(ln, extra);
   }
 
-  append(text: string): void {
-    this.#doc.append(text);
+  resetHistory(): void {
+    this.#history.reset(this.#doc.tree.root);
+
+    this.onChange?.();
   }
 
-  insert(pos: graphemes.Pos, text: string): void {
-    this.#gDoc.insert(pos, text);
-  }
-
-  delete(start: graphemes.Pos, end: graphemes.Pos): void {
-    this.#gDoc.delete(start, end);
-  }
-
-  edit(fn: () => void): void {
-    fn();
+  edit(
+    fn: (
+      _: {
+        insert: (pos: graphemes.Pos, text: string) => void;
+        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
+      },
+    ) => void,
+  ): void {
+    fn({
+      insert: (pos: graphemes.Pos, text: string) => this.#gDoc.insert(pos, text),
+      remove: (start: graphemes.Pos, end: graphemes.Pos) => this.#gDoc.delete(start, end),
+    });
 
     this.#history.push(this.#doc.tree.root);
 
@@ -71,12 +79,6 @@ export class Buffer {
     if (entry) {
       this.#doc.tree.root = entry;
     }
-
-    this.onChange?.();
-  }
-
-  resetHistory(): void {
-    this.#history.reset(this.#doc.tree.root);
 
     this.onChange?.();
   }

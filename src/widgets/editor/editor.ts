@@ -229,9 +229,9 @@ export class EditorWidget extends widgets.Widget<Params> {
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
-    this.buffer.edit(() => {
+    this.buffer.edit(({ insert, remove }) => {
       if (this.#cursor.selecting) {
-        this.buffer.delete(this.#cursor.from, {
+        remove(this.#cursor.from, {
           ln: this.#cursor.to.ln,
           col: this.#cursor.to.col + 1,
         });
@@ -239,7 +239,7 @@ export class EditorWidget extends widgets.Widget<Params> {
         this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
       }
 
-      this.buffer.insert(this.#cursor, text);
+      insert(this.#cursor, text);
 
       const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
       const eol_count = grms.filter((x) => x.isEol).length;
@@ -257,18 +257,18 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #backspace(): void {
-    this.buffer.edit(() => {
+    this.buffer.edit(({ remove }) => {
       if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
         const len = this.buffer.line(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
         if (len === 1) {
-          this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
           this.#cursor.left(false);
         } else {
           this.#cursor.left(false);
-          this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+          remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
         }
       } else {
-        this.buffer.delete({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
+        remove({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
         this.#cursor.left(false);
       }
     });
@@ -278,8 +278,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #deleteChar(): void {
-    this.buffer.edit(() => {
-      this.buffer.delete(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+    this.buffer.edit(({ remove }) => {
+      remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
     });
 
     const { ln, col } = this.#cursor;
@@ -287,8 +287,8 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #deleteSelection(): void {
-    this.buffer.edit(() => {
-      this.buffer.delete(this.#cursor.from, {
+    this.buffer.edit(({ remove }) => {
+      remove(this.#cursor.from, {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
