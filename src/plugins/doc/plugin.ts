@@ -68,7 +68,7 @@ export default {
           docSignals.broadcast("change.name", newFileName);
 
           try {
-            await toy.doc.write(files.load(newFileName));
+            await buffer.write(files.load(newFileName));
 
             toy.doc.reset();
           } catch (err) {
@@ -124,9 +124,6 @@ export default {
         reset(): void {
           buffer.resetHistory();
           widget.resetCursor();
-        },
-        async write(data: AsyncIterable<string>): Promise<void> {
-          await buffer.write(data);
         },
         read(): Iterable<string> {
           return buffer.read();

@@ -13,8 +13,7 @@ export type Doc = {
   saveAs(): Promise<void>;
 
   reset(): void;
-  write(_: AsyncIterable<string>): Promise<void>;
-  read(): Iterable<string>;
+  read(): Iterable<string>; // TODO: ?
 
   toggleWhitespace(): void;
   toggleWrap(): void;
