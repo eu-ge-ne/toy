@@ -12,10 +12,6 @@ export type Doc = {
   save(): Promise<void>;
   saveAs(): Promise<void>;
 
-  reset(): void;
-  write(_: string): void;
-  read(): Iterable<string>;
-
   toggleWhitespace(): void;
   toggleWrap(): void;
 

@@ -68,11 +68,10 @@ export default {
           docSignals.broadcast("change.name", newFileName);
 
           try {
-            for await (const chunk of files.load(newFileName)) {
-              toy.doc.write(chunk);
-            }
+            await buffer.write(files.load(newFileName));
 
-            toy.doc.reset();
+            buffer.resetHistory();
+            widget.resetCursor();
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
               // ignore
@@ -91,9 +90,10 @@ export default {
           }
 
           try {
-            await files.save(fileName, toy.doc.read());
+            await files.save(fileName, buffer.read());
 
-            toy.doc.reset();
+            buffer.resetHistory();
+            widget.resetCursor();
           } catch (err) {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await toy.alertModal.open(message);
@@ -109,12 +109,13 @@ export default {
             }
 
             try {
-              await files.save(newFileName, toy.doc.read());
+              await files.save(newFileName, buffer.read());
 
               fileName = newFileName;
               docSignals.broadcast("change.name", newFileName);
 
-              toy.doc.reset();
+              buffer.resetHistory();
+              widget.resetCursor();
 
               return;
             } catch (err) {
@@ -122,16 +123,6 @@ export default {
               await toy.alertModal.open(message);
             }
           }
-        },
-        reset(): void {
-          buffer.resetHistory();
-          widget.resetCursor();
-        },
-        write(chunk: string): void {
-          buffer.write(chunk);
-        },
-        read(): Iterable<string> {
-          return buffer.read();
         },
         toggleWhitespace(): void {
           widget.toggleWhitespace();

@@ -140,8 +140,12 @@ export class Document {
     this.insert(i, text);
   }
 
-  append(text: string): void {
-    this.insert(this.charCount, text);
+  async write(data: AsyncIterable<string>): Promise<void> {
+    this.delete(0);
+
+    for await (const chunk of data) {
+      this.insert(this.charCount, chunk);
+    }
   }
 
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {

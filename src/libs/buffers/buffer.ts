@@ -17,16 +17,16 @@ export class Buffer {
     return !this.#history.empty;
   }
 
-  get data(): string {
+  get text(): string {
     return this.#doc.text;
   }
 
-  set data(x: string) {
+  set text(x: string) {
     this.#doc.text = x;
   }
 
-  write(text: string): void {
-    this.#doc.append(text);
+  async write(text: AsyncIterable<string>): Promise<void> {
+    await this.#doc.write(text);
   }
 
   read(): Iterable<string> {
