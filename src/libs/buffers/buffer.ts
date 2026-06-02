@@ -25,8 +25,8 @@ export class Buffer {
     this.#doc.text = x;
   }
 
-  write(text: string): void {
-    this.#doc.append(text);
+  async write(text: AsyncIterable<string>): Promise<void> {
+    await this.#doc.write(text);
   }
 
   read(): Iterable<string> {
