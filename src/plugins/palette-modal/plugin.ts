@@ -33,7 +33,7 @@ export default {
           let opened = true;
           let result: ((_: api.Toy) => Promise<void>) | undefined;
 
-          buffer.data = "";
+          buffer.text = "";
           buffer.resetHistory();
           widget.children.editor.resetCursor();
           widget.children.list.items = options;

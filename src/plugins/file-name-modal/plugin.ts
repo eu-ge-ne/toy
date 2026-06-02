@@ -34,7 +34,7 @@ export default {
           let opened = true;
           let result: string | undefined;
 
-          buffer.data = fileName;
+          buffer.text = fileName;
           buffer.resetHistory();
           widget.children.editor.resetCursor();
 
@@ -50,9 +50,8 @@ export default {
                   opened = false;
                   break;
                 case "ENTER": {
-                  const path = buffer.data;
-                  if (path) {
-                    result = path;
+                  if (buffer.text) {
+                    result = buffer.text;
                     opened = false;
                   }
                   break;
