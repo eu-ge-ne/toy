@@ -75,14 +75,13 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   resetCursor(): void {
-    const { ln, col } = this.#cursor;
-    this.#cursorHistory.reset({ ln, col });
-
     if (this.params.multiLine) {
       this.#cursor.set(0, 0, false);
     } else {
       this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
     }
+
+    this.#cursorHistory.reset({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
 
   onKeyPress(key: kitty.Key): void {
