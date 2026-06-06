@@ -18,12 +18,12 @@ export class Option<T> {
 export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   new Option(
     "Edit: Copy",
-    async (api: api.Toy) => api.doc.copy(),
+    async (api: api.Toy) => api.view.copy(),
     ["⌃C", "⌘C"],
   ),
   new Option(
     "Edit: Cut",
-    async (api: api.Toy) => api.doc.cut(),
+    async (api: api.Toy) => api.view.cut(),
     ["⌃X", "⌘X"],
   ),
   new Option(
@@ -37,22 +37,22 @@ export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   ),
   new Option(
     "Edit: Select All",
-    async (api: api.Toy) => api.doc.selectAll(),
+    async (api: api.Toy) => api.view.selectAll(),
     ["⌃A", "⌘A"],
   ),
   new Option(
     "Edit: Paste",
-    async (api: api.Toy) => api.doc.paste(),
+    async (api: api.Toy) => api.view.paste(),
     ["⌃V", "⌘V"],
   ),
   new Option(
     "Edit: Redo",
-    async (api: api.Toy) => api.doc.redo(),
+    async (api: api.Toy) => api.view.redo(),
     ["⌃Y", "⌘Y"],
   ),
   new Option(
     "Global: Save",
-    async (api: api.Toy) => api.doc.save(),
+    async (api: api.Toy) => api.view.save(),
     ["F2"],
   ),
   new Option(
@@ -97,17 +97,17 @@ export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   ),
   new Option(
     "Edit: Undo",
-    async (api: api.Toy) => api.doc.undo(),
+    async (api: api.Toy) => api.view.undo(),
     ["⌃Z", "⌘Z"],
   ),
   new Option(
     "View: Toggle Render Whitespace",
-    async (api: api.Toy) => api.doc.toggleWhitespace(),
+    async (api: api.Toy) => api.view.toggleWhitespace(),
     ["F5"],
   ),
   new Option(
     "View: Toggle Line Wrap",
-    async (api: api.Toy) => api.doc.toggleWrap(),
+    async (api: api.Toy) => api.view.toggleWrap(),
     ["F6"],
   ),
   new Option(

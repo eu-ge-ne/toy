@@ -1,12 +1,13 @@
 import * as events from "@libs/events";
 
-export type DocSignals = {
+export type ViewSignals = {
   "change": (_: { modified: boolean; lineCount: number }) => void;
   "change.name": (_: string) => void;
+  "change.cursor": (_: { ln: number; col: number }) => void;
 };
 
-export type Doc = {
-  signals: events.Listener<DocSignals>;
+export type View = {
+  signals: events.Listener<ViewSignals>;
 
   open(_: string): Promise<void>;
   save(): Promise<void>;
@@ -14,7 +15,6 @@ export type Doc = {
 
   toggleWhitespace(): void;
   toggleWrap(): void;
-
   selectAll(): void;
   undo(): void;
   redo(): void;

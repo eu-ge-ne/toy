@@ -2,7 +2,7 @@
   "name": "@eu-ge-ne/toy",
   "version": "0.0.30",
   "license": "MIT",
-  "exports": "",
+  "exports": "./src/main.ts",
   "workspace": [
     "src/libs/*",
     "src/plugins/*",
