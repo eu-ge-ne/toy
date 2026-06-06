@@ -10,7 +10,7 @@ export default {
 
     toy.view.signals.on("change.name")((x) => widget.fileName = x);
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.view.signals.on("change")(({ modified }) => widget.modified = modified);
+    toy.buffer.signals.on("change")(({ modified }) => widget.modified = modified);
 
     toy.io.signals.on("resize")(() => {
       const { columns } = Deno.consoleSize();
