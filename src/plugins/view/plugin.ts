@@ -16,8 +16,9 @@ let fileName: string | undefined;
 export default {
   init(toy: api.Toy): void {
     buffer = new buffers.Buffer();
-    buffer.onChange = () =>
-      signals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount });
+    buffer.signals.on("change")(() =>
+      signals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount })
+    );
 
     widget = new EditorWidget(buffer, {
       multiLine: true,

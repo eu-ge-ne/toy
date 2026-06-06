@@ -1,4 +1,5 @@
 import * as documents from "@libs/documents";
+import * as events from "@libs/events";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
@@ -6,8 +7,11 @@ export class Buffer {
   readonly #doc = new documents.Document();
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
+  readonly #emitter = new events.SignalEmitter<{
+    "change": () => void;
+  }>();
 
-  onChange?: () => void;
+  readonly signals = this.#emitter.listener;
 
   get lineCount(): number {
     return this.#doc.lineCount;
@@ -44,7 +48,7 @@ export class Buffer {
   resetHistory(): void {
     this.#history.reset(this.#doc.tree.root);
 
-    this.onChange?.();
+    this.#emitter.broadcast("change");
   }
 
   edit(
@@ -55,31 +59,45 @@ export class Buffer {
       },
     ) => void,
   ): void {
+    let changed = false;
+
     fn({
-      insert: (pos: graphemes.Pos, text: string) => this.#gDoc.insert(pos, text),
-      remove: (start: graphemes.Pos, end: graphemes.Pos) => this.#gDoc.delete(start, end),
+      insert: (pos: graphemes.Pos, text: string) => {
+        this.#gDoc.insert(pos, text);
+        changed = true;
+      },
+      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
+        this.#gDoc.delete(start, end);
+        changed = true;
+      },
     });
 
-    this.#history.push(this.#doc.tree.root);
+    if (changed) {
+      this.#history.push(this.#doc.tree.root);
 
-    this.onChange?.();
+      this.#emitter.broadcast("change");
+    }
   }
 
   undo(): void {
     const entry = this.#history.undo();
-    if (entry) {
-      this.#doc.tree.root = entry;
+    if (!entry) {
+      return;
     }
 
-    this.onChange?.();
+    this.#doc.tree.root = entry;
+
+    this.#emitter.broadcast("change");
   }
 
   redo(): void {
     const entry = this.#history.redo();
-    if (entry) {
-      this.#doc.tree.root = entry;
+    if (!entry) {
+      return;
     }
 
-    this.onChange?.();
+    this.#doc.tree.root = entry;
+
+    this.#emitter.broadcast("change");
   }
 }
