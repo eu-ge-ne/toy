@@ -8,9 +8,9 @@ export default {
   init(toy: api.Toy): void {
     const widget = new HeaderWidget();
 
-    toy.doc.signals.on("change.name")((x) => widget.fileName = x);
+    toy.view.signals.on("change.name")((x) => widget.fileName = x);
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.doc.signals.on("change")(({ modified }) => widget.modified = modified);
+    toy.view.signals.on("change")(({ modified }) => widget.modified = modified);
 
     toy.io.signals.on("resize")(() => {
       const { columns } = Deno.consoleSize();

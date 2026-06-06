@@ -7,7 +7,7 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-const signals = new libEvents.SignalEmitter<api.DocSignals>();
+const signals = new libEvents.SignalEmitter<api.ViewSignals>();
 
 let buffer: buffers.Buffer;
 let widget: EditorWidget;
@@ -38,7 +38,7 @@ export default {
       }
       if (buffer.modified) {
         if (await toy.confirmModal.open("Save changes?")) {
-          await toy.doc.save();
+          await toy.view.save();
         }
       }
     });
@@ -53,7 +53,7 @@ export default {
     });
   },
   register: {
-    doc(toy: api.Toy): api.Doc {
+    view(toy: api.Toy): api.View {
       return {
         signals: signals.listener,
 
@@ -81,7 +81,7 @@ export default {
 
         async save(): Promise<void> {
           if (!fileName) {
-            await toy.doc.saveAs();
+            await toy.view.saveAs();
             return;
           }
 
@@ -94,7 +94,7 @@ export default {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await toy.alertModal.open(message);
 
-            await toy.doc.saveAs();
+            await toy.view.saveAs();
           }
         },
 

@@ -4,7 +4,6 @@ import * as plugins from "@libs/plugins";
 import alertModal from "@plugins/alert-modal";
 import confirmModal from "@plugins/confirm-modal";
 import debug from "@plugins/debug";
-import doc from "@plugins/doc";
 import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
@@ -13,6 +12,7 @@ import paletteModal from "@plugins/palette-modal";
 import runtime from "@plugins/runtime";
 import shortcuts from "@plugins/shortcuts";
 import theme from "@plugins/theme";
+import view from "@plugins/view";
 import zen from "@plugins/zen";
 
 const userPlugins: string[] = [];
@@ -30,7 +30,6 @@ export class Toy extends api.Toy {
     toy.#register(alertModal);
     toy.#register(confirmModal);
     toy.#register(debug);
-    toy.#register(doc);
     toy.#register(fileNameModal);
     toy.#register(footer);
     toy.#register(header);
@@ -39,6 +38,7 @@ export class Toy extends api.Toy {
     toy.#register(runtime);
     toy.#register(shortcuts);
     toy.#register(theme);
+    toy.#register(view);
     toy.#register(zen);
 
     await toy.#loadUserPlugins();
