@@ -25,7 +25,7 @@ export default {
       widget.render();
     });
 
-    toy.cursor.signals.on("change")(({ ln, col }) => {
+    toy.doc.signals.on("change.cursor")(({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });

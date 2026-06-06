@@ -1,6 +1,5 @@
 import { AlertModal } from "./alert-modal.ts";
 import { ConfirmModal } from "./confirm-modal.ts";
-import { Cursor } from "./cursor.ts";
 import { Debug } from "./debug.ts";
 import { Doc } from "./doc.ts";
 import { FileNameModal } from "./file-name-modal.ts";
@@ -13,7 +12,6 @@ import { Zen } from "./zen.ts";
 export abstract class Toy {
   readonly alertModal!: AlertModal;
   readonly confirmModal!: ConfirmModal;
-  readonly cursor!: Cursor;
   readonly debug!: Debug;
   readonly doc!: Doc;
   readonly fileNameModal!: FileNameModal;

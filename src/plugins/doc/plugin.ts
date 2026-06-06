@@ -7,8 +7,7 @@ import * as themes from "@libs/themes";
 
 import { EditorWidget } from "@widgets/editor";
 
-const docSignals = new libEvents.SignalEmitter<api.DocSignals>();
-const cursorSignals = new libEvents.SignalEmitter<api.CursorSignals>();
+const signals = new libEvents.SignalEmitter<api.DocSignals>();
 
 let buffer: buffers.Buffer;
 let widget: EditorWidget;
@@ -18,11 +17,11 @@ export default {
   init(toy: api.Toy): void {
     buffer = new buffers.Buffer();
     buffer.onChange = () =>
-      docSignals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount });
+      signals.broadcast("change", { modified: buffer.modified, lineCount: buffer.lineCount });
 
     widget = new EditorWidget(buffer, {
       multiLine: true,
-      onCursorChange: (x) => cursorSignals.broadcast("change", { ln: x.ln, col: x.col }),
+      onCursorChange: (x) => signals.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
     buffer.resetHistory();
@@ -54,18 +53,14 @@ export default {
     });
   },
   register: {
-    cursor(): api.Cursor {
-      return {
-        signals: cursorSignals.listener,
-      };
-    },
     doc(toy: api.Toy): api.Doc {
       return {
-        signals: docSignals.listener,
+        signals: signals.listener,
+
         async open(newFileName: string): Promise<void> {
           fileName = newFileName;
 
-          docSignals.broadcast("change.name", newFileName);
+          signals.broadcast("change.name", newFileName);
 
           try {
             await buffer.write(files.load(newFileName));
@@ -83,6 +78,7 @@ export default {
             }
           }
         },
+
         async save(): Promise<void> {
           if (!fileName) {
             await toy.doc.saveAs();
@@ -101,6 +97,7 @@ export default {
             await toy.doc.saveAs();
           }
         },
+
         async saveAs(): Promise<void> {
           while (true) {
             const newFileName = await toy.fileNameModal.open(fileName ?? "");
@@ -112,7 +109,7 @@ export default {
               await files.save(newFileName, buffer.read());
 
               fileName = newFileName;
-              docSignals.broadcast("change.name", newFileName);
+              signals.broadcast("change.name", newFileName);
 
               buffer.resetHistory();
               widget.resetCursor();
