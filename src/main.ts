@@ -22,7 +22,7 @@ await toy.runtime.start();
 toy.io.resize();
 
 if (typeof args._[0] === "string") {
-  await toy.view.open(args._[0]);
+  await toy.runtime.open(args._[0]);
 }
 
 await toy.io.loop(() => {});

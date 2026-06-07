@@ -6,11 +6,7 @@ export type ViewSignals = {
 
 export type View = {
   signals: events.Listener<ViewSignals>;
-
-  open(_: string): Promise<void>;
-  save(): Promise<void>;
-  saveAs(): Promise<void>;
-
+  resetCursor(): void;
   toggleWhitespace(): void;
   toggleWrap(): void;
   selectAll(): void;
