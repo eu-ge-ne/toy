@@ -9,9 +9,21 @@ export class Buffer {
   readonly #history = new history.History<documents.Node>();
   readonly #emitter = new events.SignalEmitter<{
     "change": (_: { modified: boolean; lineCount: number }) => void;
+    "change.name": (_: string) => void;
   }>();
 
+  #name = "";
+
   readonly signals = this.#emitter.listener;
+
+  get name(): string {
+    return this.#name;
+  }
+
+  set name(x: string) {
+    this.#name = x;
+    this.#emitter.broadcast("change.name", x);
+  }
 
   get lineCount(): number {
     return this.#doc.lineCount;

@@ -8,7 +8,6 @@ import { EditorWidget } from "@widgets/editor";
 
 let signals: libEvents.SignalEmitter<api.ViewSignals>;
 let widget: EditorWidget;
-let fileName: string | undefined;
 
 export default {
   register: {
@@ -19,9 +18,7 @@ export default {
         signals: signals.listener,
 
         async open(newFileName: string): Promise<void> {
-          fileName = newFileName;
-
-          signals.broadcast("change.name", newFileName);
+          toy.buffer.name = newFileName;
 
           try {
             await toy.buffer.write(files.load(newFileName));
@@ -41,13 +38,13 @@ export default {
         },
 
         async save(): Promise<void> {
-          if (!fileName) {
+          if (!toy.buffer.name) {
             await toy.view.saveAs();
             return;
           }
 
           try {
-            await files.save(fileName, toy.buffer.read());
+            await files.save(toy.buffer.name, toy.buffer.read());
 
             toy.buffer.resetHistory();
             widget.resetCursor();
@@ -61,7 +58,7 @@ export default {
 
         async saveAs(): Promise<void> {
           while (true) {
-            const newFileName = await toy.fileNameModal.open(fileName ?? "");
+            const newFileName = await toy.fileNameModal.open(toy.buffer.name);
             if (!newFileName) {
               return;
             }
@@ -69,8 +66,7 @@ export default {
             try {
               await files.save(newFileName, toy.buffer.read());
 
-              fileName = newFileName;
-              signals.broadcast("change.name", newFileName);
+              toy.buffer.name = newFileName;
 
               toy.buffer.resetHistory();
               widget.resetCursor();
@@ -82,27 +78,35 @@ export default {
             }
           }
         },
+
         toggleWhitespace(): void {
           widget.toggleWhitespace();
         },
+
         toggleWrap(): void {
           widget.toggleWrap();
         },
+
         selectAll(): void {
           widget.selectAll();
         },
+
         undo(): void {
           widget.undo();
         },
+
         redo(): void {
           widget.redo();
         },
+
         copy(): void {
           widget.copy();
         },
+
         cut(): void {
           widget.cut();
         },
+
         paste(): void {
           widget.paste();
         },

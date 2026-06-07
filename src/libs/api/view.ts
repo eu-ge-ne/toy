@@ -1,7 +1,6 @@
 import * as events from "@libs/events";
 
 export type ViewSignals = {
-  "change.name": (_: string) => void;
   "change.cursor": (_: { ln: number; col: number }) => void;
 };
 
