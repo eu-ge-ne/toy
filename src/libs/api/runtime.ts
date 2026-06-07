@@ -9,4 +9,7 @@ export type Runtime = {
   events: events.Listener<RuntimeEvents>;
   start(): Promise<void>;
   stop(e?: PromiseRejectionEvent): Promise<void>;
+  open(_: string): Promise<void>;
+  save(): Promise<void>;
+  saveAs(): Promise<void>;
 };

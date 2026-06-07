@@ -52,7 +52,7 @@ export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   ),
   new Option(
     "Global: Save",
-    async (api: api.Toy) => api.view.save(),
+    async (api: api.Toy) => api.runtime.save(),
     ["F2"],
   ),
   new Option(

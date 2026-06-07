@@ -8,7 +8,7 @@ const shortcuts: Record<string, (_: api.Toy) => Promise<void>> = {
   "⌃F1": (x) => x.paletteModal.open(),
   "⌥F1": (x) => x.paletteModal.open(),
   "⌘F1": (x) => x.paletteModal.open(),
-  "F2": (x) => x.view.save(),
+  "F2": (x) => x.runtime.save(),
   "F5": async (x) => x.view.toggleWhitespace(),
   "F6": async (x) => x.view.toggleWrap(),
   "F10": (x) => x.runtime.stop(),

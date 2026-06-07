@@ -1,6 +1,5 @@
 import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
-import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
@@ -11,72 +10,14 @@ let widget: EditorWidget;
 
 export default {
   register: {
-    view(toy: api.Toy): api.View {
+    view(_: api.Toy): api.View {
       signals = new libEvents.SignalEmitter<api.ViewSignals>();
 
       return {
         signals: signals.listener,
 
-        async open(newFileName: string): Promise<void> {
-          toy.buffer.name = newFileName;
-
-          try {
-            await toy.buffer.write(files.load(newFileName));
-
-            toy.buffer.resetHistory();
-            widget.resetCursor();
-          } catch (err) {
-            if (err instanceof Deno.errors.NotFound) {
-              // ignore
-            } else {
-              const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await toy.alertModal.open(message);
-
-              await toy.runtime.stop();
-            }
-          }
-        },
-
-        async save(): Promise<void> {
-          if (!toy.buffer.name) {
-            await toy.view.saveAs();
-            return;
-          }
-
-          try {
-            await files.save(toy.buffer.name, toy.buffer.read());
-
-            toy.buffer.resetHistory();
-            widget.resetCursor();
-          } catch (err) {
-            const message = Error.isError(err) ? err.message : Deno.inspect(err);
-            await toy.alertModal.open(message);
-
-            await toy.view.saveAs();
-          }
-        },
-
-        async saveAs(): Promise<void> {
-          while (true) {
-            const newFileName = await toy.fileNameModal.open(toy.buffer.name);
-            if (!newFileName) {
-              return;
-            }
-
-            try {
-              await files.save(newFileName, toy.buffer.read());
-
-              toy.buffer.name = newFileName;
-
-              toy.buffer.resetHistory();
-              widget.resetCursor();
-
-              return;
-            } catch (err) {
-              const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await toy.alertModal.open(message);
-            }
-          }
+        resetCursor(): void {
+          widget.resetCursor();
         },
 
         toggleWhitespace(): void {
@@ -125,17 +66,6 @@ export default {
     toy.io.signals.on("render")(() => widget.render());
     toy.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-
-    toy.runtime.events.on("stop")(async ({ e }) => {
-      if (e) {
-        return;
-      }
-      if (toy.buffer.modified) {
-        if (await toy.confirmModal.open("Save changes?")) {
-          await toy.view.save();
-        }
-      }
-    });
 
     toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
