@@ -44,11 +44,12 @@ export class Buffer {
   }
 
   get text(): string {
-    return this.#doc.text;
+    return this.#doc.read(0).reduce((a, x) => a + x, "");
   }
 
   set text(x: string) {
-    this.#doc.text = x;
+    this.#doc.delete(0);
+    this.#doc.insert(0, x);
 
     this.#emitter.broadcast("change");
 

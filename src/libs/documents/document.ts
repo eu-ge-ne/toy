@@ -1,5 +1,5 @@
 import { Content } from "./content.ts";
-import { bubble, find, NIL, type Node, successor } from "./node.ts";
+import { bubble, find, NIL, successor } from "./node.ts";
 import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
@@ -27,24 +27,6 @@ export class Document {
 
   get lineCount(): number {
     return this.tree.root.total_len === 0 ? 0 : this.tree.root.total_eols_len + 1;
-  }
-
-  get text(): string {
-    return this.read(0).reduce((a, x) => a + x, "");
-  }
-
-  set text(x: string) {
-    this.delete(0);
-
-    this.insert(0, x);
-  }
-
-  save(): Node {
-    return structuredClone(this.tree.root);
-  }
-
-  restore(node: Node): void {
-    this.tree.root = structuredClone(node);
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
