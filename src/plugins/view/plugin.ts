@@ -28,14 +28,6 @@ export default {
           widget.selectAll();
         },
 
-        undo(): void {
-          widget.undo();
-        },
-
-        redo(): void {
-          widget.redo();
-        },
-
         copy(): void {
           widget.copy();
         },
@@ -57,11 +49,11 @@ export default {
       onCursorChange: (x) => signals.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    toy.zen.signals.on("toggle")(() => widget.toggleIndex());
-    toy.io.signals.on("render")(() => widget.render());
-    toy.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    toy.zen.signals.on("toggle")(() => widget.toggleIndex());
 
+    toy.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
+    toy.io.signals.on("render")(() => widget.render());
     toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
       if (toy.zen.enabled) {

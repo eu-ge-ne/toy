@@ -47,7 +47,7 @@ export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   ),
   new Option(
     "Edit: Redo",
-    async (api: api.Toy) => api.view.redo(),
+    async (api: api.Toy) => api.buffer.redo(),
     ["⌃Y", "⌘Y"],
   ),
   new Option(
@@ -97,7 +97,7 @@ export const options: Option<(_: api.Toy) => Promise<void>>[] = [
   ),
   new Option(
     "Edit: Undo",
-    async (api: api.Toy) => api.view.undo(),
+    async (api: api.Toy) => api.buffer.undo(),
     ["⌃Z", "⌘Z"],
   ),
   new Option(
