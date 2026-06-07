@@ -16,10 +16,6 @@ export default {
       return {
         signals: signals.listener,
 
-        resetCursor(): void {
-          widget.resetCursor();
-        },
-
         toggleWhitespace(): void {
           widget.toggleWhitespace();
         },
@@ -60,7 +56,6 @@ export default {
       multiLine: true,
       onCursorChange: (x) => signals.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
-    widget.resetCursor();
 
     toy.zen.signals.on("toggle")(() => widget.toggleIndex());
     toy.io.signals.on("render")(() => widget.render());

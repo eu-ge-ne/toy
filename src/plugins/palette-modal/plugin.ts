@@ -34,7 +34,6 @@ export default {
           let result: ((_: api.Toy) => Promise<void>) | undefined;
 
           buffer.text = "";
-          widget.children.editor.resetCursor();
           widget.children.list.items = options;
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());

@@ -31,6 +31,8 @@ export class EditorWidget extends widgets.Widget<Params> {
       bg: new BgWidget(),
       content: new Content(buffer, this.#cursor),
     };
+
+    this.#reset();
   }
 
   protected override children: {
@@ -72,16 +74,6 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   toggleIndex(): void {
     this.children.content.toggleIndex();
-  }
-
-  resetCursor(): void {
-    if (this.params.multiLine) {
-      this.#cursor.set(0, 0, false);
-    } else {
-      this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
-    }
-
-    this.#cursorHistory.reset({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
 
   onKeyPress(key: kitty.Key): void {
@@ -365,5 +357,15 @@ export class EditorWidget extends widgets.Widget<Params> {
   selectAll(): void {
     this.#cursor.set(0, 0, false);
     this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+  }
+
+  #reset(): void {
+    if (this.params.multiLine) {
+      this.#cursor.set(0, 0, false);
+    } else {
+      this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+    }
+
+    this.#cursorHistory.reset({ ln: this.#cursor.ln, col: this.#cursor.col });
   }
 }

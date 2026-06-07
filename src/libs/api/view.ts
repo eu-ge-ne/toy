@@ -6,7 +6,6 @@ export type ViewSignals = {
 
 export type View = {
   signals: events.Listener<ViewSignals>;
-  resetCursor(): void;
   toggleWhitespace(): void;
   toggleWrap(): void;
   selectAll(): void;
