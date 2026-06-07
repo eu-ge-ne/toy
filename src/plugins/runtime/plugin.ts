@@ -37,9 +37,8 @@ export default {
           toy.buffer.name = newFileName;
 
           try {
-            await toy.buffer.write(files.load(newFileName));
+            await toy.buffer.rewrite(files.load(newFileName));
 
-            toy.buffer.resetHistory();
             toy.view.resetCursor();
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
@@ -62,7 +61,8 @@ export default {
           try {
             await files.save(toy.buffer.name, toy.buffer.read());
 
-            toy.buffer.resetHistory();
+            toy.buffer.resetUndo();
+
             toy.view.resetCursor();
           } catch (err) {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
@@ -82,10 +82,11 @@ export default {
             try {
               await files.save(newFileName, toy.buffer.read());
 
-              toy.buffer.name = newFileName;
+              toy.buffer.resetUndo();
 
-              toy.buffer.resetHistory();
               toy.view.resetCursor();
+
+              toy.buffer.name = newFileName;
             } catch (err) {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
               await toy.alertModal.open(message);

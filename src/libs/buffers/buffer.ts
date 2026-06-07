@@ -14,6 +14,10 @@ export class Buffer {
 
   #name = "";
 
+  constructor() {
+    this.resetUndo();
+  }
+
   readonly signals = this.#emitter.listener;
 
   get name(): string {
@@ -39,10 +43,14 @@ export class Buffer {
 
   set text(x: string) {
     this.#doc.text = x;
+
+    this.resetUndo();
   }
 
-  async write(text: AsyncIterable<string>): Promise<void> {
-    await this.#doc.write(text);
+  async rewrite(text: AsyncIterable<string>): Promise<void> {
+    await this.#doc.rewrite(text);
+
+    this.resetUndo();
   }
 
   read(): Iterable<string> {
@@ -55,12 +63,6 @@ export class Buffer {
 
   line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gDoc.line(ln, extra);
-  }
-
-  resetHistory(): void {
-    this.#history.reset(this.#doc.tree.root);
-
-    this.#emitter.broadcast("change", { modified: this.modified, lineCount: this.lineCount });
   }
 
   edit(
@@ -87,7 +89,7 @@ export class Buffer {
     if (changed) {
       this.#history.push(this.#doc.tree.root);
 
-      this.#emitter.broadcast("change", { modified: this.modified, lineCount: this.lineCount });
+      this.#emitChange();
     }
   }
 
@@ -99,7 +101,7 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitter.broadcast("change", { modified: this.modified, lineCount: this.lineCount });
+    this.#emitChange();
   }
 
   redo(): void {
@@ -110,6 +112,16 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
+    this.#emitChange();
+  }
+
+  resetUndo(): void {
+    this.#history.reset(this.#doc.tree.root);
+
+    this.#emitChange();
+  }
+
+  #emitChange(): void {
     this.#emitter.broadcast("change", { modified: this.modified, lineCount: this.lineCount });
   }
 }

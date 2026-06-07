@@ -34,7 +34,6 @@ export default {
           let result: ((_: api.Toy) => Promise<void>) | undefined;
 
           buffer.text = "";
-          buffer.resetHistory();
           widget.children.editor.resetCursor();
           widget.children.list.items = options;
 
