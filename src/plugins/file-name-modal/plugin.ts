@@ -35,7 +35,6 @@ export default {
           let result: string | undefined;
 
           buffer.text = fileName;
-          buffer.resetUndo();
 
           const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
 

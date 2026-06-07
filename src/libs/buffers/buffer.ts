@@ -51,12 +51,16 @@ export class Buffer {
     this.#doc.text = x;
 
     this.#emitter.broadcast("change");
+
+    this.resetUndo();
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
 
     this.#emitter.broadcast("change");
+
+    this.resetUndo();
   }
 
   read(): Iterable<string> {
