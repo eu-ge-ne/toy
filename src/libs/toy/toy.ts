@@ -2,6 +2,7 @@ import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 
 import alertModal from "@plugins/alert-modal";
+import buffer from "@plugins/buffer";
 import confirmModal from "@plugins/confirm-modal";
 import debug from "@plugins/debug";
 import fileNameModal from "@plugins/file-name-modal";
@@ -28,6 +29,7 @@ export class Toy extends api.Toy {
     const toy = new Toy();
 
     toy.#register(alertModal);
+    toy.#register(buffer);
     toy.#register(confirmModal);
     toy.#register(debug);
     toy.#register(fileNameModal);

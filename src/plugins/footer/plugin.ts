@@ -9,7 +9,7 @@ export default {
     const widget = new FooterWidget();
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.view.signals.on("change")(({ lineCount }) => widget.lineCount = lineCount);
+    toy.buffer.signals.on("change")(({ lineCount }) => widget.lineCount = lineCount);
 
     toy.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();

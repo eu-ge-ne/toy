@@ -1,3 +1,5 @@
+import * as buffers from "@libs/buffers";
+
 import { AlertModal } from "./alert-modal.ts";
 import { ConfirmModal } from "./confirm-modal.ts";
 import { Debug } from "./debug.ts";
@@ -11,6 +13,7 @@ import { Zen } from "./zen.ts";
 
 export abstract class Toy {
   readonly alertModal!: AlertModal;
+  readonly buffer!: buffers.Buffer;
   readonly confirmModal!: ConfirmModal;
   readonly debug!: Debug;
   readonly fileNameModal!: FileNameModal;
