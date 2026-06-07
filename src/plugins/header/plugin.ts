@@ -8,8 +8,8 @@ export default {
   init(toy: api.Toy): void {
     const widget = new HeaderWidget();
 
-    toy.buffer.signals.on("change.name")((x) => widget.fileName = x);
-    toy.buffer.signals.on("change")(({ modified }) => widget.modified = modified);
+    toy.buffer.signals.on("change.name")(() => widget.fileName = toy.buffer.name);
+    toy.buffer.signals.on("change")(() => widget.modified = toy.buffer.modified);
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
     toy.io.signals.on("resize")(() => {

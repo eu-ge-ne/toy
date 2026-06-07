@@ -8,8 +8,8 @@ export class Buffer {
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
   readonly #emitter = new events.SignalEmitter<{
-    "change": (_: { modified: boolean; lineCount: number }) => void;
-    "change.name": (_: string) => void;
+    "change": () => void;
+    "change.name": () => void;
   }>();
 
   #name = "";
@@ -26,7 +26,7 @@ export class Buffer {
 
   set name(x: string) {
     this.#name = x;
-    this.#emitter.broadcast("change.name", x);
+    this.#emitter.broadcast("change.name");
   }
 
   get lineCount(): number {
@@ -89,7 +89,7 @@ export class Buffer {
     if (changed) {
       this.#history.push(this.#doc.tree.root);
 
-      this.#emitChange();
+      this.#emitter.broadcast("change");
     }
   }
 
@@ -101,7 +101,7 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitChange();
+    this.#emitter.broadcast("change");
   }
 
   redo(): void {
@@ -112,16 +112,12 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitChange();
+    this.#emitter.broadcast("change");
   }
 
   resetUndo(): void {
     this.#history.reset(this.#doc.tree.root);
 
-    this.#emitChange();
-  }
-
-  #emitChange(): void {
-    this.#emitter.broadcast("change", { modified: this.modified, lineCount: this.lineCount });
+    this.#emitter.broadcast("change");
   }
 }
