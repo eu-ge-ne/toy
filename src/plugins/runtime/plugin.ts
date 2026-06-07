@@ -38,6 +38,8 @@ export default {
 
           try {
             await toy.buffer.rewrite(files.load(newFileName));
+
+            toy.buffer.resetUndo();
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
               // ignore

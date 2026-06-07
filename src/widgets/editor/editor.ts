@@ -32,7 +32,26 @@ export class EditorWidget extends widgets.Widget<Params> {
       content: new Content(buffer, this.#cursor),
     };
 
-    this.#reset();
+    this.#resetCursor();
+
+    buffer.signals.on("edit")(() =>
+      this.#cursorHistory.push({ ln: this.#cursor.ln, col: this.#cursor.col })
+    );
+    buffer.signals.on("undo")(() => {
+      const entry = this.#cursorHistory.undo();
+      if (entry) {
+        this.#cursor.set(entry.ln, entry.col, false);
+      }
+    });
+    buffer.signals.on("redo")(() => {
+      const entry = this.#cursorHistory.redo();
+      if (entry) {
+        this.#cursor.set(entry.ln, entry.col, false);
+      }
+    });
+    buffer.signals.on("reset.undo")(() => {
+      this.#resetCursor();
+    });
   }
 
   protected override children: {
@@ -242,9 +261,6 @@ export class EditorWidget extends widgets.Widget<Params> {
         this.#cursor.set(this.#cursor.ln + eol_count, col, false);
       }
     });
-
-    const { ln, col } = this.#cursor;
-    this.#cursorHistory.push({ ln, col });
   }
 
   #backspace(): void {
@@ -263,18 +279,12 @@ export class EditorWidget extends widgets.Widget<Params> {
         this.#cursor.left(false);
       }
     });
-
-    const { ln, col } = this.#cursor;
-    this.#cursorHistory.push({ ln, col });
   }
 
   #deleteChar(): void {
     this.buffer.edit(({ remove }) => {
       remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
     });
-
-    const { ln, col } = this.#cursor;
-    this.#cursorHistory.push({ ln, col });
   }
 
   #deleteSelection(): void {
@@ -283,11 +293,8 @@ export class EditorWidget extends widgets.Widget<Params> {
         ln: this.#cursor.to.ln,
         col: this.#cursor.to.col + 1,
       });
+      this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
     });
-    this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
-
-    const { ln, col } = this.#cursor;
-    this.#cursorHistory.push({ ln, col });
   }
 
   copy(): void {
@@ -338,20 +345,10 @@ export class EditorWidget extends widgets.Widget<Params> {
 
   undo(): void {
     this.buffer.undo();
-
-    const cursorEntry = this.#cursorHistory.undo();
-    if (cursorEntry) {
-      this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
-    }
   }
 
   redo(): void {
     this.buffer.redo();
-
-    const cursorEntry = this.#cursorHistory.redo();
-    if (cursorEntry) {
-      this.#cursor.set(cursorEntry.ln, cursorEntry.col, false);
-    }
   }
 
   selectAll(): void {
@@ -359,7 +356,7 @@ export class EditorWidget extends widgets.Widget<Params> {
     this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
   }
 
-  #reset(): void {
+  #resetCursor(): void {
     if (this.params.multiLine) {
       this.#cursor.set(0, 0, false);
     } else {

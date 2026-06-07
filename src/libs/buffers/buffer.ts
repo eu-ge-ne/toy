@@ -3,15 +3,20 @@ import * as events from "@libs/events";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
+type BufferSignals = {
+  "change": () => void;
+  "change.name": () => void;
+  "edit": () => void;
+  "undo": () => void;
+  "redo": () => void;
+  "reset.undo": () => void;
+};
+
 export class Buffer {
+  readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #doc = new documents.Document();
   readonly #gDoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
-  readonly #emitter = new events.SignalEmitter<{
-    "change": () => void;
-    "change.name": () => void;
-  }>();
-
   #name = "";
 
   constructor() {
@@ -26,6 +31,7 @@ export class Buffer {
 
   set name(x: string) {
     this.#name = x;
+
     this.#emitter.broadcast("change.name");
   }
 
@@ -44,13 +50,13 @@ export class Buffer {
   set text(x: string) {
     this.#doc.text = x;
 
-    this.resetUndo();
+    this.#emitter.broadcast("change");
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
 
-    this.resetUndo();
+    this.#emitter.broadcast("change");
   }
 
   read(): Iterable<string> {
@@ -90,6 +96,7 @@ export class Buffer {
       this.#history.push(this.#doc.tree.root);
 
       this.#emitter.broadcast("change");
+      this.#emitter.broadcast("edit");
     }
   }
 
@@ -102,6 +109,7 @@ export class Buffer {
     this.#doc.tree.root = entry;
 
     this.#emitter.broadcast("change");
+    this.#emitter.broadcast("undo");
   }
 
   redo(): void {
@@ -113,11 +121,12 @@ export class Buffer {
     this.#doc.tree.root = entry;
 
     this.#emitter.broadcast("change");
+    this.#emitter.broadcast("redo");
   }
 
   resetUndo(): void {
     this.#history.reset(this.#doc.tree.root);
 
-    this.#emitter.broadcast("change");
+    this.#emitter.broadcast("reset.undo");
   }
 }
