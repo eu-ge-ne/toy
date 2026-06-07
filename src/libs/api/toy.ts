@@ -1,4 +1,5 @@
 import * as buffers from "@libs/buffers";
+import * as views from "@libs/views";
 
 import { AlertModal } from "./alert-modal.ts";
 import { ConfirmModal } from "./confirm-modal.ts";
@@ -8,7 +9,6 @@ import { IO } from "./io.ts";
 import { PaletteModal } from "./palette-modal.ts";
 import { Runtime } from "./runtime.ts";
 import { Theme } from "./theme.ts";
-import { View } from "./view.ts";
 import { Zen } from "./zen.ts";
 
 export abstract class Toy {
@@ -21,6 +21,6 @@ export abstract class Toy {
   readonly paletteModal!: PaletteModal;
   readonly runtime!: Runtime;
   readonly theme!: Theme;
-  readonly view!: View;
+  readonly view!: views.View;
   readonly zen!: Zen;
 }

@@ -3,7 +3,7 @@ import * as events from "@libs/events";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
-type BufferSignals = {
+export type BufferSignals = {
   "change": () => void;
   "change.name": () => void;
   "edit": () => void;

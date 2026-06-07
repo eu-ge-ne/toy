@@ -2,16 +2,17 @@ import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
-
 import { EditorWidget } from "@widgets/editor";
 
-let signals: libEvents.SignalEmitter<api.ViewSignals>;
+import { View, ViewSignals } from "./view.ts";
+
+let signals: libEvents.SignalEmitter<ViewSignals>;
 let widget: EditorWidget;
 
-export default {
+export const plugin = {
   register: {
-    view(_: api.Toy): api.View {
-      signals = new libEvents.SignalEmitter<api.ViewSignals>();
+    view(_: api.Toy): View {
+      signals = new libEvents.SignalEmitter<ViewSignals>();
 
       return {
         signals: signals.listener,
