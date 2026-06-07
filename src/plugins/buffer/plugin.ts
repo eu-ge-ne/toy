@@ -5,11 +5,7 @@ import * as plugins from "@libs/plugins";
 export default {
   register: {
     buffer(_: api.Toy): buffers.Buffer {
-      const buffer = new buffers.Buffer();
-
-      buffer.resetHistory();
-
-      return buffer;
+      return new buffers.Buffer();
     },
   },
 } satisfies plugins.Plugin;

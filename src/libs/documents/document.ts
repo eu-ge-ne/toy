@@ -140,7 +140,7 @@ export class Document {
     this.insert(i, text);
   }
 
-  async write(data: AsyncIterable<string>): Promise<void> {
+  async rewrite(data: AsyncIterable<string>): Promise<void> {
     this.delete(0);
 
     for await (const chunk of data) {
