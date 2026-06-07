@@ -38,8 +38,6 @@ export default {
 
           try {
             await toy.buffer.rewrite(files.load(newFileName));
-
-            toy.view.resetCursor();
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
               // ignore
@@ -62,8 +60,6 @@ export default {
             await files.save(toy.buffer.name, toy.buffer.read());
 
             toy.buffer.resetUndo();
-
-            toy.view.resetCursor();
           } catch (err) {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await toy.alertModal.open(message);
@@ -83,8 +79,6 @@ export default {
               await files.save(newFileName, toy.buffer.read());
 
               toy.buffer.resetUndo();
-
-              toy.view.resetCursor();
 
               toy.buffer.name = newFileName;
             } catch (err) {
