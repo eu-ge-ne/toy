@@ -1,0 +1,4 @@
+{
+  "name": "@libs/runtime",
+  "exports": "./index.ts"
+}

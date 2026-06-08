@@ -3,11 +3,15 @@ import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
-const events = new libEvents.EventEmitter<api.RuntimeEvents>();
+import { RuntimeAPI, RuntimeEvents } from "./api.ts";
 
-export default {
+let events: libEvents.EventEmitter<RuntimeEvents>;
+
+export const plugin = {
   register: {
-    runtime(toy: api.Toy): api.Runtime {
+    runtime(toy: api.Toy): RuntimeAPI {
+      events = new libEvents.EventEmitter<RuntimeEvents>();
+
       return {
         events: events.listener,
 
