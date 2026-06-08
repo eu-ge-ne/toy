@@ -1,0 +1,4 @@
+{
+  "name": "@libs/zen",
+  "exports": "./index.ts"
+}

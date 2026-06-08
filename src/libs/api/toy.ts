@@ -3,13 +3,13 @@ import * as io from "@libs/io";
 import * as runtime from "@libs/runtime";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
+import * as zen from "@libs/zen";
 
 import { AlertModal } from "./alert-modal.ts";
 import { ConfirmModal } from "./confirm-modal.ts";
 import { Debug } from "./debug.ts";
 import { FileNameModal } from "./file-name-modal.ts";
 import { PaletteModal } from "./palette-modal.ts";
-import { Zen } from "./zen.ts";
 
 export abstract class Toy {
   readonly alertModal!: AlertModal;
@@ -22,5 +22,5 @@ export abstract class Toy {
   readonly runtime!: runtime.RuntimeAPI;
   readonly theme!: themes.ThemeAPI;
   readonly view!: views.ViewAPI;
-  readonly zen!: Zen;
+  readonly zen!: zen.ZenAPI;
 }
