@@ -1,0 +1,4 @@
+{
+  "name": "@libs/debug",
+  "exports": "./index.ts"
+}

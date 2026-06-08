@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/debug",
-  "exports": "./plugin.ts"
-}

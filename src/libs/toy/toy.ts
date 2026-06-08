@@ -1,5 +1,6 @@
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
+import * as debug from "@libs/debug";
 import * as io from "@libs/io";
 import * as plugins from "@libs/plugins";
 import * as runtime from "@libs/runtime";
@@ -9,7 +10,6 @@ import * as views from "@libs/views";
 import * as zen from "@libs/zen";
 import alertModal from "@plugins/alert-modal";
 import confirmModal from "@plugins/confirm-modal";
-import debug from "@plugins/debug";
 import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
@@ -30,7 +30,7 @@ export class Toy extends api.Toy {
     toy.#register(alertModal);
     toy.#register(buffers.plugin);
     toy.#register(confirmModal);
-    toy.#register(debug);
+    toy.#register(debug.plugin);
     toy.#register(fileNameModal);
     toy.#register(footer);
     toy.#register(header);
