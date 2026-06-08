@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/confirm-modal",
-  "exports": "./plugin.ts"
-}

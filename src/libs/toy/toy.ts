@@ -1,19 +1,19 @@
+import * as alertModal from "@libs/alert-modal";
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
+import * as confirmModal from "@libs/confirm-modal";
 import * as debug from "@libs/debug";
+import * as fileNameModal from "@libs/file-name-modal";
 import * as footer from "@libs/footer";
 import * as header from "@libs/header";
 import * as io from "@libs/io";
+import * as paletteModal from "@libs/palette-modal";
 import * as plugins from "@libs/plugins";
 import * as runtime from "@libs/runtime";
 import * as shortcuts from "@libs/shortcuts";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import * as zen from "@libs/zen";
-import alertModal from "@plugins/alert-modal";
-import confirmModal from "@plugins/confirm-modal";
-import fileNameModal from "@plugins/file-name-modal";
-import paletteModal from "@plugins/palette-modal";
 
 const userPlugins: string[] = [];
 
@@ -27,15 +27,15 @@ export class Toy extends api.Toy {
   static async load(): Promise<Toy> {
     const toy = new Toy();
 
-    toy.#register(alertModal);
+    toy.#register(alertModal.plugin);
     toy.#register(buffers.plugin);
-    toy.#register(confirmModal);
+    toy.#register(confirmModal.plugin);
     toy.#register(debug.plugin);
-    toy.#register(fileNameModal);
+    toy.#register(fileNameModal.plugin);
     toy.#register(footer.plugin);
     toy.#register(header.plugin);
     toy.#register(io.plugin);
-    toy.#register(paletteModal);
+    toy.#register(paletteModal.plugin);
     toy.#register(runtime.plugin);
     toy.#register(shortcuts.plugin);
     toy.#register(themes.plugin);

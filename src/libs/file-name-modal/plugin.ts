@@ -4,31 +4,15 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
+import { FileNameModalAPI } from "./api.ts";
 import { AskFileNameWidget } from "./widget.ts";
 
 let buffer: buffers.BufferAPI;
 let widget: AskFileNameWidget;
 
-export default {
-  init(toy: api.Toy): void {
-    buffer = new buffers.BufferAPI();
-    widget = new AskFileNameWidget(buffer);
-
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-
-    toy.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
-
-      const w = std.clamp(60, 0, columns);
-      const h = std.clamp(10, 0, rows);
-      const y = Math.trunc((rows - h) / 2);
-      const x = Math.trunc((columns - w) / 2);
-
-      widget.resize(w, h, y, x);
-    });
-  },
+export const plugin = {
   register: {
-    fileNameModal(toy: api.Toy): api.FileNameModal {
+    fileNameModal(toy: api.Toy): FileNameModalAPI {
       return {
         async open(fileName: string): Promise<string | undefined> {
           let opened = true;
@@ -73,5 +57,23 @@ export default {
         },
       };
     },
+  },
+
+  init(toy: api.Toy): void {
+    buffer = new buffers.BufferAPI();
+    widget = new AskFileNameWidget(buffer);
+
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+
+    toy.io.signals.on("resize")(() => {
+      const { columns, rows } = Deno.consoleSize();
+
+      const w = std.clamp(60, 0, columns);
+      const h = std.clamp(10, 0, rows);
+      const y = Math.trunc((rows - h) / 2);
+      const x = Math.trunc((columns - w) / 2);
+
+      widget.resize(w, h, y, x);
+    });
   },
 } satisfies plugins.Plugin;
