@@ -45,7 +45,7 @@ export class Content extends widgets.Widget {
   #cursorX = 0;
 
   constructor(
-    private readonly buffer: buffers.Buffer,
+    private readonly buffer: buffers.BufferAPI,
     private readonly cursor: Cursor,
   ) {
     super();

@@ -13,7 +13,7 @@ export class AskFileNameWidget extends widgets.Modal {
     footer: TextWidget;
   };
 
-  constructor(private readonly buffer: buffers.Buffer) {
+  constructor(private readonly buffer: buffers.BufferAPI) {
     super();
 
     this.children = {

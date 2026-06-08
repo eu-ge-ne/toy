@@ -4,14 +4,14 @@ import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import { EditorWidget } from "@widgets/editor";
 
-import { View, ViewSignals } from "./view.ts";
+import { ViewAPI, ViewSignals } from "./api.ts";
 
 let signals: libEvents.SignalEmitter<ViewSignals>;
 let widget: EditorWidget;
 
 export const plugin = {
   register: {
-    view(_: api.Toy): View {
+    view(_: api.Toy): ViewAPI {
       signals = new libEvents.SignalEmitter<ViewSignals>();
 
       return {

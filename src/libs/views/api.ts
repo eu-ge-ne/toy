@@ -4,7 +4,7 @@ export type ViewSignals = {
   "change.cursor": (_: { ln: number; col: number }) => void;
 };
 
-export type View = {
+export type ViewAPI = {
   signals: events.Listener<ViewSignals>;
   toggleWhitespace(): void;
   toggleWrap(): void;

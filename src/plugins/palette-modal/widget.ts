@@ -17,7 +17,7 @@ export class PaletteWidget extends widgets.Modal {
     list: ListWidget<(_: api.Toy) => Promise<void>>;
   };
 
-  constructor(private readonly buffer: buffers.Buffer) {
+  constructor(private readonly buffer: buffers.BufferAPI) {
     super();
 
     this.children = {
