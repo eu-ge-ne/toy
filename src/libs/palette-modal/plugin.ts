@@ -3,31 +3,16 @@ import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
+import { PaletteModalAPI } from "./api.ts";
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
 let buffer: buffers.BufferAPI;
 let widget: PaletteWidget;
 
-export default {
-  init(toy: api.Toy): void {
-    buffer = new buffers.BufferAPI();
-    widget = new PaletteWidget(buffer);
-
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-
-    toy.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
-
-      if (toy.zen.enabled) {
-        widget.resize(columns, rows, 0, 0);
-      } else {
-        widget.resize(columns, rows - 2, 1, 0);
-      }
-    });
-  },
+export const plugin = {
   register: {
-    paletteModal(toy: api.Toy): api.PaletteModal {
+    paletteModal(toy: api.Toy): PaletteModalAPI {
       return {
         async open(): Promise<void> {
           let opened = true;
@@ -89,5 +74,22 @@ export default {
         },
       };
     },
+  },
+
+  init(toy: api.Toy): void {
+    buffer = new buffers.BufferAPI();
+    widget = new PaletteWidget(buffer);
+
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+
+    toy.io.signals.on("resize")(() => {
+      const { columns, rows } = Deno.consoleSize();
+
+      if (toy.zen.enabled) {
+        widget.resize(columns, rows, 0, 0);
+      } else {
+        widget.resize(columns, rows - 2, 1, 0);
+      }
+    });
   },
 } satisfies plugins.Plugin;

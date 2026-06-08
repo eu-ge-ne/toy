@@ -5,7 +5,6 @@
   "exports": "./src/main.ts",
   "workspace": [
     "src/libs/*",
-    "src/plugins/*",
     "src/widgets/*"
   ],
   "compilerOptions": {

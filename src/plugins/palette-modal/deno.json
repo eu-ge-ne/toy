@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/palette-modal",
-  "exports": "./plugin.ts"
-}

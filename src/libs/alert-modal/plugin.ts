@@ -3,33 +3,17 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { AskWidget } from "./widget.ts";
+import { AlertModalAPI } from "./api.ts";
+import { AlertWidget } from "./widget.ts";
 
-let widget: AskWidget;
+let widget: AlertWidget;
 
-export default {
-  init(toy: api.Toy): void {
-    widget = new AskWidget();
-
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-
-    toy.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
-
-      const w = std.clamp(60, 0, columns);
-      const h = std.clamp(7, 0, rows);
-      const y = Math.trunc((rows - h) / 2);
-      const x = Math.trunc((columns - w) / 2);
-
-      widget.resize(w, h, y, x);
-    });
-  },
+export const plugin = {
   register: {
-    confirmModal(toy: api.Toy): api.ConfirmModal {
+    alertModal(toy: api.Toy): AlertModalAPI {
       return {
-        async open(message: string): Promise<boolean> {
+        async open(message: string): Promise<void> {
           let opened = true;
-          let result = false;
 
           widget.children.text.value = message;
 
@@ -41,13 +25,8 @@ export default {
 
               switch (data.key.name) {
                 case "ESC":
-                  result = false;
-                  opened = false;
-                  break;
                 case "ENTER":
-                  result = true;
                   opened = false;
-                  break;
               }
 
               if (opened) {
@@ -60,10 +39,25 @@ export default {
           );
 
           await toy.io.loop(() => !opened);
-
-          return result;
         },
       };
     },
+  },
+
+  init(toy: api.Toy): void {
+    widget = new AlertWidget();
+
+    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+
+    toy.io.signals.on("resize")(() => {
+      const { columns, rows } = Deno.consoleSize();
+
+      const w = std.clamp(60, 0, columns);
+      const h = std.clamp(10, 0, rows);
+      const y = Math.trunc((rows - h) / 2);
+      const x = Math.trunc((columns - w) / 2);
+
+      widget.resize(w, h, y, x);
+    });
   },
 } satisfies plugins.Plugin;

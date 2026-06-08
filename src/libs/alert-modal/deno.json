@@ -1,0 +1,4 @@
+{
+  "name": "@libs/alert-modal",
+  "exports": "./index.ts"
+}
