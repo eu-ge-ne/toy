@@ -4,7 +4,7 @@ export type ZenSignals = {
   "toggle": () => void;
 };
 
-export type Zen = {
+export type ZenAPI = {
   signals: events.Listener<ZenSignals>;
   get enabled(): boolean;
   toggle(): void;

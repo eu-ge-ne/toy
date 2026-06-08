@@ -5,6 +5,7 @@ import * as plugins from "@libs/plugins";
 import * as runtime from "@libs/runtime";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
+import * as zen from "@libs/zen";
 import alertModal from "@plugins/alert-modal";
 import confirmModal from "@plugins/confirm-modal";
 import debug from "@plugins/debug";
@@ -13,7 +14,6 @@ import footer from "@plugins/footer";
 import header from "@plugins/header";
 import paletteModal from "@plugins/palette-modal";
 import shortcuts from "@plugins/shortcuts";
-import zen from "@plugins/zen";
 
 const userPlugins: string[] = [];
 
@@ -40,7 +40,7 @@ export class Toy extends api.Toy {
     toy.#register(shortcuts);
     toy.#register(themes.plugin);
     toy.#register(views.plugin);
-    toy.#register(zen);
+    toy.#register(zen.plugin);
 
     await toy.#loadUserPlugins();
 
