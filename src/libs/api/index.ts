@@ -2,7 +2,6 @@ export * from "./alert-modal.ts";
 export * from "./confirm-modal.ts";
 export * from "./debug.ts";
 export * from "./file-name-modal.ts";
-export * from "./io.ts";
 export * from "./palette-modal.ts";
 export * from "./runtime.ts";
 export * from "./toy.ts";
