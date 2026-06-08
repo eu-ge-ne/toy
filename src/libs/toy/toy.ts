@@ -1,5 +1,6 @@
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
+import * as io from "@libs/io";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
@@ -9,7 +10,6 @@ import debug from "@plugins/debug";
 import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
-import io from "@plugins/io";
 import paletteModal from "@plugins/palette-modal";
 import runtime from "@plugins/runtime";
 import shortcuts from "@plugins/shortcuts";
@@ -34,7 +34,7 @@ export class Toy extends api.Toy {
     toy.#register(fileNameModal);
     toy.#register(footer);
     toy.#register(header);
-    toy.#register(io);
+    toy.#register(io.plugin);
     toy.#register(paletteModal);
     toy.#register(runtime);
     toy.#register(shortcuts);

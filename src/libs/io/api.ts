@@ -10,7 +10,7 @@ export type IOSignals = {
   "render": () => void;
 };
 
-export type IO = {
+export type IOAPI = {
   events: events.Listener<IOEvents>;
   signals: events.Listener<IOSignals>;
   resize(): void;
