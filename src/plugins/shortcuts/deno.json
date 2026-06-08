@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/shortcuts",
-  "exports": "./plugin.ts"
-}
