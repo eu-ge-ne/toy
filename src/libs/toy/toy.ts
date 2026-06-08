@@ -1,6 +1,8 @@
 import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
 import * as debug from "@libs/debug";
+import * as footer from "@libs/footer";
+import * as header from "@libs/header";
 import * as io from "@libs/io";
 import * as plugins from "@libs/plugins";
 import * as runtime from "@libs/runtime";
@@ -11,8 +13,6 @@ import * as zen from "@libs/zen";
 import alertModal from "@plugins/alert-modal";
 import confirmModal from "@plugins/confirm-modal";
 import fileNameModal from "@plugins/file-name-modal";
-import footer from "@plugins/footer";
-import header from "@plugins/header";
 import paletteModal from "@plugins/palette-modal";
 
 const userPlugins: string[] = [];
@@ -32,8 +32,8 @@ export class Toy extends api.Toy {
     toy.#register(confirmModal);
     toy.#register(debug.plugin);
     toy.#register(fileNameModal);
-    toy.#register(footer);
-    toy.#register(header);
+    toy.#register(footer.plugin);
+    toy.#register(header.plugin);
     toy.#register(io.plugin);
     toy.#register(paletteModal);
     toy.#register(runtime.plugin);

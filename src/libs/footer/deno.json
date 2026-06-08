@@ -1,4 +1,4 @@
 {
-  "name": "@plugins/header",
+  "name": "@libs/footer",
   "exports": "./plugin.ts"
 }
