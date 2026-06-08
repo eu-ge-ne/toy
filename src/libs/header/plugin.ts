@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export default {
+export const plugin = {
   init(toy: api.Toy): void {
     const widget = new HeaderWidget();
 
