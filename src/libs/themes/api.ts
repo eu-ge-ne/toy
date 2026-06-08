@@ -5,7 +5,7 @@ export type ThemeSignals = {
   "change": (_: keyof typeof themes.Themes) => void;
 };
 
-export type Theme = {
+export type ThemeAPI = {
   signals: events.Listener<ThemeSignals>;
   set(_: keyof typeof themes.Themes): void;
 };

@@ -20,7 +20,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
-  constructor(private readonly buffer: buffers.Buffer, params: Params) {
+  constructor(private readonly buffer: buffers.BufferAPI, params: Params) {
     super(params);
 
     this.#cursor = new Cursor(buffer);

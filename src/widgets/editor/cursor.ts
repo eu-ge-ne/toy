@@ -15,9 +15,7 @@ export class Cursor {
 
   onChange?: () => void;
 
-  constructor(
-    private readonly buffer: buffers.Buffer,
-  ) {
+  constructor(private readonly buffer: buffers.BufferAPI) {
   }
 
   set(ln: number, col: number, sel: boolean): boolean {

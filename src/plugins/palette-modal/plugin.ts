@@ -6,12 +6,12 @@ import * as themes from "@libs/themes";
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-let buffer: buffers.Buffer;
+let buffer: buffers.BufferAPI;
 let widget: PaletteWidget;
 
 export default {
   init(toy: api.Toy): void {
-    buffer = new buffers.Buffer();
+    buffer = new buffers.BufferAPI();
     widget = new PaletteWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));

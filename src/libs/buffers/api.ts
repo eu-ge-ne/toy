@@ -12,7 +12,7 @@ export type BufferSignals = {
   "reset.undo": () => void;
 };
 
-export class Buffer {
+export class BufferAPI {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #doc = new documents.Document();
   readonly #gDoc = new graphemes.Document(this.#doc);

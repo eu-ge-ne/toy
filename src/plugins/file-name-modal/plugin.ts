@@ -6,12 +6,12 @@ import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-let buffer: buffers.Buffer;
+let buffer: buffers.BufferAPI;
 let widget: AskFileNameWidget;
 
 export default {
   init(toy: api.Toy): void {
-    buffer = new buffers.Buffer();
+    buffer = new buffers.BufferAPI();
     widget = new AskFileNameWidget(buffer);
 
     toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
