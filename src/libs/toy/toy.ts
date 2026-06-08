@@ -2,6 +2,7 @@ import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
 import * as io from "@libs/io";
 import * as plugins from "@libs/plugins";
+import * as runtime from "@libs/runtime";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import alertModal from "@plugins/alert-modal";
@@ -11,7 +12,6 @@ import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
 import paletteModal from "@plugins/palette-modal";
-import runtime from "@plugins/runtime";
 import shortcuts from "@plugins/shortcuts";
 import zen from "@plugins/zen";
 
@@ -36,7 +36,7 @@ export class Toy extends api.Toy {
     toy.#register(header);
     toy.#register(io.plugin);
     toy.#register(paletteModal);
-    toy.#register(runtime);
+    toy.#register(runtime.plugin);
     toy.#register(shortcuts);
     toy.#register(themes.plugin);
     toy.#register(views.plugin);
