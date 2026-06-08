@@ -1,4 +1,4 @@
 {
   "name": "@libs/api",
-  "exports": "./index.ts"
+  "exports": "./toy.ts"
 }
