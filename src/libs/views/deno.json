@@ -1,4 +1,4 @@
 {
-  "name": "@libs/buffers",
+  "name": "@libs/views",
   "exports": "./index.ts"
 }

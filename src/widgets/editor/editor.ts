@@ -209,7 +209,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #onKeyRedo(): void {
-    this.redo();
+    this.buffer.redo();
   }
 
   #onKeyRight(key: kitty.Key): void {
@@ -229,7 +229,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   #onKeyUndo(): void {
-    this.undo();
+    this.buffer.undo();
   }
 
   #onKeyUp(key: kitty.Key): void {
@@ -341,14 +341,6 @@ export class EditorWidget extends widgets.Widget<Params> {
     }
 
     this.#insertText(this.#clipboard);
-  }
-
-  undo(): void {
-    this.buffer.undo();
-  }
-
-  redo(): void {
-    this.buffer.redo();
   }
 
   selectAll(): void {
