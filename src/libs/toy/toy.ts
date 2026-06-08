@@ -3,6 +3,7 @@ import * as buffers from "@libs/buffers";
 import * as io from "@libs/io";
 import * as plugins from "@libs/plugins";
 import * as runtime from "@libs/runtime";
+import * as shortcuts from "@libs/shortcuts";
 import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import * as zen from "@libs/zen";
@@ -13,7 +14,6 @@ import fileNameModal from "@plugins/file-name-modal";
 import footer from "@plugins/footer";
 import header from "@plugins/header";
 import paletteModal from "@plugins/palette-modal";
-import shortcuts from "@plugins/shortcuts";
 
 const userPlugins: string[] = [];
 
@@ -37,7 +37,7 @@ export class Toy extends api.Toy {
     toy.#register(io.plugin);
     toy.#register(paletteModal);
     toy.#register(runtime.plugin);
-    toy.#register(shortcuts);
+    toy.#register(shortcuts.plugin);
     toy.#register(themes.plugin);
     toy.#register(views.plugin);
     toy.#register(zen.plugin);

@@ -27,7 +27,7 @@ const shortcuts: Record<string, (_: api.Toy) => Promise<void>> = {
   "⌘V": async (x) => x.view.paste(),
 };
 
-export default {
+export const plugin = {
   init(toy: api.Toy): void {
     toy.io.events.on("key.press", -1000)(async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
