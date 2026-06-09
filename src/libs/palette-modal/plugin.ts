@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -12,18 +11,18 @@ let widget: PaletteWidget;
 
 export const plugin = {
   register: {
-    paletteModal(toy: api.Toy): PaletteModalAPI {
+    paletteModal(api: plugins.API): PaletteModalAPI {
       return {
         async open(): Promise<void> {
           let opened = true;
-          let result: ((_: api.Toy) => Promise<void>) | undefined;
+          let result: ((_: plugins.API) => Promise<void>) | undefined;
 
           buffer.text = "";
           widget.children.list.items = options;
 
-          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = api.io.signals.on("render", 1000)(() => widget.render());
 
-          const offKeyPress = toy.io.events.on("key.press", -1000)(
+          const offKeyPress = api.io.events.on("key.press", -1000)(
             async (data) => {
               data.cancel = true;
 
@@ -63,29 +62,29 @@ export const plugin = {
             },
           );
 
-          await toy.io.loop(() => {
-            toy.io.resize();
+          await api.io.loop(() => {
+            api.io.resize();
             return !opened;
           });
 
           if (typeof result !== "undefined") {
-            await result(toy);
+            await result(api);
           }
         },
       };
     },
   },
 
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     buffer = new buffers.BufferAPI();
     widget = new PaletteWidget(buffer);
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    toy.io.signals.on("resize")(() => {
+    api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
-      if (toy.zen.enabled) {
+      if (api.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);

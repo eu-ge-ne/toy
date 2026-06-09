@@ -1,4 +1,4 @@
 {
   "name": "@libs/plugins",
-  "exports": "./plugin.ts"
+  "exports": "./index.ts"
 }

@@ -1,7 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
 import * as alertModal from "@libs/alert-modal";
-import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
 import * as confirmModal from "@libs/confirm-modal";
 import * as debug from "@libs/debug";
@@ -30,39 +29,10 @@ if (args.version) {
   Deno.exit();
 }
 
-class Toy extends api.Toy {
+class API extends plugins.API {
   #plugins: plugins.Plugin[] = [];
 
-  private constructor() {
-    super();
-  }
-
-  static async load(): Promise<Toy> {
-    const toy = new Toy();
-
-    toy.#register(alertModal.plugin);
-    toy.#register(buffers.plugin);
-    toy.#register(confirmModal.plugin);
-    toy.#register(debug.plugin);
-    toy.#register(fileNameModal.plugin);
-    toy.#register(footer.plugin);
-    toy.#register(header.plugin);
-    toy.#register(io.plugin);
-    toy.#register(paletteModal.plugin);
-    toy.#register(runtime.plugin);
-    toy.#register(shortcuts.plugin);
-    toy.#register(themes.plugin);
-    toy.#register(views.plugin);
-    toy.#register(zen.plugin);
-
-    for (const plugin of toy.#plugins) {
-      plugin.init?.(toy);
-    }
-
-    return toy;
-  }
-
-  #register(plugin: plugins.Plugin): void {
+  register(plugin: plugins.Plugin): void {
     this.#plugins.push(plugin);
 
     // deno-lint-ignore no-explicit-any
@@ -75,16 +45,39 @@ class Toy extends api.Toy {
       rawThis[apiName] = apiFn(this);
     }
   }
+
+  init(): void {
+    for (const plugin of this.#plugins) {
+      plugin.init?.(this);
+    }
+  }
 }
 
-const toy = await Toy.load();
+const api = new API();
 
-await toy.runtime.start();
+api.register(alertModal.plugin);
+api.register(buffers.plugin);
+api.register(confirmModal.plugin);
+api.register(debug.plugin);
+api.register(fileNameModal.plugin);
+api.register(footer.plugin);
+api.register(header.plugin);
+api.register(io.plugin);
+api.register(paletteModal.plugin);
+api.register(runtime.plugin);
+api.register(shortcuts.plugin);
+api.register(themes.plugin);
+api.register(views.plugin);
+api.register(zen.plugin);
 
-toy.io.resize();
+api.init();
+
+await api.runtime.start();
+
+api.io.resize();
 
 if (typeof args._[0] === "string") {
-  await toy.runtime.open(args._[0]);
+  await api.runtime.open(args._[0]);
 }
 
-await toy.io.loop(() => {});
+await api.io.loop(() => {});

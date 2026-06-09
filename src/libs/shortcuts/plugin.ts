@@ -1,8 +1,7 @@
-import * as api from "@libs/api";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
 
-const shortcuts: Record<string, (_: api.Toy) => Promise<void>> = {
+const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "F1": (x) => x.paletteModal.open(),
   "⇧F1": (x) => x.paletteModal.open(),
   "⌃F1": (x) => x.paletteModal.open(),
@@ -28,14 +27,14 @@ const shortcuts: Record<string, (_: api.Toy) => Promise<void>> = {
 };
 
 export const plugin = {
-  init(toy: api.Toy): void {
-    toy.io.events.on("key.press", -1000)(async (data) => {
+  init(api: plugins.API): void {
+    api.io.events.on("key.press", -1000)(async (data) => {
       const entry = shortcuts[kitty.shortcut(data.key)];
 
       if (entry) {
         data.cancel = true;
 
-        await entry(toy);
+        await entry(api);
       }
     });
   },

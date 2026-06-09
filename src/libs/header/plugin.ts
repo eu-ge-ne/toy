@@ -1,25 +1,24 @@
-import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
 export const plugin = {
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     const widget = new HeaderWidget();
 
-    toy.buffer.signals.on("change.name")(() => widget.fileName = toy.buffer.name);
-    toy.buffer.signals.on("change")(() => widget.modified = toy.buffer.modified);
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
+    api.buffer.signals.on("change")(() => widget.modified = api.buffer.modified);
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    toy.io.signals.on("resize")(() => {
+    api.io.signals.on("resize")(() => {
       const { columns } = Deno.consoleSize();
 
       widget.resize(columns, 1, 0, 0);
     });
 
-    toy.io.signals.on("render")(() => {
-      if (toy.zen.enabled) {
+    api.io.signals.on("render")(() => {
+      if (api.zen.enabled) {
         return;
       }
 

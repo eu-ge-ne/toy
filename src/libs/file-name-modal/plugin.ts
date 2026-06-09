@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
@@ -12,7 +11,7 @@ let widget: AskFileNameWidget;
 
 export const plugin = {
   register: {
-    fileNameModal(toy: api.Toy): FileNameModalAPI {
+    fileNameModal(api: plugins.API): FileNameModalAPI {
       return {
         async open(fileName: string): Promise<string | undefined> {
           let opened = true;
@@ -20,9 +19,9 @@ export const plugin = {
 
           buffer.text = fileName;
 
-          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = api.io.signals.on("render", 1000)(() => widget.render());
 
-          const offKeyPress = toy.io.events.on("key.press", -1000)(
+          const offKeyPress = api.io.events.on("key.press", -1000)(
             async (data) => {
               data.cancel = true;
 
@@ -51,7 +50,7 @@ export const plugin = {
             },
           );
 
-          await toy.io.loop(() => !opened);
+          await api.io.loop(() => !opened);
 
           return result;
         },
@@ -59,13 +58,13 @@ export const plugin = {
     },
   },
 
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     buffer = new buffers.BufferAPI();
     widget = new AskFileNameWidget(buffer);
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    toy.io.signals.on("resize")(() => {
+    api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);

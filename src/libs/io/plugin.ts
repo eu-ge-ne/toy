@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as plugins from "@libs/plugins";
@@ -11,7 +10,7 @@ let signals: libEvents.SignalEmitter<IOSignals>;
 
 export const plugin = {
   register: {
-    io(toy: api.Toy): IOAPI {
+    io(api: plugins.API): IOAPI {
       events = new libEvents.EventEmitter<IOEvents>();
       signals = new libEvents.SignalEmitter<IOSignals>();
 
@@ -21,28 +20,28 @@ export const plugin = {
         resize,
         async loop(stop: () => unknown): Promise<void> {
           while (!stop()) {
-            render(toy);
+            render(api);
 
             const key = await vt.readKey();
 
-            await keyPress(toy, key);
+            await keyPress(api, key);
           }
         },
       };
     },
   },
 
-  init(toy: api.Toy): void {
-    toy.runtime.events.on("start")(async () => {
+  init(api: plugins.API): void {
+    api.runtime.events.on("start")(async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
         resize();
-        render(toy);
+        render(api);
       });
     });
 
-    toy.runtime.events.on("stop", 1000)(async () => vt.restore());
+    api.runtime.events.on("stop", 1000)(async () => vt.restore());
   },
 } satisfies plugins.Plugin;
 
@@ -50,7 +49,7 @@ function resize(): void {
   signals.broadcast("resize");
 }
 
-function render(toy: api.Toy): void {
+function render(api: plugins.API): void {
   const t0 = performance.now();
 
   vt.sync.bsu();
@@ -62,13 +61,13 @@ function render(toy: api.Toy): void {
   vt.buf.flush();
   vt.sync.esu();
 
-  toy.debug.setRender(performance.now() - t0);
+  api.debug.setRender(performance.now() - t0);
 }
 
-async function keyPress(toy: api.Toy, key: kitty.Key): Promise<void> {
+async function keyPress(api: plugins.API, key: kitty.Key): Promise<void> {
   const t0 = performance.now();
 
   await events.dispatch("key.press", { key });
 
-  toy.debug.setInput(performance.now() - t0);
+  api.debug.setInput(performance.now() - t0);
 }

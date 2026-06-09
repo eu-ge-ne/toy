@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
@@ -9,22 +8,22 @@ let events: libEvents.EventEmitter<RuntimeEvents>;
 
 export const plugin = {
   register: {
-    runtime(toy: api.Toy): RuntimeAPI {
+    runtime(api: plugins.API): RuntimeAPI {
       events = new libEvents.EventEmitter<RuntimeEvents>();
 
       return {
         events: events.listener,
 
         async start(): Promise<void> {
-          globalThis.addEventListener("unhandledrejection", (e) => toy.runtime.stop(e));
+          globalThis.addEventListener("unhandledrejection", (e) => api.runtime.stop(e));
 
           await events.dispatch("start", {});
         },
 
         async stop(e?: PromiseRejectionEvent): Promise<void> {
-          if (!e && toy.buffer.modified) {
-            if (await toy.confirmModal.open("Save changes?")) {
-              await toy.runtime.save();
+          if (!e && api.buffer.modified) {
+            if (await api.confirmModal.open("Save changes?")) {
+              await api.runtime.save();
             }
           }
 
@@ -38,56 +37,56 @@ export const plugin = {
         },
 
         async open(newFileName: string): Promise<void> {
-          toy.buffer.name = newFileName;
+          api.buffer.name = newFileName;
 
           try {
-            await toy.buffer.rewrite(files.load(newFileName));
+            await api.buffer.rewrite(files.load(newFileName));
           } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
               // ignore
             } else {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await toy.alertModal.open(message);
+              await api.alertModal.open(message);
 
-              await toy.runtime.stop();
+              await api.runtime.stop();
             }
           }
         },
 
         async save(): Promise<void> {
-          if (!toy.buffer.name) {
-            await toy.runtime.saveAs();
+          if (!api.buffer.name) {
+            await api.runtime.saveAs();
             return;
           }
 
           try {
-            await files.save(toy.buffer.name, toy.buffer.read());
+            await files.save(api.buffer.name, api.buffer.read());
 
-            toy.buffer.resetUndo();
+            api.buffer.resetUndo();
           } catch (err) {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
-            await toy.alertModal.open(message);
+            await api.alertModal.open(message);
 
-            await toy.runtime.saveAs();
+            await api.runtime.saveAs();
           }
         },
 
         async saveAs(): Promise<void> {
           while (true) {
-            const newFileName = await toy.fileNameModal.open(toy.buffer.name);
+            const newFileName = await api.fileNameModal.open(api.buffer.name);
             if (!newFileName) {
               return;
             }
 
             try {
-              await files.save(newFileName, toy.buffer.read());
+              await files.save(newFileName, api.buffer.read());
 
-              toy.buffer.resetUndo();
+              api.buffer.resetUndo();
 
-              toy.buffer.name = newFileName;
+              api.buffer.name = newFileName;
             } catch (err) {
               const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await toy.alertModal.open(message);
+              await api.alertModal.open(message);
             }
           }
         },
