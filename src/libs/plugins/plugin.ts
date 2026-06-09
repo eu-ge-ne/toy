@@ -1,8 +1,8 @@
-import * as api from "@libs/api";
+import { API } from "./api.ts";
 
 export type Plugin = {
   register?: {
-    [P in keyof api.Toy]?: (_: api.Toy) => api.Toy[P];
+    [P in keyof API]?: (_: API) => API[P];
   };
-  init?(_: api.Toy): void;
+  init?(_: API): void;
 };

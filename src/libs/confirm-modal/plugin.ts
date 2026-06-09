@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -10,7 +9,7 @@ let widget: AskWidget;
 
 export const plugin = {
   register: {
-    confirmModal(toy: api.Toy): ConfirmModalAPI {
+    confirmModal(api: plugins.API): ConfirmModalAPI {
       return {
         async open(message: string): Promise<boolean> {
           let opened = true;
@@ -18,9 +17,9 @@ export const plugin = {
 
           widget.children.text.value = message;
 
-          const offRender = toy.io.signals.on("render", 1000)(() => widget.render());
+          const offRender = api.io.signals.on("render", 1000)(() => widget.render());
 
-          const offKeyPress = toy.io.events.on("key.press", -1000)(
+          const offKeyPress = api.io.events.on("key.press", -1000)(
             async (data) => {
               data.cancel = true;
 
@@ -44,7 +43,7 @@ export const plugin = {
             },
           );
 
-          await toy.io.loop(() => !opened);
+          await api.io.loop(() => !opened);
 
           return result;
         },
@@ -52,12 +51,12 @@ export const plugin = {
     },
   },
 
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     widget = new AskWidget();
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    toy.io.signals.on("resize")(() => {
+    api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);

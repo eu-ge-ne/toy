@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -11,7 +10,7 @@ let widget: EditorWidget;
 
 export const plugin = {
   register: {
-    view(_: api.Toy): ViewAPI {
+    view(): ViewAPI {
       signals = new libEvents.SignalEmitter<ViewSignals>();
 
       return {
@@ -44,20 +43,20 @@ export const plugin = {
     },
   },
 
-  init(toy: api.Toy): void {
-    widget = new EditorWidget(toy.buffer, {
+  init(api: plugins.API): void {
+    widget = new EditorWidget(api.buffer, {
       multiLine: true,
       onCursorChange: (x) => signals.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.zen.signals.on("toggle")(() => widget.toggleIndex());
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.zen.signals.on("toggle")(() => widget.toggleIndex());
 
-    toy.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
-    toy.io.signals.on("render")(() => widget.render());
-    toy.io.signals.on("resize")(() => {
+    api.io.events.on("key.press")(async ({ key }) => widget.onKeyPress(key));
+    api.io.signals.on("render")(() => widget.render());
+    api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
-      if (toy.zen.enabled) {
+      if (api.zen.enabled) {
         widget.resize(columns, rows, 0, 0);
       } else {
         widget.resize(columns, rows - 2, 1, 0);

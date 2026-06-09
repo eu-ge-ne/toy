@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -12,7 +11,7 @@ let widget: DebugWidget;
 
 export const plugin = {
   register: {
-    debug(_: api.Toy): DebugAPI {
+    debug(): DebugAPI {
       let timer: NodeJS.Timeout;
 
       function updateMemUsage(): void {
@@ -47,23 +46,23 @@ export const plugin = {
     },
   },
 
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     widget = new DebugWidget();
 
     widget.version = std.version;
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.io.signals.on("render", 1000)(() => widget.render());
-    toy.io.signals.on("resize")(() => resize(toy));
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.io.signals.on("render", 1000)(() => widget.render());
+    api.io.signals.on("resize")(() => resize(api));
   },
 } satisfies plugins.Plugin;
 
-function resize(toy: api.Toy): void {
+function resize(api: plugins.API): void {
   const { columns, rows } = Deno.consoleSize();
 
   const w = std.clamp(30, 0, columns);
   const h = std.clamp(10, 0, rows);
-  const y = toy.zen.enabled ? rows - h : rows - 1 - h;
+  const y = api.zen.enabled ? rows - h : rows - 1 - h;
   const x = columns - w;
 
   widget.resize(w, h, y, x);

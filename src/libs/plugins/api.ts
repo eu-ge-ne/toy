@@ -10,7 +10,7 @@ import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import * as zen from "@libs/zen";
 
-export abstract class Toy {
+export abstract class API {
   readonly alertModal!: alertModal.AlertModalAPI;
   readonly buffer!: buffers.BufferAPI;
   readonly confirmModal!: confirmModal.ConfirmModalAPI;

@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 
@@ -9,7 +8,7 @@ let enabled = true;
 
 export const plugin = {
   register: {
-    zen(toy: api.Toy): ZenAPI {
+    zen(api: plugins.API): ZenAPI {
       signals = new libEvents.SignalEmitter<ZenSignals>();
 
       return {
@@ -24,7 +23,7 @@ export const plugin = {
 
           signals.broadcast("toggle");
 
-          toy.io.resize();
+          api.io.resize();
         },
       };
     },

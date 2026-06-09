@@ -1,4 +1,3 @@
-import * as api from "@libs/api";
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
@@ -21,7 +20,7 @@ export const plugin = {
     },
   },
 
-  init(toy: api.Toy): void {
-    toy.runtime.events.on("start")(async () => toy.theme.set("Mauve"));
+  init(api: plugins.API): void {
+    api.runtime.events.on("start")(async () => api.theme.set("Mauve"));
   },
 } satisfies plugins.Plugin;

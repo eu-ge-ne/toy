@@ -1,31 +1,30 @@
-import * as api from "@libs/api";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { FooterWidget } from "./widget.ts";
 
 export const plugin = {
-  init(toy: api.Toy): void {
+  init(api: plugins.API): void {
     const widget = new FooterWidget();
 
-    toy.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    toy.buffer.signals.on("change")(() => widget.lineCount = toy.buffer.lineCount);
+    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+    api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
 
-    toy.io.signals.on("resize")(() => {
+    api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       widget.resize(columns, 1, rows - 1, 0);
     });
 
-    toy.io.signals.on("render")(() => {
-      if (toy.zen.enabled) {
+    api.io.signals.on("render")(() => {
+      if (api.zen.enabled) {
         return;
       }
 
       widget.render();
     });
 
-    toy.view.signals.on("change.cursor")(({ ln, col }) => {
+    api.view.signals.on("change.cursor")(({ ln, col }) => {
       widget.ln = ln;
       widget.col = col;
     });
