@@ -4,9 +4,9 @@ import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
-import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
 
+import { Bg } from "../bg/bg.ts";
+import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
 import { Cursor } from "./cursor.ts";
 
@@ -15,7 +15,7 @@ interface Params {
   onCursorChange?: (_: { ln: number; col: number }) => void;
 }
 
-export class EditorWidget extends widgets.Widget<Params> {
+export class Editor extends Widget<Params> {
   readonly #cursor: Cursor;
   readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
@@ -28,7 +28,7 @@ export class EditorWidget extends widgets.Widget<Params> {
       params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
 
     this.children = {
-      bg: new BgWidget(),
+      bg: new Bg(),
       content: new Content(buffer, this.#cursor),
     };
 
@@ -55,7 +55,7 @@ export class EditorWidget extends widgets.Widget<Params> {
   }
 
   protected override children: {
-    bg: BgWidget;
+    bg: Bg;
     content: Content;
   };
 

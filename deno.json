@@ -4,8 +4,7 @@
   "license": "MIT",
   "exports": "./src/main.ts",
   "workspace": [
-    "src/libs/*",
-    "src/widgets/*"
+    "src/libs/*"
   ],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true

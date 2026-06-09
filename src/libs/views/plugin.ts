@@ -1,12 +1,12 @@
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
-import { EditorWidget } from "@widgets/editor";
+import * as widgets from "@libs/widgets";
 
 import { ViewAPI, ViewSignals } from "./api.ts";
 
 let signals: libEvents.SignalEmitter<ViewSignals>;
-let widget: EditorWidget;
+let widget: widgets.Editor;
 
 export const plugin = {
   register: {
@@ -44,7 +44,7 @@ export const plugin = {
   },
 
   init(api: plugins.API): void {
-    widget = new EditorWidget(api.buffer, {
+    widget = new widgets.Editor(api.buffer, {
       multiLine: true,
       onCursorChange: (x) => signals.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });

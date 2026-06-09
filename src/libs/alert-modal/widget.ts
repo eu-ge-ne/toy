@@ -1,22 +1,20 @@
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
-import { MultiLineText, TextWidget } from "@widgets/text";
 
 export class AlertWidget extends widgets.Modal {
   override children: {
-    bg: BgWidget;
-    text: MultiLineText;
-    footer: TextWidget;
+    bg: widgets.Bg;
+    text: widgets.MultiLineText;
+    footer: widgets.SingleLineText;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new BgWidget(),
-      text: new MultiLineText({ align: "left" }),
-      footer: new TextWidget({ align: "center" }),
+      bg: new widgets.Bg(),
+      text: new widgets.MultiLineText({ align: "left" }),
+      footer: new widgets.SingleLineText({ align: "center" }),
     };
 
     this.children.footer.value = "ENTER‧ok";

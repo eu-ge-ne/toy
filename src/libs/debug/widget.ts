@@ -1,8 +1,6 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
-import { TextWidget } from "@widgets/text";
 
 export class DebugWidget extends widgets.Widget {
   visible = false;
@@ -15,26 +13,26 @@ export class DebugWidget extends widgets.Widget {
   externalMem = "";
 
   protected override children: {
-    bg: BgWidget;
-    line1: TextWidget;
-    line2: TextWidget;
-    line3: TextWidget;
-    line4: TextWidget;
-    line5: TextWidget;
-    line6: TextWidget;
+    bg: widgets.Bg;
+    line1: widgets.SingleLineText;
+    line2: widgets.SingleLineText;
+    line3: widgets.SingleLineText;
+    line4: widgets.SingleLineText;
+    line5: widgets.SingleLineText;
+    line6: widgets.SingleLineText;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new BgWidget(),
-      line1: new TextWidget({ align: "left" }),
-      line2: new TextWidget({ align: "left" }),
-      line3: new TextWidget({ align: "left" }),
-      line4: new TextWidget({ align: "left" }),
-      line5: new TextWidget({ align: "left" }),
-      line6: new TextWidget({ align: "left" }),
+      bg: new widgets.Bg(),
+      line1: new widgets.SingleLineText({ align: "left" }),
+      line2: new widgets.SingleLineText({ align: "left" }),
+      line3: new widgets.SingleLineText({ align: "left" }),
+      line4: new widgets.SingleLineText({ align: "left" }),
+      line5: new widgets.SingleLineText({ align: "left" }),
+      line6: new widgets.SingleLineText({ align: "left" }),
     };
   }
 

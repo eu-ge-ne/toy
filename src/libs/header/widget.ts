@@ -1,24 +1,22 @@
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
-import { TextWidget } from "@widgets/text";
 
 export class HeaderWidget extends widgets.Widget {
   fileName = "";
   modified = false;
 
   protected override children: {
-    bg: BgWidget;
-    text: TextWidget;
+    bg: widgets.Bg;
+    text: widgets.SingleLineText;
   };
 
   constructor() {
     super();
 
     this.children = {
-      bg: new BgWidget(),
-      text: new TextWidget({ align: "center" }),
+      bg: new widgets.Bg(),
+      text: new widgets.SingleLineText({ align: "center" }),
     };
   }
 
