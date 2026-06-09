@@ -1,5 +1,6 @@
 import * as vt from "@libs/vt";
-import * as widgets from "@libs/widgets";
+
+import { Widget } from "../widget.ts";
 
 const encoder = new TextEncoder();
 
@@ -8,7 +9,7 @@ interface Item<T> {
   value: T;
 }
 
-export class ListWidget<T> extends widgets.Widget<{ emptyText: string }> {
+export class List<T> extends Widget<{ emptyText: string }> {
   color = new Uint8Array();
   selectedColor = new Uint8Array();
   items: Item<T>[] = [];

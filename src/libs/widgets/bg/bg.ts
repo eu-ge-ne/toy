@@ -1,7 +1,8 @@
 import * as vt from "@libs/vt";
-import * as widgets from "@libs/widgets";
 
-export class BgWidget extends widgets.Widget {
+import { Widget } from "../widget.ts";
+
+export class Bg extends Widget {
   color = new Uint8Array();
 
   render(): void {

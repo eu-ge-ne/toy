@@ -2,9 +2,6 @@ import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
-import { EditorWidget } from "@widgets/editor";
-import { ListWidget } from "@widgets/list";
 
 import { options } from "./options.ts";
 
@@ -12,20 +9,20 @@ const maxListSize = 10;
 
 export class PaletteWidget extends widgets.Modal {
   override children: {
-    bg: BgWidget;
-    editor: EditorWidget;
-    list: ListWidget<(_: plugins.API) => Promise<void>>;
+    bg: widgets.Bg;
+    editor: widgets.Editor;
+    list: widgets.List<(_: plugins.API) => Promise<void>>;
   };
 
   constructor(private readonly buffer: buffers.BufferAPI) {
     super();
 
     this.children = {
-      bg: new BgWidget(),
-      list: new ListWidget<(_: plugins.API) => Promise<void>>({
+      bg: new widgets.Bg(),
+      list: new widgets.List<(_: plugins.API) => Promise<void>>({
         emptyText: "No matching commands",
       }),
-      editor: new EditorWidget(this.buffer, { multiLine: false }),
+      editor: new widgets.Editor(this.buffer, { multiLine: false }),
     };
   }
 

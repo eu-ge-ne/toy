@@ -1,9 +1,10 @@
 import * as vt from "@libs/vt";
-import * as widgets from "@libs/widgets";
+
+import { Widget } from "../widget.ts";
 
 const encoder = new TextEncoder();
 
-export class TextWidget extends widgets.Widget<{ align: "left" | "center" | "right" }> {
+export class SingleLineText extends Widget<{ align: "left" | "center" | "right" }> {
   color = new Uint8Array();
   value = "";
 
@@ -32,7 +33,7 @@ export class TextWidget extends widgets.Widget<{ align: "left" | "center" | "rig
   }
 }
 
-export class MultiLineText extends widgets.Widget<{ align: "left" | "center" }> {
+export class MultiLineText extends Widget<{ align: "left" | "center" }> {
   color = new Uint8Array();
   value = "";
 

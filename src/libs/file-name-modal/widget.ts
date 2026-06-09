@@ -1,26 +1,23 @@
 import * as buffers from "@libs/buffers";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
-import { BgWidget } from "@widgets/bg";
-import { EditorWidget } from "@widgets/editor";
-import { TextWidget } from "@widgets/text";
 
 export class AskFileNameWidget extends widgets.Modal {
   override children: {
-    bg: BgWidget;
-    header: TextWidget;
-    editor: EditorWidget;
-    footer: TextWidget;
+    bg: widgets.Bg;
+    header: widgets.SingleLineText;
+    editor: widgets.Editor;
+    footer: widgets.SingleLineText;
   };
 
   constructor(private readonly buffer: buffers.BufferAPI) {
     super();
 
     this.children = {
-      bg: new BgWidget(),
-      header: new TextWidget({ align: "center" }),
-      footer: new TextWidget({ align: "center" }),
-      editor: new EditorWidget(this.buffer, { multiLine: false }),
+      bg: new widgets.Bg(),
+      header: new widgets.SingleLineText({ align: "center" }),
+      footer: new widgets.SingleLineText({ align: "center" }),
+      editor: new widgets.Editor(this.buffer, { multiLine: false }),
     };
 
     this.children.header.value = "Save As";

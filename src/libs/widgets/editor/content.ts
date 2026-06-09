@@ -3,8 +3,8 @@ import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
-import * as widgets from "@libs/widgets";
 
+import { Widget } from "../widget.ts";
 import { Cursor } from "./cursor.ts";
 
 const enum CharColor {
@@ -17,7 +17,7 @@ const enum CharColor {
   EmptySelected,
 }
 
-export class Content extends widgets.Widget {
+export class Content extends Widget {
   #mode = {
     index: false,
     whitespace: false,
