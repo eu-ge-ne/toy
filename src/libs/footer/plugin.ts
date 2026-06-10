@@ -3,30 +3,32 @@ import * as themes from "@libs/themes";
 
 import { FooterWidget } from "./widget.ts";
 
-export const plugin = {
-  init(api: plugins.API): void {
-    const widget = new FooterWidget();
+export default plugins.create((api: plugins.API) => {
+  const widget = new FooterWidget();
 
-    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-    api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
+  return {
+    init(): void {
+      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+      api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
 
-    api.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
+      api.io.signals.on("resize")(() => {
+        const { columns, rows } = Deno.consoleSize();
 
-      widget.resize(columns, 1, rows - 1, 0);
-    });
+        widget.resize(columns, 1, rows - 1, 0);
+      });
 
-    api.io.signals.on("render")(() => {
-      if (api.zen.enabled) {
-        return;
-      }
+      api.io.signals.on("render")(() => {
+        if (api.zen.enabled) {
+          return;
+        }
 
-      widget.render();
-    });
+        widget.render();
+      });
 
-    api.view.signals.on("change.cursor")(({ ln, col }) => {
-      widget.ln = ln;
-      widget.col = col;
-    });
-  },
-} satisfies plugins.Plugin;
+      api.view.signals.on("change.cursor")(({ ln, col }) => {
+        widget.ln = ln;
+        widget.col = col;
+      });
+    },
+  };
+});

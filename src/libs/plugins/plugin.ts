@@ -1,8 +1,13 @@
 import { API } from "./api.ts";
 
-export type Plugin = {
-  register?: {
-    [P in keyof API]?: (_: API) => API[P];
+export type Plugin = (_: API) =>
+  & {
+    [P in keyof API]?: API[P];
+  }
+  & {
+    init?(): void;
   };
-  init?(_: API): void;
-};
+
+export function create(x: Plugin): Plugin {
+  return x;
+}

@@ -1,4 +1,4 @@
 {
   "name": "@libs/shortcuts",
-  "exports": "./plugin.ts"
+  "exports": "./index.ts"
 }

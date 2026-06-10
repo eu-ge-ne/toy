@@ -30,25 +30,29 @@ if (args.version) {
 }
 
 class API extends plugins.API {
-  #plugins: plugins.Plugin[] = [];
+  #inits: (() => void)[] = [];
 
   register(plugin: plugins.Plugin): void {
-    this.#plugins.push(plugin);
-
     // deno-lint-ignore no-explicit-any
     const rawThis = this as any;
 
-    for (const [apiName, apiFn] of Object.entries(plugin.register ?? {})) {
-      if (rawThis[apiName]) {
+    for (const [name, api] of Object.entries(plugin(this))) {
+      if (name === "init" && typeof api === "function") {
+        this.#inits.push(api);
+        continue;
+      }
+
+      if (rawThis[name]) {
         throw new Error("API conflict");
       }
-      rawThis[apiName] = apiFn(this);
+
+      rawThis[name] = api;
     }
   }
 
   init(): void {
-    for (const plugin of this.#plugins) {
-      plugin.init?.(this);
+    for (const init of this.#inits) {
+      init();
     }
   }
 }
