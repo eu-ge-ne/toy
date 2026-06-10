@@ -10,16 +10,16 @@ import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import * as zen from "@libs/zen";
 
-export abstract class API {
-  readonly alertModal!: alertModal.AlertModalAPI;
-  readonly buffer!: buffers.BufferAPI;
-  readonly confirmModal!: confirmModal.ConfirmModalAPI;
-  readonly debug!: debug.DebugAPI;
-  readonly fileNameModal!: fileNameModal.FileNameModalAPI;
-  readonly io!: io.IOAPI;
-  readonly paletteModal!: paletteModal.PaletteModalAPI;
-  readonly runtime!: runtime.RuntimeAPI;
-  readonly theme!: themes.ThemeAPI;
-  readonly view!: views.ViewAPI;
-  readonly zen!: zen.ZenAPI;
-}
+export type API = {
+  readonly alertModal: alertModal.AlertModalAPI;
+  readonly buffer: buffers.BufferAPI;
+  readonly confirmModal: confirmModal.ConfirmModalAPI;
+  readonly debug: debug.DebugAPI;
+  readonly fileNameModal: fileNameModal.FileNameModalAPI;
+  readonly io: io.IOAPI;
+  readonly paletteModal: paletteModal.PaletteModalAPI;
+  readonly runtime: runtime.RuntimeAPI;
+  readonly theme: themes.ThemeAPI;
+  readonly view: views.ViewAPI;
+  readonly zen: zen.ZenAPI;
+};
