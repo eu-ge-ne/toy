@@ -2,95 +2,91 @@ import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
 import * as plugins from "@libs/plugins";
 
-import { RuntimeAPI, RuntimeEvents } from "./api.ts";
+import { RuntimeEvents } from "./api.ts";
 
-let events: libEvents.EventEmitter<RuntimeEvents>;
+export default plugins.create((api: plugins.API) => {
+  const events = new libEvents.EventEmitter<RuntimeEvents>();
 
-export const plugin = {
-  register: {
-    runtime(api: plugins.API): RuntimeAPI {
-      events = new libEvents.EventEmitter<RuntimeEvents>();
+  return {
+    runtime: {
+      events: events.listener,
 
-      return {
-        events: events.listener,
+      async start(): Promise<void> {
+        globalThis.addEventListener("unhandledrejection", (e) => api.runtime.stop(e));
 
-        async start(): Promise<void> {
-          globalThis.addEventListener("unhandledrejection", (e) => api.runtime.stop(e));
+        await events.dispatch("start", {});
+      },
 
-          await events.dispatch("start", {});
-        },
-
-        async stop(e?: PromiseRejectionEvent): Promise<void> {
-          if (!e && api.buffer.modified) {
-            if (await api.confirmModal.open("Save changes?")) {
-              await api.runtime.save();
-            }
+      async stop(e?: PromiseRejectionEvent): Promise<void> {
+        if (!e && api.buffer.modified) {
+          if (await api.confirmModal.open("Save changes?")) {
+            await api.runtime.save();
           }
+        }
 
-          await events.dispatch("stop", { e });
+        await events.dispatch("stop", { e });
 
-          if (e) {
-            console.log(e.reason);
+        if (e) {
+          console.log(e.reason);
+        }
+
+        Deno.exit(0);
+      },
+
+      async open(newFileName: string): Promise<void> {
+        api.buffer.name = newFileName;
+
+        try {
+          await api.buffer.rewrite(files.load(newFileName));
+        } catch (err) {
+          if (err instanceof Deno.errors.NotFound) {
+            // ignore
+          } else {
+            const message = Error.isError(err) ? err.message : Deno.inspect(err);
+            await api.alertModal.open(message);
+
+            await api.runtime.stop();
           }
+        }
+      },
 
-          Deno.exit(0);
-        },
+      async save(): Promise<void> {
+        if (!api.buffer.name) {
+          await api.runtime.saveAs();
+          return;
+        }
 
-        async open(newFileName: string): Promise<void> {
-          api.buffer.name = newFileName;
+        try {
+          await files.save(api.buffer.name, api.buffer.read());
 
-          try {
-            await api.buffer.rewrite(files.load(newFileName));
-          } catch (err) {
-            if (err instanceof Deno.errors.NotFound) {
-              // ignore
-            } else {
-              const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await api.alertModal.open(message);
+          api.buffer.resetUndo();
+        } catch (err) {
+          const message = Error.isError(err) ? err.message : Deno.inspect(err);
+          await api.alertModal.open(message);
 
-              await api.runtime.stop();
-            }
-          }
-        },
+          await api.runtime.saveAs();
+        }
+      },
 
-        async save(): Promise<void> {
-          if (!api.buffer.name) {
-            await api.runtime.saveAs();
+      async saveAs(): Promise<void> {
+        while (true) {
+          const newFileName = await api.fileNameModal.open(api.buffer.name);
+          if (!newFileName) {
             return;
           }
 
           try {
-            await files.save(api.buffer.name, api.buffer.read());
+            await files.save(newFileName, api.buffer.read());
 
             api.buffer.resetUndo();
+
+            api.buffer.name = newFileName;
           } catch (err) {
             const message = Error.isError(err) ? err.message : Deno.inspect(err);
             await api.alertModal.open(message);
-
-            await api.runtime.saveAs();
           }
-        },
-
-        async saveAs(): Promise<void> {
-          while (true) {
-            const newFileName = await api.fileNameModal.open(api.buffer.name);
-            if (!newFileName) {
-              return;
-            }
-
-            try {
-              await files.save(newFileName, api.buffer.read());
-
-              api.buffer.resetUndo();
-
-              api.buffer.name = newFileName;
-            } catch (err) {
-              const message = Error.isError(err) ? err.message : Deno.inspect(err);
-              await api.alertModal.open(message);
-            }
-          }
-        },
-      };
+        }
+      },
     },
-  },
-} satisfies plugins.Plugin;
+  };
+});

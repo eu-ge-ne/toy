@@ -1,31 +1,27 @@
 import * as libEvents from "@libs/events";
 import * as plugins from "@libs/plugins";
 
-import { ZenAPI, ZenSignals } from "./api.ts";
+import { ZenSignals } from "./api.ts";
 
-let signals: libEvents.SignalEmitter<ZenSignals>;
-let enabled = true;
+export default plugins.create((api: plugins.API) => {
+  const signals = new libEvents.SignalEmitter<ZenSignals>();
+  let enabled = true;
 
-export const plugin = {
-  register: {
-    zen(api: plugins.API): ZenAPI {
-      signals = new libEvents.SignalEmitter<ZenSignals>();
+  return {
+    zen: {
+      signals: signals.listener,
 
-      return {
-        signals: signals.listener,
+      get enabled(): boolean {
+        return enabled;
+      },
 
-        get enabled(): boolean {
-          return enabled;
-        },
+      toggle(): void {
+        enabled = !enabled;
 
-        toggle(): void {
-          enabled = !enabled;
+        signals.broadcast("toggle");
 
-          signals.broadcast("toggle");
-
-          api.io.resize();
-        },
-      };
+        api.io.resize();
+      },
     },
-  },
-} satisfies plugins.Plugin;
+  };
+});

@@ -2,69 +2,64 @@ import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { ConfirmModalAPI } from "./api.ts";
 import { AskWidget } from "./widget.ts";
 
-let widget: AskWidget;
+export default plugins.create((api: plugins.API) => {
+  const widget = new AskWidget();
 
-export const plugin = {
-  register: {
-    confirmModal(api: plugins.API): ConfirmModalAPI {
-      return {
-        async open(message: string): Promise<boolean> {
-          let opened = true;
-          let result = false;
+  return {
+    confirmModal: {
+      async open(message: string): Promise<boolean> {
+        let opened = true;
+        let result = false;
 
-          widget.children.text.value = message;
+        widget.children.text.value = message;
 
-          const offRender = api.io.signals.on("render", 1000)(() => widget.render());
+        const offRender = api.io.signals.on("render", 1000)(() => widget.render());
 
-          const offKeyPress = api.io.events.on("key.press", -1000)(
-            async (data) => {
-              data.cancel = true;
+        const offKeyPress = api.io.events.on("key.press", -1000)(
+          async (data) => {
+            data.cancel = true;
 
-              switch (data.key.name) {
-                case "ESC":
-                  result = false;
-                  opened = false;
-                  break;
-                case "ENTER":
-                  result = true;
-                  opened = false;
-                  break;
-              }
+            switch (data.key.name) {
+              case "ESC":
+                result = false;
+                opened = false;
+                break;
+              case "ENTER":
+                result = true;
+                opened = false;
+                break;
+            }
 
-              if (opened) {
-                return;
-              }
+            if (opened) {
+              return;
+            }
 
-              offRender();
-              offKeyPress();
-            },
-          );
+            offRender();
+            offKeyPress();
+          },
+        );
 
-          await api.io.loop(() => !opened);
+        await api.io.loop(() => !opened);
 
-          return result;
-        },
-      };
+        return result;
+      },
     },
-  },
 
-  init(api: plugins.API): void {
-    widget = new AskWidget();
+    init(): void {
+      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+      api.io.signals.on("resize")(() => {
+        const { columns, rows } = Deno.consoleSize();
 
-    api.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
+        const w = std.clamp(60, 0, columns);
+        const h = std.clamp(7, 0, rows);
+        const y = Math.trunc((rows - h) / 2);
+        const x = Math.trunc((columns - w) / 2);
 
-      const w = std.clamp(60, 0, columns);
-      const h = std.clamp(7, 0, rows);
-      const y = Math.trunc((rows - h) / 2);
-      const x = Math.trunc((columns - w) / 2);
-
-      widget.resize(w, h, y, x);
-    });
-  },
-} satisfies plugins.Plugin;
+        widget.resize(w, h, y, x);
+      });
+    },
+  };
+});

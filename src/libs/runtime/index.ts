@@ -1,2 +1,2 @@
 export * from "./api.ts";
-export * from "./plugin.ts";
+export { default as plugin } from "./plugin.ts";

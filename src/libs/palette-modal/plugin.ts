@@ -2,93 +2,87 @@ import * as buffers from "@libs/buffers";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-import { PaletteModalAPI } from "./api.ts";
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-let buffer: buffers.BufferAPI;
-let widget: PaletteWidget;
+export default plugins.create((api: plugins.API) => {
+  const buffer = new buffers.BufferAPI();
+  const widget = new PaletteWidget(buffer);
 
-export const plugin = {
-  register: {
-    paletteModal(api: plugins.API): PaletteModalAPI {
-      return {
-        async open(): Promise<void> {
-          let opened = true;
-          let result: ((_: plugins.API) => Promise<void>) | undefined;
+  return {
+    paletteModal: {
+      async open(): Promise<void> {
+        let opened = true;
+        let result: ((_: plugins.API) => Promise<void>) | undefined;
 
-          buffer.text = "";
-          widget.children.list.items = options;
+        buffer.text = "";
+        widget.children.list.items = options;
 
-          const offRender = api.io.signals.on("render", 1000)(() => widget.render());
+        const offRender = api.io.signals.on("render", 1000)(() => widget.render());
 
-          const offKeyPress = api.io.events.on("key.press", -1000)(
-            async (data) => {
-              data.cancel = true;
+        const offKeyPress = api.io.events.on("key.press", -1000)(
+          async (data) => {
+            data.cancel = true;
 
-              switch (data.key.name) {
-                case "ESC":
-                  result = undefined;
-                  opened = false;
-                  break;
-                case "ENTER":
-                  result = widget.children.list.items[widget.children.list.index]?.value;
-                  opened = false;
-                  break;
-                case "UP":
-                  if (widget.children.list.items.length > 0) {
-                    widget.children.list.index = Math.max(widget.children.list.index - 1, 0);
-                  }
-                  break;
-                case "DOWN":
-                  if (widget.children.list.items.length > 0) {
-                    widget.children.list.index = Math.min(
-                      widget.children.list.index + 1,
-                      widget.children.list.items.length - 1,
-                    );
-                  }
-                  break;
-                default:
-                  widget.children.editor.onKeyPress(data.key);
-                  widget.filter();
-              }
+            switch (data.key.name) {
+              case "ESC":
+                result = undefined;
+                opened = false;
+                break;
+              case "ENTER":
+                result = widget.children.list.items[widget.children.list.index]?.value;
+                opened = false;
+                break;
+              case "UP":
+                if (widget.children.list.items.length > 0) {
+                  widget.children.list.index = Math.max(widget.children.list.index - 1, 0);
+                }
+                break;
+              case "DOWN":
+                if (widget.children.list.items.length > 0) {
+                  widget.children.list.index = Math.min(
+                    widget.children.list.index + 1,
+                    widget.children.list.items.length - 1,
+                  );
+                }
+                break;
+              default:
+                widget.children.editor.onKeyPress(data.key);
+                widget.filter();
+            }
 
-              if (opened) {
-                return;
-              }
+            if (opened) {
+              return;
+            }
 
-              offRender();
-              offKeyPress();
-            },
-          );
+            offRender();
+            offKeyPress();
+          },
+        );
 
-          await api.io.loop(() => {
-            api.io.resize();
-            return !opened;
-          });
+        await api.io.loop(() => {
+          api.io.resize();
+          return !opened;
+        });
 
-          if (typeof result !== "undefined") {
-            await result(api);
-          }
-        },
-      };
+        if (typeof result !== "undefined") {
+          await result(api);
+        }
+      },
     },
-  },
 
-  init(api: plugins.API): void {
-    buffer = new buffers.BufferAPI();
-    widget = new PaletteWidget(buffer);
+    init(): void {
+      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+      api.io.signals.on("resize")(() => {
+        const { columns, rows } = Deno.consoleSize();
 
-    api.io.signals.on("resize")(() => {
-      const { columns, rows } = Deno.consoleSize();
-
-      if (api.zen.enabled) {
-        widget.resize(columns, rows, 0, 0);
-      } else {
-        widget.resize(columns, rows - 2, 1, 0);
-      }
-    });
-  },
-} satisfies plugins.Plugin;
+        if (api.zen.enabled) {
+          widget.resize(columns, rows, 0, 0);
+        } else {
+          widget.resize(columns, rows - 2, 1, 0);
+        }
+      });
+    },
+  };
+});

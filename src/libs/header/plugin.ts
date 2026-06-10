@@ -3,26 +3,28 @@ import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export const plugin = {
-  init(api: plugins.API): void {
-    const widget = new HeaderWidget();
+export default plugins.create((api: plugins.API) => {
+  const widget = new HeaderWidget();
 
-    api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
-    api.buffer.signals.on("change")(() => widget.modified = api.buffer.modified);
-    api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+  return {
+    init(): void {
+      api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
+      api.buffer.signals.on("change")(() => widget.modified = api.buffer.modified);
+      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
-    api.io.signals.on("resize")(() => {
-      const { columns } = Deno.consoleSize();
+      api.io.signals.on("resize")(() => {
+        const { columns } = Deno.consoleSize();
 
-      widget.resize(columns, 1, 0, 0);
-    });
+        widget.resize(columns, 1, 0, 0);
+      });
 
-    api.io.signals.on("render")(() => {
-      if (api.zen.enabled) {
-        return;
-      }
+      api.io.signals.on("render")(() => {
+        if (api.zen.enabled) {
+          return;
+        }
 
-      widget.render();
-    });
-  },
-} satisfies plugins.Plugin;
+        widget.render();
+      });
+    },
+  };
+});

@@ -26,16 +26,18 @@ const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "⌘V": async (x) => x.view.paste(),
 };
 
-export const plugin = {
-  init(api: plugins.API): void {
-    api.io.events.on("key.press", -1000)(async (data) => {
-      const entry = shortcuts[kitty.shortcut(data.key)];
+export default plugins.create((api: plugins.API) => {
+  return {
+    init(): void {
+      api.io.events.on("key.press", -1000)(async (data) => {
+        const entry = shortcuts[kitty.shortcut(data.key)];
 
-      if (entry) {
-        data.cancel = true;
+        if (entry) {
+          data.cancel = true;
 
-        await entry(api);
-      }
-    });
-  },
-} satisfies plugins.Plugin;
+          await entry(api);
+        }
+      });
+    },
+  };
+});
