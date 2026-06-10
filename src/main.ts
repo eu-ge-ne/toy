@@ -29,52 +29,41 @@ if (args.version) {
   Deno.exit();
 }
 
-class API extends plugins.API {
-  #inits: (() => void)[] = [];
+const api = {} as plugins.API;
+const inits: (() => void)[] = [];
 
-  register(plugin: plugins.Plugin): void {
-    // deno-lint-ignore no-explicit-any
-    const rawThis = this as any;
-
-    for (const [name, api] of Object.entries(plugin(this))) {
-      if (name === "init" && typeof api === "function") {
-        this.#inits.push(api);
-        continue;
-      }
-
-      if (rawThis[name]) {
-        throw new Error("API conflict");
-      }
-
-      rawThis[name] = api;
+function register(plugin: plugins.Plugin): void {
+  for (const [k, v] of Object.entries(plugin(api))) {
+    if ((api as Record<string, unknown>)[k]) {
+      throw new Error("API conflict");
     }
-  }
 
-  init(): void {
-    for (const init of this.#inits) {
-      init();
+    if (k === "init" && typeof v === "function") {
+      inits.push(v);
+    } else {
+      (api as Record<string, unknown>)[k] = v;
     }
   }
 }
 
-const api = new API();
+register(alertModal.plugin);
+register(buffers.plugin);
+register(confirmModal.plugin);
+register(debug.plugin);
+register(fileNameModal.plugin);
+register(footer.plugin);
+register(header.plugin);
+register(io.plugin);
+register(paletteModal.plugin);
+register(runtime.plugin);
+register(shortcuts.plugin);
+register(themes.plugin);
+register(views.plugin);
+register(zen.plugin);
 
-api.register(alertModal.plugin);
-api.register(buffers.plugin);
-api.register(confirmModal.plugin);
-api.register(debug.plugin);
-api.register(fileNameModal.plugin);
-api.register(footer.plugin);
-api.register(header.plugin);
-api.register(io.plugin);
-api.register(paletteModal.plugin);
-api.register(runtime.plugin);
-api.register(shortcuts.plugin);
-api.register(themes.plugin);
-api.register(views.plugin);
-api.register(zen.plugin);
-
-api.init();
+for (const init of inits) {
+  init();
+}
 
 await api.runtime.start();
 
