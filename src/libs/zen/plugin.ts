@@ -3,7 +3,7 @@ import * as plugins from "@libs/plugins";
 
 import { ZenSignals } from "./api.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const signals = new libEvents.SignalEmitter<ZenSignals>();
   let enabled = true;
 
@@ -24,4 +24,4 @@ export default plugins.create((api: plugins.API) => {
       },
     },
   };
-});
+}

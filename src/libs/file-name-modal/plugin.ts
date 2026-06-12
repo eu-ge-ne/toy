@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const buffer = new buffers.BufferAPI();
   const widget = new AskFileNameWidget(buffer);
 
@@ -69,4 +69,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}

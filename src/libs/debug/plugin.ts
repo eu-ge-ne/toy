@@ -6,7 +6,7 @@ import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const widget = new DebugWidget();
   widget.version = std.version;
 
@@ -60,7 +60,7 @@ export default plugins.create((api: plugins.API) => {
       api.io.signals.on("resize")(() => resize(api));
     },
   };
-});
+}
 
 function memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number } {
   const mem = Deno.memoryUsage();
