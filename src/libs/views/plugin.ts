@@ -5,7 +5,7 @@ import * as widgets from "@libs/widgets";
 
 import { ViewSignals } from "./api.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const signals = new libEvents.SignalEmitter<ViewSignals>();
 
   let widget: widgets.Editor;
@@ -60,4 +60,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}

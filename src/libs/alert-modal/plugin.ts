@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const widget = new AlertWidget();
 
   return {
@@ -54,4 +54,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}

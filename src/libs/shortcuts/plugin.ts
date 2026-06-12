@@ -26,7 +26,7 @@ const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "⌘V": async (x) => x.view.paste(),
 };
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   return {
     init(): void {
       api.io.events.on("key.press", -1000)(async (data) => {
@@ -40,4 +40,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}

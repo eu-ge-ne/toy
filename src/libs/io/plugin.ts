@@ -5,7 +5,7 @@ import * as vt from "@libs/vt";
 
 import { IOEvents, IOSignals } from "./api.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const events = new libEvents.EventEmitter<IOEvents>();
   const signals = new libEvents.SignalEmitter<IOSignals>();
 
@@ -65,4 +65,4 @@ export default plugins.create((api: plugins.API) => {
       api.runtime.events.on("stop", 1000)(async () => vt.restore());
     },
   };
-});
+}

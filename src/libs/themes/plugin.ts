@@ -4,7 +4,7 @@ import * as themes from "@libs/themes";
 
 import { ThemeSignals } from "./api.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const signals = new libEvents.SignalEmitter<ThemeSignals>();
 
   return {
@@ -20,4 +20,4 @@ export default plugins.create((api: plugins.API) => {
       api.runtime.events.on("start")(async () => api.theme.set("Mauve"));
     },
   };
-});
+}

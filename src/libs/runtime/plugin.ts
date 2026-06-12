@@ -4,7 +4,7 @@ import * as plugins from "@libs/plugins";
 
 import { RuntimeEvents } from "./api.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const events = new libEvents.EventEmitter<RuntimeEvents>();
 
   return {
@@ -89,4 +89,4 @@ export default plugins.create((api: plugins.API) => {
       },
     },
   };
-});
+}

@@ -5,7 +5,7 @@ import * as themes from "@libs/themes";
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const buffer = new buffers.BufferAPI();
   const widget = new PaletteWidget(buffer);
 
@@ -85,4 +85,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}

@@ -3,7 +3,7 @@ import * as themes from "@libs/themes";
 
 import { HeaderWidget } from "./widget.ts";
 
-export default plugins.create((api: plugins.API) => {
+export function plugin(api: plugins.API): plugins.Result {
   const widget = new HeaderWidget();
 
   return {
@@ -27,4 +27,4 @@ export default plugins.create((api: plugins.API) => {
       });
     },
   };
-});
+}
