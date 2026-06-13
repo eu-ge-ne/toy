@@ -1,15 +1,18 @@
 import { BufferAPI } from "@plugins/buffer";
-import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
 import { RuntimeAPI } from "@plugins/runtime";
 import { ThemesAPI } from "@plugins/themes";
 import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
 
-export class Option<T> {
+export type OptionResult = (
+  _: ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI,
+) => Promise<void>;
+
+export class Option {
   constructor(
     public readonly name: string,
-    public readonly value: T,
+    public readonly value: OptionResult,
     public readonly shortcuts: string[] = [],
   ) {
   }
@@ -21,18 +24,7 @@ export class Option<T> {
   }
 }
 
-export const options: Option<
-  (
-    _:
-      & ViewAPI
-      & DebugAPI
-      & RuntimeAPI
-      & BufferAPI
-      & ThemesAPI
-      & ZenAPI
-      & FileAPI,
-  ) => Promise<void>
->[] = [
+export const options: Option[] = [
   new Option(
     "Edit: Copy",
     async (api: ViewAPI) => api.view.copy(),
@@ -43,10 +35,13 @@ export const options: Option<
     async (api: ViewAPI) => api.view.cut(),
     ["⌃X", "⌘X"],
   ),
+  /*
+  // TODO:
   new Option(
     "Global: Toggle Debug Panel",
     async (api: DebugAPI) => api.debug.toggle(),
   ),
+  */
   new Option(
     "Global: Exit",
     (api: RuntimeAPI) => api.runtime.stop(),

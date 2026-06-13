@@ -2,7 +2,7 @@ import * as buffers from "@libs/buffers";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
-import { options } from "./options.ts";
+import { OptionResult, options } from "./options.ts";
 
 const maxListSize = 10;
 
@@ -10,7 +10,7 @@ export class PaletteWidget extends widgets.Modal {
   override children: {
     bg: widgets.Bg;
     editor: widgets.Editor;
-    list: widgets.List<(_: any) => Promise<void>>;
+    list: widgets.List<OptionResult>;
   };
 
   constructor(private readonly buffer: buffers.Buffer) {
@@ -18,7 +18,7 @@ export class PaletteWidget extends widgets.Modal {
 
     this.children = {
       bg: new widgets.Bg(),
-      list: new widgets.List<(_: any) => Promise<void>>({
+      list: new widgets.List<OptionResult>({
         emptyText: "No matching commands",
       }),
       editor: new widgets.Editor(this.buffer, { multiLine: false }),

@@ -1,11 +1,15 @@
 import * as buffers from "@libs/buffers";
 import * as libThemes from "@libs/themes";
 
+import { BufferAPI } from "@plugins/buffer";
+import { FileAPI } from "@plugins/file";
 import { IOAPI } from "@plugins/io";
+import { RuntimeAPI } from "@plugins/runtime";
 import { ThemesAPI } from "@plugins/themes";
+import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
 
-import { options } from "./options.ts";
+import { OptionResult, options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
 export type PaletteModalAPI = {
@@ -14,7 +18,9 @@ export type PaletteModalAPI = {
   };
 };
 
-export function PaletteModalPlugin(api: ThemesAPI & IOAPI & ZenAPI): PaletteModalAPI {
+export function PaletteModalPlugin(
+  api: IOAPI & ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI,
+): PaletteModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
 
@@ -34,7 +40,7 @@ export function PaletteModalPlugin(api: ThemesAPI & IOAPI & ZenAPI): PaletteModa
     paletteModal: {
       async open(): Promise<void> {
         let opened = true;
-        let result: ((_: unknown) => Promise<void>) | undefined;
+        let result: OptionResult | undefined;
 
         buffer.text = "";
         widget.children.list.items = options;
