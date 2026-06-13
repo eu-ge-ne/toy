@@ -8,13 +8,13 @@ import * as zen from "@plugins/zen";
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export type API = {
+export type PaletteModalAPI = {
   paletteModal: {
     open(): Promise<void>;
   };
 };
 
-export function plugin(api: themes.API & IOAPI & zen.API): API {
+export function PaletteModalPlugin(api: themes.API & IOAPI & zen.API): PaletteModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
 

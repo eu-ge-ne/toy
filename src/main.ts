@@ -11,7 +11,7 @@ import { FileNameModalPlugin } from "@plugins/file-name-modal";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { IOPlugin } from "@plugins/io";
-import * as paletteModal from "@plugins/palette-modal";
+import { PaletteModalPlugin } from "@plugins/palette-modal";
 import * as runtime from "@plugins/runtime";
 import * as shortcuts from "@plugins/shortcuts";
 import * as themes from "@plugins/themes";
@@ -61,7 +61,7 @@ const api = new Loader()
   .use(views.plugin)
   .use(FooterPlugin)
   .use(HeaderPlugin)
-  .use(paletteModal.plugin)
+  .use(PaletteModalPlugin)
   .use(shortcuts.plugin)
   .use(DebugPlugin)
   .build();
