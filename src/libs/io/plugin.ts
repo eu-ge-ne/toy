@@ -1,7 +1,6 @@
 import * as events from "@libs/events";
 import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
-import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 

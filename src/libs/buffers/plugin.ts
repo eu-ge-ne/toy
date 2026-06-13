@@ -1,4 +1,3 @@
-import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 
 import { Buffer } from "./buffer.ts";

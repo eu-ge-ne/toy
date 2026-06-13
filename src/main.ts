@@ -17,7 +17,7 @@ import * as themes from "@libs/themes";
 import * as views from "@libs/views";
 import * as zen from "@libs/zen";
 
-export const args = parseArgs(Deno.args, {
+const args = parseArgs(Deno.args, {
   boolean: ["version"],
   alias: {
     version: "v",

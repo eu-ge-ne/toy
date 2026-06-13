@@ -1,5 +1,4 @@
 import * as libEvents from "@libs/events";
-import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";

@@ -1,5 +1,4 @@
 import * as libEvents from "@libs/events";
-import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 
 declare module "@libs/plugins" {

@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
