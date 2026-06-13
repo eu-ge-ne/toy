@@ -38,7 +38,7 @@ const shortcuts: Record<
   "⌘V": async (x) => x.view.paste(),
 };
 
-export function plugin(
+export function ShortcutsPlugin(
   api: IOAPI & PaletteModalAPI & RuntimeAPI & views.API & BufferAPI & zen.API & FileAPI,
 ): void {
   api.io.events.on("key.press", -1000)(async (data) => {

@@ -13,7 +13,7 @@ import { HeaderPlugin } from "@plugins/header";
 import { IOPlugin } from "@plugins/io";
 import { PaletteModalPlugin } from "@plugins/palette-modal";
 import { RuntimePlugin } from "@plugins/runtime";
-import * as shortcuts from "@plugins/shortcuts";
+import { ShortcutsPlugin } from "@plugins/shortcuts";
 import * as themes from "@plugins/themes";
 import * as views from "@plugins/views";
 import * as zen from "@plugins/zen";
@@ -62,7 +62,7 @@ const api = new Loader()
   .use(FooterPlugin)
   .use(HeaderPlugin)
   .use(PaletteModalPlugin)
-  .use(shortcuts.plugin)
+  .use(ShortcutsPlugin)
   .use(DebugPlugin)
   .build();
 
