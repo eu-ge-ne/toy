@@ -47,7 +47,7 @@ const api = new plugins.Loader()
   .use(PaletteModalPlugin)
   .use(ShortcutsPlugin)
   .use(DebugPlugin)
-  .build();
+  .load();
 
 await api.runtime.start();
 

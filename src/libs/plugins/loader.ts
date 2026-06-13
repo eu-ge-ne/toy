@@ -11,7 +11,7 @@ export class Loader<T0 extends Record<PropertyKey, never>> {
     return new Loader(this.#api as T0 & T1);
   }
 
-  build(): T0 {
+  load(): T0 {
     return this.#api;
   }
 }
