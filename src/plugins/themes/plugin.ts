@@ -1,7 +1,7 @@
 import * as events from "@libs/events";
 import * as libThemes from "@libs/themes";
 
-import * as runtime from "@plugins/runtime";
+import { RuntimeAPI } from "@plugins/runtime";
 
 export type API = {
   theme: {
@@ -14,7 +14,7 @@ type ThemeSignals = {
   "change": (_: keyof typeof libThemes.Themes) => void;
 };
 
-export function plugin(api: runtime.API): API {
+export function plugin(api: RuntimeAPI): API {
   const signals = new events.SignalEmitter<ThemeSignals>();
 
   function set(name: keyof typeof libThemes.Themes): void {

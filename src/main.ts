@@ -12,7 +12,7 @@ import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { IOPlugin } from "@plugins/io";
 import { PaletteModalPlugin } from "@plugins/palette-modal";
-import * as runtime from "@plugins/runtime";
+import { RuntimePlugin } from "@plugins/runtime";
 import * as shortcuts from "@plugins/shortcuts";
 import * as themes from "@plugins/themes";
 import * as views from "@plugins/views";
@@ -50,7 +50,7 @@ class Loader<T0 extends Record<PropertyKey, never>> {
 
 const api = new Loader()
   .use(BufferPlugin)
-  .use(runtime.plugin)
+  .use(RuntimePlugin)
   .use(IOPlugin)
   .use(themes.plugin)
   .use(AlertModalPlugin)

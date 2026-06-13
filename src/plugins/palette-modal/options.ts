@@ -1,7 +1,7 @@
 import { BufferAPI } from "@plugins/buffer";
 import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
-import * as runtime from "@plugins/runtime";
+import { RuntimeAPI } from "@plugins/runtime";
 import * as themes from "@plugins/themes";
 import * as views from "@plugins/views";
 import * as zen from "@plugins/zen";
@@ -26,7 +26,7 @@ export const options: Option<
     _:
       & views.API
       & DebugAPI
-      & runtime.API
+      & RuntimeAPI
       & views.API
       & BufferAPI
       & themes.API
@@ -50,7 +50,7 @@ export const options: Option<
   ),
   new Option(
     "Global: Exit",
-    (api: runtime.API) => api.runtime.stop(),
+    (api: RuntimeAPI) => api.runtime.stop(),
     ["F10"],
   ),
   new Option(

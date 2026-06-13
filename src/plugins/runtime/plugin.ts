@@ -1,6 +1,6 @@
 import * as libEvents from "@libs/events";
 
-export type API = {
+export type RuntimeAPI = {
   runtime: {
     events: libEvents.Listener<RuntimeEvents>;
     start(): Promise<void>;
@@ -13,7 +13,7 @@ type RuntimeEvents = {
   stop: (_: libEvents.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
 };
 
-export function plugin(): API {
+export function RuntimePlugin(): RuntimeAPI {
   const events = new libEvents.EventEmitter<RuntimeEvents>();
 
   async function start(): Promise<void> {

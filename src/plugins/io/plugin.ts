@@ -2,8 +2,8 @@ import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
-//import * as debug from "@plugins/debug";
-import * as runtime from "@plugins/runtime";
+// TODO: import * as debug from "@plugins/debug";
+import { RuntimeAPI } from "@plugins/runtime";
 
 export type IOAPI = {
   io: {
@@ -23,7 +23,7 @@ type IOSignals = {
   "render": () => void;
 };
 
-export function IOPlugin(api: runtime.API): IOAPI {
+export function IOPlugin(api: RuntimeAPI): IOAPI {
   const events = new libEvents.EventEmitter<IOEvents>();
   const signals = new libEvents.SignalEmitter<IOSignals>();
 
