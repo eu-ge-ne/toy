@@ -12,8 +12,6 @@ const MIB = Math.pow(1024, 2);
 export type DebugAPI = {
   debug: {
     toggle(): void;
-    setRender(_: number): void;
-    setInput(_: number): void;
   };
 };
 
@@ -24,17 +22,20 @@ export function DebugPlugin(api: ThemesAPI & IOAPI & ZenAPI): DebugAPI {
   let timer: NodeJS.Timeout;
 
   function updateMemUsage(): void {
-    const mem = memUsage();
+    const mem = Deno.memoryUsage();
 
-    widget.rss = mem.rss.toFixed();
-    widget.heapTotal = mem.heapTotal.toFixed();
-    widget.heapUsed = mem.heapUsed.toFixed();
-    widget.externalMem = mem.external.toFixed();
+    widget.rss = (mem.rss / MIB).toFixed();
+    widget.heapTotal = (mem.heapTotal / MIB).toFixed();
+    widget.heapUsed = (mem.heapUsed / MIB).toFixed();
+    widget.externalMem = (mem.external / MIB).toFixed();
 
     widget.render();
   }
 
-  function resize(): void {
+  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+  api.io.signals.on("render", 1000)(() => widget.render());
+
+  api.io.signals.on("resize")(() => {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
@@ -43,11 +44,15 @@ export function DebugPlugin(api: ThemesAPI & IOAPI & ZenAPI): DebugAPI {
     const x = columns - w;
 
     widget.resize(w, h, y, x);
-  }
+  });
 
-  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
-  api.io.signals.on("render", 1000)(() => widget.render());
-  api.io.signals.on("resize")(() => resize());
+  api.io.signals.on("render.completed")((x) => {
+    widget.renderElapsed = x;
+  });
+
+  api.io.signals.on("key.handled")((x) => {
+    widget.inputElapsed = x;
+  });
 
   return {
     debug: {
@@ -61,23 +66,6 @@ export function DebugPlugin(api: ThemesAPI & IOAPI & ZenAPI): DebugAPI {
           clearInterval(timer);
         }
       },
-      setRender(x): void {
-        widget.renderElapsed = x;
-      },
-      setInput(x): void {
-        widget.inputElapsed = x;
-      },
     },
-  };
-}
-
-function memUsage(): { rss: number; heapTotal: number; heapUsed: number; external: number } {
-  const mem = Deno.memoryUsage();
-
-  return {
-    rss: mem.rss / MIB,
-    heapTotal: mem.heapTotal / MIB,
-    heapUsed: mem.heapUsed / MIB,
-    external: mem.external / MIB,
   };
 }
