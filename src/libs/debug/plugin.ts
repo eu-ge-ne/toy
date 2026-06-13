@@ -1,3 +1,4 @@
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
@@ -5,6 +6,16 @@ import * as themes from "@libs/themes";
 import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
+
+declare module "@libs/plugins" {
+  export interface API {
+    debug: {
+      toggle(): void;
+      setRender(_: number): void;
+      setInput(_: number): void;
+    };
+  }
+}
 
 export function plugin(api: plugins.API): plugins.Result {
   const widget = new DebugWidget();

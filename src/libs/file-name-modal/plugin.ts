@@ -1,12 +1,21 @@
 import * as buffers from "@libs/buffers";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
+declare module "@libs/plugins" {
+  export interface API {
+    fileNameModal: {
+      open(_: string): Promise<string | undefined>;
+    };
+  }
+}
+
 export function plugin(api: plugins.API): plugins.Result {
-  const buffer = new buffers.BufferAPI();
+  const buffer = new buffers.Buffer();
   const widget = new AskFileNameWidget(buffer);
 
   return {

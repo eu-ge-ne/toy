@@ -1,8 +1,25 @@
 import * as libEvents from "@libs/events";
 import * as files from "@libs/files";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 
-import { RuntimeEvents } from "./api.ts";
+declare module "@libs/plugins" {
+  export interface API {
+    runtime: {
+      events: libEvents.Listener<RuntimeEvents>;
+      start(): Promise<void>;
+      stop(e?: PromiseRejectionEvent): Promise<void>;
+      open(_: string): Promise<void>;
+      save(): Promise<void>;
+      saveAs(): Promise<void>;
+    };
+  }
+}
+
+type RuntimeEvents = {
+  start: (_: libEvents.EventData) => Promise<void>;
+  stop: (_: libEvents.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
+};
 
 export function plugin(api: plugins.API): plugins.Result {
   const events = new libEvents.EventEmitter<RuntimeEvents>();

@@ -1,9 +1,29 @@
+import * as events from "@libs/events";
 import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-import { IOEvents, IOSignals } from "./api.ts";
+declare module "@libs/plugins" {
+  export interface API {
+    io: {
+      events: events.Listener<IOEvents>;
+      signals: events.Listener<IOSignals>;
+      resize(): void;
+      loop(_: () => unknown): Promise<void>;
+    };
+  }
+}
+
+type IOEvents = {
+  "key.press": (_: events.EventData<{ key: kitty.Key }>) => Promise<void>;
+};
+
+type IOSignals = {
+  "resize": () => void;
+  "render": () => void;
+};
 
 export function plugin(api: plugins.API): plugins.Result {
   const events = new libEvents.EventEmitter<IOEvents>();

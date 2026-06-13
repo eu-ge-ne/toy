@@ -1,8 +1,17 @@
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AskWidget } from "./widget.ts";
+
+declare module "@libs/plugins" {
+  export interface API {
+    confirmModal: {
+      open(_: string): Promise<boolean>;
+    };
+  }
+}
 
 export function plugin(api: plugins.API): plugins.Result {
   const widget = new AskWidget();

@@ -1,12 +1,21 @@
 import * as buffers from "@libs/buffers";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
+declare module "@libs/plugins" {
+  export interface API {
+    paletteModal: {
+      open(): Promise<void>;
+    };
+  }
+}
+
 export function plugin(api: plugins.API): plugins.Result {
-  const buffer = new buffers.BufferAPI();
+  const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
 
   return {

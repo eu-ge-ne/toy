@@ -1,8 +1,20 @@
 import * as libEvents from "@libs/events";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 
-import { ThemeSignals } from "./api.ts";
+declare module "@libs/plugins" {
+  export interface API {
+    theme: {
+      signals: libEvents.Listener<ThemeSignals>;
+      set(_: keyof typeof themes.Themes): void;
+    };
+  }
+}
+
+type ThemeSignals = {
+  "change": (_: keyof typeof themes.Themes) => void;
+};
 
 export function plugin(api: plugins.API): plugins.Result {
   const signals = new libEvents.SignalEmitter<ThemeSignals>();

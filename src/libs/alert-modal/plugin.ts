@@ -1,8 +1,17 @@
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
 import { AlertWidget } from "./widget.ts";
+
+declare module "@libs/plugins" {
+  export interface API {
+    alertModal: {
+      open(_: string): Promise<void>;
+    };
+  }
+}
 
 export function plugin(api: plugins.API): plugins.Result {
   const widget = new AlertWidget();

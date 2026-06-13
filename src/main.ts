@@ -34,14 +34,14 @@ const inits: (() => void)[] = [];
 
 function register(plugin: plugins.Plugin): void {
   for (const [k, v] of Object.entries(plugin(api))) {
-    if ((api as Record<string, unknown>)[k]) {
+    if ((api as unknown as Record<string, unknown>)[k]) {
       throw new Error("API conflict");
     }
 
     if (k === "init" && typeof v === "function") {
       inits.push(v);
     } else {
-      (api as Record<string, unknown>)[k] = v;
+      (api as unknown as Record<string, unknown>)[k] = v;
     }
   }
 }

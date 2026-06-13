@@ -1,9 +1,26 @@
 import * as libEvents from "@libs/events";
+import "@libs/plugins";
 import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
-import { ViewSignals } from "./api.ts";
+declare module "@libs/plugins" {
+  export interface API {
+    view: {
+      signals: libEvents.Listener<ViewSignals>;
+      toggleWhitespace(): void;
+      toggleWrap(): void;
+      selectAll(): void;
+      copy(): void;
+      cut(): void;
+      paste(): void;
+    };
+  }
+}
+
+type ViewSignals = {
+  "change.cursor": (_: { ln: number; col: number }) => void;
+};
 
 export function plugin(api: plugins.API): plugins.Result {
   const signals = new libEvents.SignalEmitter<ViewSignals>();
