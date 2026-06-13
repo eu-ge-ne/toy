@@ -1,8 +1,8 @@
 import * as kitty from "@libs/kitty";
 
 import { BufferAPI } from "@plugins/buffer";
+import { FileAPI } from "@plugins/file";
 import { IOAPI } from "@plugins/io";
-import * as main from "@plugins/main";
 import * as paletteModal from "@plugins/palette-modal";
 import * as runtime from "@plugins/runtime";
 import * as views from "@plugins/views";
@@ -11,7 +11,7 @@ import * as zen from "@plugins/zen";
 const shortcuts: Record<
   string,
   (
-    _: paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & main.API,
+    _: paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & FileAPI,
   ) => Promise<void>
 > = {
   "F1": (x) => x.paletteModal.open(),
@@ -19,7 +19,7 @@ const shortcuts: Record<
   "⌃F1": (x) => x.paletteModal.open(),
   "⌥F1": (x) => x.paletteModal.open(),
   "⌘F1": (x) => x.paletteModal.open(),
-  "F2": (x) => x.main.save(),
+  "F2": (x) => x.file.save(),
   "F5": async (x) => x.view.toggleWhitespace(),
   "F6": async (x) => x.view.toggleWrap(),
   "F10": (x) => x.runtime.stop(),
@@ -39,7 +39,7 @@ const shortcuts: Record<
 };
 
 export function plugin(
-  api: IOAPI & paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & main.API,
+  api: IOAPI & paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & FileAPI,
 ): void {
   api.io.events.on("key.press", -1000)(async (data) => {
     const entry = shortcuts[kitty.shortcut(data.key)];

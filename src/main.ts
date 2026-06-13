@@ -6,11 +6,11 @@ import { AlertModalPlugin } from "@plugins/alert-modal";
 import { BufferPlugin } from "@plugins/buffer";
 import { ConfirmModalPlugin } from "@plugins/confirm-modal";
 import { DebugPlugin } from "@plugins/debug";
+import { FilePlugin } from "@plugins/file";
 import { FileNameModalPlugin } from "@plugins/file-name-modal";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
 import { IOPlugin } from "@plugins/io";
-import * as main from "@plugins/main";
 import * as paletteModal from "@plugins/palette-modal";
 import * as runtime from "@plugins/runtime";
 import * as shortcuts from "@plugins/shortcuts";
@@ -56,7 +56,7 @@ const api = new Loader()
   .use(AlertModalPlugin)
   .use(ConfirmModalPlugin)
   .use(FileNameModalPlugin)
-  .use(main.plugin)
+  .use(FilePlugin)
   .use(zen.plugin)
   .use(views.plugin)
   .use(FooterPlugin)
@@ -71,13 +71,13 @@ await api.runtime.start();
 api.io.resize();
 
 if (typeof args._[0] === "string") {
-  await api.main.open(args._[0]);
+  await api.file.open(args._[0]);
 }
 
 api.runtime.events.on("stop", -1000)(async (e) => {
   if (!e && api.buffer.modified) {
     if (await api.confirmModal.open("Save changes?")) {
-      await api.main.save();
+      await api.file.save();
     }
   }
 });

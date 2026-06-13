@@ -6,17 +6,17 @@ import { ConfirmModalAPI } from "@plugins/confirm-modal";
 import { FileNameModalAPI } from "@plugins/file-name-modal";
 import * as runtime from "@plugins/runtime";
 
-export type API = {
-  main: {
+export type FileAPI = {
+  file: {
     open(_: string): Promise<void>;
     save(): Promise<void>;
     saveAs(): Promise<void>;
   };
 };
 
-export function plugin(
+export function FilePlugin(
   api: BufferAPI & runtime.API & ConfirmModalAPI & AlertModalAPI & FileNameModalAPI,
-): API {
+): FileAPI {
   async function open(newFileName: string): Promise<void> {
     api.buffer.name = newFileName;
 
@@ -73,7 +73,7 @@ export function plugin(
   }
 
   return {
-    main: {
+    file: {
       open,
       save,
       saveAs,

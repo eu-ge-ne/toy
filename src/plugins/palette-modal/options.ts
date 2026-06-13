@@ -1,6 +1,6 @@
 import { BufferAPI } from "@plugins/buffer";
 import { DebugAPI } from "@plugins/debug";
-import * as main from "@plugins/main";
+import { FileAPI } from "@plugins/file";
 import * as runtime from "@plugins/runtime";
 import * as themes from "@plugins/themes";
 import * as views from "@plugins/views";
@@ -31,7 +31,7 @@ export const options: Option<
       & BufferAPI
       & themes.API
       & zen.API
-      & main.API,
+      & FileAPI,
   ) => Promise<void>
 >[] = [
   new Option(
@@ -70,7 +70,7 @@ export const options: Option<
   ),
   new Option(
     "Global: Save",
-    async (api: main.API) => api.main.save(),
+    async (api: FileAPI) => api.file.save(),
     ["F2"],
   ),
   new Option(
