@@ -1,22 +1,22 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as plugins from "@libs/plugins";
+import * as std from "@libs/std";
+import * as views from "@libs/views";
+import * as zen from "@libs/zen";
+
 import * as alertModal from "@plugins/alert-modal";
 import * as buffers from "@plugins/buffers";
 import * as confirmModal from "@plugins/confirm-modal";
 import * as debug from "@plugins/debug";
 import * as fileNameModal from "@plugins/file-name-modal";
 import * as footer from "@plugins/footer";
-
-import * as header from "@libs/header";
-import * as io from "@libs/io";
-import * as paletteModal from "@libs/palette-modal";
-import * as plugins from "@libs/plugins";
-import * as runtime from "@libs/runtime";
-import * as shortcuts from "@libs/shortcuts";
-import * as std from "@libs/std";
-import * as themes from "@libs/themes";
-import * as views from "@libs/views";
-import * as zen from "@libs/zen";
+import * as header from "@plugins/header";
+import * as io from "@plugins/io";
+import * as paletteModal from "@plugins/palette-modal";
+import * as runtime from "@plugins/runtime";
+import * as shortcuts from "@plugins/shortcuts";
+import * as themes from "@plugins/themes";
 
 const args = parseArgs(Deno.args, {
   boolean: ["version"],

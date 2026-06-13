@@ -1,4 +1,4 @@
 {
-  "name": "@libs/shortcuts",
+  "name": "@plugins/themes",
   "exports": "./index.ts"
 }
