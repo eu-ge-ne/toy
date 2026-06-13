@@ -7,27 +7,34 @@ export interface API {
   alertModal: {
     open(_: string): Promise<void>;
   };
+
   buffer: buffers.Buffer;
+
   confirmModal: {
     open(_: string): Promise<boolean>;
   };
+
   debug: {
     toggle(): void;
     setRender(_: number): void;
     setInput(_: number): void;
   };
+
   fileNameModal: {
     open(_: string): Promise<string | undefined>;
   };
+
   io: {
     events: events.Listener<IOEvents>;
     signals: events.Listener<IOSignals>;
     resize(): void;
     loop(_: () => unknown): Promise<void>;
   };
+
   paletteModal: {
     open(): Promise<void>;
   };
+
   runtime: {
     events: events.Listener<RuntimeEvents>;
     start(): Promise<void>;
@@ -36,10 +43,12 @@ export interface API {
     save(): Promise<void>;
     saveAs(): Promise<void>;
   };
+
   theme: {
     signals: events.Listener<ThemeSignals>;
     set(_: keyof typeof themes.Themes): void;
   };
+
   view: {
     signals: events.Listener<ViewSignals>;
     toggleWhitespace(): void;
@@ -49,6 +58,7 @@ export interface API {
     cut(): void;
     paste(): void;
   };
+
   zen: {
     signals: events.Listener<ZenSignals>;
     get enabled(): boolean;
