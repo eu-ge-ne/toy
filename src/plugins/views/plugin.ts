@@ -1,28 +1,10 @@
 import * as libEvents from "@libs/events";
+import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
-import * as plugins from "@plugins/plugins";
 
-declare module "@plugins/plugins" {
-  export interface API {
-    view: {
-      signals: libEvents.Listener<ViewSignals>;
-      toggleWhitespace(): void;
-      toggleWrap(): void;
-      selectAll(): void;
-      copy(): void;
-      cut(): void;
-      paste(): void;
-    };
-  }
-}
-
-type ViewSignals = {
-  "change.cursor": (_: { ln: number; col: number }) => void;
-};
-
-export function plugin(api: plugins.API): plugins.Result {
-  const signals = new libEvents.SignalEmitter<ViewSignals>();
+export function plugin(api: plugins.API): plugins.Plugin {
+  const signals = new libEvents.SignalEmitter<plugins.ViewSignals>();
 
   let widget: widgets.Editor;
 

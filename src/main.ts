@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 
 import * as alertModal from "@plugins/alert-modal";
@@ -11,7 +12,6 @@ import * as footer from "@plugins/footer";
 import * as header from "@plugins/header";
 import * as io from "@plugins/io";
 import * as paletteModal from "@plugins/palette-modal";
-import * as plugins from "@plugins/plugins";
 import * as runtime from "@plugins/runtime";
 import * as shortcuts from "@plugins/shortcuts";
 import * as themes from "@plugins/themes";
@@ -33,7 +33,7 @@ if (args.version) {
 const api = {} as plugins.API;
 const inits: (() => void)[] = [];
 
-function register(plugin: plugins.Plugin): void {
+function register(plugin: plugins.PluginConstructor): void {
   for (const [k, v] of Object.entries(plugin(api))) {
     if ((api as unknown as Record<string, unknown>)[k]) {
       throw new Error("API conflict");

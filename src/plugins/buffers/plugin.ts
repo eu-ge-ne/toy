@@ -1,13 +1,7 @@
 import * as buffers from "@libs/buffers";
-import * as plugins from "@plugins/plugins";
+import * as plugins from "@libs/plugins";
 
-declare module "@plugins/plugins" {
-  export interface API {
-    buffer: buffers.Buffer;
-  }
-}
-
-export function plugin(): plugins.Result {
+export function plugin(): plugins.Plugin {
   return {
     buffer: new buffers.Buffer(),
   };

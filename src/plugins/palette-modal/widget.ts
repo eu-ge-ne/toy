@@ -1,7 +1,7 @@
 import * as buffers from "@libs/buffers";
+import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
-import * as plugins from "@plugins/plugins";
 
 import { options } from "./options.ts";
 

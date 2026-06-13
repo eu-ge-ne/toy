@@ -1,5 +1,5 @@
 import * as kitty from "@libs/kitty";
-import * as plugins from "@plugins/plugins";
+import * as plugins from "@libs/plugins";
 
 const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "F1": (x) => x.paletteModal.open(),
@@ -26,7 +26,7 @@ const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "⌘V": async (x) => x.view.paste(),
 };
 
-export function plugin(api: plugins.API): plugins.Result {
+export function plugin(api: plugins.API): plugins.Plugin {
   return {
     init(): void {
       api.io.events.on("key.press", -1000)(async (data) => {

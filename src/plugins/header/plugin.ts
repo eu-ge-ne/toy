@@ -1,9 +1,9 @@
+import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
-import * as plugins from "@plugins/plugins";
 
 import { HeaderWidget } from "./widget.ts";
 
-export function plugin(api: plugins.API): plugins.Result {
+export function plugin(api: plugins.API): plugins.Plugin {
   const widget = new HeaderWidget();
 
   return {

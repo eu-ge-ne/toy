@@ -1,8 +1,8 @@
 import { API } from "./api.ts";
 
-export type Plugin = (_: API) => Result;
+export type PluginConstructor = (_: API) => Plugin;
 
-export type Result =
+export type Plugin =
   & {
     [P in keyof API]?: API[P];
   }
