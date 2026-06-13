@@ -1,8 +1,9 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as alertModal from "@libs/alert-modal";
-import * as buffers from "@libs/buffers";
-import * as confirmModal from "@libs/confirm-modal";
+import * as alertModal from "@plugins/alert-modal";
+import * as buffers from "@plugins/buffers";
+import * as confirmModal from "@plugins/confirm-modal";
+
 import * as debug from "@libs/debug";
 import * as fileNameModal from "@libs/file-name-modal";
 import * as footer from "@libs/footer";

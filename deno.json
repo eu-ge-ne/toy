@@ -4,6 +4,7 @@
   "license": "MIT",
   "exports": "./src/main.ts",
   "workspace": [
+    "src/plugins/*",
     "src/libs/*"
   ],
   "compilerOptions": {

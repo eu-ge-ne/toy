@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/buffers",
+  "exports": "./index.ts"
+}
