@@ -14,9 +14,9 @@ import { IOPlugin } from "@plugins/io";
 import { PaletteModalPlugin } from "@plugins/palette-modal";
 import { RuntimePlugin } from "@plugins/runtime";
 import { ShortcutsPlugin } from "@plugins/shortcuts";
-import * as themes from "@plugins/themes";
-import * as views from "@plugins/views";
-import * as zen from "@plugins/zen";
+import { ThemesPlugin } from "@plugins/themes";
+import { ViewPlugin } from "@plugins/view";
+import { ZenPlugin } from "@plugins/zen";
 
 const args = parseArgs(Deno.args, {
   boolean: ["version"],
@@ -52,13 +52,13 @@ const api = new Loader()
   .use(BufferPlugin)
   .use(RuntimePlugin)
   .use(IOPlugin)
-  .use(themes.plugin)
+  .use(ThemesPlugin)
   .use(AlertModalPlugin)
   .use(ConfirmModalPlugin)
   .use(FileNameModalPlugin)
   .use(FilePlugin)
-  .use(zen.plugin)
-  .use(views.plugin)
+  .use(ZenPlugin)
+  .use(ViewPlugin)
   .use(FooterPlugin)
   .use(HeaderPlugin)
   .use(PaletteModalPlugin)

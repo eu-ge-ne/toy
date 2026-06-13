@@ -3,7 +3,7 @@ import * as std from "@libs/std";
 import * as libThemes from "@libs/themes";
 
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
+import { ThemesAPI } from "@plugins/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
@@ -13,7 +13,7 @@ export type FileNameModalAPI = {
   };
 };
 
-export function FileNameModalPlugin(api: themes.API & IOAPI): FileNameModalAPI {
+export function FileNameModalPlugin(api: ThemesAPI & IOAPI): FileNameModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new AskFileNameWidget(buffer);
 

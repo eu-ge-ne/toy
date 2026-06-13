@@ -1,4 +1,4 @@
 {
-  "name": "@plugins/views",
+  "name": "@plugins/view",
   "exports": "./index.ts"
 }

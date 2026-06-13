@@ -4,10 +4,10 @@ import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
-import * as zen from "@plugins/zen";
+import { ThemesAPI } from "@plugins/themes";
+import { ZenAPI } from "@plugins/zen";
 
-export type API = {
+export type ViewAPI = {
   view: {
     signals: libEvents.Listener<ViewSignals>;
     toggleWhitespace(): void;
@@ -23,7 +23,7 @@ type ViewSignals = {
   "change.cursor": (_: { ln: number; col: number }) => void;
 };
 
-export function plugin(api: themes.API & BufferAPI & zen.API & IOAPI): API {
+export function ViewPlugin(api: ThemesAPI & BufferAPI & ZenAPI & IOAPI): ViewAPI {
   const signals = new libEvents.SignalEmitter<ViewSignals>();
 
   const widget = new widgets.Editor(api.buffer, {

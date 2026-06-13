@@ -2,7 +2,7 @@ import * as std from "@libs/std";
 import * as libThemes from "@libs/themes";
 
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
+import { ThemesAPI } from "@plugins/themes";
 
 import { AlertWidget } from "./widget.ts";
 
@@ -12,7 +12,7 @@ export type AlertModalAPI = {
   };
 };
 
-export function AlertModalPlugin(api: themes.API & IOAPI): AlertModalAPI {
+export function AlertModalPlugin(api: ThemesAPI & IOAPI): AlertModalAPI {
   const widget = new AlertWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));

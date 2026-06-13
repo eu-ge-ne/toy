@@ -2,8 +2,8 @@ import * as buffers from "@libs/buffers";
 import * as libThemes from "@libs/themes";
 
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
-import * as zen from "@plugins/zen";
+import { ThemesAPI } from "@plugins/themes";
+import { ZenAPI } from "@plugins/zen";
 
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
@@ -14,7 +14,7 @@ export type PaletteModalAPI = {
   };
 };
 
-export function PaletteModalPlugin(api: themes.API & IOAPI & zen.API): PaletteModalAPI {
+export function PaletteModalPlugin(api: ThemesAPI & IOAPI & ZenAPI): PaletteModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
 

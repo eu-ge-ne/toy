@@ -2,9 +2,9 @@ import { BufferAPI } from "@plugins/buffer";
 import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
 import { RuntimeAPI } from "@plugins/runtime";
-import * as themes from "@plugins/themes";
-import * as views from "@plugins/views";
-import * as zen from "@plugins/zen";
+import { ThemesAPI } from "@plugins/themes";
+import { ViewAPI } from "@plugins/view";
+import { ZenAPI } from "@plugins/zen";
 
 export class Option<T> {
   constructor(
@@ -24,24 +24,23 @@ export class Option<T> {
 export const options: Option<
   (
     _:
-      & views.API
+      & ViewAPI
       & DebugAPI
       & RuntimeAPI
-      & views.API
       & BufferAPI
-      & themes.API
-      & zen.API
+      & ThemesAPI
+      & ZenAPI
       & FileAPI,
   ) => Promise<void>
 >[] = [
   new Option(
     "Edit: Copy",
-    async (api: views.API) => api.view.copy(),
+    async (api: ViewAPI) => api.view.copy(),
     ["⌃C", "⌘C"],
   ),
   new Option(
     "Edit: Cut",
-    async (api: views.API) => api.view.cut(),
+    async (api: ViewAPI) => api.view.cut(),
     ["⌃X", "⌘X"],
   ),
   new Option(
@@ -55,12 +54,12 @@ export const options: Option<
   ),
   new Option(
     "Edit: Select All",
-    async (api: views.API) => api.view.selectAll(),
+    async (api: ViewAPI) => api.view.selectAll(),
     ["⌃A", "⌘A"],
   ),
   new Option(
     "Edit: Paste",
-    async (api: views.API) => api.view.paste(),
+    async (api: ViewAPI) => api.view.paste(),
     ["⌃V", "⌘V"],
   ),
   new Option(
@@ -75,43 +74,43 @@ export const options: Option<
   ),
   new Option(
     "Theme: Base16",
-    async (api: themes.API) => api.theme.set("Base16"),
+    async (api: ThemesAPI) => api.theme.set("Base16"),
   ),
   new Option(
     "Theme: Slate",
-    async (api: themes.API) => api.theme.set("Slate"),
+    async (api: ThemesAPI) => api.theme.set("Slate"),
   ),
   new Option(
     "Theme: Gray",
-    async (api: themes.API) => api.theme.set("Gray"),
+    async (api: ThemesAPI) => api.theme.set("Gray"),
   ),
   new Option(
     "Theme: Zinc",
-    async (api: themes.API) => api.theme.set("Zinc"),
+    async (api: ThemesAPI) => api.theme.set("Zinc"),
   ),
   new Option(
     "Theme: Neutral",
-    async (api: themes.API) => api.theme.set("Neutral"),
+    async (api: ThemesAPI) => api.theme.set("Neutral"),
   ),
   new Option(
     "Theme: Stone",
-    async (api: themes.API) => api.theme.set("Stone"),
+    async (api: ThemesAPI) => api.theme.set("Stone"),
   ),
   new Option(
     "Theme: Taupe",
-    async (api: themes.API) => api.theme.set("Taupe"),
+    async (api: ThemesAPI) => api.theme.set("Taupe"),
   ),
   new Option(
     "Theme: Mauve",
-    async (api: themes.API) => api.theme.set("Mauve"),
+    async (api: ThemesAPI) => api.theme.set("Mauve"),
   ),
   new Option(
     "Theme: Mist",
-    async (api: themes.API) => api.theme.set("Mist"),
+    async (api: ThemesAPI) => api.theme.set("Mist"),
   ),
   new Option(
     "Theme: Olive",
-    async (api: themes.API) => api.theme.set("Olive"),
+    async (api: ThemesAPI) => api.theme.set("Olive"),
   ),
   new Option(
     "Edit: Undo",
@@ -120,17 +119,17 @@ export const options: Option<
   ),
   new Option(
     "View: Toggle Render Whitespace",
-    async (api: views.API) => api.view.toggleWhitespace(),
+    async (api: ViewAPI) => api.view.toggleWhitespace(),
     ["F5"],
   ),
   new Option(
     "View: Toggle Line Wrap",
-    async (api: views.API) => api.view.toggleWrap(),
+    async (api: ViewAPI) => api.view.toggleWrap(),
     ["F6"],
   ),
   new Option(
     "Global: Toggle Zen Mode",
-    async (api: zen.API) => api.zen.toggle(),
+    async (api: ZenAPI) => api.zen.toggle(),
     ["F11"],
   ),
 ].sort((a, b) => a.name.localeCompare(b.name));

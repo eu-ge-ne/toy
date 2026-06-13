@@ -2,13 +2,13 @@ import * as libThemes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
-import * as views from "@plugins/views";
-import * as zen from "@plugins/zen";
+import { ThemesAPI } from "@plugins/themes";
+import { ViewAPI } from "@plugins/view";
+import { ZenAPI } from "@plugins/zen";
 
 import { FooterWidget } from "./widget.ts";
 
-export function FooterPlugin(api: IOAPI & themes.API & BufferAPI & zen.API & views.API): void {
+export function FooterPlugin(api: IOAPI & ThemesAPI & BufferAPI & ZenAPI & ViewAPI): void {
   const widget = new FooterWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));

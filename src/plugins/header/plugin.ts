@@ -2,12 +2,12 @@ import * as libThemes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
-import * as zen from "@plugins/zen";
+import { ThemesAPI } from "@plugins/themes";
+import { ZenAPI } from "@plugins/zen";
 
 import { HeaderWidget } from "./widget.ts";
 
-export function HeaderPlugin(api: BufferAPI & themes.API & IOAPI & zen.API): void {
+export function HeaderPlugin(api: BufferAPI & ThemesAPI & IOAPI & ZenAPI): void {
   const widget = new HeaderWidget();
 
   api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);

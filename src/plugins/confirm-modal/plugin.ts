@@ -2,7 +2,7 @@ import * as std from "@libs/std";
 import * as libThemes from "@libs/themes";
 
 import { IOAPI } from "@plugins/io";
-import * as themes from "@plugins/themes";
+import { ThemesAPI } from "@plugins/themes";
 
 import { AskWidget } from "./widget.ts";
 
@@ -12,7 +12,7 @@ export type ConfirmModalAPI = {
   };
 };
 
-export function ConfirmModalPlugin(api: themes.API & IOAPI): ConfirmModalAPI {
+export function ConfirmModalPlugin(api: ThemesAPI & IOAPI): ConfirmModalAPI {
   const widget = new AskWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));

@@ -5,13 +5,13 @@ import { FileAPI } from "@plugins/file";
 import { IOAPI } from "@plugins/io";
 import { PaletteModalAPI } from "@plugins/palette-modal";
 import { RuntimeAPI } from "@plugins/runtime";
-import * as views from "@plugins/views";
-import * as zen from "@plugins/zen";
+import { ViewAPI } from "@plugins/view";
+import { ZenAPI } from "@plugins/zen";
 
 const shortcuts: Record<
   string,
   (
-    _: PaletteModalAPI & RuntimeAPI & views.API & BufferAPI & zen.API & FileAPI,
+    _: PaletteModalAPI & RuntimeAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
   ) => Promise<void>
 > = {
   "F1": (x) => x.paletteModal.open(),
@@ -39,7 +39,7 @@ const shortcuts: Record<
 };
 
 export function ShortcutsPlugin(
-  api: IOAPI & PaletteModalAPI & RuntimeAPI & views.API & BufferAPI & zen.API & FileAPI,
+  api: IOAPI & PaletteModalAPI & RuntimeAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
 ): void {
   api.io.events.on("key.press", -1000)(async (data) => {
     const entry = shortcuts[kitty.shortcut(data.key)];
