@@ -1,4 +1,5 @@
 import { BufferAPI } from "@plugins/buffer";
+import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
 import { RuntimeAPI } from "@plugins/runtime";
 import { ThemesAPI } from "@plugins/themes";
@@ -6,7 +7,7 @@ import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
 
 export type OptionResult = (
-  _: ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI,
+  _: ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI & DebugAPI,
 ) => Promise<void>;
 
 export class Option {
@@ -35,13 +36,10 @@ export const options: Option[] = [
     async (api: ViewAPI) => api.view.cut(),
     ["⌃X", "⌘X"],
   ),
-  /*
-  // TODO:
   new Option(
     "Global: Toggle Debug Panel",
     async (api: DebugAPI) => api.debug.toggle(),
   ),
-  */
   new Option(
     "Global: Exit",
     (api: RuntimeAPI) => api.runtime.stop(),

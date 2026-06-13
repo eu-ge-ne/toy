@@ -2,6 +2,7 @@ import * as buffers from "@libs/buffers";
 import * as libThemes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
+import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
 import { IOAPI } from "@plugins/io";
 import { RuntimeAPI } from "@plugins/runtime";
@@ -19,7 +20,7 @@ export type PaletteModalAPI = {
 };
 
 export function PaletteModalPlugin(
-  api: IOAPI & ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI,
+  api: IOAPI & ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI & DebugAPI,
 ): PaletteModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);

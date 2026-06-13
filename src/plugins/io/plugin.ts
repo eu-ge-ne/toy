@@ -2,7 +2,6 @@ import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
-// TODO: import * as debug from "@plugins/debug";
 import { RuntimeAPI } from "@plugins/runtime";
 
 export type IOAPI = {
@@ -21,6 +20,8 @@ type IOEvents = {
 type IOSignals = {
   "resize": () => void;
   "render": () => void;
+  "render.completed": (_: number) => void;
+  "key.handled": (_: number) => void;
 };
 
 export function IOPlugin(api: RuntimeAPI): IOAPI {
@@ -32,7 +33,7 @@ export function IOPlugin(api: RuntimeAPI): IOAPI {
   }
 
   function render(): void {
-    //const t0 = performance.now();
+    const t0 = performance.now();
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
@@ -43,15 +44,15 @@ export function IOPlugin(api: RuntimeAPI): IOAPI {
     vt.buf.flush();
     vt.sync.esu();
 
-    //api.debug.setRender(performance.now() - t0);
+    signals.broadcast("render.completed", performance.now() - t0);
   }
 
   async function keyPress(key: kitty.Key): Promise<void> {
-    //const t0 = performance.now();
+    const t0 = performance.now();
 
     await events.dispatch("key.press", { key });
 
-    //api.debug.setInput(performance.now() - t0);
+    signals.broadcast("key.handled", performance.now() - t0);
   }
 
   api.runtime.events.on("start")(async () => {

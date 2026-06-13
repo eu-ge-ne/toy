@@ -44,9 +44,9 @@ const api = new plugins.Loader()
   .use(ViewPlugin)
   .use(FooterPlugin)
   .use(HeaderPlugin)
+  .use(DebugPlugin)
   .use(PaletteModalPlugin)
   .use(ShortcutsPlugin)
-  .use(DebugPlugin)
   .load();
 
 await api.runtime.start();
