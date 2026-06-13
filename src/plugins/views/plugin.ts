@@ -3,7 +3,7 @@ import * as libThemes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 import * as themes from "@plugins/themes";
 import * as zen from "@plugins/zen";
 
@@ -23,7 +23,7 @@ type ViewSignals = {
   "change.cursor": (_: { ln: number; col: number }) => void;
 };
 
-export function plugin(api: themes.API & BufferAPI & zen.API & io.API): API {
+export function plugin(api: themes.API & BufferAPI & zen.API & IOAPI): API {
   const signals = new libEvents.SignalEmitter<ViewSignals>();
 
   const widget = new widgets.Editor(api.buffer, {

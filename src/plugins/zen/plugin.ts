@@ -1,6 +1,6 @@
 import * as libEvents from "@libs/events";
 
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 
 export type API = {
   zen: {
@@ -14,7 +14,7 @@ type ZenSignals = {
   "toggle": () => void;
 };
 
-export function plugin(api: io.API): API {
+export function plugin(api: IOAPI): API {
   const signals = new libEvents.SignalEmitter<ZenSignals>();
   let enabled = true;
 

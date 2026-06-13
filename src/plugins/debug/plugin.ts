@@ -1,7 +1,7 @@
 import * as std from "@libs/std";
 import * as libThemes from "@libs/themes";
 
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 import * as themes from "@plugins/themes";
 import * as zen from "@plugins/zen";
 
@@ -17,7 +17,7 @@ export type DebugAPI = {
   };
 };
 
-export function DebugPlugin(api: themes.API & io.API & zen.API): DebugAPI {
+export function DebugPlugin(api: themes.API & IOAPI & zen.API): DebugAPI {
   const widget = new DebugWidget();
   widget.version = std.version;
 

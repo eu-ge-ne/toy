@@ -5,7 +5,7 @@ import * as vt from "@libs/vt";
 //import * as debug from "@plugins/debug";
 import * as runtime from "@plugins/runtime";
 
-export type API = {
+export type IOAPI = {
   io: {
     events: libEvents.Listener<IOEvents>;
     signals: libEvents.Listener<IOSignals>;
@@ -23,7 +23,7 @@ type IOSignals = {
   "render": () => void;
 };
 
-export function plugin(api: runtime.API): API {
+export function IOPlugin(api: runtime.API): IOAPI {
   const events = new libEvents.EventEmitter<IOEvents>();
   const signals = new libEvents.SignalEmitter<IOSignals>();
 

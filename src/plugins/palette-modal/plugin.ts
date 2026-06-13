@@ -1,7 +1,7 @@
 import * as buffers from "@libs/buffers";
 import * as libThemes from "@libs/themes";
 
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 import * as themes from "@plugins/themes";
 import * as zen from "@plugins/zen";
 
@@ -14,7 +14,7 @@ export type API = {
   };
 };
 
-export function plugin(api: themes.API & io.API & zen.API): API {
+export function plugin(api: themes.API & IOAPI & zen.API): API {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
 

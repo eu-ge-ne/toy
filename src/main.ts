@@ -6,10 +6,10 @@ import { AlertModalPlugin } from "@plugins/alert-modal";
 import { BufferPlugin } from "@plugins/buffer";
 import { ConfirmModalPlugin } from "@plugins/confirm-modal";
 import { DebugPlugin } from "@plugins/debug";
-import * as fileNameModal from "@plugins/file-name-modal";
-import * as footer from "@plugins/footer";
-import * as header from "@plugins/header";
-import * as io from "@plugins/io";
+import { FileNameModalPlugin } from "@plugins/file-name-modal";
+import { FooterPlugin } from "@plugins/footer";
+import { HeaderPlugin } from "@plugins/header";
+import { IOPlugin } from "@plugins/io";
 import * as main from "@plugins/main";
 import * as paletteModal from "@plugins/palette-modal";
 import * as runtime from "@plugins/runtime";
@@ -51,16 +51,16 @@ class Loader<T0 extends Record<PropertyKey, never>> {
 const api = new Loader()
   .use(BufferPlugin)
   .use(runtime.plugin)
-  .use(io.plugin)
+  .use(IOPlugin)
   .use(themes.plugin)
   .use(AlertModalPlugin)
   .use(ConfirmModalPlugin)
-  .use(fileNameModal.plugin)
+  .use(FileNameModalPlugin)
   .use(main.plugin)
   .use(zen.plugin)
   .use(views.plugin)
-  .use(footer.plugin)
-  .use(header.plugin)
+  .use(FooterPlugin)
+  .use(HeaderPlugin)
   .use(paletteModal.plugin)
   .use(shortcuts.plugin)
   .use(DebugPlugin)

@@ -1,13 +1,13 @@
 import * as libThemes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 import * as themes from "@plugins/themes";
 import * as zen from "@plugins/zen";
 
 import { HeaderWidget } from "./widget.ts";
 
-export function plugin(api: BufferAPI & themes.API & io.API & zen.API): void {
+export function HeaderPlugin(api: BufferAPI & themes.API & IOAPI & zen.API): void {
   const widget = new HeaderWidget();
 
   api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);

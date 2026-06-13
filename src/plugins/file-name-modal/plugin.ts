@@ -2,18 +2,18 @@ import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 import * as libThemes from "@libs/themes";
 
-import * as io from "@plugins/io";
+import { IOAPI } from "@plugins/io";
 import * as themes from "@plugins/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
 
-export type API = {
+export type FileNameModalAPI = {
   fileNameModal: {
     open(_: string): Promise<string | undefined>;
   };
 };
 
-export function plugin(api: themes.API & io.API): API {
+export function FileNameModalPlugin(api: themes.API & IOAPI): FileNameModalAPI {
   const buffer = new buffers.Buffer();
   const widget = new AskFileNameWidget(buffer);
 
