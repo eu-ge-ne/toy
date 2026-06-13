@@ -1,7 +1,7 @@
 import * as libEvents from "@libs/events";
-import * as plugins from "@libs/plugins";
+import * as plugins from "@plugins/plugins";
 
-declare module "@libs/plugins" {
+declare module "@plugins/plugins" {
   export interface API {
     zen: {
       signals: libEvents.Listener<ZenSignals>;

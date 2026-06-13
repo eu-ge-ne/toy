@@ -1,4 +1,4 @@
-import * as plugins from "@libs/plugins";
+import * as plugins from "@plugins/plugins";
 
 export class Option<T> {
   constructor(

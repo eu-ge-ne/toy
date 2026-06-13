@@ -1,10 +1,10 @@
-import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
+import * as plugins from "@plugins/plugins";
 
 import { AlertWidget } from "./widget.ts";
 
-declare module "@libs/plugins" {
+declare module "@plugins/plugins" {
   export interface API {
     alertModal: {
       open(_: string): Promise<void>;

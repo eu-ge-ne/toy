@@ -1,5 +1,5 @@
-import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
+import * as plugins from "@plugins/plugins";
 
 import { FooterWidget } from "./widget.ts";
 

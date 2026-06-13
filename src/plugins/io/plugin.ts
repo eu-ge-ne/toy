@@ -1,10 +1,10 @@
 import * as events from "@libs/events";
 import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
-import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
+import * as plugins from "@plugins/plugins";
 
-declare module "@libs/plugins" {
+declare module "@plugins/plugins" {
   export interface API {
     io: {
       events: events.Listener<IOEvents>;

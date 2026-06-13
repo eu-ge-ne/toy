@@ -1,5 +1,5 @@
 import * as kitty from "@libs/kitty";
-import * as plugins from "@libs/plugins";
+import * as plugins from "@plugins/plugins";
 
 const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "F1": (x) => x.paletteModal.open(),

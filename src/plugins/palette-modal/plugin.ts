@@ -1,11 +1,11 @@
 import * as buffers from "@libs/buffers";
-import * as plugins from "@libs/plugins";
+import * as plugins from "@plugins/plugins";
 import * as themes from "@libs/themes";
 
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-declare module "@libs/plugins" {
+declare module "@plugins/plugins" {
   export interface API {
     paletteModal: {
       open(): Promise<void>;
