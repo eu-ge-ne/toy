@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 
+import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 
 import { AlertModalPlugin } from "@plugins/alert-modal";
@@ -30,25 +31,7 @@ if (args.version) {
   Deno.exit();
 }
 
-class Loader<T0 extends Record<PropertyKey, never>> {
-  readonly #api: T0;
-
-  constructor(api?: T0) {
-    this.#api = api ?? {} as T0;
-  }
-
-  use<T1>(plugin: (_: T0) => T1): Loader<T0 & T1> {
-    Object.assign(this.#api, plugin(this.#api));
-
-    return new Loader(this.#api as T0 & T1);
-  }
-
-  build(): T0 {
-    return this.#api;
-  }
-}
-
-const api = new Loader()
+const api = new plugins.Loader()
   .use(BufferPlugin)
   .use(RuntimePlugin)
   .use(IOPlugin)
