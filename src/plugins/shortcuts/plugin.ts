@@ -1,6 +1,6 @@
 import * as kitty from "@libs/kitty";
 
-import * as buffers from "@plugins/buffers";
+import { BufferAPI } from "@plugins/buffer";
 import * as io from "@plugins/io";
 import * as main from "@plugins/main";
 import * as paletteModal from "@plugins/palette-modal";
@@ -11,7 +11,7 @@ import * as zen from "@plugins/zen";
 const shortcuts: Record<
   string,
   (
-    _: paletteModal.API & runtime.API & views.API & buffers.API & zen.API & main.API,
+    _: paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & main.API,
   ) => Promise<void>
 > = {
   "F1": (x) => x.paletteModal.open(),
@@ -39,7 +39,7 @@ const shortcuts: Record<
 };
 
 export function plugin(
-  api: io.API & paletteModal.API & runtime.API & views.API & buffers.API & zen.API & main.API,
+  api: io.API & paletteModal.API & runtime.API & views.API & BufferAPI & zen.API & main.API,
 ): void {
   api.io.events.on("key.press", -1000)(async (data) => {
     const entry = shortcuts[kitty.shortcut(data.key)];

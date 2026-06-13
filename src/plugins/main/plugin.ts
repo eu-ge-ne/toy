@@ -1,7 +1,7 @@
 import * as files from "@libs/files";
 
-import * as alertModal from "@plugins/alert-modal";
-import * as buffers from "@plugins/buffers";
+import { AlertModalAPI } from "@plugins/alert-modal";
+import { BufferAPI } from "@plugins/buffer";
 import * as confirmModal from "@plugins/confirm-modal";
 import * as fileNameModal from "@plugins/file-name-modal";
 import * as runtime from "@plugins/runtime";
@@ -15,7 +15,7 @@ export type API = {
 };
 
 export function plugin(
-  api: buffers.API & runtime.API & confirmModal.API & alertModal.API & fileNameModal.API,
+  api: BufferAPI & runtime.API & confirmModal.API & AlertModalAPI & fileNameModal.API,
 ): API {
   async function open(newFileName: string): Promise<void> {
     api.buffer.name = newFileName;

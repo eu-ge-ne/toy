@@ -1,6 +1,6 @@
 import * as libThemes from "@libs/themes";
 
-import * as buffers from "@plugins/buffers";
+import { BufferAPI } from "@plugins/buffer";
 import * as io from "@plugins/io";
 import * as themes from "@plugins/themes";
 import * as views from "@plugins/views";
@@ -8,7 +8,7 @@ import * as zen from "@plugins/zen";
 
 import { FooterWidget } from "./widget.ts";
 
-export function plugin(api: io.API & themes.API & buffers.API & zen.API & views.API): void {
+export function plugin(api: io.API & themes.API & BufferAPI & zen.API & views.API): void {
   const widget = new FooterWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));

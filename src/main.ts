@@ -2,8 +2,8 @@ import { parseArgs } from "@std/cli/parse-args";
 
 import * as std from "@libs/std";
 
-import * as alertModal from "@plugins/alert-modal";
-import * as buffers from "@plugins/buffers";
+import { AlertModalPlugin } from "@plugins/alert-modal";
+import { BufferPlugin } from "@plugins/buffer";
 import * as confirmModal from "@plugins/confirm-modal";
 import * as debug from "@plugins/debug";
 import * as fileNameModal from "@plugins/file-name-modal";
@@ -49,11 +49,11 @@ class Loader<T0 extends Record<PropertyKey, never>> {
 }
 
 const api = new Loader()
-  .use(buffers.plugin)
+  .use(BufferPlugin)
   .use(runtime.plugin)
   .use(io.plugin)
   .use(themes.plugin)
-  .use(alertModal.plugin)
+  .use(AlertModalPlugin)
   .use(confirmModal.plugin)
   .use(fileNameModal.plugin)
   .use(main.plugin)

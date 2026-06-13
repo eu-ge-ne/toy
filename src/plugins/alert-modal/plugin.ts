@@ -6,13 +6,13 @@ import * as themes from "@plugins/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export type API = {
+export type AlertModalAPI = {
   alertModal: {
     open(_: string): Promise<void>;
   };
 };
 
-export function plugin(api: themes.API & io.API): API {
+export function AlertModalPlugin(api: themes.API & io.API): AlertModalAPI {
   const widget = new AlertWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));

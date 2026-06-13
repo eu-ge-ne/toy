@@ -1,4 +1,4 @@
-import * as buffers from "@plugins/buffers";
+import { BufferAPI } from "@plugins/buffer";
 import * as debug from "@plugins/debug";
 import * as main from "@plugins/main";
 import * as runtime from "@plugins/runtime";
@@ -28,7 +28,7 @@ export const options: Option<
       & debug.API
       & runtime.API
       & views.API
-      & buffers.API
+      & BufferAPI
       & themes.API
       & zen.API
       & main.API,
@@ -65,7 +65,7 @@ export const options: Option<
   ),
   new Option(
     "Edit: Redo",
-    async (api: buffers.API) => api.buffer.redo(),
+    async (api: BufferAPI) => api.buffer.redo(),
     ["⌃Y", "⌘Y"],
   ),
   new Option(
@@ -115,7 +115,7 @@ export const options: Option<
   ),
   new Option(
     "Edit: Undo",
-    async (api: buffers.API) => api.buffer.undo(),
+    async (api: BufferAPI) => api.buffer.undo(),
     ["⌃Z", "⌘Z"],
   ),
   new Option(
