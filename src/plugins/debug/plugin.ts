@@ -9,7 +9,7 @@ import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export type API = {
+export type DebugAPI = {
   debug: {
     toggle(): void;
     setRender(_: number): void;
@@ -17,7 +17,7 @@ export type API = {
   };
 };
 
-export function plugin(api: themes.API & io.API & zen.API): API {
+export function DebugPlugin(api: themes.API & io.API & zen.API): DebugAPI {
   const widget = new DebugWidget();
   widget.version = std.version;
 

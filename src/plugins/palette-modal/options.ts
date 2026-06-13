@@ -1,5 +1,5 @@
 import { BufferAPI } from "@plugins/buffer";
-import * as debug from "@plugins/debug";
+import { DebugAPI } from "@plugins/debug";
 import * as main from "@plugins/main";
 import * as runtime from "@plugins/runtime";
 import * as themes from "@plugins/themes";
@@ -25,7 +25,7 @@ export const options: Option<
   (
     _:
       & views.API
-      & debug.API
+      & DebugAPI
       & runtime.API
       & views.API
       & BufferAPI
@@ -46,7 +46,7 @@ export const options: Option<
   ),
   new Option(
     "Global: Toggle Debug Panel",
-    async (api: debug.API) => api.debug.toggle(),
+    async (api: DebugAPI) => api.debug.toggle(),
   ),
   new Option(
     "Global: Exit",

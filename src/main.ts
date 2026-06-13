@@ -4,8 +4,8 @@ import * as std from "@libs/std";
 
 import { AlertModalPlugin } from "@plugins/alert-modal";
 import { BufferPlugin } from "@plugins/buffer";
-import * as confirmModal from "@plugins/confirm-modal";
-import * as debug from "@plugins/debug";
+import { ConfirmModalPlugin } from "@plugins/confirm-modal";
+import { DebugPlugin } from "@plugins/debug";
 import * as fileNameModal from "@plugins/file-name-modal";
 import * as footer from "@plugins/footer";
 import * as header from "@plugins/header";
@@ -54,7 +54,7 @@ const api = new Loader()
   .use(io.plugin)
   .use(themes.plugin)
   .use(AlertModalPlugin)
-  .use(confirmModal.plugin)
+  .use(ConfirmModalPlugin)
   .use(fileNameModal.plugin)
   .use(main.plugin)
   .use(zen.plugin)
@@ -63,7 +63,7 @@ const api = new Loader()
   .use(header.plugin)
   .use(paletteModal.plugin)
   .use(shortcuts.plugin)
-  .use(debug.plugin)
+  .use(DebugPlugin)
   .build();
 
 await api.runtime.start();

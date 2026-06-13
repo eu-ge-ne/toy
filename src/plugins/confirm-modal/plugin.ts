@@ -6,13 +6,13 @@ import * as themes from "@plugins/themes";
 
 import { AskWidget } from "./widget.ts";
 
-export type API = {
+export type ConfirmModalAPI = {
   confirmModal: {
     open(_: string): Promise<boolean>;
   };
 };
 
-export function plugin(api: themes.API & io.API): API {
+export function ConfirmModalPlugin(api: themes.API & io.API): ConfirmModalAPI {
   const widget = new AskWidget();
 
   api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
