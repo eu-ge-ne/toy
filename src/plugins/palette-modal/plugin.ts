@@ -1,19 +1,40 @@
 import * as buffers from "@libs/buffers";
-import * as plugins from "@libs/plugins";
-import * as themes from "@libs/themes";
+import * as libThemes from "@libs/themes";
+
+import * as io from "@plugins/io";
+import * as themes from "@plugins/themes";
+import * as zen from "@plugins/zen";
 
 import { options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export function plugin(api: plugins.API): plugins.Plugin {
+export type API = {
+  paletteModal: {
+    open(): Promise<void>;
+  };
+};
+
+export function plugin(api: themes.API & io.API & zen.API): API {
   const buffer = new buffers.Buffer();
   const widget = new PaletteWidget(buffer);
+
+  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+
+  api.io.signals.on("resize")(() => {
+    const { columns, rows } = Deno.consoleSize();
+
+    if (api.zen.enabled) {
+      widget.resize(columns, rows, 0, 0);
+    } else {
+      widget.resize(columns, rows - 2, 1, 0);
+    }
+  });
 
   return {
     paletteModal: {
       async open(): Promise<void> {
         let opened = true;
-        let result: ((_: plugins.API) => Promise<void>) | undefined;
+        let result: ((_: unknown) => Promise<void>) | undefined;
 
         buffer.text = "";
         widget.children.list.items = options;
@@ -69,20 +90,6 @@ export function plugin(api: plugins.API): plugins.Plugin {
           await result(api);
         }
       },
-    },
-
-    init(): void {
-      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-
-      api.io.signals.on("resize")(() => {
-        const { columns, rows } = Deno.consoleSize();
-
-        if (api.zen.enabled) {
-          widget.resize(columns, rows, 0, 0);
-        } else {
-          widget.resize(columns, rows - 2, 1, 0);
-        }
-      });
     },
   };
 }

@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as plugins from "@libs/plugins";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
@@ -11,7 +10,7 @@ export class PaletteWidget extends widgets.Modal {
   override children: {
     bg: widgets.Bg;
     editor: widgets.Editor;
-    list: widgets.List<(_: plugins.API) => Promise<void>>;
+    list: widgets.List<(_: any) => Promise<void>>;
   };
 
   constructor(private readonly buffer: buffers.Buffer) {
@@ -19,7 +18,7 @@ export class PaletteWidget extends widgets.Modal {
 
     this.children = {
       bg: new widgets.Bg(),
-      list: new widgets.List<(_: plugins.API) => Promise<void>>({
+      list: new widgets.List<(_: any) => Promise<void>>({
         emptyText: "No matching commands",
       }),
       editor: new widgets.Editor(this.buffer, { multiLine: false }),

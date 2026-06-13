@@ -1,7 +1,10 @@
 import * as buffers from "@libs/buffers";
-import * as plugins from "@libs/plugins";
 
-export function plugin(): plugins.Plugin {
+export type API = {
+  buffer: buffers.Buffer;
+};
+
+export function plugin(): API {
   return {
     buffer: new buffers.Buffer(),
   };

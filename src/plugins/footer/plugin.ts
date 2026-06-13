@@ -1,34 +1,35 @@
-import * as plugins from "@libs/plugins";
-import * as themes from "@libs/themes";
+import * as libThemes from "@libs/themes";
+
+import * as buffers from "@plugins/buffers";
+import * as io from "@plugins/io";
+import * as themes from "@plugins/themes";
+import * as views from "@plugins/views";
+import * as zen from "@plugins/zen";
 
 import { FooterWidget } from "./widget.ts";
 
-export function plugin(api: plugins.API): plugins.Plugin {
+export function plugin(api: io.API & themes.API & buffers.API & zen.API & views.API): void {
   const widget = new FooterWidget();
 
-  return {
-    init(): void {
-      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-      api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
+  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+  api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
 
-      api.io.signals.on("resize")(() => {
-        const { columns, rows } = Deno.consoleSize();
+  api.io.signals.on("resize")(() => {
+    const { columns, rows } = Deno.consoleSize();
 
-        widget.resize(columns, 1, rows - 1, 0);
-      });
+    widget.resize(columns, 1, rows - 1, 0);
+  });
 
-      api.io.signals.on("render")(() => {
-        if (api.zen.enabled) {
-          return;
-        }
+  api.io.signals.on("render")(() => {
+    if (api.zen.enabled) {
+      return;
+    }
 
-        widget.render();
-      });
+    widget.render();
+  });
 
-      api.view.signals.on("change.cursor")(({ ln, col }) => {
-        widget.ln = ln;
-        widget.col = col;
-      });
-    },
-  };
+  api.view.signals.on("change.cursor")(({ ln, col }) => {
+    widget.ln = ln;
+    widget.col = col;
+  });
 }

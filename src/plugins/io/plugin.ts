@@ -1,18 +1,38 @@
 import * as libEvents from "@libs/events";
 import * as kitty from "@libs/kitty";
-import * as plugins from "@libs/plugins";
 import * as vt from "@libs/vt";
 
-export function plugin(api: plugins.API): plugins.Plugin {
-  const events = new libEvents.EventEmitter<plugins.IOEvents>();
-  const signals = new libEvents.SignalEmitter<plugins.IOSignals>();
+//import * as debug from "@plugins/debug";
+import * as runtime from "@plugins/runtime";
+
+export type API = {
+  io: {
+    events: libEvents.Listener<IOEvents>;
+    signals: libEvents.Listener<IOSignals>;
+    resize(): void;
+    loop(_: () => unknown): Promise<void>;
+  };
+};
+
+type IOEvents = {
+  "key.press": (_: libEvents.EventData<{ key: kitty.Key }>) => Promise<void>;
+};
+
+type IOSignals = {
+  "resize": () => void;
+  "render": () => void;
+};
+
+export function plugin(api: runtime.API): API {
+  const events = new libEvents.EventEmitter<IOEvents>();
+  const signals = new libEvents.SignalEmitter<IOSignals>();
 
   function resize(): void {
     signals.broadcast("resize");
   }
 
-  function render(api: plugins.API): void {
-    const t0 = performance.now();
+  function render(): void {
+    //const t0 = performance.now();
 
     vt.sync.bsu();
     vt.buf.write(vt.cursor.hide);
@@ -23,16 +43,27 @@ export function plugin(api: plugins.API): plugins.Plugin {
     vt.buf.flush();
     vt.sync.esu();
 
-    api.debug.setRender(performance.now() - t0);
+    //api.debug.setRender(performance.now() - t0);
   }
 
-  async function keyPress(api: plugins.API, key: kitty.Key): Promise<void> {
-    const t0 = performance.now();
+  async function keyPress(key: kitty.Key): Promise<void> {
+    //const t0 = performance.now();
 
     await events.dispatch("key.press", { key });
 
-    api.debug.setInput(performance.now() - t0);
+    //api.debug.setInput(performance.now() - t0);
   }
+
+  api.runtime.events.on("start")(async () => {
+    vt.init();
+
+    Deno.addSignalListener("SIGWINCH", () => {
+      resize();
+      render();
+    });
+  });
+
+  api.runtime.events.on("stop", 1000)(async () => vt.restore());
 
   return {
     io: {
@@ -41,26 +72,13 @@ export function plugin(api: plugins.API): plugins.Plugin {
       resize,
       async loop(stop: () => unknown): Promise<void> {
         while (!stop()) {
-          render(api);
+          render();
 
           const key = await vt.readKey();
 
-          await keyPress(api, key);
+          await keyPress(key);
         }
       },
-    },
-
-    init(): void {
-      api.runtime.events.on("start")(async () => {
-        vt.init();
-
-        Deno.addSignalListener("SIGWINCH", () => {
-          resize();
-          render(api);
-        });
-      });
-
-      api.runtime.events.on("stop", 1000)(async () => vt.restore());
     },
   };
 }

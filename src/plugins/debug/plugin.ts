@@ -1,12 +1,23 @@
-import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
-import * as themes from "@libs/themes";
+import * as libThemes from "@libs/themes";
+
+import * as io from "@plugins/io";
+import * as themes from "@plugins/themes";
+import * as zen from "@plugins/zen";
 
 import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export function plugin(api: plugins.API): plugins.Plugin {
+export type API = {
+  debug: {
+    toggle(): void;
+    setRender(_: number): void;
+    setInput(_: number): void;
+  };
+};
+
+export function plugin(api: themes.API & io.API & zen.API): API {
   const widget = new DebugWidget();
   widget.version = std.version;
 
@@ -23,7 +34,7 @@ export function plugin(api: plugins.API): plugins.Plugin {
     widget.render();
   }
 
-  function resize(api: plugins.API): void {
+  function resize(): void {
     const { columns, rows } = Deno.consoleSize();
 
     const w = std.clamp(30, 0, columns);
@@ -33,6 +44,10 @@ export function plugin(api: plugins.API): plugins.Plugin {
 
     widget.resize(w, h, y, x);
   }
+
+  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+  api.io.signals.on("render", 1000)(() => widget.render());
+  api.io.signals.on("resize")(() => resize());
 
   return {
     debug: {
@@ -52,12 +67,6 @@ export function plugin(api: plugins.API): plugins.Plugin {
       setInput(x): void {
         widget.inputElapsed = x;
       },
-    },
-
-    init(): void {
-      api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
-      api.io.signals.on("render", 1000)(() => widget.render());
-      api.io.signals.on("resize")(() => resize(api));
     },
   };
 }

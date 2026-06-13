@@ -1,8 +1,21 @@
 import * as libEvents from "@libs/events";
-import * as plugins from "@libs/plugins";
 
-export function plugin(api: plugins.API): plugins.Plugin {
-  const signals = new libEvents.SignalEmitter<plugins.ZenSignals>();
+import * as io from "@plugins/io";
+
+export type API = {
+  zen: {
+    signals: libEvents.Listener<ZenSignals>;
+    get enabled(): boolean;
+    toggle(): void;
+  };
+};
+
+type ZenSignals = {
+  "toggle": () => void;
+};
+
+export function plugin(api: io.API): API {
+  const signals = new libEvents.SignalEmitter<ZenSignals>();
   let enabled = true;
 
   return {

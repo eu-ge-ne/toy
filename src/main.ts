@@ -1,6 +1,5 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 
 import * as alertModal from "@plugins/alert-modal";
@@ -11,6 +10,7 @@ import * as fileNameModal from "@plugins/file-name-modal";
 import * as footer from "@plugins/footer";
 import * as header from "@plugins/header";
 import * as io from "@plugins/io";
+import * as main from "@plugins/main";
 import * as paletteModal from "@plugins/palette-modal";
 import * as runtime from "@plugins/runtime";
 import * as shortcuts from "@plugins/shortcuts";
@@ -30,50 +30,56 @@ if (args.version) {
   Deno.exit();
 }
 
-const api = {} as plugins.API;
-const inits: (() => void)[] = [];
+class Loader<T0 extends Record<PropertyKey, never>> {
+  readonly #api: T0;
 
-function register(plugin: plugins.PluginConstructor): void {
-  for (const [k, v] of Object.entries(plugin(api))) {
-    if ((api as unknown as Record<string, unknown>)[k]) {
-      throw new Error("API conflict");
-    }
+  constructor(api?: T0) {
+    this.#api = api ?? {} as T0;
+  }
 
-    if (k === "init" && typeof v === "function") {
-      inits.push(v);
-    } else {
-      (api as unknown as Record<string, unknown>)[k] = v;
-    }
+  use<T1>(plugin: (_: T0) => T1): Loader<T0 & T1> {
+    Object.assign(this.#api, plugin(this.#api));
+
+    return new Loader(this.#api as T0 & T1);
+  }
+
+  build(): T0 {
+    return this.#api;
   }
 }
 
-[
-  alertModal.plugin,
-  buffers.plugin,
-  confirmModal.plugin,
-  debug.plugin,
-  fileNameModal.plugin,
-  footer.plugin,
-  header.plugin,
-  io.plugin,
-  paletteModal.plugin,
-  runtime.plugin,
-  shortcuts.plugin,
-  themes.plugin,
-  views.plugin,
-  zen.plugin,
-].map(register);
-
-for (const init of inits) {
-  init();
-}
+const api = new Loader()
+  .use(buffers.plugin)
+  .use(runtime.plugin)
+  .use(io.plugin)
+  .use(themes.plugin)
+  .use(alertModal.plugin)
+  .use(confirmModal.plugin)
+  .use(fileNameModal.plugin)
+  .use(main.plugin)
+  .use(zen.plugin)
+  .use(views.plugin)
+  .use(footer.plugin)
+  .use(header.plugin)
+  .use(paletteModal.plugin)
+  .use(shortcuts.plugin)
+  .use(debug.plugin)
+  .build();
 
 await api.runtime.start();
 
 api.io.resize();
 
 if (typeof args._[0] === "string") {
-  await api.runtime.open(args._[0]);
+  await api.main.open(args._[0]);
 }
+
+api.runtime.events.on("stop", -1000)(async (e) => {
+  if (!e && api.buffer.modified) {
+    if (await api.confirmModal.open("Save changes?")) {
+      await api.main.save();
+    }
+  }
+});
 
 await api.io.loop(() => {});

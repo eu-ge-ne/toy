@@ -1,4 +1,10 @@
-import * as plugins from "@libs/plugins";
+import * as buffers from "@plugins/buffers";
+import * as debug from "@plugins/debug";
+import * as main from "@plugins/main";
+import * as runtime from "@plugins/runtime";
+import * as themes from "@plugins/themes";
+import * as views from "@plugins/views";
+import * as zen from "@plugins/zen";
 
 export class Option<T> {
   constructor(
@@ -15,104 +21,116 @@ export class Option<T> {
   }
 }
 
-export const options: Option<(_: plugins.API) => Promise<void>>[] = [
+export const options: Option<
+  (
+    _:
+      & views.API
+      & debug.API
+      & runtime.API
+      & views.API
+      & buffers.API
+      & themes.API
+      & zen.API
+      & main.API,
+  ) => Promise<void>
+>[] = [
   new Option(
     "Edit: Copy",
-    async (api: plugins.API) => api.view.copy(),
+    async (api: views.API) => api.view.copy(),
     ["⌃C", "⌘C"],
   ),
   new Option(
     "Edit: Cut",
-    async (api: plugins.API) => api.view.cut(),
+    async (api: views.API) => api.view.cut(),
     ["⌃X", "⌘X"],
   ),
   new Option(
     "Global: Toggle Debug Panel",
-    async (api: plugins.API) => api.debug.toggle(),
+    async (api: debug.API) => api.debug.toggle(),
   ),
   new Option(
     "Global: Exit",
-    (api: plugins.API) => api.runtime.stop(),
+    (api: runtime.API) => api.runtime.stop(),
     ["F10"],
   ),
   new Option(
     "Edit: Select All",
-    async (api: plugins.API) => api.view.selectAll(),
+    async (api: views.API) => api.view.selectAll(),
     ["⌃A", "⌘A"],
   ),
   new Option(
     "Edit: Paste",
-    async (api: plugins.API) => api.view.paste(),
+    async (api: views.API) => api.view.paste(),
     ["⌃V", "⌘V"],
   ),
   new Option(
     "Edit: Redo",
-    async (api: plugins.API) => api.buffer.redo(),
+    async (api: buffers.API) => api.buffer.redo(),
     ["⌃Y", "⌘Y"],
   ),
   new Option(
     "Global: Save",
-    async (api: plugins.API) => api.runtime.save(),
+    async (api: main.API) => api.main.save(),
     ["F2"],
   ),
   new Option(
     "Theme: Base16",
-    async (api: plugins.API) => api.theme.set("Base16"),
+    async (api: themes.API) => api.theme.set("Base16"),
   ),
   new Option(
     "Theme: Slate",
-    async (api: plugins.API) => api.theme.set("Slate"),
+    async (api: themes.API) => api.theme.set("Slate"),
   ),
   new Option(
     "Theme: Gray",
-    async (api: plugins.API) => api.theme.set("Gray"),
+    async (api: themes.API) => api.theme.set("Gray"),
   ),
   new Option(
     "Theme: Zinc",
-    async (api: plugins.API) => api.theme.set("Zinc"),
+    async (api: themes.API) => api.theme.set("Zinc"),
   ),
   new Option(
     "Theme: Neutral",
-    async (api: plugins.API) => api.theme.set("Neutral"),
+    async (api: themes.API) => api.theme.set("Neutral"),
   ),
   new Option(
     "Theme: Stone",
-    async (api: plugins.API) => api.theme.set("Stone"),
+    async (api: themes.API) => api.theme.set("Stone"),
   ),
   new Option(
     "Theme: Taupe",
-    async (api: plugins.API) => api.theme.set("Taupe"),
+    async (api: themes.API) => api.theme.set("Taupe"),
   ),
   new Option(
     "Theme: Mauve",
-    async (api: plugins.API) => api.theme.set("Mauve"),
+    async (api: themes.API) => api.theme.set("Mauve"),
   ),
   new Option(
     "Theme: Mist",
-    async (api: plugins.API) => api.theme.set("Mist"),
+    async (api: themes.API) => api.theme.set("Mist"),
   ),
   new Option(
     "Theme: Olive",
-    async (api: plugins.API) => api.theme.set("Olive"),
+    async (api: themes.API) => api.theme.set("Olive"),
   ),
   new Option(
     "Edit: Undo",
-    async (api: plugins.API) => api.buffer.undo(),
+    async (api: buffers.API) => api.buffer.undo(),
     ["⌃Z", "⌘Z"],
   ),
   new Option(
     "View: Toggle Render Whitespace",
-    async (api: plugins.API) => api.view.toggleWhitespace(),
+    async (api: views.API) => api.view.toggleWhitespace(),
     ["F5"],
   ),
   new Option(
     "View: Toggle Line Wrap",
-    async (api: plugins.API) => api.view.toggleWrap(),
+    async (api: views.API) => api.view.toggleWrap(),
     ["F6"],
   ),
   new Option(
     "Global: Toggle Zen Mode",
-    async (api: plugins.API) => api.zen.toggle(),
+    async (api: zen.API) => api.zen.toggle(),
     ["F11"],
   ),
 ].sort((a, b) => a.name.localeCompare(b.name));

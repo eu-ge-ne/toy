@@ -1,21 +1,33 @@
 import * as events from "@libs/events";
-import * as plugins from "@libs/plugins";
-import * as themes from "@libs/themes";
+import * as libThemes from "@libs/themes";
 
-export function plugin(api: plugins.API): plugins.Plugin {
-  const signals = new events.SignalEmitter<plugins.ThemeSignals>();
+import * as runtime from "@plugins/runtime";
+
+export type API = {
+  theme: {
+    signals: events.Listener<ThemeSignals>;
+    set(_: keyof typeof libThemes.Themes): void;
+  };
+};
+
+type ThemeSignals = {
+  "change": (_: keyof typeof libThemes.Themes) => void;
+};
+
+export function plugin(api: runtime.API): API {
+  const signals = new events.SignalEmitter<ThemeSignals>();
+
+  function set(name: keyof typeof libThemes.Themes): void {
+    signals.broadcast("change", name);
+  }
+
+  api.runtime.events.on("start")(async () => set("Mauve"));
 
   return {
     theme: {
       signals: signals.listener,
 
-      set(name: keyof typeof themes.Themes): void {
-        signals.broadcast("change", name);
-      },
-    },
-
-    init(): void {
-      api.runtime.events.on("start")(async () => api.theme.set("Mauve"));
+      set,
     },
   };
 }

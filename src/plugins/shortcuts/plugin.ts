@@ -1,13 +1,25 @@
 import * as kitty from "@libs/kitty";
-import * as plugins from "@libs/plugins";
 
-const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
+import * as buffers from "@plugins/buffers";
+import * as io from "@plugins/io";
+import * as main from "@plugins/main";
+import * as paletteModal from "@plugins/palette-modal";
+import * as runtime from "@plugins/runtime";
+import * as views from "@plugins/views";
+import * as zen from "@plugins/zen";
+
+const shortcuts: Record<
+  string,
+  (
+    _: paletteModal.API & runtime.API & views.API & buffers.API & zen.API & main.API,
+  ) => Promise<void>
+> = {
   "F1": (x) => x.paletteModal.open(),
   "⇧F1": (x) => x.paletteModal.open(),
   "⌃F1": (x) => x.paletteModal.open(),
   "⌥F1": (x) => x.paletteModal.open(),
   "⌘F1": (x) => x.paletteModal.open(),
-  "F2": (x) => x.runtime.save(),
+  "F2": (x) => x.main.save(),
   "F5": async (x) => x.view.toggleWhitespace(),
   "F6": async (x) => x.view.toggleWrap(),
   "F10": (x) => x.runtime.stop(),
@@ -26,18 +38,16 @@ const shortcuts: Record<string, (_: plugins.API) => Promise<void>> = {
   "⌘V": async (x) => x.view.paste(),
 };
 
-export function plugin(api: plugins.API): plugins.Plugin {
-  return {
-    init(): void {
-      api.io.events.on("key.press", -1000)(async (data) => {
-        const entry = shortcuts[kitty.shortcut(data.key)];
+export function plugin(
+  api: io.API & paletteModal.API & runtime.API & views.API & buffers.API & zen.API & main.API,
+): void {
+  api.io.events.on("key.press", -1000)(async (data) => {
+    const entry = shortcuts[kitty.shortcut(data.key)];
 
-        if (entry) {
-          data.cancel = true;
+    if (entry) {
+      data.cancel = true;
 
-          await entry(api);
-        }
-      });
-    },
-  };
+      await entry(api);
+    }
+  });
 }
