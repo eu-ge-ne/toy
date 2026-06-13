@@ -3,10 +3,10 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as alertModal from "@plugins/alert-modal";
 import * as buffers from "@plugins/buffers";
 import * as confirmModal from "@plugins/confirm-modal";
+import * as debug from "@plugins/debug";
+import * as fileNameModal from "@plugins/file-name-modal";
+import * as footer from "@plugins/footer";
 
-import * as debug from "@libs/debug";
-import * as fileNameModal from "@libs/file-name-modal";
-import * as footer from "@libs/footer";
 import * as header from "@libs/header";
 import * as io from "@libs/io";
 import * as paletteModal from "@libs/palette-modal";

@@ -1,4 +1,4 @@
 {
-  "name": "@libs/footer",
+  "name": "@plugins/footer",
   "exports": "./index.ts"
 }
