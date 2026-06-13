@@ -47,20 +47,22 @@ function register(plugin: plugins.Plugin): void {
   }
 }
 
-register(alertModal.plugin);
-register(buffers.plugin);
-register(confirmModal.plugin);
-register(debug.plugin);
-register(fileNameModal.plugin);
-register(footer.plugin);
-register(header.plugin);
-register(io.plugin);
-register(paletteModal.plugin);
-register(runtime.plugin);
-register(shortcuts.plugin);
-register(themes.plugin);
-register(views.plugin);
-register(zen.plugin);
+[
+  alertModal.plugin,
+  buffers.plugin,
+  confirmModal.plugin,
+  debug.plugin,
+  fileNameModal.plugin,
+  footer.plugin,
+  header.plugin,
+  io.plugin,
+  paletteModal.plugin,
+  runtime.plugin,
+  shortcuts.plugin,
+  themes.plugin,
+  views.plugin,
+  zen.plugin,
+].map(register);
 
 for (const init of inits) {
   init();
