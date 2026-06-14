@@ -83,132 +83,36 @@ export class Editor extends Widget<Params> {
   }
 
   handleInput(key: kitty.Key): void {
-    if (this.#handleEditKey(key)) {
-      return;
-    }
+    // Cursor
 
-    this.#handleCursorKey(key);
-  }
-
-  #historyReset(): void {
-    if (this.params.multiLine) {
-      this.cursor.set(0, 0, false);
-    } else {
-      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
-    }
-
-    this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
-  }
-
-  #historyPush() {
-    this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
-  }
-
-  #historyUndo() {
-    const entry = this.history.undo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
-    }
-  }
-
-  #historyRedo() {
-    const entry = this.history.redo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
-    }
-  }
-
-  #handleEditKey(key: kitty.Key): boolean {
-    if (typeof key.text === "string") {
-      this.#insertText(key.text!);
-      return true;
-    }
-
-    if (key.name === "TAB") {
-      this.#insertText("\t");
-      return true;
-    }
-
-    if (this.params.multiLine && key.name === "ENTER") {
-      this.#insertText("\n");
-      return true;
-    }
-
-    if (key.name === "DELETE") {
-      if (this.cursor.selecting) {
-        this.#deleteSelection();
-      } else {
-        this.#deleteChar();
-      }
-      return true;
-    }
-
-    if (key.name === "BACKSPACE") {
-      if (this.cursor.selecting) {
-        this.#deleteSelection();
-      } else {
-        this.#backspace();
-      }
-      return true;
-    }
-
-    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
-      this.copy();
-      return true;
-    }
-
-    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
-      this.cut();
-      return true;
-    }
-
-    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
-      this.paste();
-      return true;
-    }
-
-    if (key.name === "z" && (key.ctrl || key.super)) {
-      this.buffer.undoHistory();
-      return true;
-    }
-
-    if (key.name === "y" && (key.ctrl || key.super)) {
-      this.buffer.redoHistory();
-      return true;
-    }
-
-    return false;
-  }
-
-  #handleCursorKey(key: kitty.Key): boolean {
     if (key.name === "LEFT") {
       this.cursor.left(Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (key.name === "RIGHT") {
       this.cursor.right(Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "UP") {
       this.cursor.up(1, Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "DOWN") {
       this.cursor.down(1, Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "UP" && Boolean(key.super)) {
       this.cursor.top(Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "DOWN" && Boolean(key.super)) {
       this.cursor.bottom(Boolean(key.shift));
-      return true;
+      return;
     }
 
     let isHome = false;
@@ -220,7 +124,7 @@ export class Editor extends Widget<Params> {
     }
     if (isHome) {
       this.cursor.home(Boolean(key.shift));
-      return true;
+      return;
     }
 
     let isEnd = false;
@@ -232,25 +136,83 @@ export class Editor extends Widget<Params> {
     }
     if (isEnd) {
       this.cursor.end(Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "PAGE_UP") {
       this.cursor.up(this.height, Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (this.params.multiLine && key.name === "PAGE_DOWN") {
       this.cursor.down(this.height, Boolean(key.shift));
-      return true;
+      return;
     }
 
     if (key.name === "a" && Boolean(key.ctrl || key.super)) {
       this.cursor.selectAll();
-      return true;
+      return;
     }
 
-    return false;
+    // Edit
+
+    if (typeof key.text === "string") {
+      this.#insertText(key.text!);
+      return;
+    }
+
+    if (key.name === "TAB") {
+      this.#insertText("\t");
+      return;
+    }
+
+    if (this.params.multiLine && key.name === "ENTER") {
+      this.#insertText("\n");
+      return;
+    }
+
+    if (key.name === "DELETE") {
+      if (this.cursor.selecting) {
+        this.#deleteSelection();
+      } else {
+        this.#deleteChar();
+      }
+      return;
+    }
+
+    if (key.name === "BACKSPACE") {
+      if (this.cursor.selecting) {
+        this.#deleteSelection();
+      } else {
+        this.#backspace();
+      }
+      return;
+    }
+
+    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
+      this.copy();
+      return;
+    }
+
+    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
+      this.cut();
+      return;
+    }
+
+    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
+      this.paste();
+      return;
+    }
+
+    if (key.name === "z" && (key.ctrl || key.super)) {
+      this.buffer.undoHistory();
+      return;
+    }
+
+    if (key.name === "y" && (key.ctrl || key.super)) {
+      this.buffer.redoHistory();
+      return;
+    }
   }
 
   copy(): void {
@@ -297,6 +259,34 @@ export class Editor extends Widget<Params> {
     }
 
     this.#insertText(this.clipboard);
+  }
+
+  #historyReset(): void {
+    if (this.params.multiLine) {
+      this.cursor.set(0, 0, false);
+    } else {
+      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+    }
+
+    this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
+  }
+
+  #historyPush() {
+    this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
+  }
+
+  #historyUndo() {
+    const entry = this.history.undo();
+    if (entry) {
+      this.cursor.set(entry.ln, entry.col, false);
+    }
+  }
+
+  #historyRedo() {
+    const entry = this.history.redo();
+    if (entry) {
+      this.cursor.set(entry.ln, entry.col, false);
+    }
   }
 
   #sgr = new Intl.Segmenter();
