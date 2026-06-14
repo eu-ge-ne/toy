@@ -1,5 +1,4 @@
 import * as std from "@libs/std";
-import * as themes from "@libs/themes";
 
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
@@ -45,7 +44,7 @@ class Debug {
       this.widget.inputElapsed = x;
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(x));
   }
 
   toggle(): void {

@@ -1,5 +1,3 @@
-import * as themes from "@libs/themes";
-
 import { BufferAPI } from "@plugins/buffer";
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
@@ -25,7 +23,7 @@ export function FooterPlugin(api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI & Vie
     widget.render();
   });
 
-  api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+  api.theme.signals.on("change")((x) => widget.setTheme(x));
   api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
 
   api.view.signals.on("change.cursor")(({ ln, col }) => {

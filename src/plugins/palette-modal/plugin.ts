@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as themes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
 import { CoreAPI } from "@plugins/core";
@@ -44,7 +43,7 @@ class PaletteModal {
       }
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(x));
   }
 
   async open(): Promise<void> {

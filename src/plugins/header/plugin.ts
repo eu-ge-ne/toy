@@ -1,5 +1,3 @@
-import * as themes from "@libs/themes";
-
 import { BufferAPI } from "@plugins/buffer";
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
@@ -26,5 +24,5 @@ export function HeaderPlugin(api: CoreAPI & BufferAPI & ThemesAPI & ZenAPI): voi
 
   api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
   api.buffer.signals.on("change")(() => widget.modified = api.buffer.modified);
-  api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
+  api.theme.signals.on("change")((x) => widget.setTheme(x));
 }

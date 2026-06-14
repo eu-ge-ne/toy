@@ -49,6 +49,8 @@ const api = new plugins.Loader()
 
 await api.core.start();
 
+api.theme.set("Mauve");
+
 if (typeof args._[0] === "string") {
   await api.file.open(args._[0]);
 }

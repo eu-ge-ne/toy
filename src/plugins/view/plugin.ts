@@ -1,5 +1,4 @@
 import * as events from "@libs/events";
-import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
@@ -39,7 +38,7 @@ class View {
       }
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(x));
     api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
   }
 

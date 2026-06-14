@@ -1,6 +1,5 @@
 import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
-import * as themes from "@libs/themes";
 
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
@@ -31,7 +30,7 @@ class FileNameModal {
       this.widget.resize(w, h, y, x);
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(x));
   }
 
   async open(fileName: string): Promise<string | undefined> {
