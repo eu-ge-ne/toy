@@ -11,15 +11,15 @@ import { ZenAPI } from "@plugins/zen";
 import { OptionResult, options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export type PaletteModalAPI = ReturnType<typeof PaletteModalPlugin>;
+export type PaletteAPI = ReturnType<typeof PalettePlugin>;
 
-export function PaletteModalPlugin(...api: ConstructorParameters<typeof PaletteModal>) {
+export function PalettePlugin(...api: ConstructorParameters<typeof Palette>) {
   return {
-    paletteModal: new PaletteModal(...api),
+    palette: new Palette(...api),
   };
 }
 
-class PaletteModal {
+class Palette {
   private readonly buffer = new buffers.Buffer();
   private readonly widget = new PaletteWidget(this.buffer);
 

@@ -2,7 +2,7 @@ import * as buffers from "@libs/buffers";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
-export class AskFileNameWidget extends widgets.Modal {
+export class SaveAsWidget extends widgets.Modal {
   override children: {
     bg: widgets.Bg;
     header: widgets.SingleLineText;

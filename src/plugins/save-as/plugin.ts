@@ -4,19 +4,19 @@ import * as std from "@libs/std";
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 
-import { AskFileNameWidget } from "./widget.ts";
+import { SaveAsWidget } from "./widget.ts";
 
-export type FileNameModalAPI = ReturnType<typeof FileNameModalPlugin>;
+export type SaveAsAPI = ReturnType<typeof SaveAsPlugin>;
 
-export function FileNameModalPlugin(...api: ConstructorParameters<typeof FileNameModal>) {
+export function SaveAsPlugin(...api: ConstructorParameters<typeof SaveAs>) {
   return {
-    fileNameModal: new FileNameModal(...api),
+    saveAs: new SaveAs(...api),
   };
 }
 
-class FileNameModal {
+class SaveAs {
   private readonly buffer = new buffers.Buffer();
-  private readonly widget = new AskFileNameWidget(this.buffer);
+  private readonly widget = new SaveAsWidget(this.buffer);
 
   constructor(private readonly api: CoreAPI & ThemesAPI) {
     api.core.signals.on("resize")(() => {

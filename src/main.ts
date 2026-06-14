@@ -9,10 +9,10 @@ import { ConfirmPlugin } from "@plugins/confirm";
 import { CorePlugin } from "@plugins/core";
 import { DebugPlugin } from "@plugins/debug";
 import { FilePlugin } from "@plugins/file";
-import { FileNameModalPlugin } from "@plugins/file-name-modal";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
-import { PaletteModalPlugin } from "@plugins/palette-modal";
+import { PalettePlugin } from "@plugins/palette";
+import { SaveAsPlugin } from "@plugins/save-as";
 import { ShortcutsPlugin } from "@plugins/shortcuts";
 import { ThemesPlugin } from "@plugins/themes";
 import { ViewPlugin } from "@plugins/view";
@@ -36,14 +36,14 @@ const api = new plugins.Loader()
   .use(ThemesPlugin)
   .use(AlertPlugin)
   .use(ConfirmPlugin)
-  .use(FileNameModalPlugin)
+  .use(SaveAsPlugin)
   .use(FilePlugin)
   .use(ZenPlugin)
   .use(ViewPlugin)
   .use(FooterPlugin)
   .use(HeaderPlugin)
   .use(DebugPlugin)
-  .use(PaletteModalPlugin)
+  .use(PalettePlugin)
   .use(ShortcutsPlugin)
   .load();
 

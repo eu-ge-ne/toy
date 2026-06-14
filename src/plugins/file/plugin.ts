@@ -4,7 +4,7 @@ import { AlertAPI } from "@plugins/alert";
 import { BufferAPI } from "@plugins/buffer";
 import { ConfirmAPI } from "@plugins/confirm";
 import { CoreAPI } from "@plugins/core";
-import { FileNameModalAPI } from "@plugins/file-name-modal";
+import { SaveAsAPI } from "@plugins/save-as";
 
 export type FileAPI = ReturnType<typeof FilePlugin>;
 
@@ -21,7 +21,7 @@ class File {
       & BufferAPI
       & ConfirmAPI
       & AlertAPI
-      & FileNameModalAPI,
+      & SaveAsAPI,
   ) {
   }
 
@@ -62,7 +62,7 @@ class File {
 
   async saveAs() {
     while (true) {
-      const newFileName = await this.api.fileNameModal.open(this.api.buffer.name);
+      const newFileName = await this.api.saveAs.open(this.api.buffer.name);
       if (!newFileName) {
         return;
       }

@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/file-name-modal",
-  "exports": "./index.ts"
-}
