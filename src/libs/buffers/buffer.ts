@@ -137,12 +137,12 @@ export class Buffer {
   }
 
   handleKey(key: kitty.Key): boolean {
-    if (key.name === "z" && Boolean(key.ctrl || key.super)) {
+    if (key.name === "z" && (key.ctrl || key.super)) {
       this.undo();
       return true;
     }
 
-    if (key.name === "y" && Boolean(key.ctrl || key.super)) {
+    if (key.name === "y" && (key.ctrl || key.super)) {
       this.redo();
       return true;
     }
