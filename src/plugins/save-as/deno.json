@@ -1,0 +1,4 @@
+{
+  "name": "@plugins/save-as",
+  "exports": "./index.ts"
+}

@@ -1,23 +1,24 @@
 import { parseArgs } from "@std/cli/parse-args";
 
-import * as alertModal from "@libs/alert-modal";
-import * as buffers from "@libs/buffers";
-import * as confirmModal from "@libs/confirm-modal";
-import * as debug from "@libs/debug";
-import * as fileNameModal from "@libs/file-name-modal";
-import * as footer from "@libs/footer";
-import * as header from "@libs/header";
-import * as io from "@libs/io";
-import * as paletteModal from "@libs/palette-modal";
 import * as plugins from "@libs/plugins";
-import * as runtime from "@libs/runtime";
-import * as shortcuts from "@libs/shortcuts";
 import * as std from "@libs/std";
-import * as themes from "@libs/themes";
-import * as views from "@libs/views";
-import * as zen from "@libs/zen";
 
-export const args = parseArgs(Deno.args, {
+import { AlertPlugin } from "@plugins/alert";
+import { BufferPlugin } from "@plugins/buffer";
+import { ConfirmPlugin } from "@plugins/confirm";
+import { CorePlugin } from "@plugins/core";
+import { DebugPlugin } from "@plugins/debug";
+import { FilePlugin } from "@plugins/file";
+import { FooterPlugin } from "@plugins/footer";
+import { HeaderPlugin } from "@plugins/header";
+import { PalettePlugin } from "@plugins/palette";
+import { SaveAsPlugin } from "@plugins/save-as";
+import { ShortcutsPlugin } from "@plugins/shortcuts";
+import { ThemesPlugin } from "@plugins/themes";
+import { ViewPlugin } from "@plugins/view";
+import { ZenPlugin } from "@plugins/zen";
+
+const args = parseArgs(Deno.args, {
   boolean: ["version"],
   alias: {
     version: "v",
@@ -29,48 +30,37 @@ if (args.version) {
   Deno.exit();
 }
 
-const api = {} as plugins.API;
-const inits: (() => void)[] = [];
+const api = new plugins.Loader()
+  .use(CorePlugin)
+  .use(BufferPlugin)
+  .use(ThemesPlugin)
+  .use(AlertPlugin)
+  .use(ConfirmPlugin)
+  .use(SaveAsPlugin)
+  .use(FilePlugin)
+  .use(ZenPlugin)
+  .use(ViewPlugin)
+  .use(FooterPlugin)
+  .use(HeaderPlugin)
+  .use(DebugPlugin)
+  .use(PalettePlugin)
+  .use(ShortcutsPlugin)
+  .load();
 
-function register(plugin: plugins.Plugin): void {
-  for (const [k, v] of Object.entries(plugin(api))) {
-    if ((api as Record<string, unknown>)[k]) {
-      throw new Error("API conflict");
-    }
+await api.core.start();
 
-    if (k === "init" && typeof v === "function") {
-      inits.push(v);
-    } else {
-      (api as Record<string, unknown>)[k] = v;
-    }
-  }
-}
-
-register(alertModal.plugin);
-register(buffers.plugin);
-register(confirmModal.plugin);
-register(debug.plugin);
-register(fileNameModal.plugin);
-register(footer.plugin);
-register(header.plugin);
-register(io.plugin);
-register(paletteModal.plugin);
-register(runtime.plugin);
-register(shortcuts.plugin);
-register(themes.plugin);
-register(views.plugin);
-register(zen.plugin);
-
-for (const init of inits) {
-  init();
-}
-
-await api.runtime.start();
-
-api.io.resize();
+api.theme.set("Mauve");
 
 if (typeof args._[0] === "string") {
-  await api.runtime.open(args._[0]);
+  await api.file.open(args._[0]);
 }
 
-await api.io.loop(() => {});
+api.core.events.on("stop", -1000)(async ({ e }) => {
+  if (!e && api.buffer.modified) {
+    if (await api.confirm.open("Save changes?")) {
+      await api.file.save();
+    }
+  }
+});
+
+await api.core.loop(() => {});
