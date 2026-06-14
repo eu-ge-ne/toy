@@ -1,5 +1,5 @@
 import * as events from "@libs/events";
-import * as libThemes from "@libs/themes";
+import * as themes from "@libs/themes";
 
 import { RuntimeAPI } from "@plugins/runtime";
 
@@ -13,7 +13,7 @@ export function ThemesPlugin(...api: ConstructorParameters<typeof Themes>) {
 
 class Themes {
   private readonly emitter = new events.SignalEmitter<{
-    "change": (_: keyof typeof libThemes.Themes) => void;
+    "change": (_: keyof typeof themes.Themes) => void;
   }>();
 
   constructor(private readonly api: RuntimeAPI) {
@@ -22,7 +22,7 @@ class Themes {
 
   readonly signals = this.emitter.listener;
 
-  set(name: keyof typeof libThemes.Themes): void {
+  set(name: keyof typeof themes.Themes): void {
     this.emitter.broadcast("change", name);
   }
 }

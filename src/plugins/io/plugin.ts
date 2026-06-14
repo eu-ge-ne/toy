@@ -1,4 +1,4 @@
-import * as libEvents from "@libs/events";
+import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
@@ -13,11 +13,11 @@ export function IOPlugin(...api: ConstructorParameters<typeof IO>) {
 }
 
 class IO {
-  private readonly eventEmitter = new libEvents.EventEmitter<{
-    "key.press": (_: libEvents.EventData<{ key: kitty.Key }>) => Promise<void>;
+  private readonly eventEmitter = new events.EventEmitter<{
+    "key.press": (_: events.EventData<{ key: kitty.Key }>) => Promise<void>;
   }>();
 
-  private readonly signalEmitter = new libEvents.SignalEmitter<{
+  private readonly signalEmitter = new events.SignalEmitter<{
     "resize": () => void;
     "render": () => void;
     "render.completed": (_: number) => void;

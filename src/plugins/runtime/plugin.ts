@@ -1,4 +1,4 @@
-import * as libEvents from "@libs/events";
+import * as events from "@libs/events";
 
 export type RuntimeAPI = ReturnType<typeof RuntimePlugin>;
 
@@ -9,9 +9,9 @@ export function RuntimePlugin() {
 }
 
 class Runtime {
-  private readonly emitter = new libEvents.EventEmitter<{
-    start: (_: libEvents.EventData) => Promise<void>;
-    stop: (_: libEvents.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
+  private readonly emitter = new events.EventEmitter<{
+    start: (_: events.EventData) => Promise<void>;
+    stop: (_: events.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
   }>();
 
   readonly events = this.emitter.listener;

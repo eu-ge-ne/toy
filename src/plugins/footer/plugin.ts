@@ -1,4 +1,4 @@
-import * as libThemes from "@libs/themes";
+import * as themes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
 import { IOAPI } from "@plugins/io";
@@ -11,7 +11,7 @@ import { FooterWidget } from "./widget.ts";
 export function FooterPlugin(api: IOAPI & ThemesAPI & BufferAPI & ZenAPI & ViewAPI): void {
   const widget = new FooterWidget();
 
-  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+  api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
   api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
 
   api.io.signals.on("resize")(() => {

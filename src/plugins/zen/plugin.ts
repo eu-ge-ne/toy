@@ -1,4 +1,4 @@
-import * as libEvents from "@libs/events";
+import * as events from "@libs/events";
 
 import { IOAPI } from "@plugins/io";
 
@@ -11,7 +11,7 @@ export function ZenPlugin(...api: ConstructorParameters<typeof Zen>) {
 }
 
 class Zen {
-  private readonly emitter = new libEvents.SignalEmitter<{
+  private readonly emitter = new events.SignalEmitter<{
     "toggle": () => void;
   }>();
 

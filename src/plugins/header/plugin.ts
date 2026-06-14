@@ -1,4 +1,4 @@
-import * as libThemes from "@libs/themes";
+import * as themes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
 import { IOAPI } from "@plugins/io";
@@ -12,7 +12,7 @@ export function HeaderPlugin(api: BufferAPI & ThemesAPI & IOAPI & ZenAPI): void 
 
   api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
   api.buffer.signals.on("change")(() => widget.modified = api.buffer.modified);
-  api.theme.signals.on("change")((x) => widget.setTheme(libThemes.Themes[x]));
+  api.theme.signals.on("change")((x) => widget.setTheme(themes.Themes[x]));
 
   api.io.signals.on("resize")(() => {
     const { columns } = Deno.consoleSize();

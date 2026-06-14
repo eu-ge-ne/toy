@@ -1,5 +1,5 @@
 import * as std from "@libs/std";
-import * as libThemes from "@libs/themes";
+import * as themes from "@libs/themes";
 
 import { IOAPI } from "@plugins/io";
 import { ThemesAPI } from "@plugins/themes";
@@ -18,7 +18,7 @@ class AlertModal {
   private readonly widget = new AlertWidget();
 
   constructor(private readonly api: ThemesAPI & IOAPI) {
-    api.theme.signals.on("change")((x) => this.widget.setTheme(libThemes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
 
     api.io.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();

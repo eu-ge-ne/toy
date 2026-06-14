@@ -1,5 +1,5 @@
-import * as libEvents from "@libs/events";
-import * as libThemes from "@libs/themes";
+import * as events from "@libs/events";
+import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
@@ -17,7 +17,7 @@ export function ViewPlugin(...api: ConstructorParameters<typeof View>) {
 
 class View {
   private readonly widget: widgets.Editor;
-  private readonly emitter = new libEvents.SignalEmitter<{
+  private readonly emitter = new events.SignalEmitter<{
     "change.cursor": (_: { ln: number; col: number }) => void;
   }>();
 
@@ -27,7 +27,7 @@ class View {
       onCursorChange: (x) => this.emitter.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(libThemes.Themes[x]));
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
     api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
 
     api.io.events.on("key.press")(async ({ key }) => this.widget.onKeyPress(key));
