@@ -2,7 +2,7 @@ import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { IOAPI } from "@plugins/io";
+import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 
 import { AskFileNameWidget } from "./widget.ts";
@@ -19,10 +19,8 @@ class FileNameModal {
   private readonly buffer = new buffers.Buffer();
   private readonly widget = new AskFileNameWidget(this.buffer);
 
-  constructor(private readonly api: ThemesAPI & IOAPI) {
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
-
-    api.io.signals.on("resize")(() => {
+  constructor(private readonly api: CoreAPI & ThemesAPI) {
+    api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(60, 0, columns);
@@ -32,6 +30,8 @@ class FileNameModal {
 
       this.widget.resize(w, h, y, x);
     });
+
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
   }
 
   async open(fileName: string): Promise<string | undefined> {
@@ -40,9 +40,9 @@ class FileNameModal {
 
     this.buffer.text = fileName;
 
-    const offRender = this.api.io.signals.on("render", 1000)(() => this.widget.render());
+    const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
 
-    const offKeyPress = this.api.io.events.on("key.press", -1000)(
+    const offKeyPress = this.api.core.events.on("input", -1000)(
       async (data) => {
         data.cancel = true;
 
@@ -71,7 +71,7 @@ class FileNameModal {
       },
     );
 
-    await this.api.io.loop(() => !opened);
+    await this.api.core.loop(() => !opened);
 
     return result;
   }

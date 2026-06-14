@@ -1,6 +1,6 @@
 import * as events from "@libs/events";
 
-import { IOAPI } from "@plugins/io";
+import { CoreAPI } from "@plugins/core";
 
 export type ZenAPI = ReturnType<typeof ZenPlugin>;
 
@@ -17,7 +17,7 @@ class Zen {
 
   #enabled = true;
 
-  constructor(private readonly api: IOAPI) {
+  constructor(private readonly api: CoreAPI) {
   }
 
   readonly signals = this.emitter.listener;
@@ -31,6 +31,6 @@ class Zen {
 
     this.emitter.broadcast("toggle");
 
-    this.api.io.resize();
+    this.api.core.resize();
   }
 }

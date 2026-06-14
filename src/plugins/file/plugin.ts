@@ -3,8 +3,8 @@ import * as files from "@libs/files";
 import { AlertModalAPI } from "@plugins/alert-modal";
 import { BufferAPI } from "@plugins/buffer";
 import { ConfirmModalAPI } from "@plugins/confirm-modal";
+import { CoreAPI } from "@plugins/core";
 import { FileNameModalAPI } from "@plugins/file-name-modal";
-import { RuntimeAPI } from "@plugins/runtime";
 
 export type FileAPI = ReturnType<typeof FilePlugin>;
 
@@ -17,8 +17,8 @@ export function FilePlugin(...api: ConstructorParameters<typeof File>) {
 class File {
   constructor(
     private readonly api:
+      & CoreAPI
       & BufferAPI
-      & RuntimeAPI
       & ConfirmModalAPI
       & AlertModalAPI
       & FileNameModalAPI,
@@ -37,7 +37,7 @@ class File {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.api.alertModal.open(message);
 
-        await this.api.runtime.stop();
+        await this.api.core.stop();
       }
     }
   }

@@ -1,18 +1,15 @@
 import * as kitty from "@libs/kitty";
 
 import { BufferAPI } from "@plugins/buffer";
+import { CoreAPI } from "@plugins/core";
 import { FileAPI } from "@plugins/file";
-import { IOAPI } from "@plugins/io";
 import { PaletteModalAPI } from "@plugins/palette-modal";
-import { RuntimeAPI } from "@plugins/runtime";
 import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
 
 const shortcuts: Record<
   string,
-  (
-    _: PaletteModalAPI & RuntimeAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
-  ) => Promise<void>
+  (_: CoreAPI & PaletteModalAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI) => Promise<void>
 > = {
   "F1": (x) => x.paletteModal.open(),
   "⇧F1": (x) => x.paletteModal.open(),
@@ -22,7 +19,7 @@ const shortcuts: Record<
   "F2": (x) => x.file.save(),
   "F5": async (x) => x.view.toggleWhitespace(),
   "F6": async (x) => x.view.toggleWrap(),
-  "F10": (x) => x.runtime.stop(),
+  "F10": (x) => x.core.stop(),
   "F11": async (x) => x.zen.toggle(),
   "⌃A": async (x) => x.view.selectAll(),
   "⌘A": async (x) => x.view.selectAll(),
@@ -39,9 +36,9 @@ const shortcuts: Record<
 };
 
 export function ShortcutsPlugin(
-  api: IOAPI & PaletteModalAPI & RuntimeAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
+  api: CoreAPI & PaletteModalAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
 ): void {
-  api.io.events.on("key.press", -1000)(async (data) => {
+  api.core.events.on("input", -1000)(async (data) => {
     const entry = shortcuts[kitty.shortcut(data.key)];
 
     if (entry) {

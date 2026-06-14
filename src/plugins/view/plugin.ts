@@ -3,7 +3,7 @@ import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
-import { IOAPI } from "@plugins/io";
+import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 import { ZenAPI } from "@plugins/zen";
 
@@ -17,22 +17,20 @@ export function ViewPlugin(...api: ConstructorParameters<typeof View>) {
 
 class View {
   private readonly widget: widgets.Editor;
+
   private readonly emitter = new events.SignalEmitter<{
     "change.cursor": (_: { ln: number; col: number }) => void;
   }>();
 
-  constructor(private readonly api: ThemesAPI & BufferAPI & ZenAPI & IOAPI) {
+  constructor(private readonly api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI) {
     this.widget = new widgets.Editor(api.buffer, {
       multiLine: true,
       onCursorChange: (x) => this.emitter.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
-    api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
-
-    api.io.events.on("key.press")(async ({ key }) => this.widget.onKeyPress(key));
-    api.io.signals.on("render")(() => this.widget.render());
-    api.io.signals.on("resize")(() => {
+    api.core.events.on("input")(async ({ key }) => this.widget.onKeyPress(key));
+    api.core.signals.on("render")(() => this.widget.render());
+    api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
       if (api.zen.enabled) {
         this.widget.resize(columns, rows, 0, 0);
@@ -40,6 +38,9 @@ class View {
         this.widget.resize(columns, rows - 2, 1, 0);
       }
     });
+
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
+    api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
   }
 
   readonly signals = this.emitter.listener;

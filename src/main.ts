@@ -6,14 +6,13 @@ import * as std from "@libs/std";
 import { AlertModalPlugin } from "@plugins/alert-modal";
 import { BufferPlugin } from "@plugins/buffer";
 import { ConfirmModalPlugin } from "@plugins/confirm-modal";
+import { CorePlugin } from "@plugins/core";
 import { DebugPlugin } from "@plugins/debug";
 import { FilePlugin } from "@plugins/file";
 import { FileNameModalPlugin } from "@plugins/file-name-modal";
 import { FooterPlugin } from "@plugins/footer";
 import { HeaderPlugin } from "@plugins/header";
-import { IOPlugin } from "@plugins/io";
 import { PaletteModalPlugin } from "@plugins/palette-modal";
-import { RuntimePlugin } from "@plugins/runtime";
 import { ShortcutsPlugin } from "@plugins/shortcuts";
 import { ThemesPlugin } from "@plugins/themes";
 import { ViewPlugin } from "@plugins/view";
@@ -32,9 +31,8 @@ if (args.version) {
 }
 
 const api = new plugins.Loader()
+  .use(CorePlugin)
   .use(BufferPlugin)
-  .use(RuntimePlugin)
-  .use(IOPlugin)
   .use(ThemesPlugin)
   .use(AlertModalPlugin)
   .use(ConfirmModalPlugin)
@@ -49,15 +47,13 @@ const api = new plugins.Loader()
   .use(ShortcutsPlugin)
   .load();
 
-await api.runtime.start();
-
-api.io.resize();
+await api.core.start();
 
 if (typeof args._[0] === "string") {
   await api.file.open(args._[0]);
 }
 
-api.runtime.events.on("stop", -1000)(async ({ e }) => {
+api.core.events.on("stop", -1000)(async ({ e }) => {
   if (!e && api.buffer.modified) {
     if (await api.confirmModal.open("Save changes?")) {
       await api.file.save();
@@ -65,4 +61,4 @@ api.runtime.events.on("stop", -1000)(async ({ e }) => {
   }
 });
 
-await api.io.loop(() => {});
+await api.core.loop(() => {});

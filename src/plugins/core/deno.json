@@ -1,4 +1,4 @@
 {
-  "name": "@plugins/runtime",
+  "name": "@plugins/core",
   "exports": "./index.ts"
 }

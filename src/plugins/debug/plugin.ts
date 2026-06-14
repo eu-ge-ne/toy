@@ -1,7 +1,7 @@
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 
-import { IOAPI } from "@plugins/io";
+import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 import { ZenAPI } from "@plugins/zen";
 
@@ -21,13 +21,12 @@ class Debug {
   private readonly widget = new DebugWidget();
   private timer!: NodeJS.Timeout;
 
-  constructor(private readonly api: ThemesAPI & IOAPI & ZenAPI) {
+  constructor(private readonly api: CoreAPI & ThemesAPI & ZenAPI) {
     this.widget.version = std.version;
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
-    api.io.signals.on("render", 1000)(() => this.widget.render());
+    api.core.signals.on("render", 1000)(() => this.widget.render());
 
-    api.io.signals.on("resize")(() => {
+    api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       const w = std.clamp(30, 0, columns);
@@ -38,13 +37,15 @@ class Debug {
       this.widget.resize(w, h, y, x);
     });
 
-    api.io.signals.on("render.completed")((x) => {
+    api.core.signals.on("render.completed")((x) => {
       this.widget.renderElapsed = x;
     });
 
-    api.io.signals.on("key.handled")((x) => {
+    api.core.signals.on("input.processed")((x) => {
       this.widget.inputElapsed = x;
     });
+
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
   }
 
   toggle(): void {

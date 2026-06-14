@@ -2,10 +2,9 @@ import * as buffers from "@libs/buffers";
 import * as themes from "@libs/themes";
 
 import { BufferAPI } from "@plugins/buffer";
+import { CoreAPI } from "@plugins/core";
 import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
-import { IOAPI } from "@plugins/io";
-import { RuntimeAPI } from "@plugins/runtime";
 import { ThemesAPI } from "@plugins/themes";
 import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
@@ -27,18 +26,15 @@ class PaletteModal {
 
   constructor(
     private readonly api:
-      & IOAPI
+      & CoreAPI
       & ViewAPI
-      & RuntimeAPI
       & BufferAPI
       & ThemesAPI
       & ZenAPI
       & FileAPI
       & DebugAPI,
   ) {
-    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
-
-    api.io.signals.on("resize")(() => {
+    api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 
       if (api.zen.enabled) {
@@ -47,6 +43,8 @@ class PaletteModal {
         this.widget.resize(columns, rows - 2, 1, 0);
       }
     });
+
+    api.theme.signals.on("change")((x) => this.widget.setTheme(themes.Themes[x]));
   }
 
   async open(): Promise<void> {
@@ -56,9 +54,9 @@ class PaletteModal {
     this.buffer.text = "";
     this.widget.children.list.items = options;
 
-    const offRender = this.api.io.signals.on("render", 1000)(() => this.widget.render());
+    const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
 
-    const offKeyPress = this.api.io.events.on("key.press", -1000)(
+    const offKeyPress = this.api.core.events.on("input", -1000)(
       async (data) => {
         data.cancel = true;
 
@@ -98,8 +96,9 @@ class PaletteModal {
       },
     );
 
-    await this.api.io.loop(() => {
-      this.api.io.resize();
+    await this.api.core.loop(() => {
+      this.api.core.resize();
+
       return !opened;
     });
 

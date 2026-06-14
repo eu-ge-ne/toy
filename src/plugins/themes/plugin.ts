@@ -1,7 +1,7 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
-import { RuntimeAPI } from "@plugins/runtime";
+import { CoreAPI } from "@plugins/core";
 
 export type ThemesAPI = ReturnType<typeof ThemesPlugin>;
 
@@ -16,8 +16,8 @@ class Themes {
     "change": (_: keyof typeof themes.Themes) => void;
   }>();
 
-  constructor(private readonly api: RuntimeAPI) {
-    api.runtime.events.on("start")(async () => this.set("Mauve"));
+  constructor(private readonly api: CoreAPI) {
+    api.core.events.on("start")(async () => this.set("Mauve"));
   }
 
   readonly signals = this.emitter.listener;

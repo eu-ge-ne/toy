@@ -1,13 +1,13 @@
 import { BufferAPI } from "@plugins/buffer";
+import { CoreAPI } from "@plugins/core";
 import { DebugAPI } from "@plugins/debug";
 import { FileAPI } from "@plugins/file";
-import { RuntimeAPI } from "@plugins/runtime";
 import { ThemesAPI } from "@plugins/themes";
 import { ViewAPI } from "@plugins/view";
 import { ZenAPI } from "@plugins/zen";
 
 export type OptionResult = (
-  _: ViewAPI & RuntimeAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI & DebugAPI,
+  _: CoreAPI & ViewAPI & BufferAPI & ThemesAPI & ZenAPI & FileAPI & DebugAPI,
 ) => Promise<void>;
 
 export class Option {
@@ -42,7 +42,7 @@ export const options: Option[] = [
   ),
   new Option(
     "Global: Exit",
-    (api: RuntimeAPI) => api.runtime.stop(),
+    (api: CoreAPI) => api.core.stop(),
     ["F10"],
   ),
   new Option(
