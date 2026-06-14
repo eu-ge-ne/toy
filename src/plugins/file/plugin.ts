@@ -6,77 +6,77 @@ import { ConfirmModalAPI } from "@plugins/confirm-modal";
 import { FileNameModalAPI } from "@plugins/file-name-modal";
 import { RuntimeAPI } from "@plugins/runtime";
 
-export type FileAPI = {
-  file: {
-    open(_: string): Promise<void>;
-    save(): Promise<void>;
-    saveAs(): Promise<void>;
-  };
-};
+export type FileAPI = ReturnType<typeof FilePlugin>;
 
-export function FilePlugin(
-  api: BufferAPI & RuntimeAPI & ConfirmModalAPI & AlertModalAPI & FileNameModalAPI,
-): FileAPI {
-  async function open(newFileName: string): Promise<void> {
-    api.buffer.name = newFileName;
+export function FilePlugin(...api: ConstructorParameters<typeof File>) {
+  return {
+    file: new File(...api),
+  };
+}
+
+class File {
+  constructor(
+    private readonly api:
+      & BufferAPI
+      & RuntimeAPI
+      & ConfirmModalAPI
+      & AlertModalAPI
+      & FileNameModalAPI,
+  ) {
+  }
+
+  async open(newFileName: string) {
+    this.api.buffer.name = newFileName;
 
     try {
-      await api.buffer.rewrite(files.load(newFileName));
+      await this.api.buffer.rewrite(files.load(newFileName));
     } catch (err) {
       if (err instanceof Deno.errors.NotFound) {
         // ignore
       } else {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await api.alertModal.open(message);
+        await this.api.alertModal.open(message);
 
-        await api.runtime.stop();
+        await this.api.runtime.stop();
       }
     }
   }
 
-  async function save(): Promise<void> {
-    if (!api.buffer.name) {
-      await saveAs();
+  async save() {
+    if (!this.api.buffer.name) {
+      await this.saveAs();
       return;
     }
 
     try {
-      await files.save(api.buffer.name, api.buffer.read());
+      await files.save(this.api.buffer.name, this.api.buffer.read());
 
-      api.buffer.resetUndo();
+      this.api.buffer.resetUndo();
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await api.alertModal.open(message);
+      await this.api.alertModal.open(message);
 
-      await saveAs();
+      await this.saveAs();
     }
   }
 
-  async function saveAs(): Promise<void> {
+  async saveAs() {
     while (true) {
-      const newFileName = await api.fileNameModal.open(api.buffer.name);
+      const newFileName = await this.api.fileNameModal.open(this.api.buffer.name);
       if (!newFileName) {
         return;
       }
 
       try {
-        await files.save(newFileName, api.buffer.read());
+        await files.save(newFileName, this.api.buffer.read());
 
-        api.buffer.resetUndo();
+        this.api.buffer.resetUndo();
 
-        api.buffer.name = newFileName;
+        this.api.buffer.name = newFileName;
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await api.alertModal.open(message);
+        await this.api.alertModal.open(message);
       }
     }
   }
-
-  return {
-    file: {
-      open,
-      save,
-      saveAs,
-    },
-  };
 }
