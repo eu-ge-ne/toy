@@ -87,6 +87,11 @@ export class Cursor {
     return this.set(this.ln, this.col + n, false);
   }
 
+  selectAll(): void {
+    this.set(0, 0, false);
+    this.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+  }
+
   isSelected(ln: number, col: number): boolean {
     if (!this.selecting) {
       return false;

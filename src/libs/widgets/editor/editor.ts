@@ -82,11 +82,6 @@ export class Editor extends Widget<Params> {
     this.children.content.toggleIndex();
   }
 
-  selectAll(): void {
-    this.cursor.set(0, 0, false);
-    this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
-  }
-
   handleKey(key: kitty.Key): boolean {
     if (this.#tryEdit(key)) {
       return true;
@@ -157,7 +152,7 @@ export class Editor extends Widget<Params> {
     }
 
     if (key.name === "a" && Boolean(key.ctrl || key.super)) {
-      this.selectAll();
+      this.cursor.selectAll();
       return true;
     }
 

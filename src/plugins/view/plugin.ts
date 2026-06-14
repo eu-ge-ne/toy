@@ -54,7 +54,7 @@ class View {
   }
 
   selectAll(): void {
-    this.widget.selectAll();
+    this.widget.cursor.selectAll();
   }
 
   copy(): void {
