@@ -25,7 +25,7 @@ class IO {
   }>();
 
   constructor(private readonly api: RuntimeAPI) {
-    api.runtime.events.on("start")(async () => {
+    api.runtime.events.on("start", -1000)(async () => {
       vt.init();
 
       Deno.addSignalListener("SIGWINCH", () => {
@@ -37,8 +37,8 @@ class IO {
     api.runtime.events.on("stop", 1000)(async () => vt.restore());
   }
 
-  events = this.eventEmitter.listener;
-  signals = this.signalEmitter.listener;
+  readonly events = this.eventEmitter.listener;
+  readonly signals = this.signalEmitter.listener;
 
   resize(): void {
     this.signalEmitter.broadcast("resize");
