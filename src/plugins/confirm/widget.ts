@@ -1,7 +1,7 @@
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
-export class AskWidget extends widgets.Modal {
+export class ConfirmWidget extends widgets.Modal {
   override children: {
     bg: widgets.Bg;
     text: widgets.MultiLineText;

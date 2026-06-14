@@ -1,8 +1,8 @@
 import * as files from "@libs/files";
 
-import { AlertModalAPI } from "@plugins/alert-modal";
+import { AlertAPI } from "@plugins/alert";
 import { BufferAPI } from "@plugins/buffer";
-import { ConfirmModalAPI } from "@plugins/confirm-modal";
+import { ConfirmAPI } from "@plugins/confirm";
 import { CoreAPI } from "@plugins/core";
 import { FileNameModalAPI } from "@plugins/file-name-modal";
 
@@ -19,8 +19,8 @@ class File {
     private readonly api:
       & CoreAPI
       & BufferAPI
-      & ConfirmModalAPI
-      & AlertModalAPI
+      & ConfirmAPI
+      & AlertAPI
       & FileNameModalAPI,
   ) {
   }
@@ -35,7 +35,7 @@ class File {
         // ignore
       } else {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.api.alertModal.open(message);
+        await this.api.alert.open(message);
 
         await this.api.core.stop();
       }
@@ -54,7 +54,7 @@ class File {
       this.api.buffer.resetUndo();
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
-      await this.api.alertModal.open(message);
+      await this.api.alert.open(message);
 
       await this.saveAs();
     }
@@ -75,7 +75,7 @@ class File {
         this.api.buffer.name = newFileName;
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
-        await this.api.alertModal.open(message);
+        await this.api.alert.open(message);
       }
     }
   }

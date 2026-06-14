@@ -1,4 +1,0 @@
-{
-  "name": "@plugins/alert-modal",
-  "exports": "./index.ts"
-}

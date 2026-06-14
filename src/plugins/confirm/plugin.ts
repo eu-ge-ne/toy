@@ -3,18 +3,18 @@ import * as std from "@libs/std";
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 
-import { AskWidget } from "./widget.ts";
+import { ConfirmWidget } from "./widget.ts";
 
-export type ConfirmModalAPI = ReturnType<typeof ConfirmModalPlugin>;
+export type ConfirmAPI = ReturnType<typeof ConfirmPlugin>;
 
-export function ConfirmModalPlugin(...api: ConstructorParameters<typeof ConfirmModal>) {
+export function ConfirmPlugin(...api: ConstructorParameters<typeof Confirm>) {
   return {
-    confirmModal: new ConfirmModal(...api),
+    confirm: new Confirm(...api),
   };
 }
 
-class ConfirmModal {
-  private readonly widget = new AskWidget();
+class Confirm {
+  private readonly widget = new ConfirmWidget();
 
   constructor(private readonly api: CoreAPI & ThemesAPI) {
     api.core.signals.on("resize")(() => {

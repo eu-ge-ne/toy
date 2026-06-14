@@ -5,15 +5,15 @@ import { ThemesAPI } from "@plugins/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export type AlertModalAPI = ReturnType<typeof AlertModalPlugin>;
+export type AlertAPI = ReturnType<typeof AlertPlugin>;
 
-export function AlertModalPlugin(...api: ConstructorParameters<typeof AlertModal>) {
+export function AlertPlugin(...api: ConstructorParameters<typeof Alert>) {
   return {
-    alertModal: new AlertModal(...api),
+    alert: new Alert(...api),
   };
 }
 
-class AlertModal {
+class Alert {
   private readonly widget = new AlertWidget();
 
   constructor(private readonly api: CoreAPI & ThemesAPI) {

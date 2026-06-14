@@ -3,9 +3,9 @@ import { parseArgs } from "@std/cli/parse-args";
 import * as plugins from "@libs/plugins";
 import * as std from "@libs/std";
 
-import { AlertModalPlugin } from "@plugins/alert-modal";
+import { AlertPlugin } from "@plugins/alert";
 import { BufferPlugin } from "@plugins/buffer";
-import { ConfirmModalPlugin } from "@plugins/confirm-modal";
+import { ConfirmPlugin } from "@plugins/confirm";
 import { CorePlugin } from "@plugins/core";
 import { DebugPlugin } from "@plugins/debug";
 import { FilePlugin } from "@plugins/file";
@@ -34,8 +34,8 @@ const api = new plugins.Loader()
   .use(CorePlugin)
   .use(BufferPlugin)
   .use(ThemesPlugin)
-  .use(AlertModalPlugin)
-  .use(ConfirmModalPlugin)
+  .use(AlertPlugin)
+  .use(ConfirmPlugin)
   .use(FileNameModalPlugin)
   .use(FilePlugin)
   .use(ZenPlugin)
@@ -57,7 +57,7 @@ if (typeof args._[0] === "string") {
 
 api.core.events.on("stop", -1000)(async ({ e }) => {
   if (!e && api.buffer.modified) {
-    if (await api.confirmModal.open("Save changes?")) {
+    if (await api.confirm.open("Save changes?")) {
       await api.file.save();
     }
   }
