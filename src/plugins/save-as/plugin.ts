@@ -58,7 +58,9 @@ class SaveAs {
             break;
           }
           default:
-            this.widget.children.editor.onKeyPress(data.key);
+            if (!this.widget.children.editor.handleKey(data.key)) {
+              this.buffer.handleKey(data.key);
+            }
         }
 
         if (opened) {
