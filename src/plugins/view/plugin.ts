@@ -70,10 +70,9 @@ class View {
   }
 
   #onKey(key: kitty.Key): void {
-    if (this.widget.handleKey(key)) {
+    if (this.api.buffer.handleKey(key)) {
       return;
     }
-
-    this.api.buffer.handleKey(key);
+    this.widget.handleKey(key);
   }
 }

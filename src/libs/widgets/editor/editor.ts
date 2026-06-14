@@ -99,18 +99,10 @@ export class Editor extends Widget<Params> {
   }
 
   handleKey(key: kitty.Key): boolean {
-    if (this.#tryMoveCursor(key)) {
-      return true;
-    }
-
     if (this.#tryEdit(key)) {
       return true;
     }
 
-    return false;
-  }
-
-  #tryMoveCursor(key: kitty.Key): boolean {
     if (key.name === "LEFT") {
       this.#cursor.left(Boolean(key.shift));
       return true;
