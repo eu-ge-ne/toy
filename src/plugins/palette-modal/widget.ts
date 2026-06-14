@@ -1,0 +1,77 @@
+import * as buffers from "@libs/buffers";
+import * as themes from "@libs/themes";
+import * as widgets from "@libs/widgets";
+
+import { OptionResult, options } from "./options.ts";
+
+const maxListSize = 10;
+
+export class PaletteWidget extends widgets.Modal {
+  override children: {
+    bg: widgets.Bg;
+    editor: widgets.Editor;
+    list: widgets.List<OptionResult>;
+  };
+
+  constructor(private readonly buffer: buffers.Buffer) {
+    super();
+
+    this.children = {
+      bg: new widgets.Bg(),
+      list: new widgets.List<OptionResult>({
+        emptyText: "No matching commands",
+      }),
+      editor: new widgets.Editor(this.buffer, { multiLine: false }),
+    };
+  }
+
+  override resizeChildren(): void {
+    const { list, bg, editor } = this.children;
+
+    const width = Math.min(60, this.width);
+
+    let listSize = Math.min(list.items.length, maxListSize);
+    let height = 3 + Math.max(listSize, 1);
+    if (height > this.height) {
+      height = this.height;
+      if (listSize > 0) {
+        listSize = height - 3;
+      }
+    }
+
+    const y = this.y + Math.trunc((this.height - height) / 2);
+    const x = this.x + Math.trunc((this.width - width) / 2);
+
+    bg.resize(width, height, y, x);
+    editor.resize(width - 4, 1, y + 1, x + 2);
+    list.resize(width - 4, height - 3, y + 2, x + 2);
+  }
+
+  setTheme(theme: themes.Theme): void {
+    const bg = new Uint8Array(theme.bgLight1);
+    const option = new Uint8Array([...theme.bgLight1, ...theme.fgLight1]);
+    const selectedOption = new Uint8Array([
+      ...theme.bgLight2,
+      ...theme.fgLight1,
+    ]);
+
+    this.children.bg.color = bg;
+    this.children.list.color = option;
+    this.children.list.selectedColor = selectedOption;
+    this.children.editor.setTheme(theme);
+  }
+
+  filter(): void {
+    const { list } = this.children;
+
+    list.index = 0;
+
+    const text = this.buffer.text.toUpperCase();
+
+    if (!text) {
+      list.items = options;
+    } else {
+      list.items = options.filter((x) => x.name.toUpperCase().includes(text));
+    }
+  }
+}

@@ -1,4 +1,5 @@
 #!/bin/bash
 
-deno fmt --check
+deno check
 deno lint
+deno fmt --check

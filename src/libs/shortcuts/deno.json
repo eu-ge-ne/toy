@@ -1,4 +1,0 @@
-{
-  "name": "@libs/shortcuts",
-  "exports": "./index.ts"
-}
