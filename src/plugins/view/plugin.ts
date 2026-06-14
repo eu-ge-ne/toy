@@ -27,7 +27,9 @@ class View {
       onCursorChange: (x) => this.emitter.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    api.core.events.on("input")(async ({ key }) => this.widget.onKeyPress(key));
+    api.core.events.on("input")(async ({ key }) => {
+      this.widget.onKeyPress(key);
+    });
     api.core.signals.on("render")(() => this.widget.render());
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
