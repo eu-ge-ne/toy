@@ -2,37 +2,35 @@ import * as libEvents from "@libs/events";
 
 import { IOAPI } from "@plugins/io";
 
-export type ZenAPI = {
-  zen: {
-    signals: libEvents.Listener<ZenSignals>;
-    get enabled(): boolean;
-    toggle(): void;
-  };
-};
+export type ZenAPI = ReturnType<typeof ZenPlugin>;
 
-type ZenSignals = {
-  "toggle": () => void;
-};
-
-export function ZenPlugin(api: IOAPI): ZenAPI {
-  const signals = new libEvents.SignalEmitter<ZenSignals>();
-  let enabled = true;
-
+export function ZenPlugin(...api: ConstructorParameters<typeof Zen>) {
   return {
-    zen: {
-      signals: signals.listener,
-
-      get enabled(): boolean {
-        return enabled;
-      },
-
-      toggle(): void {
-        enabled = !enabled;
-
-        signals.broadcast("toggle");
-
-        api.io.resize();
-      },
-    },
+    zen: new Zen(...api),
   };
+}
+
+class Zen {
+  private readonly emitter = new libEvents.SignalEmitter<{
+    "toggle": () => void;
+  }>();
+
+  #enabled = true;
+
+  constructor(private readonly api: IOAPI) {
+  }
+
+  readonly signals = this.emitter.listener;
+
+  get enabled(): boolean {
+    return this.#enabled;
+  }
+
+  toggle(): void {
+    this.#enabled = !this.#enabled;
+
+    this.emitter.broadcast("toggle");
+
+    this.api.io.resize();
+  }
 }
