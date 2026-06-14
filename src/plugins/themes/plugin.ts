@@ -3,31 +3,26 @@ import * as libThemes from "@libs/themes";
 
 import { RuntimeAPI } from "@plugins/runtime";
 
-export type ThemesAPI = {
-  theme: {
-    signals: events.Listener<ThemeSignals>;
-    set(_: keyof typeof libThemes.Themes): void;
+export type ThemesAPI = ReturnType<typeof ThemesPlugin>;
+
+export function ThemesPlugin(...api: ConstructorParameters<typeof Themes>) {
+  return {
+    theme: new Themes(...api),
   };
-};
+}
 
-type ThemeSignals = {
-  "change": (_: keyof typeof libThemes.Themes) => void;
-};
+class Themes {
+  private readonly emitter = new events.SignalEmitter<{
+    "change": (_: keyof typeof libThemes.Themes) => void;
+  }>();
 
-export function ThemesPlugin(api: RuntimeAPI): ThemesAPI {
-  const signals = new events.SignalEmitter<ThemeSignals>();
-
-  function set(name: keyof typeof libThemes.Themes): void {
-    signals.broadcast("change", name);
+  constructor(private readonly api: RuntimeAPI) {
+    api.runtime.events.on("start")(async () => this.set("Mauve"));
   }
 
-  api.runtime.events.on("start")(async () => set("Mauve"));
+  readonly signals = this.emitter.listener;
 
-  return {
-    theme: {
-      signals: signals.listener,
-
-      set,
-    },
-  };
+  set(name: keyof typeof libThemes.Themes): void {
+    this.emitter.broadcast("change", name);
+  }
 }
