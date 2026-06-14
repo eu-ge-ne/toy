@@ -7,10 +7,10 @@ import * as kitty from "@libs/kitty";
 export type BufferSignals = {
   "change": () => void;
   "change.name": () => void;
-  "edit": () => void;
-  "undo": () => void;
-  "redo": () => void;
-  "reset.undo": () => void;
+  "history.push": () => void;
+  "history.undo": () => void;
+  "history.redo": () => void;
+  "history.reset": () => void;
 };
 
 export class Buffer {
@@ -102,7 +102,7 @@ export class Buffer {
       this.#history.push(this.#doc.tree.root);
 
       this.#emitter.broadcast("change");
-      this.#emitter.broadcast("edit");
+      this.#emitter.broadcast("history.push");
     }
   }
 
@@ -115,7 +115,7 @@ export class Buffer {
     this.#doc.tree.root = entry;
 
     this.#emitter.broadcast("change");
-    this.#emitter.broadcast("undo");
+    this.#emitter.broadcast("history.undo");
   }
 
   redo(): void {
@@ -127,13 +127,13 @@ export class Buffer {
     this.#doc.tree.root = entry;
 
     this.#emitter.broadcast("change");
-    this.#emitter.broadcast("redo");
+    this.#emitter.broadcast("history.redo");
   }
 
   resetUndo(): void {
     this.#history.reset(this.#doc.tree.root);
 
-    this.#emitter.broadcast("reset.undo");
+    this.#emitter.broadcast("history.reset");
   }
 
   handleKey(key: kitty.Key): boolean {
