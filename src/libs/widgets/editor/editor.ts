@@ -20,6 +20,11 @@ export class Editor extends Widget<Params> {
   readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
   #clipboard = "";
 
+  protected override children: {
+    bg: Bg;
+    content: Content;
+  };
+
   constructor(private readonly buffer: buffers.Buffer, params: Params) {
     super(params);
 
@@ -52,12 +57,7 @@ export class Editor extends Widget<Params> {
     buffer.signals.on("reset.undo")(() => this.#resetCursor());
   }
 
-  protected override children: {
-    bg: Bg;
-    content: Content;
-  };
-
-  override resizeChildren(): void {
+  protected override resizeChildren(): void {
     const { bg, content } = this.children;
 
     bg.resize(this.width, this.height, this.y, this.x);
