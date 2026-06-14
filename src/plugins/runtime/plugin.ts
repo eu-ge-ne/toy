@@ -1,29 +1,29 @@
 import * as libEvents from "@libs/events";
 
-export type RuntimeAPI = {
-  runtime: {
-    events: libEvents.Listener<RuntimeEvents>;
-    start(): Promise<void>;
-    stop(e?: PromiseRejectionEvent): Promise<void>;
+export type RuntimeAPI = ReturnType<typeof RuntimePlugin>;
+
+export function RuntimePlugin() {
+  return {
+    runtime: new Runtime(),
   };
-};
+}
 
-type RuntimeEvents = {
-  start: (_: libEvents.EventData) => Promise<void>;
-  stop: (_: libEvents.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
-};
+class Runtime {
+  private readonly emitter = new libEvents.EventEmitter<{
+    start: (_: libEvents.EventData) => Promise<void>;
+    stop: (_: libEvents.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
+  }>();
 
-export function RuntimePlugin(): RuntimeAPI {
-  const events = new libEvents.EventEmitter<RuntimeEvents>();
+  readonly events = this.emitter.listener;
 
-  async function start(): Promise<void> {
-    globalThis.addEventListener("unhandledrejection", (e) => stop(e));
+  async start(): Promise<void> {
+    globalThis.addEventListener("unhandledrejection", (e) => this.stop(e));
 
-    await events.dispatch("start", {});
+    await this.emitter.dispatch("start", {});
   }
 
-  async function stop(e?: PromiseRejectionEvent): Promise<void> {
-    await events.dispatch("stop", { e });
+  async stop(e?: PromiseRejectionEvent): Promise<void> {
+    await this.emitter.dispatch("stop", { e });
 
     if (e) {
       console.log(e.reason);
@@ -31,12 +31,4 @@ export function RuntimePlugin(): RuntimeAPI {
 
     Deno.exit(0);
   }
-
-  return {
-    runtime: {
-      events: events.listener,
-      start,
-      stop,
-    },
-  };
 }
