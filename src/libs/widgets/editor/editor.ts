@@ -49,9 +49,7 @@ export class Editor extends Widget<Params> {
         this.#cursor.set(entry.ln, entry.col, false);
       }
     });
-    buffer.signals.on("reset.undo")(() => {
-      this.#resetCursor();
-    });
+    buffer.signals.on("reset.undo")(() => this.#resetCursor());
   }
 
   protected override children: {
@@ -100,7 +98,7 @@ export class Editor extends Widget<Params> {
     this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
   }
 
-  onKeyPress(key: kitty.Key): boolean {
+  handleKey(key: kitty.Key): boolean {
     if (this.#tryMoveCursor(key)) {
       return true;
     }
@@ -243,16 +241,6 @@ export class Editor extends Widget<Params> {
 
     if (key.name === "v" && Boolean(key.ctrl || key.super)) {
       this.paste();
-      return true;
-    }
-
-    if (key.name === "z" && Boolean(key.ctrl || key.super)) {
-      this.buffer.undo();
-      return true;
-    }
-
-    if (key.name === "y" && Boolean(key.ctrl || key.super)) {
-      this.buffer.redo();
       return true;
     }
 

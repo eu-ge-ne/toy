@@ -1,4 +1,5 @@
 import * as events from "@libs/events";
+import * as kitty from "@libs/kitty";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
@@ -27,9 +28,7 @@ class View {
       onCursorChange: (x) => this.emitter.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    api.core.events.on("input")(async ({ key }) => {
-      this.widget.onKeyPress(key);
-    });
+    api.core.events.on("input")(async ({ key }) => this.#onKey(key));
     api.core.signals.on("render")(() => this.widget.render());
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
@@ -68,5 +67,13 @@ class View {
 
   paste(): void {
     this.widget.paste();
+  }
+
+  #onKey(key: kitty.Key): void {
+    if (this.widget.handleKey(key)) {
+      return;
+    }
+
+    this.api.buffer.handleKey(key);
   }
 }
