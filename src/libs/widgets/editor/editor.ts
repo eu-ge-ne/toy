@@ -168,12 +168,12 @@ export class Editor extends Widget<Params> {
     }
 
     if (key.name === "z" && (key.ctrl || key.super)) {
-      this.buffer.undo();
+      this.buffer.undoHistory();
       return true;
     }
 
     if (key.name === "y" && (key.ctrl || key.super)) {
-      this.buffer.redo();
+      this.buffer.redoHistory();
       return true;
     }
 

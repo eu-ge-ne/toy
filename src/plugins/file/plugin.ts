@@ -51,7 +51,7 @@ class File {
     try {
       await files.save(this.api.buffer.name, this.api.buffer.read());
 
-      this.api.buffer.resetUndo();
+      this.api.buffer.resetHistory();
     } catch (err) {
       const message = Error.isError(err) ? err.message : Deno.inspect(err);
       await this.api.alert.open(message);
@@ -70,7 +70,7 @@ class File {
       try {
         await files.save(newFileName, this.api.buffer.read());
 
-        this.api.buffer.resetUndo();
+        this.api.buffer.resetHistory();
 
         this.api.buffer.name = newFileName;
       } catch (err) {

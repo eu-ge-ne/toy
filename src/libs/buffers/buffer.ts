@@ -6,10 +6,10 @@ import * as history from "@libs/history";
 export type BufferSignals = {
   "change": () => void;
   "change.name": () => void;
-  "history.push": () => void;
+  "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
-  "history.reset": () => void;
+  "history.push": () => void;
 };
 
 export class Buffer {
@@ -20,7 +20,7 @@ export class Buffer {
   #name = "";
 
   constructor() {
-    this.resetUndo();
+    this.resetHistory();
   }
 
   readonly signals = this.#emitter.listener;
@@ -53,7 +53,7 @@ export class Buffer {
 
     this.#emitter.broadcast("change");
 
-    this.resetUndo();
+    this.resetHistory();
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
@@ -61,7 +61,7 @@ export class Buffer {
 
     this.#emitter.broadcast("change");
 
-    this.resetUndo();
+    this.resetHistory();
   }
 
   read(): Iterable<string> {
@@ -105,7 +105,13 @@ export class Buffer {
     }
   }
 
-  undo(): void {
+  resetHistory(): void {
+    this.#history.reset(this.#doc.tree.root);
+
+    this.#emitter.broadcast("history.reset");
+  }
+
+  undoHistory(): void {
     const entry = this.#history.undo();
     if (!entry) {
       return;
@@ -117,7 +123,7 @@ export class Buffer {
     this.#emitter.broadcast("history.undo");
   }
 
-  redo(): void {
+  redoHistory(): void {
     const entry = this.#history.redo();
     if (!entry) {
       return;
@@ -127,11 +133,5 @@ export class Buffer {
 
     this.#emitter.broadcast("change");
     this.#emitter.broadcast("history.redo");
-  }
-
-  resetUndo(): void {
-    this.#history.reset(this.#doc.tree.root);
-
-    this.#emitter.broadcast("history.reset");
   }
 }
