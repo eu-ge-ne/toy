@@ -82,11 +82,105 @@ export class Editor extends Widget<Params> {
     this.children.content.toggleIndex();
   }
 
-  handleKey(key: kitty.Key): boolean {
-    if (this.#tryEdit(key)) {
+  handleInput(key: kitty.Key): void {
+    if (this.#handleEditKey(key)) {
+      return;
+    }
+
+    this.#handleCursorKey(key);
+  }
+
+  #historyReset(): void {
+    if (this.params.multiLine) {
+      this.cursor.set(0, 0, false);
+    } else {
+      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+    }
+
+    this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
+  }
+
+  #historyPush() {
+    this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
+  }
+
+  #historyUndo() {
+    const entry = this.history.undo();
+    if (entry) {
+      this.cursor.set(entry.ln, entry.col, false);
+    }
+  }
+
+  #historyRedo() {
+    const entry = this.history.redo();
+    if (entry) {
+      this.cursor.set(entry.ln, entry.col, false);
+    }
+  }
+
+  #handleEditKey(key: kitty.Key): boolean {
+    if (typeof key.text === "string") {
+      this.#insertText(key.text!);
       return true;
     }
 
+    if (key.name === "TAB") {
+      this.#insertText("\t");
+      return true;
+    }
+
+    if (this.params.multiLine && key.name === "ENTER") {
+      this.#insertText("\n");
+      return true;
+    }
+
+    if (key.name === "DELETE") {
+      if (this.cursor.selecting) {
+        this.#deleteSelection();
+      } else {
+        this.#deleteChar();
+      }
+      return true;
+    }
+
+    if (key.name === "BACKSPACE") {
+      if (this.cursor.selecting) {
+        this.#deleteSelection();
+      } else {
+        this.#backspace();
+      }
+      return true;
+    }
+
+    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
+      this.copy();
+      return true;
+    }
+
+    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
+      this.cut();
+      return true;
+    }
+
+    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
+      this.paste();
+      return true;
+    }
+
+    if (key.name === "z" && (key.ctrl || key.super)) {
+      this.buffer.undo();
+      return true;
+    }
+
+    if (key.name === "y" && (key.ctrl || key.super)) {
+      this.buffer.redo();
+      return true;
+    }
+
+    return false;
+  }
+
+  #handleCursorKey(key: kitty.Key): boolean {
     if (key.name === "LEFT") {
       this.cursor.left(Boolean(key.shift));
       return true;
@@ -153,88 +247,6 @@ export class Editor extends Widget<Params> {
 
     if (key.name === "a" && Boolean(key.ctrl || key.super)) {
       this.cursor.selectAll();
-      return true;
-    }
-
-    return false;
-  }
-
-  #historyReset(): void {
-    if (this.params.multiLine) {
-      this.cursor.set(0, 0, false);
-    } else {
-      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
-    }
-
-    this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
-  }
-
-  #historyPush() {
-    this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
-  }
-
-  #historyUndo() {
-    const entry = this.history.undo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
-    }
-  }
-
-  #historyRedo() {
-    const entry = this.history.redo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
-    }
-  }
-
-  // TODO: move to buffer
-
-  #tryEdit(key: kitty.Key): boolean {
-    if (typeof key.text === "string") {
-      this.#insertText(key.text!);
-      return true;
-    }
-
-    if (key.name === "TAB") {
-      this.#insertText("\t");
-      return true;
-    }
-
-    if (this.params.multiLine && key.name === "ENTER") {
-      this.#insertText("\n");
-      return true;
-    }
-
-    if (key.name === "DELETE") {
-      if (this.cursor.selecting) {
-        this.#deleteSelection();
-      } else {
-        this.#deleteChar();
-      }
-      return true;
-    }
-
-    if (key.name === "BACKSPACE") {
-      if (this.cursor.selecting) {
-        this.#deleteSelection();
-      } else {
-        this.#backspace();
-      }
-      return true;
-    }
-
-    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
-      this.copy();
-      return true;
-    }
-
-    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
-      this.cut();
-      return true;
-    }
-
-    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
-      this.paste();
       return true;
     }
 

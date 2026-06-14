@@ -2,7 +2,6 @@ import * as documents from "@libs/documents";
 import * as events from "@libs/events";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
-import * as kitty from "@libs/kitty";
 
 export type BufferSignals = {
   "change": () => void;
@@ -134,19 +133,5 @@ export class Buffer {
     this.#history.reset(this.#doc.tree.root);
 
     this.#emitter.broadcast("history.reset");
-  }
-
-  handleKey(key: kitty.Key): boolean {
-    if (key.name === "z" && (key.ctrl || key.super)) {
-      this.undo();
-      return true;
-    }
-
-    if (key.name === "y" && (key.ctrl || key.super)) {
-      this.redo();
-      return true;
-    }
-
-    return false;
   }
 }
