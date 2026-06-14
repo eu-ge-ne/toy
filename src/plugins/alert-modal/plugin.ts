@@ -8,9 +8,9 @@ import { AlertWidget } from "./widget.ts";
 
 export type AlertModalAPI = ReturnType<typeof AlertModalPlugin>;
 
-export function AlertModalPlugin(api: ConstructorParameters<typeof AlertModal>[0]) {
+export function AlertModalPlugin(...api: ConstructorParameters<typeof AlertModal>) {
   return {
-    alertModal: new AlertModal(api),
+    alertModal: new AlertModal(...api),
   };
 }
 

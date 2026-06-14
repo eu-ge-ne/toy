@@ -8,9 +8,9 @@ import { AskWidget } from "./widget.ts";
 
 export type ConfirmModalAPI = ReturnType<typeof ConfirmModalPlugin>;
 
-export function ConfirmModalPlugin(api: ConstructorParameters<typeof ConfirmModal>[0]) {
+export function ConfirmModalPlugin(...api: ConstructorParameters<typeof ConfirmModal>) {
   return {
-    confirmModal: new ConfirmModal(api),
+    confirmModal: new ConfirmModal(...api),
   };
 }
 
