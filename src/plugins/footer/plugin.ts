@@ -24,7 +24,12 @@ export function FooterPlugin(api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI & Vie
   });
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
-  api.buffer.signals.on("change")(() => widget.lineCount = api.buffer.lineCount);
+
+  const updateLineCount = () => widget.lineCount = api.buffer.lineCount;
+  api.buffer.signals.on("history.push")(updateLineCount);
+  api.buffer.signals.on("history.undo")(updateLineCount);
+  api.buffer.signals.on("history.redo")(updateLineCount);
+  api.buffer.signals.on("history.reset")(updateLineCount);
 
   api.view.signals.on("change.cursor")(({ ln, col }) => {
     widget.ln = ln;

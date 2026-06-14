@@ -4,7 +4,6 @@ import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
 export type BufferSignals = {
-  "change": () => void;
   "change.name": () => void;
   "history.reset": () => void;
   "history.undo": () => void;
@@ -51,15 +50,11 @@ export class Buffer {
     this.#doc.delete(0);
     this.#doc.insert(0, x);
 
-    this.#emitter.broadcast("change");
-
     this.resetHistory();
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
-
-    this.#emitter.broadcast("change");
 
     this.resetHistory();
   }
@@ -100,7 +95,6 @@ export class Buffer {
     if (changed) {
       this.#history.push(this.#doc.tree.root);
 
-      this.#emitter.broadcast("change");
       this.#emitter.broadcast("history.push");
     }
   }
@@ -119,7 +113,6 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitter.broadcast("change");
     this.#emitter.broadcast("history.undo");
   }
 
@@ -131,7 +124,6 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitter.broadcast("change");
     this.#emitter.broadcast("history.redo");
   }
 }

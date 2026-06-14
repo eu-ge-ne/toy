@@ -8,7 +8,7 @@ export class Cursor {
   ln = 0;
   col = 0;
 
-  selecting = false;
+  isSelecting = false;
 
   readonly from = { ln: 0, col: 0 };
   readonly to = { ln: 0, col: 0 };
@@ -93,7 +93,7 @@ export class Cursor {
   }
 
   isSelected(ln: number, col: number): boolean {
-    if (!this.selecting) {
+    if (!this.isSelecting) {
       return false;
     }
 
@@ -136,16 +136,16 @@ export class Cursor {
 
   #setSelection(ln: number, col: number, sel: boolean): void {
     if (!sel) {
-      this.selecting = false;
+      this.isSelecting = false;
       return;
     }
 
-    if (!this.selecting) {
+    if (!this.isSelecting) {
       this.#ln0 = ln;
       this.#col0 = col;
     }
 
-    this.selecting = true;
+    this.isSelecting = true;
   }
 
   #setRange(): void {

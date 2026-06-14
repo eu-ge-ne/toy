@@ -36,12 +36,12 @@ export class Editor extends Widget<Params> {
       content: new Content(buffer, this.cursor),
     };
 
-    this.#historyReset();
+    this.#resetHistory();
 
-    buffer.signals.on("history.push")(this.#historyPush.bind(this));
-    buffer.signals.on("history.undo")(this.#historyUndo.bind(this));
-    buffer.signals.on("history.redo")(this.#historyRedo.bind(this));
-    buffer.signals.on("history.reset")(this.#historyReset.bind(this));
+    buffer.signals.on("history.push")(this.#pushHistory.bind(this));
+    buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
+    buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
+    buffer.signals.on("history.reset")(this.#resetHistory.bind(this));
   }
 
   readonly cursor: Cursor;
@@ -172,7 +172,7 @@ export class Editor extends Widget<Params> {
     }
 
     if (key.name === "DELETE") {
-      if (this.cursor.selecting) {
+      if (this.cursor.isSelecting) {
         this.#deleteSelection();
       } else {
         this.#deleteChar();
@@ -181,7 +181,7 @@ export class Editor extends Widget<Params> {
     }
 
     if (key.name === "BACKSPACE") {
-      if (this.cursor.selecting) {
+      if (this.cursor.isSelecting) {
         this.#deleteSelection();
       } else {
         this.#backspace();
@@ -216,7 +216,7 @@ export class Editor extends Widget<Params> {
   }
 
   copy(): void {
-    if (this.cursor.selecting) {
+    if (this.cursor.isSelecting) {
       this.clipboard = this.buffer.slice(this.cursor.from, {
         ln: this.cursor.to.ln,
         col: this.cursor.to.col + 1,
@@ -234,7 +234,7 @@ export class Editor extends Widget<Params> {
   }
 
   cut(): void {
-    if (this.cursor.selecting) {
+    if (this.cursor.isSelecting) {
       this.clipboard = this.buffer.slice(this.cursor.from, {
         ln: this.cursor.to.ln,
         col: this.cursor.to.col + 1,
@@ -261,7 +261,7 @@ export class Editor extends Widget<Params> {
     this.#insertText(this.clipboard);
   }
 
-  #historyReset(): void {
+  #resetHistory(): void {
     if (this.params.multiLine) {
       this.cursor.set(0, 0, false);
     } else {
@@ -271,29 +271,45 @@ export class Editor extends Widget<Params> {
     this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
   }
 
-  #historyPush() {
+  #pushHistory() {
+    if (this.cursor.isSelecting) {
+      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+    }
+
     this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
   }
 
-  #historyUndo() {
+  #undoHistory() {
     const entry = this.history.undo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
+    if (!entry) {
+      return;
     }
+
+    if (this.cursor.isSelecting) {
+      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+    }
+
+    this.cursor.set(entry.ln, entry.col, false);
   }
 
-  #historyRedo() {
+  #redoHistory() {
     const entry = this.history.redo();
-    if (entry) {
-      this.cursor.set(entry.ln, entry.col, false);
+    if (!entry) {
+      return;
     }
+
+    if (this.cursor.isSelecting) {
+      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+    }
+
+    this.cursor.set(entry.ln, entry.col, false);
   }
 
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
     this.buffer.edit(({ insert, remove }) => {
-      if (this.cursor.selecting) {
+      if (this.cursor.isSelecting) {
         remove(this.cursor.from, {
           ln: this.cursor.to.ln,
           col: this.cursor.to.col + 1,
@@ -346,7 +362,7 @@ export class Editor extends Widget<Params> {
         ln: this.cursor.to.ln,
         col: this.cursor.to.col + 1,
       });
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+      //this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     });
   }
 }
