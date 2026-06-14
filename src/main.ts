@@ -57,7 +57,7 @@ if (typeof args._[0] === "string") {
   await api.file.open(args._[0]);
 }
 
-api.runtime.events.on("stop", -1000)(async (e) => {
+api.runtime.events.on("stop", -1000)(async ({ e }) => {
   if (!e && api.buffer.modified) {
     if (await api.confirmModal.open("Save changes?")) {
       await api.file.save();
