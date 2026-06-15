@@ -71,34 +71,6 @@ export class Buffer {
     return this.#gDoc.line(ln, extra);
   }
 
-  edit(
-    fn: (
-      _: {
-        insert: (pos: graphemes.Pos, text: string) => void;
-        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
-      },
-    ) => void,
-  ): void {
-    let changed = false;
-
-    fn({
-      insert: (pos: graphemes.Pos, text: string) => {
-        this.#gDoc.insert(pos, text);
-        changed = true;
-      },
-      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
-        this.#gDoc.delete(start, end);
-        changed = true;
-      },
-    });
-
-    if (changed) {
-      this.#history.push(this.#doc.tree.root);
-
-      this.#emitter.broadcast("history.push");
-    }
-  }
-
   resetHistory(): void {
     this.#history.reset(this.#doc.tree.root);
 
@@ -134,5 +106,36 @@ export class Buffer {
 
     this.#emitter.broadcast("buffer.change", start, end);
     this.#emitter.broadcast("history.push");
+  }
+
+  // TODO: insert
+  // TODO: replace
+
+  edit(
+    fn: (
+      _: {
+        insert: (pos: graphemes.Pos, text: string) => void;
+        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
+      },
+    ) => void,
+  ): void {
+    let changed = false;
+
+    fn({
+      insert: (pos: graphemes.Pos, text: string) => {
+        this.#gDoc.insert(pos, text);
+        changed = true;
+      },
+      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
+        this.#gDoc.delete(start, end);
+        changed = true;
+      },
+    });
+
+    if (changed) {
+      this.#history.push(this.#doc.tree.root);
+
+      this.#emitter.broadcast("history.push");
+    }
   }
 }
