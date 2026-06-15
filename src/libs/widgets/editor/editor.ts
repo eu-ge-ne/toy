@@ -212,44 +212,23 @@ export class Editor extends Widget<Params> {
   }
 
   copy(): void {
-    if (this.cursor.isSelecting) {
-      this.clipboard = this.buffer.slice(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
-      });
+    const { pos, from, to } = this.cursor;
 
-      this.cursor.set(this.cursor.pos, false);
-    } else {
-      this.clipboard = this.buffer.slice(this.cursor.pos, {
-        ln: this.cursor.pos.ln,
-        col: this.cursor.pos.col + 1,
-      });
-    }
-
+    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
     vt.copyToClipboard(vt.sync, this.clipboard);
+
+    if (this.cursor.isSelecting) {
+      this.cursor.set(pos, false);
+    }
   }
 
   cut(): void {
-    if (this.cursor.isSelecting) {
-      this.clipboard = this.buffer.slice(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
-      });
+    const { from, to } = this.cursor;
 
-      this.buffer.remove(this.cursor.from, {
-        ln: this.cursor.to.ln,
-        col: this.cursor.to.col + 1,
-      });
-    } else {
-      this.clipboard = this.buffer.slice(this.cursor.pos, {
-        ln: this.cursor.pos.ln,
-        col: this.cursor.pos.col + 1,
-      });
-
-      this.buffer.remove(this.cursor.pos, { ln: this.cursor.pos.ln, col: this.cursor.pos.col + 1 });
-    }
-
+    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
     vt.copyToClipboard(vt.sync, this.clipboard);
+
+    this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
   }
 
   paste(): void {
