@@ -4,7 +4,7 @@ import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
 export type BufferSignals = {
-  "change.name": () => void;
+  "name.change": () => void;
   "buffer.change": (start: graphemes.Pos, end: graphemes.Pos) => void;
   "history.reset": () => void;
   "history.undo": () => void;
@@ -31,8 +31,7 @@ export class Buffer {
 
   set name(x: string) {
     this.#name = x;
-
-    this.#emitter.broadcast("change.name");
+    this.#emitter.broadcast("name.change");
   }
 
   get lineCount(): number {

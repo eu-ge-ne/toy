@@ -25,11 +25,7 @@ export function FooterPlugin(api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI & Vie
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
 
-  const updateLineCount = () => widget.lineCount = api.buffer.lineCount;
-  api.buffer.signals.on("history.push")(updateLineCount);
-  api.buffer.signals.on("history.undo")(updateLineCount);
-  api.buffer.signals.on("history.redo")(updateLineCount);
-  api.buffer.signals.on("history.reset")(updateLineCount);
+  api.buffer.signals.on("buffer.change")(() => widget.lineCount = api.buffer.lineCount);
 
   api.view.signals.on("change.cursor")(({ ln, col }) => {
     widget.ln = ln;

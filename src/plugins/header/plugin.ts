@@ -22,13 +22,8 @@ export function HeaderPlugin(api: CoreAPI & BufferAPI & ThemesAPI & ZenAPI): voi
     widget.render();
   });
 
-  api.buffer.signals.on("change.name")(() => widget.fileName = api.buffer.name);
-
-  const updateModified = () => widget.modified = api.buffer.modified;
-  api.buffer.signals.on("history.push")(updateModified);
-  api.buffer.signals.on("history.undo")(updateModified);
-  api.buffer.signals.on("history.redo")(updateModified);
-  api.buffer.signals.on("history.reset")(updateModified);
+  api.buffer.signals.on("name.change")(() => widget.fileName = api.buffer.name);
+  api.buffer.signals.on("buffer.change")(() => widget.modified = api.buffer.modified);
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
 }
