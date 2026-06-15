@@ -21,13 +21,21 @@ export class Cursor {
   set(ln: number, col: number, sel: boolean): boolean {
     const { ln: oldLn, col: oldCol } = this;
 
-    this.#setLn(ln);
-    this.#setCol(col);
+    this.ln = std.clamp(ln, 0, Math.max(this.buffer.lineCount - 1, 0));
+
+    let maxCol = 0;
+    for (const { gr } of this.buffer.line(this.ln)) {
+      if (gr.isEol) {
+        break;
+      }
+      maxCol += 1;
+    }
+    this.col = std.clamp(col, 0, maxCol);
+
     this.#setSelection(oldLn, oldCol, sel);
     this.#setRange();
 
     const changed = this.ln !== oldLn || this.col !== oldCol;
-
     if (changed) {
       this.onChange?.();
     }
@@ -110,28 +118,6 @@ export class Cursor {
     }
 
     return true;
-  }
-
-  #setLn(ln: number): void {
-    let max = this.buffer.lineCount - 1;
-    if (max < 0) {
-      max = 0;
-    }
-
-    this.ln = std.clamp(ln, 0, max);
-  }
-
-  #setCol(col: number): void {
-    let len = 0;
-
-    for (const { gr } of this.buffer.line(this.ln)) {
-      if (gr.isEol) {
-        break;
-      }
-      len += 1;
-    }
-
-    this.col = std.clamp(col, 0, len);
   }
 
   #setSelection(ln: number, col: number, sel: boolean): void {
