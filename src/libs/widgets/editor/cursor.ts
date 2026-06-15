@@ -1,4 +1,5 @@
 import * as buffers from "@libs/buffers";
+import * as events from "@libs/events";
 import * as std from "@libs/std";
 
 export type Pos = {
@@ -7,6 +8,10 @@ export type Pos = {
 };
 
 export class Cursor {
+  private readonly emitter = new events.SignalEmitter<{
+    "cursor.change": () => void;
+  }>();
+
   #selFrom: Readonly<Pos> = { ln: 0, col: 0 };
 
   pos: Readonly<Pos> = { ln: 0, col: 0 };
@@ -15,10 +20,10 @@ export class Cursor {
   from: Readonly<Pos> = { ln: 0, col: 0 };
   to: Readonly<Pos> = { ln: 0, col: 0 };
 
-  onChange?: () => void;
-
   constructor(private readonly buffer: buffers.Buffer) {
   }
+
+  readonly signals = this.emitter.listener;
 
   set(to: Pos, select: boolean): boolean {
     const old = this.pos;
@@ -52,7 +57,7 @@ export class Cursor {
 
     const changed = this.pos.ln !== old.ln || this.pos.col !== old.col;
     if (changed) {
-      this.onChange?.();
+      this.emitter.broadcast("cursor.change");
     }
 
     return changed;

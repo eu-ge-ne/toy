@@ -12,7 +12,6 @@ import { Cursor, Pos } from "./cursor.ts";
 
 interface Params {
   multiLine: boolean;
-  onCursorChange?: (_: Pos) => void;
 }
 
 export class Editor extends Widget<Params> {
@@ -28,7 +27,6 @@ export class Editor extends Widget<Params> {
     super(params);
 
     this.cursor = new Cursor(buffer);
-    this.cursor.onChange = () => params.onCursorChange?.(this.cursor.pos);
 
     this.children = {
       bg: new Bg(),

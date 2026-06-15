@@ -27,8 +27,9 @@ export function FooterPlugin(api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI & Vie
 
   api.buffer.signals.on("buffer.change")(() => widget.lineCount = api.buffer.lineCount);
 
-  api.view.signals.on("change.cursor")(({ ln, col }) => {
-    widget.ln = ln;
-    widget.col = col;
+  api.view.cursor.signals.on("cursor.change")(() => {
+    widget.pos = api.view.cursor.pos;
+    widget.from = api.view.cursor.from;
+    widget.to = api.view.cursor.to;
   });
 }
