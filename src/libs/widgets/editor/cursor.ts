@@ -1,17 +1,21 @@
 import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 
+type Pos = {
+  ln: number;
+  col: number;
+};
+
 export class Cursor {
-  #selStartLn0 = 0;
-  #selStartCol0 = 0;
+  #selStart: Readonly<Pos> = { ln: 0, col: 0 };
 
   ln = 0;
   col = 0;
 
   isSelecting = false;
 
-  readonly from = { ln: 0, col: 0 };
-  readonly to = { ln: 0, col: 0 };
+  from: Readonly<Pos> = { ln: 0, col: 0 };
+  to: Readonly<Pos> = { ln: 0, col: 0 };
 
   onChange?: () => void;
 
@@ -122,27 +126,21 @@ export class Cursor {
 
   #setSelection(ln: number, col: number, select: boolean): void {
     if (select && !this.isSelecting) {
-      this.#selStartLn0 = ln;
-      this.#selStartCol0 = col;
+      this.#selStart = { ln, col };
     }
-
     this.isSelecting = select;
   }
 
   #setRange(): void {
     if (
-      (this.#selStartLn0 > this.ln) ||
-      (this.#selStartLn0 === this.ln && this.#selStartCol0 > this.col)
+      (this.#selStart.ln > this.ln) ||
+      (this.#selStart.ln === this.ln && this.#selStart.col > this.col)
     ) {
-      this.from.ln = this.ln;
-      this.from.col = this.col;
-      this.to.ln = this.#selStartLn0;
-      this.to.col = this.#selStartCol0;
+      this.from = { ln: this.ln, col: this.col };
+      this.to = this.#selStart;
     } else {
-      this.from.ln = this.#selStartLn0;
-      this.from.col = this.#selStartCol0;
-      this.to.ln = this.ln;
-      this.to.col = this.col;
+      this.from = this.#selStart;
+      this.to = { ln: this.ln, col: this.col };
     }
   }
 }
