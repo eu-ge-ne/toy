@@ -12,18 +12,18 @@ export class Cursor {
     "cursor.change": () => void;
   }>();
 
-  #selFrom: Readonly<Pos> = { ln: 0, col: 0 };
+  private selStart: Readonly<Pos> = { ln: 0, col: 0 };
+
+  constructor(private readonly buffer: buffers.Buffer) {
+  }
+
+  readonly signals = this.emitter.listener;
 
   pos: Readonly<Pos> = { ln: 0, col: 0 };
 
   isSelecting = false;
   from: Readonly<Pos> = { ln: 0, col: 0 };
   to: Readonly<Pos> = { ln: 0, col: 0 };
-
-  constructor(private readonly buffer: buffers.Buffer) {
-  }
-
-  readonly signals = this.emitter.listener;
 
   set(to: Pos, select: boolean): boolean {
     const old = this.pos;
@@ -40,20 +40,20 @@ export class Cursor {
     this.pos = { ln, col };
 
     if (!select) {
-      this.#selFrom = this.pos;
+      this.selStart = this.pos;
     } else if (!this.isSelecting) {
-      this.#selFrom = old;
+      this.selStart = old;
     }
     this.isSelecting = select;
 
     if (
-      (this.#selFrom.ln > this.pos.ln) ||
-      (this.#selFrom.ln === this.pos.ln && this.#selFrom.col > this.pos.col)
+      (this.selStart.ln > this.pos.ln) ||
+      (this.selStart.ln === this.pos.ln && this.selStart.col > this.pos.col)
     ) {
       this.from = this.pos;
-      this.to = this.#selFrom;
+      this.to = this.selStart;
     } else {
-      this.from = this.#selFrom;
+      this.from = this.selStart;
       this.to = this.pos;
     }
 
