@@ -39,7 +39,9 @@ export class Cursor {
     const col = std.clamp(to.col, 0, maxCol);
     this.pos = { ln, col };
 
-    if (!this.isSelecting && select) {
+    if (!select) {
+      this.#selFrom = this.pos;
+    } else if (!this.isSelecting) {
       this.#selFrom = old;
     }
     this.isSelecting = select;
