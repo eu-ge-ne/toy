@@ -173,21 +173,6 @@ export class Editor extends Widget<Params> {
       if (this.cursor.isSelecting) {
         this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
       } else {
-        /*
-        if (this.cursor.ln > 0 && this.cursor.col === 0) {
-          const len = this.buffer.line(this.cursor.ln).take(2).reduce((a) => a + 1, 0);
-          if (len === 1) {
-            this.buffer.remove(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
-            this.cursor.left(false);
-          } else {
-            this.cursor.left(false);
-            this.buffer.remove(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
-          }
-        } else {
-          this.buffer.remove({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
-          this.cursor.left(false);
-        }
-        */
         if (pos.col > 0) {
           this.buffer.remove({ ln: pos.ln, col: pos.col - 1 }, pos);
         } else if (pos.ln > 0) {
