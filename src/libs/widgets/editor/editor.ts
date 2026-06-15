@@ -294,6 +294,7 @@ export class Editor extends Widget<Params> {
 
   #pushHistory() {
     if (this.cursor.isSelecting) {
+      // TODO: remove
       this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     }
 
@@ -307,6 +308,7 @@ export class Editor extends Widget<Params> {
     }
 
     if (this.cursor.isSelecting) {
+      // TODO: remove
       this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     }
 
@@ -320,6 +322,7 @@ export class Editor extends Widget<Params> {
     }
 
     if (this.cursor.isSelecting) {
+      // TODO: remove
       this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     }
 
