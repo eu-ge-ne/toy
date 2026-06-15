@@ -38,6 +38,7 @@ export class Editor extends Widget<Params> {
 
     this.#resetHistory();
 
+    buffer.signals.on("buffer.change")(this.#bufferChanged.bind(this));
     buffer.signals.on("history.push")(this.#pushHistory.bind(this));
     buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
     buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
@@ -45,13 +46,6 @@ export class Editor extends Widget<Params> {
   }
 
   readonly cursor: Cursor;
-
-  protected override resizeChildren(): void {
-    const { bg, content } = this.children;
-
-    bg.resize(this.width, this.height, this.y, this.x);
-    content.resize(this.width, this.height, this.y, this.x);
-  }
 
   render(): void {
     const { bg, content } = this.children;
@@ -190,6 +184,7 @@ export class Editor extends Widget<Params> {
           col: this.cursor.to.col + 1,
         });
       } else {
+        /*
         if (this.cursor.ln > 0 && this.cursor.col === 0) {
           const len = this.buffer.line(this.cursor.ln).take(2).reduce((a) => a + 1, 0);
           if (len === 1) {
@@ -202,6 +197,15 @@ export class Editor extends Widget<Params> {
         } else {
           this.buffer.remove({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
           this.cursor.left(false);
+        }
+        */
+        if (this.cursor.col > 0) {
+          this.buffer.remove({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
+        } else if (this.cursor.ln > 0) {
+          const ln = this.cursor.ln - 1;
+          const prevLine = this.buffer.line(ln);
+          const col = [...prevLine].length - 1;
+          this.buffer.remove({ ln, col }, this.cursor);
         }
       }
       return;
@@ -282,6 +286,17 @@ export class Editor extends Widget<Params> {
     this.#insertText(this.clipboard);
   }
 
+  protected override resizeChildren(): void {
+    const { bg, content } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    content.resize(this.width, this.height, this.y, this.x);
+  }
+
+  #bufferChanged(start: graphemes.Pos, _: graphemes.Pos): void {
+    this.cursor.set(start.ln, start.col, false);
+  }
+
   #resetHistory(): void {
     if (this.params.multiLine) {
       this.cursor.set(0, 0, false);
@@ -293,11 +308,6 @@ export class Editor extends Widget<Params> {
   }
 
   #pushHistory() {
-    if (this.cursor.isSelecting) {
-      // TODO: remove
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
-    }
-
     this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
   }
 
@@ -307,11 +317,6 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    if (this.cursor.isSelecting) {
-      // TODO: remove
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
-    }
-
     this.cursor.set(entry.ln, entry.col, false);
   }
 
@@ -319,11 +324,6 @@ export class Editor extends Widget<Params> {
     const entry = this.history.redo();
     if (!entry) {
       return;
-    }
-
-    if (this.cursor.isSelecting) {
-      // TODO: remove
-      this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
     }
 
     this.cursor.set(entry.ln, entry.col, false);

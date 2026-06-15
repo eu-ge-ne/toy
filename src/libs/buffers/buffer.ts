@@ -5,7 +5,7 @@ import * as history from "@libs/history";
 
 export type BufferSignals = {
   "change.name": () => void;
-  "change.content": (start: graphemes.Pos, end: graphemes.Pos) => void;
+  "buffer.change": (start: graphemes.Pos, end: graphemes.Pos) => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
@@ -133,7 +133,7 @@ export class Buffer {
 
     this.#history.push(this.#doc.tree.root);
 
-    this.#emitter.broadcast("change.content", start, end);
+    this.#emitter.broadcast("buffer.change", start, end);
     this.#emitter.broadcast("history.push");
   }
 }
