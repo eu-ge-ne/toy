@@ -8,15 +8,15 @@ import * as vt from "@libs/vt";
 import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
-import { Cursor } from "./cursor.ts";
+import { Cursor, Pos } from "./cursor.ts";
 
 interface Params {
   multiLine: boolean;
-  onCursorChange?: (_: { ln: number; col: number }) => void;
+  onCursorChange?: (_: Pos) => void;
 }
 
 export class Editor extends Widget<Params> {
-  private readonly history = new history.History<{ ln: number; col: number }>();
+  private readonly history = new history.History<Pos>();
   private clipboard = "";
 
   protected override children: {
@@ -28,8 +28,7 @@ export class Editor extends Widget<Params> {
     super(params);
 
     this.cursor = new Cursor(buffer);
-    this.cursor.onChange = () =>
-      params.onCursorChange?.({ ln: this.cursor.ln, col: this.cursor.col });
+    this.cursor.onChange = () => params.onCursorChange?.(this.cursor.pos);
 
     this.children = {
       bg: new Bg(),
@@ -172,7 +171,10 @@ export class Editor extends Widget<Params> {
           col: this.cursor.to.col + 1,
         });
       } else {
-        this.buffer.remove(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+        this.buffer.remove(this.cursor.pos, {
+          ln: this.cursor.pos.ln,
+          col: this.cursor.pos.col + 1,
+        });
       }
       return;
     }
@@ -199,13 +201,16 @@ export class Editor extends Widget<Params> {
           this.cursor.left(false);
         }
         */
-        if (this.cursor.col > 0) {
-          this.buffer.remove({ ln: this.cursor.ln, col: this.cursor.col - 1 }, this.cursor);
-        } else if (this.cursor.ln > 0) {
-          const ln = this.cursor.ln - 1;
+        if (this.cursor.pos.col > 0) {
+          this.buffer.remove(
+            { ln: this.cursor.pos.ln, col: this.cursor.pos.col - 1 },
+            this.cursor.pos,
+          );
+        } else if (this.cursor.pos.ln > 0) {
+          const ln = this.cursor.pos.ln - 1;
           const prevLine = this.buffer.line(ln);
           const col = [...prevLine].length - 1;
-          this.buffer.remove({ ln, col }, this.cursor);
+          this.buffer.remove({ ln, col }, this.cursor.pos);
         }
       }
       return;
@@ -244,11 +249,11 @@ export class Editor extends Widget<Params> {
         col: this.cursor.to.col + 1,
       });
 
-      this.cursor.set(this.cursor.ln, this.cursor.col, false);
+      this.cursor.set(this.cursor.pos, false);
     } else {
-      this.clipboard = this.buffer.slice(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.clipboard = this.buffer.slice(this.cursor.pos, {
+        ln: this.cursor.pos.ln,
+        col: this.cursor.pos.col + 1,
       });
     }
 
@@ -267,12 +272,12 @@ export class Editor extends Widget<Params> {
         col: this.cursor.to.col + 1,
       });
     } else {
-      this.clipboard = this.buffer.slice(this.cursor, {
-        ln: this.cursor.ln,
-        col: this.cursor.col + 1,
+      this.clipboard = this.buffer.slice(this.cursor.pos, {
+        ln: this.cursor.pos.ln,
+        col: this.cursor.pos.col + 1,
       });
 
-      this.buffer.remove(this.cursor, { ln: this.cursor.ln, col: this.cursor.col + 1 });
+      this.buffer.remove(this.cursor.pos, { ln: this.cursor.pos.ln, col: this.cursor.pos.col + 1 });
     }
 
     vt.copyToClipboard(vt.sync, this.clipboard);
@@ -294,21 +299,21 @@ export class Editor extends Widget<Params> {
   }
 
   #bufferChanged(start: graphemes.Pos, _: graphemes.Pos): void {
-    this.cursor.set(start.ln, start.col, false);
+    this.cursor.set(start, false);
   }
 
   #resetHistory(): void {
     if (this.params.multiLine) {
-      this.cursor.set(0, 0, false);
+      this.cursor.set({ ln: 0, col: 0 }, false);
     } else {
-      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+      this.cursor.set({ ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER }, false);
     }
 
-    this.history.reset({ ln: this.cursor.ln, col: this.cursor.col });
+    this.history.reset(this.cursor.pos);
   }
 
   #pushHistory() {
-    this.history.push({ ln: this.cursor.ln, col: this.cursor.col });
+    this.history.push(this.cursor.pos);
   }
 
   #undoHistory() {
@@ -317,7 +322,7 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    this.cursor.set(entry.ln, entry.col, false);
+    this.cursor.set(entry, false);
   }
 
   #redoHistory() {
@@ -326,7 +331,7 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    this.cursor.set(entry.ln, entry.col, false);
+    this.cursor.set(entry, false);
   }
 
   #sgr = new Intl.Segmenter();
@@ -339,10 +344,10 @@ export class Editor extends Widget<Params> {
           col: this.cursor.to.col + 1,
         });
 
-        this.cursor.set(this.cursor.from.ln, this.cursor.from.col, false);
+        this.cursor.set(this.cursor.from, false);
       }
 
-      insert(this.cursor, text);
+      insert(this.cursor.pos, text);
 
       const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
       const eol_count = grms.filter((x) => x.isEol).length;
@@ -351,7 +356,7 @@ export class Editor extends Widget<Params> {
         this.cursor.forward(grms.length);
       } else {
         const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-        this.cursor.set(this.cursor.ln + eol_count, col, false);
+        this.cursor.set({ ln: this.cursor.pos.ln + eol_count, col }, false);
       }
     });
   }

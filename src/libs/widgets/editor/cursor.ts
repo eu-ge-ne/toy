@@ -1,7 +1,7 @@
 import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 
-type Pos = {
+export type Pos = {
   ln: number;
   col: number;
 };
@@ -9,11 +9,9 @@ type Pos = {
 export class Cursor {
   #selStart: Readonly<Pos> = { ln: 0, col: 0 };
 
-  ln = 0;
-  col = 0;
+  pos: Readonly<Pos> = { ln: 0, col: 0 };
 
   isSelecting = false;
-
   from: Readonly<Pos> = { ln: 0, col: 0 };
   to: Readonly<Pos> = { ln: 0, col: 0 };
 
@@ -22,24 +20,37 @@ export class Cursor {
   constructor(private readonly buffer: buffers.Buffer) {
   }
 
-  set(ln: number, col: number, select: boolean): boolean {
-    const { ln: oldLn, col: oldCol } = this;
+  set(to: Pos, select: boolean): boolean {
+    const old = this.pos;
 
-    this.ln = std.clamp(ln, 0, Math.max(this.buffer.lineCount - 1, 0));
-
+    const ln = std.clamp(to.ln, 0, Math.max(this.buffer.lineCount - 1, 0));
     let maxCol = 0;
-    for (const { gr } of this.buffer.line(this.ln)) {
+    for (const { gr } of this.buffer.line(ln)) {
       if (gr.isEol) {
         break;
       }
       maxCol += 1;
     }
-    this.col = std.clamp(col, 0, maxCol);
+    const col = std.clamp(to.col, 0, maxCol);
+    this.pos = { ln, col };
 
-    this.#setSelection(oldLn, oldCol, select);
-    this.#setRange();
+    if (select && !this.isSelecting) {
+      this.#selStart = old;
+    }
+    this.isSelecting = select;
 
-    const changed = this.ln !== oldLn || this.col !== oldCol;
+    if (
+      (this.#selStart.ln > this.pos.ln) ||
+      (this.#selStart.ln === this.pos.ln && this.#selStart.col > this.pos.col)
+    ) {
+      this.from = this.pos;
+      this.to = this.#selStart;
+    } else {
+      this.from = this.#selStart;
+      this.to = this.pos;
+    }
+
+    const changed = this.pos.ln !== old.ln || this.pos.col !== old.col;
     if (changed) {
       this.onChange?.();
     }
@@ -47,100 +58,80 @@ export class Cursor {
     return changed;
   }
 
-  top(sel: boolean): boolean {
-    return this.set(0, 0, sel);
+  top(select: boolean): boolean {
+    return this.set({ ln: 0, col: 0 }, select);
   }
 
-  bottom(sel: boolean): boolean {
-    return this.set(Number.MAX_SAFE_INTEGER, 0, sel);
+  bottom(select: boolean): boolean {
+    return this.set({ ln: Number.MAX_SAFE_INTEGER, col: 0 }, select);
   }
 
-  home(sel: boolean): boolean {
-    return this.set(this.ln, 0, sel);
+  home(select: boolean): boolean {
+    return this.set({ ln: this.pos.ln, col: 0 }, select);
   }
 
-  end(sel: boolean): boolean {
-    return this.set(this.ln, Number.MAX_SAFE_INTEGER, sel);
+  end(select: boolean): boolean {
+    return this.set({ ln: this.pos.ln, col: Number.MAX_SAFE_INTEGER }, select);
   }
 
-  up(n: number, sel: boolean): boolean {
-    return this.set(this.ln - n, this.col, sel);
+  up(n: number, select: boolean): boolean {
+    return this.set({ ln: this.pos.ln - n, col: this.pos.col }, select);
   }
 
-  down(n: number, sel: boolean): boolean {
-    return this.set(this.ln + n, this.col, sel);
+  down(n: number, select: boolean): boolean {
+    return this.set({ ln: this.pos.ln + n, col: this.pos.col }, select);
   }
 
-  left(sel: boolean): boolean {
-    if (this.set(this.ln, this.col - 1, sel)) {
+  left(select: boolean): boolean {
+    if (this.set({ ln: this.pos.ln, col: this.pos.col - 1 }, select)) {
       return true;
     }
 
-    if (this.ln > 0) {
-      return this.set(this.ln - 1, Number.MAX_SAFE_INTEGER, sel);
+    if (this.pos.ln > 0) {
+      return this.set({ ln: this.pos.ln - 1, col: Number.MAX_SAFE_INTEGER }, select);
     }
 
     return false;
   }
 
-  right(sel: boolean): boolean {
-    if (this.set(this.ln, this.col + 1, sel)) {
+  right(select: boolean): boolean {
+    if (this.set({ ln: this.pos.ln, col: this.pos.col + 1 }, select)) {
       return true;
     }
 
-    if (this.ln < this.buffer.lineCount - 1) {
-      return this.set(this.ln + 1, 0, sel);
+    if (this.pos.ln < this.buffer.lineCount - 1) {
+      return this.set({ ln: this.pos.ln + 1, col: 0 }, select);
     }
 
     return false;
   }
 
   forward(n: number): boolean {
-    return this.set(this.ln, this.col + n, false);
+    return this.set({ ln: this.pos.ln, col: this.pos.col + n }, false);
   }
 
   selectAll(): void {
-    this.set(0, 0, false);
-    this.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
+    this.set({ ln: 0, col: 0 }, false);
+    this.set({ ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER }, true);
   }
 
-  isSelected(ln: number, col: number): boolean {
+  isSelected(x: Pos): boolean {
     if (!this.isSelecting) {
       return false;
     }
 
-    if (ln < this.from.ln || ln > this.to.ln) {
+    if (x.ln < this.from.ln || x.ln > this.to.ln) {
       return false;
     }
 
-    if (ln === this.from.ln && col < this.from.col) {
+    if (x.ln === this.from.ln && x.col < this.from.col) {
       return false;
     }
 
-    if (ln === this.to.ln && col > this.to.col) {
+    if (x.ln === this.to.ln && x.col > this.to.col) {
       return false;
     }
 
     return true;
-  }
-
-  #setSelection(ln: number, col: number, select: boolean): void {
-    if (select && !this.isSelecting) {
-      this.#selStart = { ln, col };
-    }
-    this.isSelecting = select;
-  }
-
-  #setRange(): void {
-    if (
-      (this.#selStart.ln > this.ln) ||
-      (this.#selStart.ln === this.ln && this.#selStart.col > this.col)
-    ) {
-      this.from = { ln: this.ln, col: this.col };
-      this.to = this.#selStart;
-    } else {
-      this.from = this.#selStart;
-      this.to = { ln: this.ln, col: this.col };
-    }
   }
 }

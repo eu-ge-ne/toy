@@ -119,21 +119,21 @@ export class Content extends Widget {
   }
 
   #scrollV(): void {
-    const deltaLn = this.cursor.ln - this.#scrollLn;
+    const deltaLn = this.cursor.pos.ln - this.#scrollLn;
 
     // Above?
     if (deltaLn <= 0) {
-      this.#scrollLn = this.cursor.ln;
+      this.#scrollLn = this.cursor.pos.ln;
       return;
     }
 
     // Below?
 
     if (deltaLn > this.height) {
-      this.#scrollLn = this.cursor.ln - this.height;
+      this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
-    const xs = std.range(this.#scrollLn, this.cursor.ln + 1).map((ln) =>
+    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
       this.buffer.line(ln).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
@@ -153,7 +153,7 @@ export class Content extends Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell = this.buffer.line(this.cursor.ln, true).drop(this.cursor.col).next().value;
+    const cell = this.buffer.line(this.cursor.pos.ln, true).drop(this.cursor.pos.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -169,8 +169,8 @@ export class Content extends Widget {
 
     // After?
 
-    const xs = this.buffer.line(this.cursor.ln, true)
-      .drop(this.cursor.col - deltaCol)
+    const xs = this.buffer.line(this.cursor.pos.ln, true)
+      .drop(this.cursor.pos.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
       .toArray();
@@ -223,7 +223,11 @@ export class Content extends Widget {
         continue;
       }
 
-      const color = charColor(this.cursor.isSelected(ln, i), isVisible, this.#mode.whitespace);
+      const color = charColor(
+        this.cursor.isSelected({ ln, col: i }),
+        isVisible,
+        this.#mode.whitespace,
+      );
 
       if (color !== currentColor) {
         currentColor = color;
