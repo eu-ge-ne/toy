@@ -163,26 +163,15 @@ export class Editor extends Widget<Params> {
     }
 
     if (key.name === "DELETE") {
-      if (this.cursor.isSelecting) {
-        this.buffer.remove(this.cursor.from, {
-          ln: this.cursor.to.ln,
-          col: this.cursor.to.col + 1,
-        });
-      } else {
-        this.buffer.remove(this.cursor.pos, {
-          ln: this.cursor.pos.ln,
-          col: this.cursor.pos.col + 1,
-        });
-      }
+      const { from, to } = this.cursor;
+      this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
       return;
     }
 
     if (key.name === "BACKSPACE") {
+      const { pos, from, to } = this.cursor;
       if (this.cursor.isSelecting) {
-        this.buffer.remove(this.cursor.from, {
-          ln: this.cursor.to.ln,
-          col: this.cursor.to.col + 1,
-        });
+        this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
       } else {
         /*
         if (this.cursor.ln > 0 && this.cursor.col === 0) {
@@ -199,16 +188,13 @@ export class Editor extends Widget<Params> {
           this.cursor.left(false);
         }
         */
-        if (this.cursor.pos.col > 0) {
-          this.buffer.remove(
-            { ln: this.cursor.pos.ln, col: this.cursor.pos.col - 1 },
-            this.cursor.pos,
-          );
-        } else if (this.cursor.pos.ln > 0) {
-          const ln = this.cursor.pos.ln - 1;
+        if (pos.col > 0) {
+          this.buffer.remove({ ln: pos.ln, col: pos.col - 1 }, pos);
+        } else if (pos.ln > 0) {
+          const ln = pos.ln - 1;
           const prevLine = this.buffer.line(ln);
           const col = [...prevLine].length - 1;
-          this.buffer.remove({ ln, col }, this.cursor.pos);
+          this.buffer.remove({ ln, col }, pos);
         }
       }
       return;
