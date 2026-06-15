@@ -7,7 +7,7 @@ export type Pos = {
 };
 
 export class Cursor {
-  #selStart: Readonly<Pos> = { ln: 0, col: 0 };
+  #selFrom: Readonly<Pos> = { ln: 0, col: 0 };
 
   pos: Readonly<Pos> = { ln: 0, col: 0 };
 
@@ -35,18 +35,18 @@ export class Cursor {
     this.pos = { ln, col };
 
     if (select && !this.isSelecting) {
-      this.#selStart = old;
+      this.#selFrom = old;
     }
     this.isSelecting = select;
 
     if (
-      (this.#selStart.ln > this.pos.ln) ||
-      (this.#selStart.ln === this.pos.ln && this.#selStart.col > this.pos.col)
+      (this.#selFrom.ln > this.pos.ln) ||
+      (this.#selFrom.ln === this.pos.ln && this.#selFrom.col > this.pos.col)
     ) {
       this.from = this.pos;
-      this.to = this.#selStart;
+      this.to = this.#selFrom;
     } else {
-      this.from = this.#selStart;
+      this.from = this.#selFrom;
       this.to = this.pos;
     }
 
