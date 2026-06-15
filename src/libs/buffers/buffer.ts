@@ -126,4 +126,12 @@ export class Buffer {
 
     this.#emitter.broadcast("history.redo");
   }
+
+  remove(start: graphemes.Pos, end: graphemes.Pos): void {
+    this.#gDoc.delete(start, end);
+
+    this.#history.push(this.#doc.tree.root);
+
+    this.#emitter.broadcast("history.push");
+  }
 }
