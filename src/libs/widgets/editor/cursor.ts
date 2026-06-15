@@ -2,8 +2,8 @@ import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 
 export class Cursor {
-  #ln0 = 0;
-  #col0 = 0;
+  #selStartLn0 = 0;
+  #selStartCol0 = 0;
 
   ln = 0;
   col = 0;
@@ -18,7 +18,7 @@ export class Cursor {
   constructor(private readonly buffer: buffers.Buffer) {
   }
 
-  set(ln: number, col: number, sel: boolean): boolean {
+  set(ln: number, col: number, select: boolean): boolean {
     const { ln: oldLn, col: oldCol } = this;
 
     this.ln = std.clamp(ln, 0, Math.max(this.buffer.lineCount - 1, 0));
@@ -32,7 +32,7 @@ export class Cursor {
     }
     this.col = std.clamp(col, 0, maxCol);
 
-    this.#setSelection(oldLn, oldCol, sel);
+    this.#setSelection(oldLn, oldCol, select);
     this.#setRange();
 
     const changed = this.ln !== oldLn || this.col !== oldCol;
@@ -120,29 +120,27 @@ export class Cursor {
     return true;
   }
 
-  #setSelection(ln: number, col: number, sel: boolean): void {
-    if (!sel) {
-      this.isSelecting = false;
-      return;
+  #setSelection(ln: number, col: number, select: boolean): void {
+    if (select && !this.isSelecting) {
+      this.#selStartLn0 = ln;
+      this.#selStartCol0 = col;
     }
 
-    if (!this.isSelecting) {
-      this.#ln0 = ln;
-      this.#col0 = col;
-    }
-
-    this.isSelecting = true;
+    this.isSelecting = select;
   }
 
   #setRange(): void {
-    if ((this.#ln0 > this.ln) || (this.#ln0 === this.ln && this.#col0 > this.col)) {
+    if (
+      (this.#selStartLn0 > this.ln) ||
+      (this.#selStartLn0 === this.ln && this.#selStartCol0 > this.col)
+    ) {
       this.from.ln = this.ln;
       this.from.col = this.col;
-      this.to.ln = this.#ln0;
-      this.to.col = this.#col0;
+      this.to.ln = this.#selStartLn0;
+      this.to.col = this.#selStartCol0;
     } else {
-      this.from.ln = this.#ln0;
-      this.from.col = this.#col0;
+      this.from.ln = this.#selStartLn0;
+      this.from.col = this.#selStartCol0;
       this.to.ln = this.ln;
       this.to.col = this.col;
     }
