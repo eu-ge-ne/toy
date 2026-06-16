@@ -5,7 +5,7 @@ import * as history from "@libs/history";
 
 export type BufferSignals = {
   "name.change": () => void;
-  "buffer.change": (start: graphemes.Pos, end: graphemes.Pos) => void;
+  "buffer.change": () => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
@@ -101,41 +101,26 @@ export class Buffer {
 
   remove(start: graphemes.Pos, end: graphemes.Pos): void {
     this.#gDoc.delete(start, end);
+    this.#emitter.broadcast("buffer.change");
 
     this.#history.push(this.#doc.tree.root);
-
-    this.#emitter.broadcast("buffer.change", start, end);
     this.#emitter.broadcast("history.push");
   }
 
-  // TODO: insert
-  // TODO: replace
+  replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
+    this.#gDoc.delete(start, end);
+    this.#gDoc.insert(start, text);
+    this.#emitter.broadcast("buffer.change");
 
-  edit(
-    fn: (
-      _: {
-        insert: (pos: graphemes.Pos, text: string) => void;
-        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
-      },
-    ) => void,
-  ): void {
-    let changed = false;
+    this.#history.push(this.#doc.tree.root);
+    this.#emitter.broadcast("history.push");
+  }
 
-    fn({
-      insert: (pos: graphemes.Pos, text: string) => {
-        this.#gDoc.insert(pos, text);
-        changed = true;
-      },
-      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
-        this.#gDoc.delete(start, end);
-        changed = true;
-      },
-    });
+  insert(pos: graphemes.Pos, text: string): void {
+    this.#gDoc.insert(pos, text);
+    this.#emitter.broadcast("buffer.change");
 
-    if (changed) {
-      this.#history.push(this.#doc.tree.root);
-
-      this.#emitter.broadcast("history.push");
-    }
+    this.#history.push(this.#doc.tree.root);
+    this.#emitter.broadcast("history.push");
   }
 }
