@@ -99,12 +99,17 @@ export class Buffer {
     this.#emitter.broadcast("history.redo");
   }
 
+  #pushHistory() {
+    this.#history.push(this.#doc.tree.root);
+
+    this.#emitter.broadcast("history.push");
+  }
+
   remove(start: graphemes.Pos, end: graphemes.Pos): void {
     this.#gDoc.delete(start, end);
     this.#emitter.broadcast("buffer.change");
 
-    this.#history.push(this.#doc.tree.root);
-    this.#emitter.broadcast("history.push");
+    this.#pushHistory();
   }
 
   replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
@@ -112,15 +117,13 @@ export class Buffer {
     this.#gDoc.insert(start, text);
     this.#emitter.broadcast("buffer.change");
 
-    this.#history.push(this.#doc.tree.root);
-    this.#emitter.broadcast("history.push");
+    this.#pushHistory();
   }
 
   insert(pos: graphemes.Pos, text: string): void {
     this.#gDoc.insert(pos, text);
     this.#emitter.broadcast("buffer.change");
 
-    this.#history.push(this.#doc.tree.root);
-    this.#emitter.broadcast("history.push");
+    this.#pushHistory();
   }
 }
