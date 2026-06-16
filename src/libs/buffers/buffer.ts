@@ -31,6 +31,7 @@ export class Buffer {
 
   set name(x: string) {
     this.#name = x;
+
     this.#emitter.broadcast("name.change");
   }
 
@@ -49,12 +50,14 @@ export class Buffer {
   set text(x: string) {
     this.#doc.delete(0);
     this.#doc.insert(0, x);
+    this.#emitter.broadcast("buffer.change");
 
     this.resetHistory();
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
+    this.#emitter.broadcast("buffer.change");
 
     this.resetHistory();
   }
@@ -69,6 +72,28 @@ export class Buffer {
 
   line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gDoc.line(ln, extra);
+  }
+
+  remove(start: graphemes.Pos, end: graphemes.Pos): void {
+    this.#gDoc.delete(start, end);
+    this.#emitter.broadcast("buffer.change");
+
+    this.#pushHistory();
+  }
+
+  replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
+    this.#gDoc.delete(start, end);
+    this.#gDoc.insert(start, text);
+    this.#emitter.broadcast("buffer.change");
+
+    this.#pushHistory();
+  }
+
+  insert(pos: graphemes.Pos, text: string): void {
+    this.#gDoc.insert(pos, text);
+    this.#emitter.broadcast("buffer.change");
+
+    this.#pushHistory();
   }
 
   resetHistory(): void {
@@ -103,27 +128,5 @@ export class Buffer {
     this.#history.push(this.#doc.tree.root);
 
     this.#emitter.broadcast("history.push");
-  }
-
-  remove(start: graphemes.Pos, end: graphemes.Pos): void {
-    this.#gDoc.delete(start, end);
-    this.#emitter.broadcast("buffer.change");
-
-    this.#pushHistory();
-  }
-
-  replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
-    this.#gDoc.delete(start, end);
-    this.#gDoc.insert(start, text);
-    this.#emitter.broadcast("buffer.change");
-
-    this.#pushHistory();
-  }
-
-  insert(pos: graphemes.Pos, text: string): void {
-    this.#gDoc.insert(pos, text);
-    this.#emitter.broadcast("buffer.change");
-
-    this.#pushHistory();
   }
 }
