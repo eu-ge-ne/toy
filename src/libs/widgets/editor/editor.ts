@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
@@ -35,7 +34,6 @@ export class Editor extends Widget<Params> {
 
     this.#resetHistory();
 
-    buffer.signals.on("buffer.change")(this.#bufferChanged.bind(this));
     buffer.signals.on("history.push")(this.#pushHistory.bind(this));
     buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
     buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
@@ -148,17 +146,29 @@ export class Editor extends Widget<Params> {
     // Edit
 
     if (typeof key.text === "string") {
-      this.#insertText(key.text!);
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
+      } else {
+        this.buffer.insert(this.cursor.pos, key.text!);
+      }
       return;
     }
 
     if (key.name === "TAB") {
-      this.#insertText("\t");
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, "\t");
+      } else {
+        this.buffer.insert(this.cursor.pos, "\t");
+      }
       return;
     }
 
     if (this.params.multiLine && key.name === "ENTER") {
-      this.#insertText("\n");
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, "\n");
+      } else {
+        this.buffer.insert(this.cursor.pos, "\n");
+      }
       return;
     }
 
@@ -236,7 +246,11 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    this.#insertText(this.clipboard);
+    if (this.cursor.isSelecting) {
+      this.buffer.replace(this.cursor.from, this.cursor.to, this.clipboard);
+    } else {
+      this.buffer.insert(this.cursor.pos, this.clipboard);
+    }
   }
 
   protected override resizeChildren(): void {
@@ -244,10 +258,6 @@ export class Editor extends Widget<Params> {
 
     bg.resize(this.width, this.height, this.y, this.x);
     content.resize(this.width, this.height, this.y, this.x);
-  }
-
-  #bufferChanged(start: graphemes.Pos, _: graphemes.Pos): void {
-    this.cursor.set(start, false);
   }
 
   #resetHistory(): void {
@@ -281,7 +291,39 @@ export class Editor extends Widget<Params> {
 
     this.cursor.set(entry, false);
   }
+}
 
+/*
+  edit(
+    fn: (
+      _: {
+        insert: (pos: graphemes.Pos, text: string) => void;
+        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
+      },
+    ) => void,
+  ): void {
+    let changed = false;
+
+    fn({
+      insert: (pos: graphemes.Pos, text: string) => {
+        this.#gDoc.insert(pos, text);
+        changed = true;
+      },
+      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
+        this.#gDoc.delete(start, end);
+        changed = true;
+      },
+    });
+
+    if (changed) {
+      this.#history.push(this.#doc.tree.root);
+
+      this.#emitter.broadcast("history.push");
+    }
+  }
+  */
+
+/*
   #sgr = new Intl.Segmenter();
 
   #insertText(text: string): void {
@@ -308,4 +350,12 @@ export class Editor extends Widget<Params> {
       }
     });
   }
-}
+  */
+
+/*
+  #bufferChanged(start: graphemes.Pos, _: graphemes.Pos): void {
+    this.cursor.set(start, false);
+  }
+  */
+
+//buffer.signals.on("buffer.change")(this.#bufferChanged.bind(this));
