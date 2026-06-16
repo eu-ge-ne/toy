@@ -42,6 +42,13 @@ export class Editor extends Widget<Params> {
 
   readonly cursor: Cursor;
 
+  protected override resizeChildren(): void {
+    const { bg, content } = this.children;
+
+    bg.resize(this.width, this.height, this.y, this.x);
+    content.resize(this.width, this.height, this.y, this.x);
+  }
+
   render(): void {
     const { bg, content } = this.children;
 
@@ -251,13 +258,6 @@ export class Editor extends Widget<Params> {
     } else {
       this.buffer.insert(this.cursor.pos, this.clipboard);
     }
-  }
-
-  protected override resizeChildren(): void {
-    const { bg, content } = this.children;
-
-    bg.resize(this.width, this.height, this.y, this.x);
-    content.resize(this.width, this.height, this.y, this.x);
   }
 
   #resetHistory(): void {
