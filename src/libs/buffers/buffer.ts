@@ -71,9 +71,11 @@ export class Buffer {
     return this.#doc.read(0);
   }
 
-  readSlice(start: graphemes.Pos, end: graphemes.Pos): string {
+  readStringSlice(start: graphemes.Pos, end: graphemes.Pos): string {
     return this.#gDoc.read(start, end);
   }
+
+  // TODO
 
   readLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gDoc.line(ln, extra);
