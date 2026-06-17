@@ -91,26 +91,6 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    if (this.params.multiLine && key.name === "UP") {
-      this.cursor.up(1, Boolean(key.shift));
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "DOWN") {
-      this.cursor.down(1, Boolean(key.shift));
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "UP" && Boolean(key.super)) {
-      this.cursor.top(Boolean(key.shift));
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "DOWN" && Boolean(key.super)) {
-      this.cursor.bottom(Boolean(key.shift));
-      return;
-    }
-
     let isHome = false;
     if (key.name === "HOME") {
       isHome = true;
@@ -135,19 +115,41 @@ export class Editor extends Widget<Params> {
       return;
     }
 
-    if (this.params.multiLine && key.name === "PAGE_UP") {
-      this.cursor.up(this.height, Boolean(key.shift));
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "PAGE_DOWN") {
-      this.cursor.down(this.height, Boolean(key.shift));
-      return;
-    }
-
     if (key.name === "a" && Boolean(key.ctrl || key.super)) {
       this.cursor.selectAll();
       return;
+    }
+
+    if (this.params.multiLine) {
+      if (key.name === "UP") {
+        this.cursor.up(1, Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "DOWN") {
+        this.cursor.down(1, Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "UP" && Boolean(key.super)) {
+        this.cursor.top(Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "DOWN" && Boolean(key.super)) {
+        this.cursor.bottom(Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "PAGE_UP") {
+        this.cursor.up(this.height, Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "PAGE_DOWN") {
+        this.cursor.down(this.height, Boolean(key.shift));
+        return;
+      }
     }
 
     // Edit
