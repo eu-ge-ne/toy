@@ -66,3 +66,25 @@ export function* segments(
     yield seg;
   }
 }
+
+export function measure(text: string): { lns: number; cols: number } {
+  let lns = 0;
+  let cols = 0;
+
+  for (const { segment } of sgr.segment(text)) {
+    const gr = graphemes.get(segment);
+
+    if (gr.width < 0) {
+      gr.width = vt.wchar(settings.y, settings.x, gr.bytes);
+    }
+
+    if (gr.isEol) {
+      lns += 1;
+      cols = 0;
+    } else {
+      cols += 1;
+    }
+  }
+
+  return { lns, cols };
+}
