@@ -34,6 +34,7 @@ export class Editor extends Widget<Params> {
 
     this.#resetHistory();
 
+    buffer.signals.on("buffer.change")(this.#onBufferChange.bind(this));
     buffer.signals.on("history.push")(this.#pushHistory.bind(this));
     buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
     buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
@@ -183,18 +184,19 @@ export class Editor extends Widget<Params> {
 
     if (key.name === "DELETE") {
       const { from, to } = this.cursor;
-      this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
+      this.buffer.remove(from, to);
       return;
     }
 
     if (key.name === "BACKSPACE") {
       const { pos, from, to } = this.cursor;
       if (this.cursor.isSelecting) {
-        this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
+        this.buffer.remove(from, to);
       } else {
         if (pos.col > 0) {
-          this.buffer.remove({ ln: pos.ln, col: pos.col - 1 }, pos);
+          this.buffer.remove({ ln: pos.ln, col: pos.col - 1 }, { ln: pos.ln, col: pos.col - 1 });
         } else if (pos.ln > 0) {
+          // TODO
           const ln = pos.ln - 1;
           const prevLine = this.buffer.line(ln);
           const col = [...prevLine].length - 1;
@@ -262,6 +264,18 @@ export class Editor extends Widget<Params> {
     }
   }
 
+  #onBufferChange(change: buffers.BufferChange) {
+    switch (change.type) {
+      case "insert":
+      case "replace":
+        this.cursor.set(change.to, false);
+        break;
+      case "remove":
+        this.cursor.set(change.from, false);
+        break;
+    }
+  }
+
   #resetHistory(): void {
     if (this.params.multiLine) {
       this.cursor.set({ ln: 0, col: 0 }, false);
@@ -278,19 +292,15 @@ export class Editor extends Widget<Params> {
 
   #undoHistory() {
     const entry = this.history.undo();
-    if (!entry) {
-      return;
+    if (entry) {
+      this.cursor.set(entry, false);
     }
-
-    this.cursor.set(entry, false);
   }
 
   #redoHistory() {
     const entry = this.history.redo();
-    if (!entry) {
-      return;
+    if (entry) {
+      this.cursor.set(entry, false);
     }
-
-    this.cursor.set(entry, false);
   }
 }

@@ -5,11 +5,17 @@ import * as history from "@libs/history";
 
 export type BufferSignals = {
   "name.change": () => void;
-  "buffer.change": () => void; // TODO: params
+  "buffer.change": (_: BufferChange) => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
   "history.push": () => void;
+};
+
+export type BufferChange = {
+  type: "set" | "insert" | "remove" | "replace";
+  from: graphemes.Pos;
+  to: graphemes.Pos;
 };
 
 export class Buffer {
@@ -50,14 +56,26 @@ export class Buffer {
   set text(x: string) {
     this.#doc.delete(0);
     this.#doc.insert(0, x);
-    this.#emitter.broadcast("buffer.change");
+
+    // TODO
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln: 0, col: 0 },
+    });
 
     this.resetHistory();
   }
 
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
-    this.#emitter.broadcast("buffer.change");
+
+    // TODO
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln: 0, col: 0 },
+    });
 
     this.resetHistory();
   }
@@ -76,22 +94,43 @@ export class Buffer {
 
   insert(pos: graphemes.Pos, text: string): void {
     this.#gDoc.insert(pos, text);
-    this.#emitter.broadcast("buffer.change");
+
+    const to = { ln: pos.ln, col: pos.col };
+    const { lns, cols } = graphemes.measure(text);
+    if (lns === 0) {
+      to.col += cols;
+    } else {
+      to.ln += lns;
+      to.col = 0;
+    }
+
+    this.#emitter.broadcast("buffer.change", { type: "insert", from: pos, to });
 
     this.#pushHistory();
   }
 
-  remove(start: graphemes.Pos, end: graphemes.Pos): void {
-    this.#gDoc.delete(start, end);
-    this.#emitter.broadcast("buffer.change");
+  remove(from: graphemes.Pos, to: graphemes.Pos): void {
+    this.#gDoc.delete(from, { ln: to.ln, col: to.col + 1 });
+
+    this.#emitter.broadcast("buffer.change", { type: "remove", from, to: from });
 
     this.#pushHistory();
   }
 
-  replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
-    this.#gDoc.delete(start, end);
-    this.#gDoc.insert(start, text);
-    this.#emitter.broadcast("buffer.change");
+  replace(from: graphemes.Pos, to: graphemes.Pos, text: string): void {
+    this.#gDoc.delete(from, { ln: to.ln, col: to.col + 1 });
+    this.#gDoc.insert(from, text);
+
+    to = { ln: from.ln, col: from.col };
+    const { lns, cols } = graphemes.measure(text);
+    if (lns === 0) {
+      to.col += cols;
+    } else {
+      to.ln += lns;
+      to.col = 0;
+    }
+
+    this.#emitter.broadcast("buffer.change", { type: "replace", from, to });
 
     this.#pushHistory();
   }
@@ -130,70 +169,3 @@ export class Buffer {
     this.#emitter.broadcast("history.push");
   }
 }
-
-/*
-  edit(
-    fn: (
-      _: {
-        insert: (pos: graphemes.Pos, text: string) => void;
-        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
-      },
-    ) => void,
-  ): void {
-    let changed = false;
-
-    fn({
-      insert: (pos: graphemes.Pos, text: string) => {
-        this.#gDoc.insert(pos, text);
-        changed = true;
-      },
-      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
-        this.#gDoc.delete(start, end);
-        changed = true;
-      },
-    });
-
-    if (changed) {
-      this.#history.push(this.#doc.tree.root);
-
-      this.#emitter.broadcast("history.push");
-    }
-  }
-  */
-
-/*
-  #sgr = new Intl.Segmenter();
-
-  #insertText(text: string): void {
-    this.buffer.edit(({ insert, remove }) => {
-      if (this.cursor.isSelecting) {
-        remove(this.cursor.from, {
-          ln: this.cursor.to.ln,
-          col: this.cursor.to.col + 1,
-        });
-
-        this.cursor.set(this.cursor.from, false);
-      }
-
-      insert(this.cursor.pos, text);
-
-      const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
-      const eol_count = grms.filter((x) => x.isEol).length;
-
-      if (eol_count === 0) {
-        this.cursor.forward(grms.length);
-      } else {
-        const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-        this.cursor.set({ ln: this.cursor.pos.ln + eol_count, col }, false);
-      }
-    });
-  }
-  */
-
-/*
-  #bufferChanged(start: graphemes.Pos, _: graphemes.Pos): void {
-    this.cursor.set(start, false);
-  }
-  */
-
-//buffer.signals.on("buffer.change")(this.#bufferChanged.bind(this));

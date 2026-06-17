@@ -113,9 +113,11 @@ export class Cursor {
     return false;
   }
 
+  /*
   forward(n: number): boolean {
     return this.set({ ln: this.pos.ln, col: this.pos.col + n }, false);
   }
+  */
 
   selectAll(): void {
     this.set({ ln: 0, col: 0 }, false);
