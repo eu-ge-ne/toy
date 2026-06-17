@@ -66,7 +66,7 @@ export class PaletteWidget extends widgets.Modal {
 
     list.index = 0;
 
-    const text = this.buffer.text.toUpperCase();
+    const text = this.buffer.readString().toUpperCase();
 
     if (!text) {
       list.items = options;

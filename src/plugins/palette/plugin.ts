@@ -50,7 +50,7 @@ class Palette {
     let opened = true;
     let result: OptionResult | undefined;
 
-    this.buffer.text = "";
+    this.buffer.writeString("");
     this.widget.children.list.items = options;
 
     const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());

@@ -49,24 +49,6 @@ export class Buffer {
     return !this.#history.empty;
   }
 
-  get text(): string {
-    return this.#doc.read(0).reduce((a, x) => a + x, "");
-  }
-
-  set text(x: string) {
-    this.#doc.delete(0);
-    this.#doc.insert(0, x);
-
-    // TODO
-    this.#emitter.broadcast("buffer.change", {
-      type: "set",
-      from: { ln: 0, col: 0 },
-      to: { ln: 0, col: 0 },
-    });
-
-    this.resetHistory();
-  }
-
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
 
@@ -80,6 +62,10 @@ export class Buffer {
     this.resetHistory();
   }
 
+  readString(): string {
+    return this.#doc.read(0).reduce((a, x) => a + x, "");
+  }
+
   read(): Iterable<string> {
     return this.#doc.read(0);
   }
@@ -90,6 +76,20 @@ export class Buffer {
 
   line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gDoc.line(ln, extra);
+  }
+
+  writeString(text: string) {
+    this.#doc.delete(0);
+    this.#doc.insert(0, text);
+
+    // TODO
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln: 0, col: 0 },
+    });
+
+    this.resetHistory();
   }
 
   insert(pos: graphemes.Pos, text: string): void {
