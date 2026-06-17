@@ -74,6 +74,13 @@ export class Buffer {
     return this.#gDoc.line(ln, extra);
   }
 
+  insert(pos: graphemes.Pos, text: string): void {
+    this.#gDoc.insert(pos, text);
+    this.#emitter.broadcast("buffer.change");
+
+    this.#pushHistory();
+  }
+
   remove(start: graphemes.Pos, end: graphemes.Pos): void {
     this.#gDoc.delete(start, end);
     this.#emitter.broadcast("buffer.change");
@@ -84,13 +91,6 @@ export class Buffer {
   replace(start: graphemes.Pos, end: graphemes.Pos, text: string): void {
     this.#gDoc.delete(start, end);
     this.#gDoc.insert(start, text);
-    this.#emitter.broadcast("buffer.change");
-
-    this.#pushHistory();
-  }
-
-  insert(pos: graphemes.Pos, text: string): void {
-    this.#gDoc.insert(pos, text);
     this.#emitter.broadcast("buffer.change");
 
     this.#pushHistory();
