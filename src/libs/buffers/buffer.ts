@@ -63,11 +63,7 @@ export class Buffer {
     this.resetHistory();
   }
 
-  readString(): string {
-    return this.#doc.read(0).reduce((a, x) => a + x, "");
-  }
-
-  readStringIter(): Iterable<string> {
+  read1D(): IteratorObject<string> {
     return this.#doc.read(0);
   }
 

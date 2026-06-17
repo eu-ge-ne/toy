@@ -49,7 +49,7 @@ class File {
     }
 
     try {
-      await files.save(this.api.buffer.name, this.api.buffer.readStringIter());
+      await files.save(this.api.buffer.name, this.api.buffer.read1D());
 
       this.api.buffer.resetHistory();
     } catch (err) {
@@ -68,7 +68,7 @@ class File {
       }
 
       try {
-        await files.save(newFileName, this.api.buffer.readStringIter());
+        await files.save(newFileName, this.api.buffer.read1D());
 
         this.api.buffer.resetHistory();
 

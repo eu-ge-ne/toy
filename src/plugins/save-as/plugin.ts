@@ -51,7 +51,7 @@ class SaveAs {
             opened = false;
             break;
           case "ENTER": {
-            result = this.buffer.readString();
+            result = [...this.buffer.read1D()].join("");
             if (result) {
               opened = false;
             }
