@@ -75,9 +75,7 @@ export class Buffer {
     return this.#gDoc.line(ln, extra);
   }
 
-  // TODO
-
-  writeString(text: string) {
+  write1D(text: string) {
     this.#doc.delete(0);
     this.#doc.insert(0, text);
 

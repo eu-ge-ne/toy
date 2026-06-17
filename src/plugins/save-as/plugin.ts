@@ -37,7 +37,7 @@ class SaveAs {
     let opened = true;
     let result: string | undefined;
 
-    this.buffer.writeString(fileName);
+    this.buffer.write1D(fileName);
 
     const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
 
