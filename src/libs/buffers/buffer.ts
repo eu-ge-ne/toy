@@ -49,6 +49,7 @@ export class Buffer {
     return !this.#history.empty;
   }
 
+  // TODO: rename
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
 
@@ -66,7 +67,7 @@ export class Buffer {
     return this.#doc.read(0).reduce((a, x) => a + x, "");
   }
 
-  read(): Iterable<string> {
+  readStringIter(): Iterable<string> {
     return this.#doc.read(0);
   }
 
