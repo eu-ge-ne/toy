@@ -194,13 +194,14 @@ export class Editor extends Widget<Params> {
         this.buffer.remove(from, to);
       } else {
         if (pos.col > 0) {
-          this.buffer.remove({ ln: pos.ln, col: pos.col - 1 }, { ln: pos.ln, col: pos.col - 1 });
+          const p = { ln: pos.ln, col: pos.col - 1 };
+          this.buffer.remove(p, p);
         } else if (pos.ln > 0) {
-          // TODO
           const ln = pos.ln - 1;
           const prevLine = this.buffer.line(ln);
           const col = [...prevLine].length - 1;
-          this.buffer.remove({ ln, col }, pos);
+          const p = { ln, col };
+          this.buffer.remove(p, p);
         }
       }
       return;
