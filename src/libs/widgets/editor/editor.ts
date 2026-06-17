@@ -198,7 +198,7 @@ export class Editor extends Widget<Params> {
           this.buffer.remove(p, p);
         } else if (pos.ln > 0) {
           const ln = pos.ln - 1;
-          const prevLine = this.buffer.readLine(ln);
+          const prevLine = this.buffer.readGraphemeLine(ln);
           const col = [...prevLine].length - 1;
           const p = { ln, col };
           this.buffer.remove(p, p);

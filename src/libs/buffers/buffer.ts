@@ -75,11 +75,11 @@ export class Buffer {
     return this.#gDoc.read(start, end);
   }
 
-  // TODO
-
-  readLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
+  readGraphemeLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gDoc.line(ln, extra);
   }
+
+  // TODO
 
   writeString(text: string) {
     this.#doc.delete(0);
