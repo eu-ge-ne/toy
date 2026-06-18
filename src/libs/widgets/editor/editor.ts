@@ -236,7 +236,7 @@ export class Editor extends Widget<Params> {
   copy(): void {
     const { pos, from, to } = this.cursor;
 
-    this.clipboard = this.buffer.readStringSlice(from, { ln: to.ln, col: to.col + 1 });
+    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     if (this.cursor.isSelecting) {
@@ -247,7 +247,7 @@ export class Editor extends Widget<Params> {
   cut(): void {
     const { from, to } = this.cursor;
 
-    this.clipboard = this.buffer.readStringSlice(from, { ln: to.ln, col: to.col + 1 });
+    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });

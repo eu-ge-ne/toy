@@ -80,7 +80,7 @@ export class Buffer {
     this.resetHistory();
   }
 
-  readStringSlice(start: graphemes.Pos, end: graphemes.Pos): string {
+  slice(start: graphemes.Pos, end: graphemes.Pos): string {
     return this.#gdoc.read(start, end);
   }
 
