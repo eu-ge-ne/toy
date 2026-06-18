@@ -67,9 +67,8 @@ export class Buffer {
     this.resetHistory();
   }
 
-  // TODO: rename
-  async rewrite(text: AsyncIterable<string>): Promise<void> {
-    await this.#doc.rewrite(text);
+  async load(text: AsyncIterable<string>): Promise<void> {
+    await this.#doc.load(text);
 
     // TODO
     this.#emitter.broadcast("buffer.change", {

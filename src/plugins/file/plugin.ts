@@ -29,7 +29,7 @@ class File {
     this.api.buffer.name = newFileName;
 
     try {
-      await this.api.buffer.rewrite(files.load(newFileName));
+      await this.api.buffer.load(files.load(newFileName));
     } catch (err) {
       if (err instanceof Deno.errors.NotFound) {
         // ignore
