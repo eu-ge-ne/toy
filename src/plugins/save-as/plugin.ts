@@ -37,7 +37,7 @@ class SaveAs {
     let opened = true;
     let result: string | undefined;
 
-    this.buffer.write1D(fileName);
+    this.buffer.chunks = [fileName].values();
 
     const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
 
@@ -51,7 +51,7 @@ class SaveAs {
             opened = false;
             break;
           case "ENTER": {
-            result = [...this.buffer.read1D()].join("");
+            result = [...this.buffer.chunks].join("");
             if (result) {
               opened = false;
             }

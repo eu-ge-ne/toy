@@ -21,7 +21,7 @@ export type BufferChange = {
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #doc = new documents.Document();
-  readonly #gDoc = new graphemes.Document(this.#doc);
+  readonly #gdoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
   #name = "";
 
@@ -49,6 +49,26 @@ export class Buffer {
     return !this.#history.empty;
   }
 
+  get chunks(): IteratorObject<string> {
+    return this.#doc.read(0);
+  }
+
+  set chunks(xx: IteratorObject<string>) {
+    this.#doc.delete(0);
+    for (const x of xx) {
+      this.#doc.insert(0, x);
+    }
+
+    // TODO
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln: 0, col: 0 },
+    });
+
+    this.resetHistory();
+  }
+
   // TODO: rename
   async rewrite(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.rewrite(text);
@@ -63,34 +83,16 @@ export class Buffer {
     this.resetHistory();
   }
 
-  read1D(): IteratorObject<string> {
-    return this.#doc.read(0);
-  }
-
   readStringSlice(start: graphemes.Pos, end: graphemes.Pos): string {
-    return this.#gDoc.read(start, end);
+    return this.#gdoc.read(start, end);
   }
 
   readGraphemeLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
-    return this.#gDoc.line(ln, extra);
-  }
-
-  write1D(text: string) {
-    this.#doc.delete(0);
-    this.#doc.insert(0, text);
-
-    // TODO
-    this.#emitter.broadcast("buffer.change", {
-      type: "set",
-      from: { ln: 0, col: 0 },
-      to: { ln: 0, col: 0 },
-    });
-
-    this.resetHistory();
+    return this.#gdoc.line(ln, extra);
   }
 
   insert(pos: graphemes.Pos, text: string): void {
-    this.#gDoc.insert(pos, text);
+    this.#gdoc.insert(pos, text);
 
     const to = { ln: pos.ln, col: pos.col };
     const { lns, cols } = graphemes.measure(text);
@@ -107,7 +109,7 @@ export class Buffer {
   }
 
   remove(from: graphemes.Pos, to: graphemes.Pos): void {
-    this.#gDoc.delete(from, { ln: to.ln, col: to.col + 1 });
+    this.#gdoc.delete(from, { ln: to.ln, col: to.col + 1 });
 
     this.#emitter.broadcast("buffer.change", { type: "remove", from, to: from });
 
@@ -115,8 +117,8 @@ export class Buffer {
   }
 
   replace(from: graphemes.Pos, to: graphemes.Pos, text: string): void {
-    this.#gDoc.delete(from, { ln: to.ln, col: to.col + 1 });
-    this.#gDoc.insert(from, text);
+    this.#gdoc.delete(from, { ln: to.ln, col: to.col + 1 });
+    this.#gdoc.insert(from, text);
 
     to = { ln: from.ln, col: from.col };
     const { lns, cols } = graphemes.measure(text);
