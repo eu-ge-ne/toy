@@ -53,11 +53,9 @@ export class Buffer {
     return this.#doc.read(0);
   }
 
-  set chunks(xx: IteratorObject<string>) {
+  set chunks(x: string) {
     this.#doc.delete(0);
-    for (const x of xx) {
-      this.#doc.insert(0, x);
-    }
+    this.#doc.insert(0, x);
 
     // TODO
     this.#emitter.broadcast("buffer.change", {
