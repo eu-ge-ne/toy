@@ -57,11 +57,13 @@ export class Buffer {
     this.#doc.delete(0);
     this.#doc.insert(0, x);
 
-    // TODO
+    const ln = Math.max(this.lineCount - 1, 0);
+    const col = Math.max([...this.line(ln)].length - 1, 0);
+
     this.#emitter.broadcast("buffer.change", {
       type: "set",
       from: { ln: 0, col: 0 },
-      to: { ln: 0, col: 0 },
+      to: { ln, col },
     });
 
     this.resetHistory();
@@ -70,11 +72,13 @@ export class Buffer {
   async load(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.load(text);
 
-    // TODO
+    const ln = Math.max(this.lineCount - 1, 0);
+    const col = Math.max([...this.line(ln)].length - 1, 0);
+
     this.#emitter.broadcast("buffer.change", {
       type: "set",
       from: { ln: 0, col: 0 },
-      to: { ln: 0, col: 0 },
+      to: { ln, col },
     });
 
     this.resetHistory();
