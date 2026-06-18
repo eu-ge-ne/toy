@@ -50,7 +50,7 @@ class Palette {
     let opened = true;
     let result: OptionResult | undefined;
 
-    this.buffer.text = "";
+    this.buffer.chunks = "";
     this.widget.children.list.items = options;
 
     const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
@@ -82,7 +82,7 @@ class Palette {
             }
             break;
           default:
-            this.widget.children.editor.onKeyPress(data.key);
+            this.widget.children.editor.handleInput(data.key);
             this.widget.filter();
         }
 

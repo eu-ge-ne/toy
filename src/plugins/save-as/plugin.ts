@@ -37,7 +37,7 @@ class SaveAs {
     let opened = true;
     let result: string | undefined;
 
-    this.buffer.text = fileName;
+    this.buffer.chunks = fileName;
 
     const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
 
@@ -51,14 +51,14 @@ class SaveAs {
             opened = false;
             break;
           case "ENTER": {
-            if (this.buffer.text) {
-              result = this.buffer.text;
+            result = [...this.buffer.chunks].join("");
+            if (result) {
               opened = false;
             }
             break;
           }
           default:
-            this.widget.children.editor.onKeyPress(data.key);
+            this.widget.children.editor.handleInput(data.key);
         }
 
         if (opened) {

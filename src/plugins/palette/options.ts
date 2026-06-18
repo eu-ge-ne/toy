@@ -55,11 +55,8 @@ export const options: Option[] = [
     async (api: ViewAPI) => api.view.paste(),
     ["⌃V", "⌘V"],
   ),
-  new Option(
-    "Edit: Redo",
-    async (api: BufferAPI) => api.buffer.redo(),
-    ["⌃Y", "⌘Y"],
-  ),
+  new Option("Edit: Undo", async (api: BufferAPI) => api.buffer.undoHistory(), ["⌃Z", "⌘Z"]),
+  new Option("Edit: Redo", async (api: BufferAPI) => api.buffer.redoHistory(), ["⌃Y", "⌘Y"]),
   new Option(
     "Global: Save",
     async (api: FileAPI) => api.file.save(),
@@ -104,11 +101,6 @@ export const options: Option[] = [
   new Option(
     "Theme: Olive",
     async (api: ThemesAPI) => api.theme.set("Olive"),
-  ),
-  new Option(
-    "Edit: Undo",
-    async (api: BufferAPI) => api.buffer.undo(),
-    ["⌃Z", "⌘Z"],
   ),
   new Option(
     "View: Toggle Render Whitespace",

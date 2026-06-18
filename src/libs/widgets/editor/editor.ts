@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
@@ -8,58 +7,43 @@ import * as vt from "@libs/vt";
 import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
-import { Cursor } from "./cursor.ts";
+import { Cursor, Pos } from "./cursor.ts";
 
 interface Params {
   multiLine: boolean;
-  onCursorChange?: (_: { ln: number; col: number }) => void;
 }
 
 export class Editor extends Widget<Params> {
-  readonly #cursor: Cursor;
-  readonly #cursorHistory = new history.History<{ ln: number; col: number }>();
-  #clipboard = "";
-
-  constructor(private readonly buffer: buffers.Buffer, params: Params) {
-    super(params);
-
-    this.#cursor = new Cursor(buffer);
-    this.#cursor.onChange = () =>
-      params.onCursorChange?.({ ln: this.#cursor.ln, col: this.#cursor.col });
-
-    this.children = {
-      bg: new Bg(),
-      content: new Content(buffer, this.#cursor),
-    };
-
-    this.#resetCursor();
-
-    buffer.signals.on("edit")(() =>
-      this.#cursorHistory.push({ ln: this.#cursor.ln, col: this.#cursor.col })
-    );
-    buffer.signals.on("undo")(() => {
-      const entry = this.#cursorHistory.undo();
-      if (entry) {
-        this.#cursor.set(entry.ln, entry.col, false);
-      }
-    });
-    buffer.signals.on("redo")(() => {
-      const entry = this.#cursorHistory.redo();
-      if (entry) {
-        this.#cursor.set(entry.ln, entry.col, false);
-      }
-    });
-    buffer.signals.on("reset.undo")(() => {
-      this.#resetCursor();
-    });
-  }
+  private readonly history = new history.History<Pos>();
+  private clipboard = "";
 
   protected override children: {
     bg: Bg;
     content: Content;
   };
 
-  override resizeChildren(): void {
+  constructor(private readonly buffer: buffers.Buffer, params: Params) {
+    super(params);
+
+    this.cursor = new Cursor(buffer);
+
+    this.children = {
+      bg: new Bg(),
+      content: new Content(buffer, this.cursor),
+    };
+
+    this.#resetHistory();
+
+    buffer.signals.on("buffer.change")(this.#onBufferChange.bind(this));
+    buffer.signals.on("history.push")(this.#pushHistory.bind(this));
+    buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
+    buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
+    buffer.signals.on("history.reset")(this.#resetHistory.bind(this));
+  }
+
+  readonly cursor: Cursor;
+
+  protected override resizeChildren(): void {
     const { bg, content } = this.children;
 
     bg.resize(this.width, this.height, this.y, this.x);
@@ -84,7 +68,7 @@ export class Editor extends Widget<Params> {
 
   toggleWrap(): void {
     this.children.content.toggleWrap();
-    this.#cursor.home(false);
+    this.cursor.home(false);
   }
 
   toggleWhitespace(): void {
@@ -95,266 +79,229 @@ export class Editor extends Widget<Params> {
     this.children.content.toggleIndex();
   }
 
-  onKeyPress(key: kitty.Key): void {
-    const handler = this.#onKeyHandlers.find(([_, match]) => match(key));
-    if (!handler) {
+  handleInput(key: kitty.Key): void {
+    // Cursor
+
+    if (key.name === "LEFT") {
+      this.cursor.left(Boolean(key.shift));
       return;
     }
 
-    handler[0].call(this, key);
-  }
-
-  #onKeyHandlers: [(_: kitty.Key) => void, (_: kitty.Key) => boolean][] = [
-    [this.#onKeyText, (x) => typeof x.text === "string"],
-    [this.#onKeyBackspace, (x) => x.name === "BACKSPACE"],
-    [this.#onKeyBottom, (x) => this.params.multiLine && x.name === "DOWN" && Boolean(x.super)],
-    [this.#onKeyCopy, (x) => x.name === "c" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyCut, (x) => x.name === "x" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyDelete, (x) => x.name === "DELETE"],
-    [this.#onKeyDown, (x) => this.params.multiLine && x.name === "DOWN"],
-    [this.#onKeyEnd, (x) => {
-      if (x.name === "END") {
-        return true;
-      }
-      if (x.name === "RIGHT" && x.super) {
-        return true;
-      }
-      return false;
-    }],
-    [this.#onKeyEnter, (x) => this.params.multiLine && x.name === "ENTER"],
-    [this.#onKeyHome, (x) => {
-      if (x.name === "HOME") {
-        return true;
-      }
-      if (x.name === "LEFT" && x.super) {
-        return true;
-      }
-      return false;
-    }],
-    [this.#onKeyLeft, (x) => x.name === "LEFT"],
-    [this.#onKeyPageDown, (x) => this.params.multiLine && x.name === "PAGE_DOWN"],
-    [this.#onKeyPageUp, (x) => this.params.multiLine && x.name === "PAGE_UP"],
-    [this.#onKeyPaste, (x) => x.name === "v" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyRedo, (x) => x.name === "y" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyRight, (x) => x.name === "RIGHT"],
-    [this.#onKeySelectAll, (x) => x.name === "a" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyTab, (x) => x.name === "TAB"],
-    [this.#onKeyTop, (x) => this.params.multiLine && x.name === "UP" && Boolean(x.super)],
-    [this.#onKeyUndo, (x) => x.name === "z" && Boolean(x.ctrl || x.super)],
-    [this.#onKeyUp, (x) => this.params.multiLine && x.name === "UP"],
-  ];
-
-  #onKeyText(key: kitty.Key): void {
-    this.#insertText(key.text!);
-  }
-
-  #onKeyBackspace(): void {
-    if (this.#cursor.selecting) {
-      this.#deleteSelection();
-    } else {
-      this.#backspace();
+    if (key.name === "RIGHT") {
+      this.cursor.right(Boolean(key.shift));
+      return;
     }
-  }
 
-  #onKeyBottom(key: kitty.Key): void {
-    this.#cursor.bottom(Boolean(key.shift));
-  }
-
-  #onKeyCopy(): void {
-    this.copy();
-  }
-
-  #onKeyCut(): void {
-    this.cut();
-  }
-
-  #onKeyDelete(): void {
-    if (this.#cursor.selecting) {
-      this.#deleteSelection();
-    } else {
-      this.#deleteChar();
+    let isHome = false;
+    if (key.name === "HOME") {
+      isHome = true;
     }
-  }
+    if (key.name === "LEFT" && key.super) {
+      isHome = true;
+    }
+    if (isHome) {
+      this.cursor.home(Boolean(key.shift));
+      return;
+    }
 
-  #onKeyDown(key: kitty.Key): void {
-    this.#cursor.down(1, Boolean(key.shift));
-  }
+    let isEnd = false;
+    if (key.name === "END") {
+      isEnd = true;
+    }
+    if (key.name === "RIGHT" && key.super) {
+      isEnd = true;
+    }
+    if (isEnd) {
+      this.cursor.end(Boolean(key.shift));
+      return;
+    }
 
-  #onKeyEnd(key: kitty.Key): void {
-    this.#cursor.end(Boolean(key.shift));
-  }
+    if (key.name === "a" && Boolean(key.ctrl || key.super)) {
+      this.cursor.selectAll();
+      return;
+    }
 
-  #onKeyEnter(): void {
-    this.#insertText("\n");
-  }
-
-  #onKeyHome(key: kitty.Key): void {
-    this.#cursor.home(Boolean(key.shift));
-  }
-
-  #onKeyLeft(key: kitty.Key): void {
-    this.#cursor.left(Boolean(key.shift));
-  }
-
-  #onKeyPageDown(key: kitty.Key): void {
-    this.#cursor.down(this.height, Boolean(key.shift));
-  }
-
-  #onKeyPageUp(key: kitty.Key): void {
-    this.#cursor.up(this.height, Boolean(key.shift));
-  }
-
-  #onKeyPaste(): void {
-    this.paste();
-  }
-
-  #onKeyRedo(): void {
-    this.buffer.redo();
-  }
-
-  #onKeyRight(key: kitty.Key): void {
-    this.#cursor.right(Boolean(key.shift));
-  }
-
-  #onKeySelectAll(): void {
-    this.selectAll();
-  }
-
-  #onKeyTab(): void {
-    this.#insertText("\t");
-  }
-
-  #onKeyTop(key: kitty.Key): void {
-    this.#cursor.top(Boolean(key.shift));
-  }
-
-  #onKeyUndo(): void {
-    this.buffer.undo();
-  }
-
-  #onKeyUp(key: kitty.Key): void {
-    this.#cursor.up(1, Boolean(key.shift));
-  }
-
-  #sgr = new Intl.Segmenter();
-
-  #insertText(text: string): void {
-    this.buffer.edit(({ insert, remove }) => {
-      if (this.#cursor.selecting) {
-        remove(this.#cursor.from, {
-          ln: this.#cursor.to.ln,
-          col: this.#cursor.to.col + 1,
-        });
-
-        this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
+    if (this.params.multiLine) {
+      if (key.name === "UP") {
+        this.cursor.up(1, Boolean(key.shift));
+        return;
       }
 
-      insert(this.#cursor, text);
+      if (key.name === "DOWN") {
+        this.cursor.down(1, Boolean(key.shift));
+        return;
+      }
 
-      const grms = [...this.#sgr.segment(text)].map((x) => graphemes.graphemes.get(x.segment));
-      const eol_count = grms.filter((x) => x.isEol).length;
+      if (key.name === "UP" && Boolean(key.super)) {
+        this.cursor.top(Boolean(key.shift));
+        return;
+      }
 
-      if (eol_count === 0) {
-        this.#cursor.forward(grms.length);
+      if (key.name === "DOWN" && Boolean(key.super)) {
+        this.cursor.bottom(Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "PAGE_UP") {
+        this.cursor.up(this.height, Boolean(key.shift));
+        return;
+      }
+
+      if (key.name === "PAGE_DOWN") {
+        this.cursor.down(this.height, Boolean(key.shift));
+        return;
+      }
+    }
+
+    // Edit
+
+    if (typeof key.text === "string") {
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
       } else {
-        const col = grms.length - grms.findLastIndex((x) => x.isEol) - 1;
-        this.#cursor.set(this.#cursor.ln + eol_count, col, false);
+        this.buffer.insert(this.cursor.pos, key.text!);
       }
-    });
-  }
+      return;
+    }
 
-  #backspace(): void {
-    this.buffer.edit(({ remove }) => {
-      if (this.#cursor.ln > 0 && this.#cursor.col === 0) {
-        const len = this.buffer.line(this.#cursor.ln).take(2).reduce((a) => a + 1, 0);
-        if (len === 1) {
-          remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
-          this.#cursor.left(false);
-        } else {
-          this.#cursor.left(false);
-          remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
+    if (key.name === "TAB") {
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, "\t");
+      } else {
+        this.buffer.insert(this.cursor.pos, "\t");
+      }
+      return;
+    }
+
+    if (this.params.multiLine && key.name === "ENTER") {
+      if (this.cursor.isSelecting) {
+        this.buffer.replace(this.cursor.from, this.cursor.to, "\n");
+      } else {
+        this.buffer.insert(this.cursor.pos, "\n");
+      }
+      return;
+    }
+
+    if (key.name === "DELETE") {
+      const { from, to } = this.cursor;
+      this.buffer.remove(from, to);
+      return;
+    }
+
+    if (key.name === "BACKSPACE") {
+      const { pos, from, to } = this.cursor;
+      if (this.cursor.isSelecting) {
+        this.buffer.remove(from, to);
+      } else {
+        if (pos.col > 0) {
+          const p = { ln: pos.ln, col: pos.col - 1 };
+          this.buffer.remove(p, p);
+        } else if (pos.ln > 0) {
+          const ln = pos.ln - 1;
+          const prevLine = this.buffer.cells(ln);
+          const col = [...prevLine].length - 1;
+          const p = { ln, col };
+          this.buffer.remove(p, p);
         }
-      } else {
-        remove({ ln: this.#cursor.ln, col: this.#cursor.col - 1 }, this.#cursor);
-        this.#cursor.left(false);
       }
-    });
-  }
+      return;
+    }
 
-  #deleteChar(): void {
-    this.buffer.edit(({ remove }) => {
-      remove(this.#cursor, { ln: this.#cursor.ln, col: this.#cursor.col + 1 });
-    });
-  }
+    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
+      this.copy();
+      return;
+    }
 
-  #deleteSelection(): void {
-    this.buffer.edit(({ remove }) => {
-      remove(this.#cursor.from, {
-        ln: this.#cursor.to.ln,
-        col: this.#cursor.to.col + 1,
-      });
-      this.#cursor.set(this.#cursor.from.ln, this.#cursor.from.col, false);
-    });
+    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
+      this.cut();
+      return;
+    }
+
+    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
+      this.paste();
+      return;
+    }
+
+    if (key.name === "z" && (key.ctrl || key.super)) {
+      this.buffer.undoHistory();
+      return;
+    }
+
+    if (key.name === "y" && (key.ctrl || key.super)) {
+      this.buffer.redoHistory();
+      return;
+    }
   }
 
   copy(): void {
-    if (this.#cursor.selecting) {
-      this.#clipboard = this.buffer.slice(this.#cursor.from, {
-        ln: this.#cursor.to.ln,
-        col: this.#cursor.to.col + 1,
-      });
+    const { pos, from, to } = this.cursor;
 
-      this.#cursor.set(this.#cursor.ln, this.#cursor.col, false);
-    } else {
-      this.#clipboard = this.buffer.slice(this.#cursor, {
-        ln: this.#cursor.ln,
-        col: this.#cursor.col + 1,
-      });
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
+    vt.copyToClipboard(vt.sync, this.clipboard);
+
+    if (this.cursor.isSelecting) {
+      this.cursor.set(pos, false);
     }
-
-    vt.copyToClipboard(vt.sync, this.#clipboard);
   }
 
   cut(): void {
-    if (this.#cursor.selecting) {
-      this.#clipboard = this.buffer.slice(this.#cursor.from, {
-        ln: this.#cursor.to.ln,
-        col: this.#cursor.to.col + 1,
-      });
+    const { from, to } = this.cursor;
 
-      this.#deleteSelection();
-    } else {
-      this.#clipboard = this.buffer.slice(this.#cursor, {
-        ln: this.#cursor.ln,
-        col: this.#cursor.col + 1,
-      });
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
+    vt.copyToClipboard(vt.sync, this.clipboard);
 
-      this.#deleteChar();
-    }
-
-    vt.copyToClipboard(vt.sync, this.#clipboard);
+    this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
   }
 
   paste(): void {
-    if (!this.#clipboard) {
+    if (!this.clipboard) {
       return;
     }
 
-    this.#insertText(this.#clipboard);
-  }
-
-  selectAll(): void {
-    this.#cursor.set(0, 0, false);
-    this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, true);
-  }
-
-  #resetCursor(): void {
-    if (this.params.multiLine) {
-      this.#cursor.set(0, 0, false);
+    if (this.cursor.isSelecting) {
+      this.buffer.replace(this.cursor.from, this.cursor.to, this.clipboard);
     } else {
-      this.#cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
+      this.buffer.insert(this.cursor.pos, this.clipboard);
+    }
+  }
+
+  #onBufferChange(change: buffers.BufferChange) {
+    switch (change.type) {
+      case "insert":
+      case "replace":
+        this.cursor.set(change.to, false);
+        break;
+      case "remove":
+        this.cursor.set(change.from, false);
+        break;
+    }
+  }
+
+  #resetHistory(): void {
+    if (this.params.multiLine) {
+      this.cursor.set({ ln: 0, col: 0 }, false);
+    } else {
+      this.cursor.set({ ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER }, false);
     }
 
-    this.#cursorHistory.reset({ ln: this.#cursor.ln, col: this.#cursor.col });
+    this.history.reset(this.cursor.pos);
+  }
+
+  #pushHistory() {
+    this.history.push(this.cursor.pos);
+  }
+
+  #undoHistory() {
+    const entry = this.history.undo();
+    if (entry) {
+      this.cursor.set(entry, false);
+    }
+  }
+
+  #redoHistory() {
+    const entry = this.history.redo();
+    if (entry) {
+      this.cursor.set(entry, false);
+    }
   }
 }

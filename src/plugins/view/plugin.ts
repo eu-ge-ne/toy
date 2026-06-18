@@ -1,4 +1,3 @@
-import * as events from "@libs/events";
 import * as widgets from "@libs/widgets";
 
 import { BufferAPI } from "@plugins/buffer";
@@ -17,18 +16,14 @@ export function ViewPlugin(...api: ConstructorParameters<typeof View>) {
 class View {
   private readonly widget: widgets.Editor;
 
-  private readonly emitter = new events.SignalEmitter<{
-    "change.cursor": (_: { ln: number; col: number }) => void;
-  }>();
-
   constructor(private readonly api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI) {
     this.widget = new widgets.Editor(api.buffer, {
       multiLine: true,
-      onCursorChange: (x) => this.emitter.broadcast("change.cursor", { ln: x.ln, col: x.col }),
     });
 
-    api.core.events.on("input")(async ({ key }) => this.widget.onKeyPress(key));
+    api.core.events.on("input")(async ({ key }) => this.widget.handleInput(key));
     api.core.signals.on("render")(() => this.widget.render());
+
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
       if (api.zen.enabled) {
@@ -42,7 +37,9 @@ class View {
     api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
   }
 
-  readonly signals = this.emitter.listener;
+  get cursor() {
+    return this.widget.cursor;
+  }
 
   toggleWhitespace(): void {
     this.widget.toggleWhitespace();
@@ -53,7 +50,7 @@ class View {
   }
 
   selectAll(): void {
-    this.widget.selectAll();
+    this.widget.cursor.selectAll();
   }
 
   copy(): void {

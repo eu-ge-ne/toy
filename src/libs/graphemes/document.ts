@@ -1,6 +1,6 @@
 import * as documents from "@libs/documents";
 
-import { Segment, segments } from "./segmenter.ts";
+import { Cell, segments } from "./segmenter.ts";
 
 export interface Pos {
   ln: number;
@@ -11,14 +11,13 @@ export class Document {
   constructor(private readonly document: documents.Document) {
   }
 
-  line(ln: number, extra = false): IteratorObject<Segment> {
+  cells(ln: number, extra = false): IteratorObject<Cell> {
     const chunks = this.document.read2([ln, 0], [ln + 1, 0]);
     return segments(chunks, extra);
   }
 
-  read(start: Pos, end: Pos): string {
-    return this.document.read2(this.#unitPos(start), this.#unitPos(end))
-      .reduce((a, x) => a + x, "");
+  read(start: Pos, end: Pos): IteratorObject<string> {
+    return this.document.read2(this.#unitPos(start), this.#unitPos(end));
   }
 
   insert(pos: Pos, text: string): void {
@@ -33,7 +32,7 @@ export class Document {
     let unit_col = 0;
     let i = 0;
 
-    for (const { gr } of this.line(ln)) {
+    for (const { gr } of this.cells(ln)) {
       if (i === col) {
         break;
       }

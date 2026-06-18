@@ -4,23 +4,29 @@ import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 
 export type BufferSignals = {
-  "change": () => void;
-  "change.name": () => void;
-  "edit": () => void;
-  "undo": () => void;
-  "redo": () => void;
-  "reset.undo": () => void;
+  "name.change": () => void;
+  "buffer.change": (_: BufferChange) => void;
+  "history.reset": () => void;
+  "history.undo": () => void;
+  "history.redo": () => void;
+  "history.push": () => void;
+};
+
+export type BufferChange = {
+  type: "set" | "insert" | "remove" | "replace";
+  from: graphemes.Pos;
+  to: graphemes.Pos;
 };
 
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #doc = new documents.Document();
-  readonly #gDoc = new graphemes.Document(this.#doc);
+  readonly #gdoc = new graphemes.Document(this.#doc);
   readonly #history = new history.History<documents.Node>();
   #name = "";
 
   constructor() {
-    this.resetUndo();
+    this.resetHistory();
   }
 
   readonly signals = this.#emitter.listener;
@@ -32,7 +38,7 @@ export class Buffer {
   set name(x: string) {
     this.#name = x;
 
-    this.#emitter.broadcast("change.name");
+    this.#emitter.broadcast("name.change");
   }
 
   get lineCount(): number {
@@ -43,69 +49,114 @@ export class Buffer {
     return !this.#history.empty;
   }
 
-  get text(): string {
-    return this.#doc.read(0).reduce((a, x) => a + x, "");
-  }
-
-  set text(x: string) {
-    this.#doc.delete(0);
-    this.#doc.insert(0, x);
-
-    this.#emitter.broadcast("change");
-
-    this.resetUndo();
-  }
-
-  async rewrite(text: AsyncIterable<string>): Promise<void> {
-    await this.#doc.rewrite(text);
-
-    this.#emitter.broadcast("change");
-
-    this.resetUndo();
-  }
-
-  read(): Iterable<string> {
+  get chunks(): IteratorObject<string> {
     return this.#doc.read(0);
   }
 
-  slice(start: graphemes.Pos, end: graphemes.Pos): string {
-    return this.#gDoc.read(start, end);
-  }
+  set chunks(x: string) {
+    this.#doc.delete(0);
+    this.#doc.insert(0, x);
 
-  line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
-    return this.#gDoc.line(ln, extra);
-  }
+    const ln = Math.max(this.lineCount - 1, 0);
+    const col = Math.max([...this.cells(ln)].length - 1, 0);
 
-  edit(
-    fn: (
-      _: {
-        insert: (pos: graphemes.Pos, text: string) => void;
-        remove: (start: graphemes.Pos, end: graphemes.Pos) => void;
-      },
-    ) => void,
-  ): void {
-    let changed = false;
-
-    fn({
-      insert: (pos: graphemes.Pos, text: string) => {
-        this.#gDoc.insert(pos, text);
-        changed = true;
-      },
-      remove: (start: graphemes.Pos, end: graphemes.Pos) => {
-        this.#gDoc.delete(start, end);
-        changed = true;
-      },
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln, col },
     });
 
-    if (changed) {
-      this.#history.push(this.#doc.tree.root);
-
-      this.#emitter.broadcast("change");
-      this.#emitter.broadcast("edit");
-    }
+    this.resetHistory();
   }
 
-  undo(): void {
+  async load(text: AsyncIterable<string>): Promise<void> {
+    await this.#doc.load(text);
+
+    const ln = Math.max(this.lineCount - 1, 0);
+    const col = Math.max([...this.cells(ln)].length - 1, 0);
+
+    this.#emitter.broadcast("buffer.change", {
+      type: "set",
+      from: { ln: 0, col: 0 },
+      to: { ln, col },
+    });
+
+    this.resetHistory();
+  }
+
+  read(start: graphemes.Pos, end: graphemes.Pos): IteratorObject<string> {
+    return this.#gdoc.read(start, end);
+  }
+
+  cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
+    return this.#gdoc.cells(ln, extra);
+  }
+
+  insert(pos: graphemes.Pos, text: string): void {
+    this.#gdoc.insert(pos, text);
+
+    const to = { ln: pos.ln, col: pos.col };
+    const { lns, cols } = graphemes.measure(text);
+    if (lns === 0) {
+      to.col += cols;
+    } else {
+      to.ln += lns;
+      to.col = 0;
+    }
+
+    this.#emitter.broadcast("buffer.change", {
+      type: "insert",
+      from: pos,
+      to,
+    });
+
+    this.#pushHistory();
+  }
+
+  remove(from: graphemes.Pos, to: graphemes.Pos): void {
+    this.#gdoc.delete(from, {
+      ln: to.ln,
+      col: to.col + 1,
+    });
+
+    this.#emitter.broadcast("buffer.change", {
+      type: "remove",
+      from,
+      to: from,
+    });
+
+    this.#pushHistory();
+  }
+
+  replace(from: graphemes.Pos, to: graphemes.Pos, text: string): void {
+    this.#gdoc.delete(from, { ln: to.ln, col: to.col + 1 });
+    this.#gdoc.insert(from, text);
+
+    to = { ln: from.ln, col: from.col };
+    const { lns, cols } = graphemes.measure(text);
+    if (lns === 0) {
+      to.col += cols;
+    } else {
+      to.ln += lns;
+      to.col = 0;
+    }
+
+    this.#emitter.broadcast("buffer.change", {
+      type: "replace",
+      from,
+      to,
+    });
+
+    this.#pushHistory();
+  }
+
+  resetHistory(): void {
+    this.#history.reset(this.#doc.tree.root);
+
+    this.#emitter.broadcast("history.reset");
+  }
+
+  undoHistory(): void {
     const entry = this.#history.undo();
     if (!entry) {
       return;
@@ -113,11 +164,10 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitter.broadcast("change");
-    this.#emitter.broadcast("undo");
+    this.#emitter.broadcast("history.undo");
   }
 
-  redo(): void {
+  redoHistory(): void {
     const entry = this.#history.redo();
     if (!entry) {
       return;
@@ -125,13 +175,12 @@ export class Buffer {
 
     this.#doc.tree.root = entry;
 
-    this.#emitter.broadcast("change");
-    this.#emitter.broadcast("redo");
+    this.#emitter.broadcast("history.redo");
   }
 
-  resetUndo(): void {
-    this.#history.reset(this.#doc.tree.root);
+  #pushHistory() {
+    this.#history.push(this.#doc.tree.root);
 
-    this.#emitter.broadcast("reset.undo");
+    this.#emitter.broadcast("history.push");
   }
 }

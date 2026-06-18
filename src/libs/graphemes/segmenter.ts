@@ -11,18 +11,15 @@ export const settings = {
   x: 0,
 };
 
-export interface Segment {
+export interface Cell {
   i: number;
   gr: Grapheme;
   ln: number;
   col: number;
 }
 
-export function* segments(
-  chunks: IteratorObject<string>,
-  extra = false,
-): Generator<Segment> {
-  const seg: Segment = {
+export function* segments(chunks: IteratorObject<string>, extra = false): Generator<Cell> {
+  const seg: Cell = {
     i: 0,
     gr: undefined as unknown as Grapheme,
     ln: 0,
@@ -65,4 +62,26 @@ export function* segments(
 
     yield seg;
   }
+}
+
+export function measure(text: string): { lns: number; cols: number } {
+  let lns = 0;
+  let cols = 0;
+
+  for (const { segment } of sgr.segment(text)) {
+    const gr = graphemes.get(segment);
+
+    if (gr.width < 0) {
+      gr.width = vt.wchar(settings.y, settings.x, gr.bytes);
+    }
+
+    if (gr.isEol) {
+      lns += 1;
+      cols = 0;
+    } else {
+      cols += 1;
+    }
+  }
+
+  return { lns, cols };
 }
