@@ -11,18 +11,15 @@ export const settings = {
   x: 0,
 };
 
-export interface Segment {
+export interface Cell {
   i: number;
   gr: Grapheme;
   ln: number;
   col: number;
 }
 
-export function* segments(
-  chunks: IteratorObject<string>,
-  extra = false,
-): Generator<Segment> {
-  const seg: Segment = {
+export function* segments(chunks: IteratorObject<string>, extra = false): Generator<Cell> {
+  const seg: Cell = {
     i: 0,
     gr: undefined as unknown as Grapheme,
     ln: 0,

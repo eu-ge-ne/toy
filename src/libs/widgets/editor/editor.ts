@@ -198,7 +198,7 @@ export class Editor extends Widget<Params> {
           this.buffer.remove(p, p);
         } else if (pos.ln > 0) {
           const ln = pos.ln - 1;
-          const prevLine = this.buffer.line(ln);
+          const prevLine = this.buffer.cells(ln);
           const col = [...prevLine].length - 1;
           const p = { ln, col };
           this.buffer.remove(p, p);
@@ -236,7 +236,7 @@ export class Editor extends Widget<Params> {
   copy(): void {
     const { pos, from, to } = this.cursor;
 
-    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     if (this.cursor.isSelecting) {
@@ -247,7 +247,7 @@ export class Editor extends Widget<Params> {
   cut(): void {
     const { from, to } = this.cursor;
 
-    this.clipboard = this.buffer.slice(from, { ln: to.ln, col: to.col + 1 });
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });

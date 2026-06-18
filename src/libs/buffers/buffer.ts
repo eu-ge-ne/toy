@@ -58,7 +58,7 @@ export class Buffer {
     this.#doc.insert(0, x);
 
     const ln = Math.max(this.lineCount - 1, 0);
-    const col = Math.max([...this.line(ln)].length - 1, 0);
+    const col = Math.max([...this.cells(ln)].length - 1, 0);
 
     this.#emitter.broadcast("buffer.change", {
       type: "set",
@@ -73,7 +73,7 @@ export class Buffer {
     await this.#doc.load(text);
 
     const ln = Math.max(this.lineCount - 1, 0);
-    const col = Math.max([...this.line(ln)].length - 1, 0);
+    const col = Math.max([...this.cells(ln)].length - 1, 0);
 
     this.#emitter.broadcast("buffer.change", {
       type: "set",
@@ -84,12 +84,12 @@ export class Buffer {
     this.resetHistory();
   }
 
-  slice(start: graphemes.Pos, end: graphemes.Pos): string {
+  read(start: graphemes.Pos, end: graphemes.Pos): IteratorObject<string> {
     return this.#gdoc.read(start, end);
   }
 
-  line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
-    return this.#gdoc.line(ln, extra);
+  cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
+    return this.#gdoc.cells(ln, extra);
   }
 
   insert(pos: graphemes.Pos, text: string): void {

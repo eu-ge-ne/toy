@@ -30,7 +30,7 @@ export class Cursor {
 
     const ln = std.clamp(to.ln, 0, Math.max(this.buffer.lineCount - 1, 0));
     let maxCol = 0;
-    for (const { gr } of this.buffer.line(ln)) {
+    for (const { gr } of this.buffer.cells(ln)) {
       if (gr.isEol) {
         break;
       }
