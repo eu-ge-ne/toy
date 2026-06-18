@@ -104,15 +104,26 @@ export class Buffer {
       to.col = 0;
     }
 
-    this.#emitter.broadcast("buffer.change", { type: "insert", from: pos, to });
+    this.#emitter.broadcast("buffer.change", {
+      type: "insert",
+      from: pos,
+      to,
+    });
 
     this.#pushHistory();
   }
 
   remove(from: graphemes.Pos, to: graphemes.Pos): void {
-    this.#gdoc.delete(from, { ln: to.ln, col: to.col + 1 });
+    this.#gdoc.delete(from, {
+      ln: to.ln,
+      col: to.col + 1,
+    });
 
-    this.#emitter.broadcast("buffer.change", { type: "remove", from, to: from });
+    this.#emitter.broadcast("buffer.change", {
+      type: "remove",
+      from,
+      to: from,
+    });
 
     this.#pushHistory();
   }
@@ -130,7 +141,11 @@ export class Buffer {
       to.col = 0;
     }
 
-    this.#emitter.broadcast("buffer.change", { type: "replace", from, to });
+    this.#emitter.broadcast("buffer.change", {
+      type: "replace",
+      from,
+      to,
+    });
 
     this.#pushHistory();
   }
