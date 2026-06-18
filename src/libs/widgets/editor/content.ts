@@ -134,10 +134,7 @@ export class Content extends Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.readGraphemeLine(ln).reduce(
-        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-        1,
-      )
+      this.buffer.line(ln).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
     );
 
     let i = 0;
@@ -156,8 +153,7 @@ export class Content extends Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell =
-      this.buffer.readGraphemeLine(this.cursor.pos.ln, true).drop(this.cursor.pos.col).next().value;
+    const cell = this.buffer.line(this.cursor.pos.ln, true).drop(this.cursor.pos.col).next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -173,7 +169,7 @@ export class Content extends Widget {
 
     // After?
 
-    const xs = this.buffer.readGraphemeLine(this.cursor.pos.ln, true)
+    const xs = this.buffer.line(this.cursor.pos.ln, true)
       .drop(this.cursor.pos.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -197,9 +193,7 @@ export class Content extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const xs = this.buffer.readGraphemeLine(ln);
-
-    for (const { gr: { width, isVisible, bytes }, i, col } of xs) {
+    for (const { gr: { width, isVisible, bytes }, i, col } of this.buffer.line(ln)) {
       if (col === 0) {
         if (i > 0) {
           row += 1;

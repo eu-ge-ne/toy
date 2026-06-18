@@ -84,7 +84,7 @@ export class Buffer {
     return this.#gdoc.read(start, end);
   }
 
-  readGraphemeLine(ln: number, extra = false): IteratorObject<graphemes.Segment> {
+  line(ln: number, extra = false): IteratorObject<graphemes.Segment> {
     return this.#gdoc.line(ln, extra);
   }
 
