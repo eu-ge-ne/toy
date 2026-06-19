@@ -42,6 +42,7 @@ export class Editor extends Widget<Params> {
       new singleLineHandlers.CursorEnd(this),
       new singleLineHandlers.Tab(this),
       new singleLineHandlers.Delete(this),
+      new singleLineHandlers.Backspace(this),
       ...(!this.params.multiLine ? [] : [
         new multiLineHandlers.CursorUp(this),
         new multiLineHandlers.CursorDown(this),
@@ -113,25 +114,6 @@ export class Editor extends Widget<Params> {
         this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
       } else {
         this.buffer.insert(this.cursor.pos, key.text!);
-      }
-      return;
-    }
-
-    if (key.name === "BACKSPACE") {
-      const { pos, from, to } = this.cursor;
-      if (this.cursor.isSelecting) {
-        this.buffer.remove(from, to);
-      } else {
-        if (pos.col > 0) {
-          const p = { ln: pos.ln, col: pos.col - 1 };
-          this.buffer.remove(p, p);
-        } else if (pos.ln > 0) {
-          const ln = pos.ln - 1;
-          const prevLine = this.buffer.cells(ln);
-          const col = [...prevLine].length - 1;
-          const p = { ln, col };
-          this.buffer.remove(p, p);
-        }
       }
       return;
     }

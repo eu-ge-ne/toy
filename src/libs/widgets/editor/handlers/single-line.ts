@@ -94,3 +94,28 @@ export class Delete extends InputHandler {
     this.editor.buffer.remove(from, to);
   }
 }
+
+export class Backspace extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "BACKSPACE";
+  }
+
+  handle(_: kitty.Key) {
+    const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
+
+    if (isSelecting) {
+      buffer.remove(from, to);
+    } else {
+      if (pos.col > 0) {
+        const p = { ln: pos.ln, col: pos.col - 1 };
+        buffer.remove(p, p);
+      } else if (pos.ln > 0) {
+        const ln = pos.ln - 1;
+        const prevLine = buffer.cells(ln);
+        const col = [...prevLine].length - 1;
+        const p = { ln, col };
+        buffer.remove(p, p);
+      }
+    }
+  }
+}
