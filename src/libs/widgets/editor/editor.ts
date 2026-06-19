@@ -8,12 +8,14 @@ import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
 import { Cursor, Pos } from "./cursor.ts";
+import { InputHandler, multiLineHandlers, singleLineHandlers } from "./handlers/index.ts";
 
 interface Params {
   multiLine: boolean;
 }
 
 export class Editor extends Widget<Params> {
+  private readonly handlers: InputHandler[];
   private readonly history = new history.History<Pos>();
   private clipboard = "";
 
@@ -22,7 +24,7 @@ export class Editor extends Widget<Params> {
     content: Content;
   };
 
-  constructor(private readonly buffer: buffers.Buffer, params: Params) {
+  constructor(readonly buffer: buffers.Buffer, params: Params) {
     super(params);
 
     this.cursor = new Cursor(buffer);
@@ -31,6 +33,24 @@ export class Editor extends Widget<Params> {
       bg: new Bg(),
       content: new Content(buffer, this.cursor),
     };
+
+    this.handlers = [
+      new singleLineHandlers.SelectAll(this),
+      new singleLineHandlers.CursorLeft(this),
+      new singleLineHandlers.CursorRight(this),
+      new singleLineHandlers.CursorHome(this),
+      new singleLineHandlers.CursorEnd(this),
+      new singleLineHandlers.Tab(this),
+      ...(!this.params.multiLine ? [] : [
+        new multiLineHandlers.CursorUp(this),
+        new multiLineHandlers.CursorDown(this),
+        new multiLineHandlers.CursorTop(this),
+        new multiLineHandlers.CursorBottom(this),
+        new multiLineHandlers.CursorPageUp(this),
+        new multiLineHandlers.CursorPageDown(this),
+        new multiLineHandlers.Enter(this),
+      ]),
+    ];
 
     this.#resetHistory();
 
@@ -80,104 +100,18 @@ export class Editor extends Widget<Params> {
   }
 
   handleInput(key: kitty.Key): void {
-    // Cursor
-
-    if (key.name === "LEFT") {
-      this.cursor.left(Boolean(key.shift));
-      return;
-    }
-
-    if (key.name === "RIGHT") {
-      this.cursor.right(Boolean(key.shift));
-      return;
-    }
-
-    let isHome = false;
-    if (key.name === "HOME") {
-      isHome = true;
-    }
-    if (key.name === "LEFT" && key.super) {
-      isHome = true;
-    }
-    if (isHome) {
-      this.cursor.home(Boolean(key.shift));
-      return;
-    }
-
-    let isEnd = false;
-    if (key.name === "END") {
-      isEnd = true;
-    }
-    if (key.name === "RIGHT" && key.super) {
-      isEnd = true;
-    }
-    if (isEnd) {
-      this.cursor.end(Boolean(key.shift));
-      return;
-    }
-
-    if (key.name === "a" && Boolean(key.ctrl || key.super)) {
-      this.cursor.selectAll();
-      return;
-    }
-
-    if (this.params.multiLine) {
-      if (key.name === "UP") {
-        this.cursor.up(1, Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "DOWN") {
-        this.cursor.down(1, Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "UP" && Boolean(key.super)) {
-        this.cursor.top(Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "DOWN" && Boolean(key.super)) {
-        this.cursor.bottom(Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "PAGE_UP") {
-        this.cursor.up(this.height, Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "PAGE_DOWN") {
-        this.cursor.down(this.height, Boolean(key.shift));
-        return;
+    for (const handler of this.handlers) {
+      if (handler.match(key)) {
+        handler.handle(key);
+        break;
       }
     }
-
-    // Edit
 
     if (typeof key.text === "string") {
       if (this.cursor.isSelecting) {
         this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
       } else {
         this.buffer.insert(this.cursor.pos, key.text!);
-      }
-      return;
-    }
-
-    if (key.name === "TAB") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, "\t");
-      } else {
-        this.buffer.insert(this.cursor.pos, "\t");
-      }
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "ENTER") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, "\n");
-      } else {
-        this.buffer.insert(this.cursor.pos, "\n");
       }
       return;
     }
