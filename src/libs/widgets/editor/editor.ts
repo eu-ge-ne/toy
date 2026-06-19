@@ -35,14 +35,18 @@ export class Editor extends Widget<Params> {
     };
 
     this.handlers = [
-      new singleLineHandlers.SelectAll(this),
+      new singleLineHandlers.Text(this),
       new singleLineHandlers.CursorLeft(this),
       new singleLineHandlers.CursorRight(this),
       new singleLineHandlers.CursorHome(this),
       new singleLineHandlers.CursorEnd(this),
+      new singleLineHandlers.SelectAll(this),
       new singleLineHandlers.Tab(this),
       new singleLineHandlers.Delete(this),
       new singleLineHandlers.Backspace(this),
+      new singleLineHandlers.Copy(this),
+      new singleLineHandlers.Cut(this),
+      new singleLineHandlers.Paste(this),
       ...(!this.params.multiLine ? [] : [
         new multiLineHandlers.CursorUp(this),
         new multiLineHandlers.CursorDown(this),
@@ -107,30 +111,6 @@ export class Editor extends Widget<Params> {
         handler.handle(key);
         break;
       }
-    }
-
-    if (typeof key.text === "string") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
-      } else {
-        this.buffer.insert(this.cursor.pos, key.text!);
-      }
-      return;
-    }
-
-    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
-      this.copy();
-      return;
-    }
-
-    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
-      this.cut();
-      return;
-    }
-
-    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
-      this.paste();
-      return;
     }
 
     if (key.name === "z" && (key.ctrl || key.super)) {

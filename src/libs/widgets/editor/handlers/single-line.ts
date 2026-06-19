@@ -2,16 +2,6 @@ import * as kitty from "@libs/kitty";
 
 import { InputHandler } from "./handler.ts";
 
-export class SelectAll extends InputHandler {
-  match(key: kitty.Key): boolean {
-    return key.name === "a" && Boolean(key.ctrl || key.super);
-  }
-
-  handle(_: kitty.Key) {
-    this.editor.cursor.selectAll();
-  }
-}
-
 export class CursorLeft extends InputHandler {
   match(key: kitty.Key): boolean {
     return key.name === "LEFT";
@@ -68,6 +58,32 @@ export class CursorEnd extends InputHandler {
   }
 }
 
+export class SelectAll extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "a" && Boolean(key.ctrl || key.super);
+  }
+
+  handle(_: kitty.Key) {
+    this.editor.cursor.selectAll();
+  }
+}
+
+export class Text extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return typeof key.text === "string";
+  }
+
+  handle(key: kitty.Key) {
+    const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
+
+    if (isSelecting) {
+      buffer.replace(from, to, key.text!);
+    } else {
+      buffer.insert(pos, key.text!);
+    }
+  }
+}
+
 export class Tab extends InputHandler {
   match(key: kitty.Key): boolean {
     return key.name === "TAB";
@@ -117,5 +133,35 @@ export class Backspace extends InputHandler {
         buffer.remove(p, p);
       }
     }
+  }
+}
+
+export class Copy extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "c" && Boolean(key.ctrl || key.super);
+  }
+
+  handle(_: kitty.Key) {
+    this.editor.copy();
+  }
+}
+
+export class Cut extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "x" && Boolean(key.ctrl || key.super);
+  }
+
+  handle(_: kitty.Key) {
+    this.editor.cut();
+  }
+}
+
+export class Paste extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "v" && Boolean(key.ctrl || key.super);
+  }
+
+  handle(_: kitty.Key) {
+    this.editor.paste();
   }
 }
