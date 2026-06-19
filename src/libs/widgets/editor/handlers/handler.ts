@@ -1,4 +1,5 @@
 import * as kitty from "@libs/kitty";
+
 import { Editor } from "../editor.ts";
 
 export abstract class InputHandler {

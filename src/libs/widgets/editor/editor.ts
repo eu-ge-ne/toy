@@ -35,26 +35,9 @@ export class Editor extends Widget<Params> {
     };
 
     this.handlers = [
-      new singleLineHandlers.Text(this),
-      new singleLineHandlers.CursorLeft(this),
-      new singleLineHandlers.CursorRight(this),
-      new singleLineHandlers.CursorHome(this),
-      new singleLineHandlers.CursorEnd(this),
-      new singleLineHandlers.SelectAll(this),
-      new singleLineHandlers.Tab(this),
-      new singleLineHandlers.Delete(this),
-      new singleLineHandlers.Backspace(this),
-      new singleLineHandlers.Copy(this),
-      new singleLineHandlers.Cut(this),
-      new singleLineHandlers.Paste(this),
+      ...singleLineHandlers.map((x) => new x(this)),
       ...(!this.params.multiLine ? [] : [
-        new multiLineHandlers.CursorUp(this),
-        new multiLineHandlers.CursorDown(this),
-        new multiLineHandlers.CursorTop(this),
-        new multiLineHandlers.CursorBottom(this),
-        new multiLineHandlers.CursorPageUp(this),
-        new multiLineHandlers.CursorPageDown(this),
-        new multiLineHandlers.Enter(this),
+        ...multiLineHandlers.map((x) => new x(this)),
       ]),
     ];
 
@@ -106,21 +89,11 @@ export class Editor extends Widget<Params> {
   }
 
   handleInput(key: kitty.Key): void {
-    for (const handler of this.handlers) {
-      if (handler.match(key)) {
-        handler.handle(key);
+    for (const x of this.handlers) {
+      if (x.match(key)) {
+        x.handle(key);
         break;
       }
-    }
-
-    if (key.name === "z" && (key.ctrl || key.super)) {
-      this.buffer.undoHistory();
-      return;
-    }
-
-    if (key.name === "y" && (key.ctrl || key.super)) {
-      this.buffer.redoHistory();
-      return;
     }
   }
 
