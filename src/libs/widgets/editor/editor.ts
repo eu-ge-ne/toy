@@ -41,6 +41,7 @@ export class Editor extends Widget<Params> {
       new singleLineHandlers.CursorHome(this),
       new singleLineHandlers.CursorEnd(this),
       new singleLineHandlers.Tab(this),
+      new singleLineHandlers.Delete(this),
       ...(!this.params.multiLine ? [] : [
         new multiLineHandlers.CursorUp(this),
         new multiLineHandlers.CursorDown(this),
@@ -113,12 +114,6 @@ export class Editor extends Widget<Params> {
       } else {
         this.buffer.insert(this.cursor.pos, key.text!);
       }
-      return;
-    }
-
-    if (key.name === "DELETE") {
-      const { from, to } = this.cursor;
-      this.buffer.remove(from, to);
       return;
     }
 

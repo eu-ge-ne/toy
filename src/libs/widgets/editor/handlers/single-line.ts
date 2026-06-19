@@ -83,3 +83,14 @@ export class Tab extends InputHandler {
     }
   }
 }
+
+export class Delete extends InputHandler {
+  match(key: kitty.Key): boolean {
+    return key.name === "DELETE";
+  }
+
+  handle(_: kitty.Key) {
+    const { from, to } = this.editor.cursor;
+    this.editor.buffer.remove(from, to);
+  }
+}
