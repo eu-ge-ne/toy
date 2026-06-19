@@ -8,7 +8,7 @@ import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
 import { Cursor, Pos } from "./cursor.ts";
-import { InputHandler, multiLineHandlers, singleLineHandlers } from "./handlers/index.ts";
+import { cursorHandlers, editHandlers, InputHandler, multiLineHandlers } from "./handlers/index.ts";
 
 interface Params {
   multiLine: boolean;
@@ -35,7 +35,8 @@ export class Editor extends Widget<Params> {
     };
 
     this.handlers = [
-      ...singleLineHandlers.map((x) => new x(this)),
+      ...editHandlers.map((x) => new x(this)),
+      ...cursorHandlers.map((x) => new x(this)),
       ...(!this.params.multiLine ? [] : [
         ...multiLineHandlers.map((x) => new x(this)),
       ]),
