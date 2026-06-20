@@ -8,12 +8,14 @@ import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
 import { Cursor, Pos } from "./cursor.ts";
+import { cursorHandlers, editHandlers, InputHandler, multiLineHandlers } from "./handlers/index.ts";
 
 interface Params {
   multiLine: boolean;
 }
 
 export class Editor extends Widget<Params> {
+  private readonly handlers: InputHandler[];
   private readonly history = new history.History<Pos>();
   private clipboard = "";
 
@@ -22,7 +24,7 @@ export class Editor extends Widget<Params> {
     content: Content;
   };
 
-  constructor(private readonly buffer: buffers.Buffer, params: Params) {
+  constructor(readonly buffer: buffers.Buffer, params: Params) {
     super(params);
 
     this.cursor = new Cursor(buffer);
@@ -31,6 +33,14 @@ export class Editor extends Widget<Params> {
       bg: new Bg(),
       content: new Content(buffer, this.cursor),
     };
+
+    this.handlers = [
+      ...editHandlers.map((x) => new x(this)),
+      ...cursorHandlers.map((x) => new x(this)),
+      ...(!this.params.multiLine ? [] : [
+        ...multiLineHandlers.map((x) => new x(this)),
+      ]),
+    ];
 
     this.#resetHistory();
 
@@ -80,156 +90,11 @@ export class Editor extends Widget<Params> {
   }
 
   handleInput(key: kitty.Key): void {
-    // Cursor
-
-    if (key.name === "LEFT") {
-      this.cursor.left(Boolean(key.shift));
-      return;
-    }
-
-    if (key.name === "RIGHT") {
-      this.cursor.right(Boolean(key.shift));
-      return;
-    }
-
-    let isHome = false;
-    if (key.name === "HOME") {
-      isHome = true;
-    }
-    if (key.name === "LEFT" && key.super) {
-      isHome = true;
-    }
-    if (isHome) {
-      this.cursor.home(Boolean(key.shift));
-      return;
-    }
-
-    let isEnd = false;
-    if (key.name === "END") {
-      isEnd = true;
-    }
-    if (key.name === "RIGHT" && key.super) {
-      isEnd = true;
-    }
-    if (isEnd) {
-      this.cursor.end(Boolean(key.shift));
-      return;
-    }
-
-    if (key.name === "a" && Boolean(key.ctrl || key.super)) {
-      this.cursor.selectAll();
-      return;
-    }
-
-    if (this.params.multiLine) {
-      if (key.name === "UP") {
-        this.cursor.up(1, Boolean(key.shift));
-        return;
+    for (const x of this.handlers) {
+      if (x.match(key)) {
+        x.handle(key);
+        break;
       }
-
-      if (key.name === "DOWN") {
-        this.cursor.down(1, Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "UP" && Boolean(key.super)) {
-        this.cursor.top(Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "DOWN" && Boolean(key.super)) {
-        this.cursor.bottom(Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "PAGE_UP") {
-        this.cursor.up(this.height, Boolean(key.shift));
-        return;
-      }
-
-      if (key.name === "PAGE_DOWN") {
-        this.cursor.down(this.height, Boolean(key.shift));
-        return;
-      }
-    }
-
-    // Edit
-
-    if (typeof key.text === "string") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, key.text!);
-      } else {
-        this.buffer.insert(this.cursor.pos, key.text!);
-      }
-      return;
-    }
-
-    if (key.name === "TAB") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, "\t");
-      } else {
-        this.buffer.insert(this.cursor.pos, "\t");
-      }
-      return;
-    }
-
-    if (this.params.multiLine && key.name === "ENTER") {
-      if (this.cursor.isSelecting) {
-        this.buffer.replace(this.cursor.from, this.cursor.to, "\n");
-      } else {
-        this.buffer.insert(this.cursor.pos, "\n");
-      }
-      return;
-    }
-
-    if (key.name === "DELETE") {
-      const { from, to } = this.cursor;
-      this.buffer.remove(from, to);
-      return;
-    }
-
-    if (key.name === "BACKSPACE") {
-      const { pos, from, to } = this.cursor;
-      if (this.cursor.isSelecting) {
-        this.buffer.remove(from, to);
-      } else {
-        if (pos.col > 0) {
-          const p = { ln: pos.ln, col: pos.col - 1 };
-          this.buffer.remove(p, p);
-        } else if (pos.ln > 0) {
-          const ln = pos.ln - 1;
-          const prevLine = this.buffer.cells(ln);
-          const col = [...prevLine].length - 1;
-          const p = { ln, col };
-          this.buffer.remove(p, p);
-        }
-      }
-      return;
-    }
-
-    if (key.name === "c" && Boolean(key.ctrl || key.super)) {
-      this.copy();
-      return;
-    }
-
-    if (key.name === "x" && Boolean(key.ctrl || key.super)) {
-      this.cut();
-      return;
-    }
-
-    if (key.name === "v" && Boolean(key.ctrl || key.super)) {
-      this.paste();
-      return;
-    }
-
-    if (key.name === "z" && (key.ctrl || key.super)) {
-      this.buffer.undoHistory();
-      return;
-    }
-
-    if (key.name === "y" && (key.ctrl || key.super)) {
-      this.buffer.redoHistory();
-      return;
     }
   }
 
