@@ -8,9 +8,11 @@ import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export type DebugAPI = ReturnType<typeof DebugPlugin>;
+export type DebugAPI = {
+  debug: Debug;
+};
 
-export function DebugPlugin(...api: ConstructorParameters<typeof Debug>) {
+export function DebugPlugin(...api: ConstructorParameters<typeof Debug>): DebugAPI {
   return {
     debug: new Debug(...api),
   };

@@ -4,10 +4,13 @@ import { BufferAPI } from "@plugins/buffer";
 import { CoreAPI } from "@plugins/core";
 import { ThemesAPI } from "@plugins/themes";
 import { ZenAPI } from "@plugins/zen";
+import { Cursor } from "../../libs/widgets/editor/cursor.ts";
 
-export type ViewAPI = ReturnType<typeof ViewPlugin>;
+export type ViewAPI = {
+  view: View;
+};
 
-export function ViewPlugin(...api: ConstructorParameters<typeof View>) {
+export function ViewPlugin(...api: ConstructorParameters<typeof View>): ViewAPI {
   return {
     view: new View(...api),
   };
@@ -37,7 +40,7 @@ class View {
     api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
   }
 
-  get cursor() {
+  get cursor(): Cursor {
     return this.widget.cursor;
   }
 

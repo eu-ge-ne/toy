@@ -130,7 +130,7 @@ export class Editor extends Widget<Params> {
     }
   }
 
-  #onBufferChange(change: buffers.BufferChange) {
+  #onBufferChange(change: buffers.BufferChange): void {
     switch (change.type) {
       case "insert":
       case "replace":
@@ -152,18 +152,18 @@ export class Editor extends Widget<Params> {
     this.history.reset(this.cursor.pos);
   }
 
-  #pushHistory() {
+  #pushHistory(): void {
     this.history.push(this.cursor.pos);
   }
 
-  #undoHistory() {
+  #undoHistory(): void {
     const entry = this.history.undo();
     if (entry) {
       this.cursor.set(entry, false);
     }
   }
 
-  #redoHistory() {
+  #redoHistory(): void {
     const entry = this.history.redo();
     if (entry) {
       this.cursor.set(entry, false);

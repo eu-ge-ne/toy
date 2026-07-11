@@ -9,7 +9,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "UP";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.up(1, Boolean(key.shift));
     }
   },
@@ -19,7 +19,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "DOWN";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.down(1, Boolean(key.shift));
     }
   },
@@ -29,7 +29,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "UP" && Boolean(key.super);
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.top(Boolean(key.shift));
     }
   },
@@ -39,7 +39,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "DOWN" && Boolean(key.super);
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.bottom(Boolean(key.shift));
     }
   },
@@ -49,7 +49,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "PAGE_UP";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.up(this.editor.height, Boolean(key.shift));
     }
   },
@@ -59,7 +59,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "PAGE_DOWN";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.down(this.editor.height, Boolean(key.shift));
     }
   },
@@ -69,7 +69,7 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "ENTER";
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       const { cursor, buffer } = this.editor;
 
       if (cursor.isSelecting) {

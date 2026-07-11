@@ -16,20 +16,21 @@
   "lint": {
     "rules": {
       "tags": [
-        "recommended"
+        "recommended",
+        "workspace"
       ],
       "include": [
-        "eqeqeq"
+        "eqeqeq",
+        "explicit-function-return-type"
       ],
       "exclude": [
-        "require-await",
-        "no-slow-types"
+        "require-await"
       ]
     }
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/cli": "jsr:@std/cli@^1.0.29",
+    "@std/cli": "jsr:@std/cli@^1.0.32",
     "@std/fmt": "jsr:@std/fmt@^1.0.10"
   }
 }

@@ -9,7 +9,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return typeof key.text === "string";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
 
       if (isSelecting) {
@@ -25,7 +25,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "TAB";
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       const { cursor, buffer } = this.editor;
 
       if (cursor.isSelecting) {
@@ -41,7 +41,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "DELETE";
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       const { from, to } = this.editor.cursor;
       this.editor.buffer.remove(from, to);
     }
@@ -52,7 +52,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "BACKSPACE";
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
 
       if (isSelecting) {
@@ -77,7 +77,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "c" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.copy();
     }
   },
@@ -87,7 +87,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "x" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.cut();
     }
   },
@@ -97,7 +97,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "v" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.paste();
     }
   },
@@ -107,7 +107,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "z" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.buffer.undoHistory();
     }
   },
@@ -117,7 +117,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "y" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.buffer.redoHistory();
     }
   },

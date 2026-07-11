@@ -2,9 +2,11 @@ import * as events from "@libs/events";
 
 import { CoreAPI } from "@plugins/core";
 
-export type ZenAPI = ReturnType<typeof ZenPlugin>;
+export type ZenAPI = {
+  zen: Zen;
+};
 
-export function ZenPlugin(...api: ConstructorParameters<typeof Zen>) {
+export function ZenPlugin(...api: ConstructorParameters<typeof Zen>): ZenAPI {
   return {
     zen: new Zen(...api),
   };

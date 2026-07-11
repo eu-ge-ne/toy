@@ -5,9 +5,11 @@ import { ThemesAPI } from "@plugins/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export type AlertAPI = ReturnType<typeof AlertPlugin>;
+export type AlertAPI = {
+  alert: Alert;
+};
 
-export function AlertPlugin(...api: ConstructorParameters<typeof Alert>) {
+export function AlertPlugin(...api: ConstructorParameters<typeof Alert>): AlertAPI {
   return {
     alert: new Alert(...api),
   };
