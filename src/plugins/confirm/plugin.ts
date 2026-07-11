@@ -1,24 +1,24 @@
 import * as std from "@libs/std";
 
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
 
 import { ConfirmWidget } from "./widget.ts";
 
-export type ConfirmAPI = {
+export type API = {
   confirm: Confirm;
 };
 
-export function ConfirmPlugin(...api: ConstructorParameters<typeof Confirm>): ConfirmAPI {
+export function Plugin(api: core.API & themes.API): API {
   return {
-    confirm: new Confirm(...api),
+    confirm: new Confirm(api),
   };
 }
 
 class Confirm {
   private readonly widget = new ConfirmWidget();
 
-  constructor(private readonly api: CoreAPI & ThemesAPI) {
+  constructor(private readonly api: core.API & themes.API) {
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 

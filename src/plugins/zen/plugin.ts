@@ -1,14 +1,14 @@
 import * as events from "@libs/events";
 
-import { CoreAPI } from "@plugins/core";
+import * as core from "@plugins/core";
 
-export type ZenAPI = {
+export type API = {
   zen: Zen;
 };
 
-export function ZenPlugin(...api: ConstructorParameters<typeof Zen>): ZenAPI {
+export function Plugin(api: core.API): API {
   return {
-    zen: new Zen(...api),
+    zen: new Zen(api),
   };
 }
 
@@ -19,7 +19,7 @@ class Zen {
 
   #enabled = true;
 
-  constructor(private readonly api: CoreAPI) {
+  constructor(private readonly api: core.API) {
   }
 
   readonly signals = this.emitter.listener;

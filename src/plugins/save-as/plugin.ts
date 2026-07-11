@@ -1,18 +1,18 @@
 import * as buffers from "@libs/buffers";
 import * as std from "@libs/std";
 
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
 
 import { SaveAsWidget } from "./widget.ts";
 
-export type SaveAsAPI = {
+export type API = {
   saveAs: SaveAs;
 };
 
-export function SaveAsPlugin(...api: ConstructorParameters<typeof SaveAs>): SaveAsAPI {
+export function Plugin(api: core.API & themes.API): API {
   return {
-    saveAs: new SaveAs(...api),
+    saveAs: new SaveAs(api),
   };
 }
 
@@ -20,7 +20,7 @@ class SaveAs {
   private readonly buffer = new buffers.Buffer();
   private readonly widget = new SaveAsWidget(this.buffer);
 
-  constructor(private readonly api: CoreAPI & ThemesAPI) {
+  constructor(private readonly api: core.API & themes.API) {
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 

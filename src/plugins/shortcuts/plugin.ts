@@ -1,15 +1,15 @@
 import * as kitty from "@libs/kitty";
 
-import { BufferAPI } from "@plugins/buffer";
-import { CoreAPI } from "@plugins/core";
-import { FileAPI } from "@plugins/file";
-import { PaletteAPI } from "@plugins/palette";
-import { ViewAPI } from "@plugins/view";
-import { ZenAPI } from "@plugins/zen";
+import * as buffer from "@plugins/buffer";
+import * as core from "@plugins/core";
+import * as file from "@plugins/file";
+import * as palette from "@plugins/palette";
+import * as view from "@plugins/view";
+import * as zen from "@plugins/zen";
 
 const shortcuts: Record<
   string,
-  (_: CoreAPI & PaletteAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI) => Promise<void>
+  (_: core.API & palette.API & view.API & buffer.API & zen.API & file.API) => Promise<void>
 > = {
   "F1": (x) => x.palette.open(),
   "⇧F1": (x) => x.palette.open(),
@@ -35,8 +35,8 @@ const shortcuts: Record<
   "⌘V": async (x) => x.view.paste(),
 };
 
-export function ShortcutsPlugin(
-  api: CoreAPI & PaletteAPI & ViewAPI & BufferAPI & ZenAPI & FileAPI,
+export function Plugin(
+  api: core.API & palette.API & view.API & buffer.API & zen.API & file.API,
 ): void {
   api.core.events.on("input", -1000)(async (data) => {
     const entry = shortcuts[kitty.shortcut(data.key)];

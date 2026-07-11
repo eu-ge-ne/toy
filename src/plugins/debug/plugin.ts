@@ -1,20 +1,20 @@
 import * as std from "@libs/std";
 
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
-import { ZenAPI } from "@plugins/zen";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
+import * as zen from "@plugins/zen";
 
 import { DebugWidget } from "./widget.ts";
 
 const MIB = Math.pow(1024, 2);
 
-export type DebugAPI = {
+export type API = {
   debug: Debug;
 };
 
-export function DebugPlugin(...api: ConstructorParameters<typeof Debug>): DebugAPI {
+export function Plugin(api: core.API & themes.API & zen.API): API {
   return {
-    debug: new Debug(...api),
+    debug: new Debug(api),
   };
 }
 
@@ -22,7 +22,7 @@ class Debug {
   private readonly widget = new DebugWidget();
   private timer!: NodeJS.Timeout;
 
-  constructor(private readonly api: CoreAPI & ThemesAPI & ZenAPI) {
+  constructor(private readonly api: core.API & themes.API & zen.API) {
     this.widget.version = std.version;
 
     api.core.signals.on("render", 1000)(() => this.widget.render());
