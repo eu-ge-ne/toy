@@ -178,7 +178,7 @@ export class Buffer {
     this.#emitter.broadcast("history.redo");
   }
 
-  #pushHistory() {
+  #pushHistory(): void {
     this.#history.push(this.#doc.tree.root);
 
     this.#emitter.broadcast("history.push");

@@ -9,7 +9,7 @@ export const cursorHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "LEFT";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.left(Boolean(key.shift));
     }
   },
@@ -19,7 +19,7 @@ export const cursorHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "RIGHT";
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.right(Boolean(key.shift));
     }
   },
@@ -37,7 +37,7 @@ export const cursorHandlers: (new (_: Editor) => InputHandler)[] = [
       return false;
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.home(Boolean(key.shift));
     }
   },
@@ -55,7 +55,7 @@ export const cursorHandlers: (new (_: Editor) => InputHandler)[] = [
       return false;
     }
 
-    handle(key: kitty.Key) {
+    handle(key: kitty.Key): void {
       this.editor.cursor.end(Boolean(key.shift));
     }
   },
@@ -65,7 +65,7 @@ export const cursorHandlers: (new (_: Editor) => InputHandler)[] = [
       return key.name === "a" && Boolean(key.ctrl || key.super);
     }
 
-    handle(_: kitty.Key) {
+    handle(_: kitty.Key): void {
       this.editor.cursor.selectAll();
     }
   },

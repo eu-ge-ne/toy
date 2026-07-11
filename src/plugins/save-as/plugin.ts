@@ -6,9 +6,11 @@ import { ThemesAPI } from "@plugins/themes";
 
 import { SaveAsWidget } from "./widget.ts";
 
-export type SaveAsAPI = ReturnType<typeof SaveAsPlugin>;
+export type SaveAsAPI = {
+  saveAs: SaveAs;
+};
 
-export function SaveAsPlugin(...api: ConstructorParameters<typeof SaveAs>) {
+export function SaveAsPlugin(...api: ConstructorParameters<typeof SaveAs>): SaveAsAPI {
   return {
     saveAs: new SaveAs(...api),
   };

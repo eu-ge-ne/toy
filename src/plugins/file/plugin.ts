@@ -6,9 +6,11 @@ import { ConfirmAPI } from "@plugins/confirm";
 import { CoreAPI } from "@plugins/core";
 import { SaveAsAPI } from "@plugins/save-as";
 
-export type FileAPI = ReturnType<typeof FilePlugin>;
+export type FileAPI = {
+  file: File;
+};
 
-export function FilePlugin(...api: ConstructorParameters<typeof File>) {
+export function FilePlugin(...api: ConstructorParameters<typeof File>): FileAPI {
   return {
     file: new File(...api),
   };
@@ -25,7 +27,7 @@ class File {
   ) {
   }
 
-  async open(newFileName: string) {
+  async open(newFileName: string): Promise<void> {
     this.api.buffer.name = newFileName;
 
     try {
@@ -42,7 +44,7 @@ class File {
     }
   }
 
-  async save() {
+  async save(): Promise<void> {
     if (!this.api.buffer.name) {
       await this.saveAs();
       return;
@@ -60,7 +62,7 @@ class File {
     }
   }
 
-  async saveAs() {
+  async saveAs(): Promise<void> {
     while (true) {
       const newFileName = await this.api.saveAs.open(this.api.buffer.name);
       if (!newFileName) {

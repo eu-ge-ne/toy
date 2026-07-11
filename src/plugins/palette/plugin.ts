@@ -11,9 +11,11 @@ import { ZenAPI } from "@plugins/zen";
 import { OptionResult, options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export type PaletteAPI = ReturnType<typeof PalettePlugin>;
+export type PaletteAPI = {
+  palette: Palette;
+};
 
-export function PalettePlugin(...api: ConstructorParameters<typeof Palette>) {
+export function PalettePlugin(...api: ConstructorParameters<typeof Palette>): PaletteAPI {
   return {
     palette: new Palette(...api),
   };

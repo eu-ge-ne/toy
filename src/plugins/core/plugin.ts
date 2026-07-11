@@ -2,9 +2,11 @@ import * as events from "@libs/events";
 import * as kitty from "@libs/kitty";
 import * as vt from "@libs/vt";
 
-export type CoreAPI = ReturnType<typeof CorePlugin>;
+export type CoreAPI = {
+  core: Core;
+};
 
-export function CorePlugin() {
+export function CorePlugin(): CoreAPI {
   return {
     core: new Core(),
   };

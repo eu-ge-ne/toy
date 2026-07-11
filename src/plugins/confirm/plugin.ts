@@ -5,9 +5,11 @@ import { ThemesAPI } from "@plugins/themes";
 
 import { ConfirmWidget } from "./widget.ts";
 
-export type ConfirmAPI = ReturnType<typeof ConfirmPlugin>;
+export type ConfirmAPI = {
+  confirm: Confirm;
+};
 
-export function ConfirmPlugin(...api: ConstructorParameters<typeof Confirm>) {
+export function ConfirmPlugin(...api: ConstructorParameters<typeof Confirm>): ConfirmAPI {
   return {
     confirm: new Confirm(...api),
   };
