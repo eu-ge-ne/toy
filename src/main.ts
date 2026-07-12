@@ -45,7 +45,7 @@ const api = new plugins.Loader()
   .use(debug.Plugin)
   .use(palette.Plugin)
   .use(shortcuts.Plugin)
-  .load();
+  .api;
 
 await api.core.start();
 
