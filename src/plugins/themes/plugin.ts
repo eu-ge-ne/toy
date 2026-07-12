@@ -1,13 +1,13 @@
 import * as events from "@libs/events";
 import * as themes from "@libs/themes";
 
-export type ThemesAPI = {
+export type API = {
   theme: Themes;
 };
 
-export function ThemesPlugin(...api: ConstructorParameters<typeof Themes>): ThemesAPI {
+export function Plugin(): API {
   return {
-    theme: new Themes(...api),
+    theme: new Themes(),
   };
 }
 

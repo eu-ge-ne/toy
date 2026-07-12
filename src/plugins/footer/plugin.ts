@@ -1,12 +1,12 @@
-import { BufferAPI } from "@plugins/buffer";
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
-import { ViewAPI } from "@plugins/view";
-import { ZenAPI } from "@plugins/zen";
+import * as buffer from "@plugins/buffer";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
+import * as view from "@plugins/view";
+import * as zen from "@plugins/zen";
 
 import { FooterWidget } from "./widget.ts";
 
-export function FooterPlugin(api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI & ViewAPI): void {
+export function Plugin(api: core.API & themes.API & buffer.API & zen.API & view.API): void {
   const widget = new FooterWidget();
 
   api.core.signals.on("resize")(() => {

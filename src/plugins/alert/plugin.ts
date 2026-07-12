@@ -1,24 +1,24 @@
 import * as std from "@libs/std";
 
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
 
 import { AlertWidget } from "./widget.ts";
 
-export type AlertAPI = {
+export type API = {
   alert: Alert;
 };
 
-export function AlertPlugin(...api: ConstructorParameters<typeof Alert>): AlertAPI {
+export function Plugin(api: core.API & themes.API): API {
   return {
-    alert: new Alert(...api),
+    alert: new Alert(api),
   };
 }
 
 class Alert {
   private readonly widget = new AlertWidget();
 
-  constructor(private readonly api: CoreAPI & ThemesAPI) {
+  constructor(private readonly api: core.API & themes.API) {
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
 

@@ -1,29 +1,36 @@
 import * as files from "@libs/files";
 
-import { AlertAPI } from "@plugins/alert";
-import { BufferAPI } from "@plugins/buffer";
-import { ConfirmAPI } from "@plugins/confirm";
-import { CoreAPI } from "@plugins/core";
-import { SaveAsAPI } from "@plugins/save-as";
+import * as alert from "@plugins/alert";
+import * as buffer from "@plugins/buffer";
+import * as confirm from "@plugins/confirm";
+import * as core from "@plugins/core";
+import * as saveAs from "@plugins/save-as";
 
-export type FileAPI = {
+export type API = {
   file: File;
 };
 
-export function FilePlugin(...api: ConstructorParameters<typeof File>): FileAPI {
+export function Plugin(
+  api:
+    & core.API
+    & buffer.API
+    & confirm.API
+    & alert.API
+    & saveAs.API,
+): API {
   return {
-    file: new File(...api),
+    file: new File(api),
   };
 }
 
 class File {
   constructor(
     private readonly api:
-      & CoreAPI
-      & BufferAPI
-      & ConfirmAPI
-      & AlertAPI
-      & SaveAsAPI,
+      & core.API
+      & buffer.API
+      & confirm.API
+      & alert.API
+      & saveAs.API,
   ) {
   }
 

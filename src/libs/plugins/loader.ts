@@ -1,17 +1,15 @@
-export class Loader<T0 extends Record<PropertyKey, never>> {
-  readonly #api: T0;
+export class Loader<API extends Record<PropertyKey, never>> {
+  readonly #api: API;
 
-  constructor(api?: T0) {
-    this.#api = api ?? {} as T0;
+  constructor(api = {} as API) {
+    this.#api = api;
   }
 
-  use<T1>(plugin: (_: T0) => T1): Loader<T0 & T1> {
-    Object.assign(this.#api, plugin(this.#api));
-
-    return new Loader(this.#api as T0 & T1);
+  use<T>(plugin: (_: API) => T): Loader<API & T> {
+    return new Loader(Object.assign(this.#api, plugin(this.#api)));
   }
 
-  load(): T0 {
+  get api(): API {
     return this.#api;
   }
 }

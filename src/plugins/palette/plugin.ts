@@ -1,23 +1,32 @@
 import * as buffers from "@libs/buffers";
 
-import { BufferAPI } from "@plugins/buffer";
-import { CoreAPI } from "@plugins/core";
-import { DebugAPI } from "@plugins/debug";
-import { FileAPI } from "@plugins/file";
-import { ThemesAPI } from "@plugins/themes";
-import { ViewAPI } from "@plugins/view";
-import { ZenAPI } from "@plugins/zen";
+import * as buffer from "@plugins/buffer";
+import * as core from "@plugins/core";
+import * as debug from "@plugins/debug";
+import * as file from "@plugins/file";
+import * as themes from "@plugins/themes";
+import * as view from "@plugins/view";
+import * as zen from "@plugins/zen";
 
 import { OptionResult, options } from "./options.ts";
 import { PaletteWidget } from "./widget.ts";
 
-export type PaletteAPI = {
+export type API = {
   palette: Palette;
 };
 
-export function PalettePlugin(...api: ConstructorParameters<typeof Palette>): PaletteAPI {
+export function Plugin(
+  api:
+    & core.API
+    & view.API
+    & buffer.API
+    & themes.API
+    & zen.API
+    & file.API
+    & debug.API,
+): API {
   return {
-    palette: new Palette(...api),
+    palette: new Palette(api),
   };
 }
 
@@ -27,13 +36,13 @@ class Palette {
 
   constructor(
     private readonly api:
-      & CoreAPI
-      & ViewAPI
-      & BufferAPI
-      & ThemesAPI
-      & ZenAPI
-      & FileAPI
-      & DebugAPI,
+      & core.API
+      & view.API
+      & buffer.API
+      & themes.API
+      & zen.API
+      & file.API
+      & debug.API,
   ) {
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();

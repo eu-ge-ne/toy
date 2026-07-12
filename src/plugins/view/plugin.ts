@@ -1,25 +1,25 @@
 import * as widgets from "@libs/widgets";
 
-import { BufferAPI } from "@plugins/buffer";
-import { CoreAPI } from "@plugins/core";
-import { ThemesAPI } from "@plugins/themes";
-import { ZenAPI } from "@plugins/zen";
+import * as buffer from "@plugins/buffer";
+import * as core from "@plugins/core";
+import * as themes from "@plugins/themes";
+import * as zen from "@plugins/zen";
 import { Cursor } from "../../libs/widgets/editor/cursor.ts";
 
-export type ViewAPI = {
+export type API = {
   view: View;
 };
 
-export function ViewPlugin(...api: ConstructorParameters<typeof View>): ViewAPI {
+export function Plugin(api: core.API & themes.API & buffer.API & zen.API): API {
   return {
-    view: new View(...api),
+    view: new View(api),
   };
 }
 
 class View {
   private readonly widget: widgets.Editor;
 
-  constructor(private readonly api: CoreAPI & ThemesAPI & BufferAPI & ZenAPI) {
+  constructor(private readonly api: core.API & themes.API & buffer.API & zen.API) {
     this.widget = new widgets.Editor(api.buffer, {
       multiLine: true,
     });
