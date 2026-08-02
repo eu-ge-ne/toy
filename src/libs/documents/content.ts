@@ -1,14 +1,14 @@
-import { Buffer } from "./buffer.ts";
 import { bubble, create as create_node, type Node, successor } from "./node.ts";
+import { TextBuffer } from "./text-buffer.ts";
 
 export class Content {
-  readonly buffers: Buffer[] = [];
+  readonly buffers: TextBuffer[] = [];
 
   create(text: string): Node {
-    const buf = new Buffer(text);
+    const buf = new TextBuffer(text);
     const buf_index = this.buffers.push(buf) - 1;
 
-    return create_node(buf_index, 0, buf.len, 0, buf.eols_len);
+    return create_node(buf_index, 0, buf.length, 0, buf.eols_len);
   }
 
   split(x: Node, index: number, gap: number): Node {
@@ -45,7 +45,7 @@ export class Content {
   growable(x: Node): boolean {
     const buf = this.buffers[x.buf]!;
 
-    return (buf.len < 100) && (x.slice_start + x.slice_len === buf.len);
+    return (buf.length < 100) && (x.slice_start + x.slice_len === buf.length);
   }
 
   grow(x: Node, text: string): void {
