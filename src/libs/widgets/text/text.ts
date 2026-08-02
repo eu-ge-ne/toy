@@ -4,7 +4,8 @@ import { Widget } from "../widget.ts";
 
 const encoder = new TextEncoder();
 
-export class SingleLineText extends Widget<{ align: "left" | "center" | "right" }> {
+export class SingleLineText
+  extends Widget<{ align: "left" | "center" | "right" }> {
   color = new Uint8Array();
   value = "";
 

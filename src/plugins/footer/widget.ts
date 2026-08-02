@@ -39,11 +39,13 @@ export class FooterWidget extends widgets.Widget {
 
     this.children.bg.render();
 
-    const pct = this.lineCount === 0 ? 0 : ((this.pos.ln / this.lineCount) * 100).toFixed(0);
+    const pct = this.lineCount === 0
+      ? 0
+      : ((this.pos.ln / this.lineCount) * 100).toFixed(0);
 
-    this.children.text.value = `${this.pos.ln + 1}:${this.pos.col + 1}  ${this.from.ln + 1}:${
-      this.from.col + 1
-    } - ${this.to.ln + 1}:${this.to.col + 1}  ${pct}% `;
+    this.children.text.value = `${this.pos.ln + 1}:${this.pos.col + 1}  ${
+      this.from.ln + 1
+    }:${this.from.col + 1} - ${this.to.ln + 1}:${this.to.col + 1}  ${pct}% `;
 
     this.children.text.render();
 

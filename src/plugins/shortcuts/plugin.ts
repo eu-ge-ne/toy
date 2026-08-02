@@ -9,7 +9,9 @@ import * as zen from "@plugins/zen";
 
 const shortcuts: Record<
   string,
-  (_: core.API & palette.API & view.API & buffer.API & zen.API & file.API) => Promise<void>
+  (
+    _: core.API & palette.API & view.API & buffer.API & zen.API & file.API,
+  ) => Promise<void>
 > = {
   "F1": (x) => x.palette.open(),
   "⇧F1": (x) => x.palette.open(),

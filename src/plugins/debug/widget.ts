@@ -72,7 +72,8 @@ export class DebugWidget extends widgets.Widget {
     this.children.line4.value = `RSS      : ${this.rss} MiB`;
     this.children.line4.render();
 
-    this.children.line5.value = `Heap     : ${this.heapUsed}/${this.heapTotal} MiB`;
+    this.children.line5.value =
+      `Heap     : ${this.heapUsed}/${this.heapTotal} MiB`;
     this.children.line5.render();
 
     this.children.line6.value = `External : ${this.externalMem} MiB`;

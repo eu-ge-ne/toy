@@ -64,7 +64,9 @@ class Palette {
     this.buffer.chunks = "";
     this.widget.children.list.items = options;
 
-    const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
+    const offRender = this.api.core.signals.on("render", 1000)(() =>
+      this.widget.render()
+    );
 
     const offKeyPress = this.api.core.events.on("input", -1000)(
       async (data) => {
@@ -76,12 +78,16 @@ class Palette {
             opened = false;
             break;
           case "ENTER":
-            result = this.widget.children.list.items[this.widget.children.list.index]?.value;
+            result = this.widget.children.list
+              .items[this.widget.children.list.index]?.value;
             opened = false;
             break;
           case "UP":
             if (this.widget.children.list.items.length > 0) {
-              this.widget.children.list.index = Math.max(this.widget.children.list.index - 1, 0);
+              this.widget.children.list.index = Math.max(
+                this.widget.children.list.index - 1,
+                0,
+              );
             }
             break;
           case "DOWN":

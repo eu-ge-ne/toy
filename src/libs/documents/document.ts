@@ -26,7 +26,9 @@ export class Document {
   }
 
   get lineCount(): number {
-    return this.tree.root.total_len === 0 ? 0 : this.tree.root.total_eols_len + 1;
+    return this.tree.root.total_len === 0
+      ? 0
+      : this.tree.root.total_eols_len + 1;
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
@@ -224,7 +226,7 @@ export class Document {
 
       if (eol_index < x.eols_len) {
         const buf = this.#content.buffers[x.buf]!;
-        const eol_end = buf.get_eol_end(x.eols_start + eol_index)!;
+        const eol_end = buf.eols[x.eols_start + eol_index]!.end;
         return i + eol_end - x.slice_start;
       }
 

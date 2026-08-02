@@ -6,7 +6,9 @@ import * as zen from "@plugins/zen";
 
 import { FooterWidget } from "./widget.ts";
 
-export function Plugin(api: core.API & themes.API & buffer.API & zen.API & view.API): void {
+export function Plugin(
+  api: core.API & themes.API & buffer.API & zen.API & view.API,
+): void {
   const widget = new FooterWidget();
 
   api.core.signals.on("resize")(() => {
@@ -25,7 +27,9 @@ export function Plugin(api: core.API & themes.API & buffer.API & zen.API & view.
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
 
-  api.buffer.signals.on("buffer.change")(() => widget.lineCount = api.buffer.lineCount);
+  api.buffer.signals.on("buffer.change")(() =>
+    widget.lineCount = api.buffer.lineCount
+  );
 
   api.view.cursor.signals.on("cursor.change")(() => {
     widget.pos = api.view.cursor.pos;

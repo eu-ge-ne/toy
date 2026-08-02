@@ -15,7 +15,9 @@ export function Plugin(): API {
 class Core {
   private readonly eventEmitter = new events.EventEmitter<{
     "start": (_: events.EventData) => Promise<void>;
-    "stop": (_: events.EventData<{ e?: PromiseRejectionEvent }>) => Promise<void>;
+    "stop": (
+      _: events.EventData<{ e?: PromiseRejectionEvent }>,
+    ) => Promise<void>;
     "input": (_: events.EventData<{ key: kitty.Key }>) => Promise<void>;
   }>();
 

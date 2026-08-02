@@ -19,12 +19,16 @@ export function Plugin(api: core.API & themes.API & buffer.API & zen.API): API {
 class View {
   private readonly widget: widgets.Editor;
 
-  constructor(private readonly api: core.API & themes.API & buffer.API & zen.API) {
+  constructor(
+    private readonly api: core.API & themes.API & buffer.API & zen.API,
+  ) {
     this.widget = new widgets.Editor(api.buffer, {
       multiLine: true,
     });
 
-    api.core.events.on("input")(async ({ key }) => this.widget.handleInput(key));
+    api.core.events.on("input")(async ({ key }) =>
+      this.widget.handleInput(key)
+    );
     api.core.signals.on("render")(() => this.widget.render());
 
     api.core.signals.on("resize")(() => {

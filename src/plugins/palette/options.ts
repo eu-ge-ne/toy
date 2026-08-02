@@ -7,7 +7,14 @@ import * as view from "@plugins/view";
 import * as zen from "@plugins/zen";
 
 export type OptionResult = (
-  _: core.API & view.API & buffer.API & themes.API & zen.API & file.API & debug.API,
+  _:
+    & core.API
+    & view.API
+    & buffer.API
+    & themes.API
+    & zen.API
+    & file.API
+    & debug.API,
 ) => Promise<void>;
 
 export class Option {
@@ -55,8 +62,16 @@ export const options: Option[] = [
     async (api: view.API) => api.view.paste(),
     ["⌃V", "⌘V"],
   ),
-  new Option("Edit: Undo", async (api: buffer.API) => api.buffer.undoHistory(), ["⌃Z", "⌘Z"]),
-  new Option("Edit: Redo", async (api: buffer.API) => api.buffer.redoHistory(), ["⌃Y", "⌘Y"]),
+  new Option(
+    "Edit: Undo",
+    async (api: buffer.API) => api.buffer.undoHistory(),
+    ["⌃Z", "⌘Z"],
+  ),
+  new Option(
+    "Edit: Redo",
+    async (api: buffer.API) => api.buffer.redoHistory(),
+    ["⌃Y", "⌘Y"],
+  ),
   new Option(
     "Global: Save",
     async (api: file.API) => api.file.save(),

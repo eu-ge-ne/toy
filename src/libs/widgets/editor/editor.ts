@@ -8,7 +8,12 @@ import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
 import { Content } from "./content.ts";
 import { Cursor, Pos } from "./cursor.ts";
-import { cursorHandlers, editHandlers, InputHandler, multiLineHandlers } from "./handlers/index.ts";
+import {
+  cursorHandlers,
+  editHandlers,
+  InputHandler,
+  multiLineHandlers,
+} from "./handlers/index.ts";
 
 interface Params {
   multiLine: boolean;
@@ -101,7 +106,8 @@ export class Editor extends Widget<Params> {
   copy(): void {
     const { pos, from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+      .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     if (this.cursor.isSelecting) {
@@ -112,7 +118,8 @@ export class Editor extends Widget<Params> {
   cut(): void {
     const { from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })].join("");
+    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+      .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
@@ -146,7 +153,10 @@ export class Editor extends Widget<Params> {
     if (this.params.multiLine) {
       this.cursor.set({ ln: 0, col: 0 }, false);
     } else {
-      this.cursor.set({ ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER }, false);
+      this.cursor.set({
+        ln: Number.MAX_SAFE_INTEGER,
+        col: Number.MAX_SAFE_INTEGER,
+      }, false);
     }
 
     this.history.reset(this.cursor.pos);
