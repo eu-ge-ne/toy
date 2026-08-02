@@ -20,8 +20,8 @@ export class Content {
     this.#resize(x, index);
     bubble(x);
 
-    const eols_start = buf.findEolIndex(start, x.eols_start + x.eols_len);
-    const eols_end = buf.findEolIndex(start + len, eols_start);
+    const eols_start = buf.indexToLine(start, x.eols_start + x.eols_len);
+    const eols_end = buf.indexToLine(start + len, eols_start);
     const eols_len = eols_end - eols_start;
 
     return create_node(x.buf, start, len, eols_start, eols_len);
@@ -61,9 +61,9 @@ export class Content {
     x.slice_start += n;
     x.slice_len -= n;
 
-    x.eols_start = buf.findEolIndex(x.slice_start, x.eols_start);
+    x.eols_start = buf.indexToLine(x.slice_start, x.eols_start);
 
-    const eols_end = buf.findEolIndex(
+    const eols_end = buf.indexToLine(
       x.slice_start + x.slice_len,
       x.eols_start,
     );
@@ -80,7 +80,7 @@ export class Content {
 
     x.slice_len = len;
 
-    const eols_end = buf.findEolIndex(
+    const eols_end = buf.indexToLine(
       x.slice_start + x.slice_len,
       x.eols_start,
     );

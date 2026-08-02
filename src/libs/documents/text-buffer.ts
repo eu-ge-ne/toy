@@ -17,16 +17,13 @@ export class TextBuffer {
     this.text += text;
   }
 
-  findEolIndex(index: number, a: number): number {
+  indexToLine(index: number, a = 0): number {
     let b = this.eols.length - 1;
-    let i = 0;
-    let start = 0;
-    let end = 0;
 
     while (a <= b) {
-      i = Math.trunc((a + b) / 2);
-      start = this.eols[i]!.start;
-      end = this.eols[i]?.end!;
+      const i = Math.trunc((a + b) / 2);
+      const start = this.eols[i]!.start;
+      const end = this.eols[i]?.end!;
 
       if (index >= end) {
         a = i + 1;

@@ -41,19 +41,19 @@ Deno.test("findEolIndex", () => {
 
   assertEquals(buf.eols.length, 2);
 
-  assertEquals(buf.findEolIndex(0, 0), 0);
-  assertEquals(buf.findEolIndex(1, 0), 0);
+  assertEquals(buf.indexToLine(0), 0);
+  assertEquals(buf.indexToLine(1), 0);
 
-  assertEquals(buf.findEolIndex(2, 0), 0);
-  assertThrows(() => buf.findEolIndex(3, 0));
+  assertEquals(buf.indexToLine(2), 0);
+  assertThrows(() => buf.indexToLine(3));
 
-  assertEquals(buf.findEolIndex(4, 0), 1);
-  assertEquals(buf.findEolIndex(5, 0), 1);
+  assertEquals(buf.indexToLine(4), 1);
+  assertEquals(buf.indexToLine(5, 0), 1);
 
-  assertEquals(buf.findEolIndex(6, 0), 1);
+  assertEquals(buf.indexToLine(6), 1);
 
-  assertEquals(buf.findEolIndex(7, 0), 2);
-  assertEquals(buf.findEolIndex(8, 0), 2);
+  assertEquals(buf.indexToLine(7), 2);
+  assertEquals(buf.indexToLine(8), 2);
 });
 
 Deno.test("findEolIndex_2", () => {
@@ -63,14 +63,14 @@ Deno.test("findEolIndex_2", () => {
 
   assertEquals(buf.eols.length, 4);
 
-  assertEquals(buf.findEolIndex(0, 0), 0);
-  assertEquals(buf.findEolIndex(1, 0), 0);
-  assertEquals(buf.findEolIndex(2, 0), 1);
-  assertEquals(buf.findEolIndex(3, 0), 1);
-  assertEquals(buf.findEolIndex(4, 0), 2);
-  assertEquals(buf.findEolIndex(5, 0), 2);
-  assertEquals(buf.findEolIndex(6, 0), 3);
-  assertEquals(buf.findEolIndex(7, 0), 3);
-  assertEquals(buf.findEolIndex(8, 0), 4);
-  assertEquals(buf.findEolIndex(8, 0), 4);
+  assertEquals(buf.indexToLine(0), 0);
+  assertEquals(buf.indexToLine(1), 0);
+  assertEquals(buf.indexToLine(2), 1);
+  assertEquals(buf.indexToLine(3), 1);
+  assertEquals(buf.indexToLine(4), 2);
+  assertEquals(buf.indexToLine(5), 2);
+  assertEquals(buf.indexToLine(6), 3);
+  assertEquals(buf.indexToLine(7), 3);
+  assertEquals(buf.indexToLine(8), 4);
+  assertEquals(buf.indexToLine(8, 0), 4);
 });
