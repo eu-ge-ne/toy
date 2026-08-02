@@ -9,12 +9,12 @@ NIL.p = NIL;
 NIL.left = NIL;
 NIL.right = NIL;
 
-export interface TreeNode {
-  nil: boolean;
-  red: boolean;
-  p: TreeNode;
-  left: TreeNode;
-  right: TreeNode;
+export class TreeNode {
+  nil = false;
+  red = true;
+  p = NIL;
+  left = NIL;
+  right = NIL;
   total_len: number;
   total_eols_len: number;
   buf: number;
@@ -22,29 +22,22 @@ export interface TreeNode {
   slice_len: number;
   eols_start: number;
   eols_len: number;
-}
 
-export function create(
-  buf: number,
-  slice_start: number,
-  slice_len: number,
-  eols_start: number,
-  eols_len: number,
-): TreeNode {
-  return {
-    nil: false,
-    red: true,
-    p: NIL,
-    left: NIL,
-    right: NIL,
-    total_len: slice_len,
-    total_eols_len: eols_len,
-    buf,
-    slice_start,
-    slice_len,
-    eols_start,
-    eols_len,
-  };
+  constructor(
+    buf: number,
+    slice_start: number,
+    slice_len: number,
+    eols_start: number,
+    eols_len: number,
+  ) {
+    this.total_len = slice_len;
+    this.total_eols_len = eols_len;
+    this.buf = buf;
+    this.slice_start = slice_start;
+    this.slice_len = slice_len;
+    this.eols_start = eols_start;
+    this.eols_len = eols_len;
+  }
 }
 
 export function find(
