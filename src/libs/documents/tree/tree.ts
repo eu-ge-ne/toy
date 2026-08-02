@@ -3,41 +3,41 @@ import { bubble, maximum, minimum, NIL, type TreeNode } from "./node.ts";
 export class Tree {
   root = NIL;
 
-  insert_left(p: TreeNode, z: TreeNode): void {
+  insertLeft(p: TreeNode, z: TreeNode): void {
     p.left = z;
     z.p = p;
 
     bubble(z);
 
-    this.#insert_fixup(z);
+    this.#insertFixup(z);
   }
 
-  insert_right(p: TreeNode, z: TreeNode): void {
+  insertRight(p: TreeNode, z: TreeNode): void {
     p.right = z;
     z.p = p;
 
     bubble(z);
 
-    this.#insert_fixup(z);
+    this.#insertFixup(z);
   }
 
-  insert_before(p: TreeNode, z: TreeNode): void {
+  insertBefore(p: TreeNode, z: TreeNode): void {
     if (p.left.nil) {
-      this.insert_left(p, z);
+      this.insertLeft(p, z);
     } else {
-      this.insert_right(maximum(p.left), z);
+      this.insertRight(maximum(p.left), z);
     }
   }
 
-  insert_after(p: TreeNode, z: TreeNode): void {
+  insertAfter(p: TreeNode, z: TreeNode): void {
     if (p.right.nil) {
-      this.insert_right(p, z);
+      this.insertRight(p, z);
     } else {
-      this.insert_left(minimum(p.right), z);
+      this.insertLeft(minimum(p.right), z);
     }
   }
 
-  #insert_fixup(z: TreeNode): void {
+  #insertFixup(z: TreeNode): void {
     while (z.p.red) {
       if (z.p === z.p.p.left) {
         const y = z.p.p.right;
@@ -49,11 +49,11 @@ export class Tree {
         } else {
           if (z === z.p.right) {
             z = z.p;
-            this.#left_rotate(z);
+            this.#leftRotate(z);
           }
           z.p.red = false;
           z.p.p.red = true;
-          this.#right_rotate(z.p.p);
+          this.#rightRotate(z.p.p);
         }
       } else {
         const y = z.p.p.left;
@@ -65,11 +65,11 @@ export class Tree {
         } else {
           if (z === z.p.left) {
             z = z.p;
-            this.#right_rotate(z);
+            this.#rightRotate(z);
           }
           z.p.red = false;
           z.p.p.red = true;
-          this.#left_rotate(z.p.p);
+          this.#leftRotate(z.p.p);
         }
       }
     }
@@ -118,11 +118,11 @@ export class Tree {
     }
 
     if (!y_original_color) {
-      this.#delete_fixup(x);
+      this.#deleteFixup(x);
     }
   }
 
-  #delete_fixup(x: TreeNode): void {
+  #deleteFixup(x: TreeNode): void {
     while (x !== this.root && !x.red) {
       if (x === x.p.left) {
         let w = x.p.right;
@@ -130,7 +130,7 @@ export class Tree {
         if (w.red) {
           w.red = false;
           x.p.red = true;
-          this.#left_rotate(x.p);
+          this.#leftRotate(x.p);
           w = x.p.right;
         }
 
@@ -141,14 +141,14 @@ export class Tree {
           if (!w.right.red) {
             w.left.red = false;
             w.red = true;
-            this.#right_rotate(w);
+            this.#rightRotate(w);
             w = x.p.right;
           }
 
           w.red = x.p.red;
           x.p.red = false;
           w.right.red = false;
-          this.#left_rotate(x.p);
+          this.#leftRotate(x.p);
           x = this.root;
         }
       } else {
@@ -157,7 +157,7 @@ export class Tree {
         if (w.red) {
           w.red = false;
           x.p.red = true;
-          this.#right_rotate(x.p);
+          this.#rightRotate(x.p);
           w = x.p.left;
         }
 
@@ -168,14 +168,14 @@ export class Tree {
           if (!w.left.red) {
             w.right.red = false;
             w.red = true;
-            this.#left_rotate(w);
+            this.#leftRotate(w);
             w = x.p.left;
           }
 
           w.red = x.p.red;
           x.p.red = false;
           w.left.red = false;
-          this.#right_rotate(x.p);
+          this.#rightRotate(x.p);
           x = this.root;
         }
       }
@@ -184,7 +184,7 @@ export class Tree {
     x.red = false;
   }
 
-  #left_rotate(x: TreeNode): void {
+  #leftRotate(x: TreeNode): void {
     const y = x.right;
 
     x.right = y.left;
@@ -208,7 +208,7 @@ export class Tree {
     bubble(x);
   }
 
-  #right_rotate(y: TreeNode): void {
+  #rightRotate(y: TreeNode): void {
     const x = y.left;
 
     y.left = x.right;

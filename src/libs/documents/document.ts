@@ -98,17 +98,17 @@ export class Document {
         break;
       }
       case InsertionCase.Left: {
-        this.tree.insert_left(p, child);
+        this.tree.insertLeft(p, child);
         break;
       }
       case InsertionCase.Right: {
-        this.tree.insert_right(p, child);
+        this.tree.insertRight(p, child);
         break;
       }
       case InsertionCase.Split: {
         const y = this.#splitNode(p, i, 0);
-        this.tree.insert_after(p, y);
-        this.tree.insert_before(y, child);
+        this.tree.insertAfter(p, y);
+        this.tree.insertBefore(y, child);
         break;
       }
     }
@@ -154,7 +154,7 @@ export class Document {
         bubble(node);
       } else {
         const y = this.#splitNode(node, offset, count);
-        this.tree.insert_after(node, y);
+        this.tree.insertAfter(node, y);
       }
     } else {
       let x = node;
@@ -162,13 +162,13 @@ export class Document {
 
       if (offset !== 0) {
         x = this.#splitNode(node, offset, 0);
-        this.tree.insert_after(node, x);
+        this.tree.insertAfter(node, x);
       }
 
       const last = find(this.tree.root, end);
       if (last && last.offset !== 0) {
         const y = this.#splitNode(last.node, last.offset, 0);
-        this.tree.insert_after(last.node, y);
+        this.tree.insertAfter(last.node, y);
       }
 
       while (!x.nil && (i < count)) {
