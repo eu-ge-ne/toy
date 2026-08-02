@@ -8,7 +8,7 @@ export class Content {
     const buf = new TextBuffer(text);
     const buf_index = this.buffers.push(buf) - 1;
 
-    return create_node(buf_index, 0, buf.length, 0, buf.eols_len);
+    return create_node(buf_index, 0, buf.text.length, 0, buf.eols.length);
   }
 
   split(x: Node, index: number, gap: number): Node {
@@ -45,7 +45,7 @@ export class Content {
   growable(x: Node): boolean {
     const buf = this.buffers[x.buf]!;
 
-    return (buf.length < 100) && (x.slice_start + x.slice_len === buf.length);
+    return (buf.text.length < 100) && (x.slice_start + x.slice_len === buf.text.length);
   }
 
   grow(x: Node, text: string): void {

@@ -1,18 +1,11 @@
 export class TextBuffer {
-  #eols_buf = new ArrayBuffer(1024 * 64, { maxByteLength: 100e6 * 2 });
-
   text = "";
-  eols = new Int32Array(this.#eols_buf);
-  eols_len = 0;
+  eols: { start: number; end: number }[] = [];
 
   constructor(text: string) {
     this.#appendEols(text);
 
     this.text = text;
-  }
-
-  get length(): number {
-    return this.text.length;
   }
 
   append(text: string): void {
@@ -21,20 +14,16 @@ export class TextBuffer {
     this.text += text;
   }
 
-  get_eol_end(index: number): number | undefined {
-    return this.eols[index * 2 + 1];
-  }
-
   find_eol_index(index: number, a: number): number {
-    let b = this.eols_len - 1;
+    let b = this.eols.length - 1;
     let i = 0;
     let start = 0;
     let end = 0;
 
     while (a <= b) {
       i = Math.trunc((a + b) / 2);
-      start = this.eols[i * 2]!;
-      end = this.eols[i * 2 + 1]!;
+      start = this.eols[i]!.start;
+      end = this.eols[i]?.end!;
 
       if (index >= end) {
         a = i + 1;
@@ -53,17 +42,10 @@ export class TextBuffer {
 
   #appendEols(text: string): void {
     for (const x of text.matchAll(/\r?\n/gm)) {
-      const new_len = (this.eols_len + 1) * 2 * 4;
-      if (new_len > this.#eols_buf.byteLength) {
-        this.#eols_buf.resize(new_len * 2);
-      }
-
-      this.eols[this.eols_len * 2] = this.text.length + x.index;
-      this.eols[this.eols_len * 2 + 1] = this.text.length + x.index + x[0].length;
-
-      this.eols_len += 1;
+      this.eols.push({
+        start: this.text.length + x.index,
+        end: this.text.length + x.index + x[0].length,
+      });
     }
-
-    this.#eols_buf.resize(this.eols_len * 2 * 4);
   }
 }
