@@ -1,9 +1,9 @@
-import { bubble, maximum, minimum, NIL, type Node } from "./node.ts";
+import { bubble, maximum, minimum, NIL, type TreeNode } from "./node.ts";
 
 export class Tree {
   root = NIL;
 
-  insert_left(p: Node, z: Node): void {
+  insert_left(p: TreeNode, z: TreeNode): void {
     p.left = z;
     z.p = p;
 
@@ -12,7 +12,7 @@ export class Tree {
     this.#insert_fixup(z);
   }
 
-  insert_right(p: Node, z: Node): void {
+  insert_right(p: TreeNode, z: TreeNode): void {
     p.right = z;
     z.p = p;
 
@@ -21,7 +21,7 @@ export class Tree {
     this.#insert_fixup(z);
   }
 
-  insert_before(p: Node, z: Node): void {
+  insert_before(p: TreeNode, z: TreeNode): void {
     if (p.left.nil) {
       this.insert_left(p, z);
     } else {
@@ -29,7 +29,7 @@ export class Tree {
     }
   }
 
-  insert_after(p: Node, z: Node): void {
+  insert_after(p: TreeNode, z: TreeNode): void {
     if (p.right.nil) {
       this.insert_right(p, z);
     } else {
@@ -37,7 +37,7 @@ export class Tree {
     }
   }
 
-  #insert_fixup(z: Node): void {
+  #insert_fixup(z: TreeNode): void {
     while (z.p.red) {
       if (z.p === z.p.p.left) {
         const y = z.p.p.right;
@@ -77,10 +77,10 @@ export class Tree {
     this.root.red = false;
   }
 
-  delete(z: Node): void {
+  delete(z: TreeNode): void {
     let y = z;
     let y_original_color = y.red;
-    let x: Node;
+    let x: TreeNode;
 
     if (z.left.nil) {
       x = z.right;
@@ -122,7 +122,7 @@ export class Tree {
     }
   }
 
-  #delete_fixup(x: Node): void {
+  #delete_fixup(x: TreeNode): void {
     while (x !== this.root && !x.red) {
       if (x === x.p.left) {
         let w = x.p.right;
@@ -184,7 +184,7 @@ export class Tree {
     x.red = false;
   }
 
-  #left_rotate(x: Node): void {
+  #left_rotate(x: TreeNode): void {
     const y = x.right;
 
     x.right = y.left;
@@ -208,7 +208,7 @@ export class Tree {
     bubble(x);
   }
 
-  #right_rotate(y: Node): void {
+  #right_rotate(y: TreeNode): void {
     const x = y.left;
 
     y.left = x.right;
@@ -232,7 +232,7 @@ export class Tree {
     bubble(y);
   }
 
-  #transplant(u: Node, v: Node): void {
+  #transplant(u: TreeNode, v: TreeNode): void {
     if (u.p.nil) {
       this.root = v;
     } else if (u === u.p.left) {

@@ -1,13 +1,13 @@
+import { TextBuffer } from "./text-buffer.ts";
 import {
   bubble,
   create as create_node,
   find,
   NIL,
-  type Node,
   successor,
-} from "./node.ts";
-import { TextBuffer } from "./text-buffer.ts";
-import { Tree } from "./tree.ts";
+  type TreeNode,
+} from "./tree/node.ts";
+import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
   Root,
@@ -199,14 +199,14 @@ export class Document {
     this.delete(i, this.#posToIndex(end));
   }
 
-  #createNode(text: string): Node {
+  #createNode(text: string): TreeNode {
     const buf = new TextBuffer(text);
     const buf_index = this.#bufs.push(buf) - 1;
 
     return create_node(buf_index, 0, buf.text.length, 0, buf.eols.length);
   }
 
-  #splitNode(x: Node, index: number, gap: number): Node {
+  #splitNode(x: TreeNode, index: number, gap: number): TreeNode {
     const buf = this.#bufs[x.buf]!;
 
     const start = x.slice_start + index + gap;
@@ -222,7 +222,7 @@ export class Document {
     return create_node(x.buf, start, len, eols_start, eols_len);
   }
 
-  *#readNode(x: Node, offset: number, n: number): Generator<string> {
+  *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
     while (!x.nil && (n > 0)) {
       const count = Math.min(x.slice_len - offset, n);
 
@@ -237,20 +237,20 @@ export class Document {
     }
   }
 
-  #isNodeGrowable(x: Node): boolean {
+  #isNodeGrowable(x: TreeNode): boolean {
     const buf = this.#bufs[x.buf]!;
 
     return (buf.text.length < 100) &&
       (x.slice_start + x.slice_len === buf.text.length);
   }
 
-  #growNode(x: Node, text: string): void {
+  #growNode(x: TreeNode, text: string): void {
     this.#bufs[x.buf]!.append(text);
 
     this.#resizeNode(x, x.slice_len + text.length);
   }
 
-  #trimNodeStart(x: Node, n: number): void {
+  #trimNodeStart(x: TreeNode, n: number): void {
     const buf = this.#bufs[x.buf]!;
 
     x.slice_start += n;
@@ -266,11 +266,11 @@ export class Document {
     x.eols_len = eols_end - x.eols_start;
   }
 
-  #trimNodeEnd(x: Node, n: number): void {
+  #trimNodeEnd(x: TreeNode, n: number): void {
     this.#resizeNode(x, x.slice_len - n);
   }
 
-  #resizeNode(x: Node, len: number): void {
+  #resizeNode(x: TreeNode, len: number): void {
     const buf = this.#bufs[x.buf]!;
 
     x.slice_len = len;

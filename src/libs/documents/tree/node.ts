@@ -3,21 +3,18 @@ export const NIL = {
   red: false,
   total_len: 0,
   total_eols_len: 0,
-} as Node;
+} as TreeNode;
 
 NIL.p = NIL;
 NIL.left = NIL;
 NIL.right = NIL;
 
-/**
- * @ignore
- */
-export interface Node {
+export interface TreeNode {
   nil: boolean;
   red: boolean;
-  p: Node;
-  left: Node;
-  right: Node;
+  p: TreeNode;
+  left: TreeNode;
+  right: TreeNode;
   total_len: number;
   total_eols_len: number;
   buf: number;
@@ -33,7 +30,7 @@ export function create(
   slice_len: number,
   eols_start: number,
   eols_len: number,
-): Node {
+): TreeNode {
   return {
     nil: false,
     red: true,
@@ -51,9 +48,9 @@ export function create(
 }
 
 export function find(
-  x: Node,
+  x: TreeNode,
   index: number,
-): { node: Node; offset: number } | undefined {
+): { node: TreeNode; offset: number } | undefined {
   while (!x.nil) {
     if (index < x.left.total_len) {
       x = x.left;
@@ -71,7 +68,7 @@ export function find(
   }
 }
 
-export function bubble(x: Node): void {
+export function bubble(x: TreeNode): void {
   while (!x.nil) {
     x.total_len = x.left.total_len + x.slice_len + x.right.total_len;
 
@@ -82,7 +79,7 @@ export function bubble(x: Node): void {
   }
 }
 
-export function minimum(x: Node): Node {
+export function minimum(x: TreeNode): TreeNode {
   while (!x.left.nil) {
     x = x.left;
   }
@@ -90,7 +87,7 @@ export function minimum(x: Node): Node {
   return x;
 }
 
-export function maximum(x: Node): Node {
+export function maximum(x: TreeNode): TreeNode {
   while (!x.right.nil) {
     x = x.right;
   }
@@ -98,7 +95,7 @@ export function maximum(x: Node): Node {
   return x;
 }
 
-export function successor(x: Node): Node {
+export function successor(x: TreeNode): TreeNode {
   if (!x.right.nil) {
     return minimum(x.right);
   } else {
