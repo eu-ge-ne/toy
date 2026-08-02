@@ -3,18 +3,21 @@ export class TextBuffer {
   eols: { start: number; end: number }[] = [];
 
   constructor(text: string) {
-    this.#appendEols(text);
-
-    this.text = text;
+    this.append(text);
   }
 
   append(text: string): void {
-    this.#appendEols(text);
+    for (const x of text.matchAll(/\r?\n/gm)) {
+      this.eols.push({
+        start: this.text.length + x.index,
+        end: this.text.length + x.index + x[0].length,
+      });
+    }
 
     this.text += text;
   }
 
-  find_eol_index(index: number, a: number): number {
+  findEolIndex(index: number, a: number): number {
     let b = this.eols.length - 1;
     let i = 0;
     let start = 0;
@@ -38,14 +41,5 @@ export class TextBuffer {
     }
 
     return a;
-  }
-
-  #appendEols(text: string): void {
-    for (const x of text.matchAll(/\r?\n/gm)) {
-      this.eols.push({
-        start: this.text.length + x.index,
-        end: this.text.length + x.index + x[0].length,
-      });
-    }
   }
 }
