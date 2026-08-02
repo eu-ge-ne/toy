@@ -59,7 +59,9 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    graphemes.settings.width = this.#mode.wrap ? textWidth : Number.MAX_SAFE_INTEGER;
+    graphemes.settings.width = this.#mode.wrap
+      ? textWidth
+      : Number.MAX_SAFE_INTEGER;
     graphemes.settings.y = this.#cursorY = this.y;
     graphemes.settings.x = this.#cursorX = this.x + indexWidth;
 
@@ -79,11 +81,23 @@ export class Content extends Widget {
     this.#color.char = {
       [CharColor.Undefined]: new Uint8Array(),
       [CharColor.Visible]: new Uint8Array([...theme.bgMain, ...theme.fgLight1]),
-      [CharColor.Whitespace]: new Uint8Array([...theme.bgMain, ...theme.fgDark0]),
+      [CharColor.Whitespace]: new Uint8Array([
+        ...theme.bgMain,
+        ...theme.fgDark0,
+      ]),
       [CharColor.Empty]: new Uint8Array([...theme.bgMain, ...theme.fgMain]),
-      [CharColor.VisibleSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgLight1]),
-      [CharColor.WhitespaceSelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
-      [CharColor.EmptySelected]: new Uint8Array([...theme.bgLight2, ...theme.fgDark1]),
+      [CharColor.VisibleSelected]: new Uint8Array([
+        ...theme.bgLight2,
+        ...theme.fgLight1,
+      ]),
+      [CharColor.WhitespaceSelected]: new Uint8Array([
+        ...theme.bgLight2,
+        ...theme.fgDark1,
+      ]),
+      [CharColor.EmptySelected]: new Uint8Array([
+        ...theme.bgLight2,
+        ...theme.fgDark1,
+      ]),
     };
   }
 
@@ -134,7 +148,10 @@ export class Content extends Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.cells(ln).reduce((a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0), 1)
+      this.buffer.cells(ln).reduce(
+        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
+        1,
+      )
     );
 
     let i = 0;
@@ -153,7 +170,9 @@ export class Content extends Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell = this.buffer.cells(this.cursor.pos.ln, true).drop(this.cursor.pos.col).next().value;
+    const cell =
+      this.buffer.cells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
+        .next().value;
     if (cell) {
       this.#cursorY += cell.ln;
     }
@@ -193,7 +212,9 @@ export class Content extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    for (const { gr: { width, isVisible, bytes }, i, col } of this.buffer.cells(ln)) {
+    for (
+      const { gr: { width, isVisible, bytes }, i, col } of this.buffer.cells(ln)
+    ) {
       if (col === 0) {
         if (i > 0) {
           row += 1;
@@ -207,7 +228,11 @@ export class Content extends Widget {
         if (indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
-            vt.writeText(vt.buf, [indexWidth], `${ln + 1} `.padStart(indexWidth));
+            vt.writeText(
+              vt.buf,
+              [indexWidth],
+              `${ln + 1} `.padStart(indexWidth),
+            );
           } else {
             vt.buf.write(this.#color.bg);
             vt.writeSpaces(vt.buf, indexWidth);
@@ -241,7 +266,11 @@ export class Content extends Widget {
   }
 }
 
-function charColor(isSelected: boolean, isVisible: boolean, whitespaceEnabled: boolean): CharColor {
+function charColor(
+  isSelected: boolean,
+  isVisible: boolean,
+  whitespaceEnabled: boolean,
+): CharColor {
   if (isSelected) {
     if (isVisible) {
       return CharColor.VisibleSelected;

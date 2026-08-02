@@ -125,7 +125,8 @@
 
 ## v0.0.6
 
-- Fix parsing `Esc`, `F2` keys in terminals which do not support Kitty keyboard protocol
+- Fix parsing `Esc`, `F2` keys in terminals which do not support Kitty keyboard
+  protocol
 - Fix deleting text selection
 
 ## v0.0.5

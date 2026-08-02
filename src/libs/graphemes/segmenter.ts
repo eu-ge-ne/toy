@@ -18,7 +18,10 @@ export interface Cell {
   col: number;
 }
 
-export function* segments(chunks: IteratorObject<string>, extra = false): Generator<Cell> {
+export function* segments(
+  chunks: IteratorObject<string>,
+  extra = false,
+): Generator<Cell> {
   const seg: Cell = {
     i: 0,
     gr: undefined as unknown as Grapheme,

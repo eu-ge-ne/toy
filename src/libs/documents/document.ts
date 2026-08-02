@@ -26,7 +26,9 @@ export class Document {
   }
 
   get lineCount(): number {
-    return this.tree.root.total_len === 0 ? 0 : this.tree.root.total_eols_len + 1;
+    return this.tree.root.total_len === 0
+      ? 0
+      : this.tree.root.total_eols_len + 1;
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {

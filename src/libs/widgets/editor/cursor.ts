@@ -95,7 +95,10 @@ export class Cursor {
     }
 
     if (this.pos.ln > 0) {
-      return this.set({ ln: this.pos.ln - 1, col: Number.MAX_SAFE_INTEGER }, select);
+      return this.set(
+        { ln: this.pos.ln - 1, col: Number.MAX_SAFE_INTEGER },
+        select,
+      );
     }
 
     return false;
@@ -121,7 +124,10 @@ export class Cursor {
 
   selectAll(): void {
     this.set({ ln: 0, col: 0 }, false);
-    this.set({ ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER }, true);
+    this.set(
+      { ln: Number.MAX_SAFE_INTEGER, col: Number.MAX_SAFE_INTEGER },
+      true,
+    );
   }
 
   isSelected(x: Pos): boolean {

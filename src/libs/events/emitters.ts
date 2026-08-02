@@ -8,7 +8,10 @@ export class EventEmitter<T extends Events> {
 
   readonly listener = new Listener<T>(this.#clients);
 
-  async dispatch<K extends keyof T>(name: K, data: Parameters<T[K]>[0]): Promise<void> {
+  async dispatch<K extends keyof T>(
+    name: K,
+    data: Parameters<T[K]>[0],
+  ): Promise<void> {
     const xx = this.#clients[name];
     if (!xx) {
       return;

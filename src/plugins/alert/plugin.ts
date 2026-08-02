@@ -38,7 +38,9 @@ class Alert {
 
     this.widget.children.text.value = message;
 
-    const offRender = this.api.core.signals.on("render", 1000)(() => this.widget.render());
+    const offRender = this.api.core.signals.on("render", 1000)(() =>
+      this.widget.render()
+    );
 
     const offKeyPress = this.api.core.events.on("input", -1000)(
       async (data) => {

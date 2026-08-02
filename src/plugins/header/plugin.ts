@@ -5,7 +5,9 @@ import * as zen from "@plugins/zen";
 
 import { HeaderWidget } from "./widget.ts";
 
-export function Plugin(api: core.API & buffer.API & themes.API & zen.API): void {
+export function Plugin(
+  api: core.API & buffer.API & themes.API & zen.API,
+): void {
   const widget = new HeaderWidget();
 
   api.core.signals.on("resize")(() => {
@@ -23,7 +25,9 @@ export function Plugin(api: core.API & buffer.API & themes.API & zen.API): void 
   });
 
   api.buffer.signals.on("name.change")(() => widget.fileName = api.buffer.name);
-  api.buffer.signals.on("buffer.change")(() => widget.modified = api.buffer.modified);
+  api.buffer.signals.on("buffer.change")(() =>
+    widget.modified = api.buffer.modified
+  );
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
 }
