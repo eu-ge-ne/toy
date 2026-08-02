@@ -1,5 +1,12 @@
-import { Content } from "./content.ts";
-import { bubble, find, NIL, successor } from "./node.ts";
+import {
+  bubble,
+  create as create_node,
+  find,
+  NIL,
+  type Node,
+  successor,
+} from "./node.ts";
+import { TextBuffer } from "./text-buffer.ts";
 import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
@@ -10,13 +17,12 @@ export const enum InsertionCase {
 }
 
 export class Document {
-  tree: Tree = new Tree();
-
-  #content = new Content();
+  readonly tree: Tree = new Tree();
+  readonly #bufs: TextBuffer[] = [];
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = this.#content.create(text);
+      this.tree.root = this.#createNode(text);
       this.tree.root.red = false;
     }
   }
@@ -39,16 +45,16 @@ export class Document {
 
     const { node, offset } = first;
 
-    yield* this.#content.read(node, offset, end - start);
+    yield* this.#readNode(node, offset, end - start);
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
-    const i = this.#pos_to_index(start);
+    const i = this.#posToIndex(start);
     if (typeof i !== "number") {
       return;
     }
 
-    yield* this.read(i, this.#pos_to_index(end));
+    yield* this.read(i, this.#posToIndex(end));
   }
 
   insert(i: number, text: string): void {
@@ -84,13 +90,13 @@ export class Document {
       x = x.right;
     }
 
-    if (insert_case === InsertionCase.Right && this.#content.growable(p)) {
-      this.#content.grow(p, text);
+    if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
+      this.#growNode(p, text);
       bubble(p);
       return;
     }
 
-    const child = this.#content.create(text);
+    const child = this.#createNode(text);
 
     switch (insert_case) {
       case InsertionCase.Root: {
@@ -107,7 +113,7 @@ export class Document {
         break;
       }
       case InsertionCase.Split: {
-        const y = this.#content.split(p, i, 0);
+        const y = this.#splitNode(p, i, 0);
         this.tree.insert_after(p, y);
         this.tree.insert_before(y, child);
         break;
@@ -116,7 +122,7 @@ export class Document {
   }
 
   insert2(pos: [number, number], text: string): void {
-    const i = this.#pos_to_index(pos);
+    const i = this.#posToIndex(pos);
     if (typeof i !== "number") {
       return;
     }
@@ -146,15 +152,15 @@ export class Document {
       if (offset === 0) {
         this.tree.delete(node);
       } else {
-        this.#content.trim_end(node, count);
+        this.#trimNodeEnd(node, count);
         bubble(node);
       }
     } else if (offset2 < node.slice_len) {
       if (offset === 0) {
-        this.#content.trim_start(node, count);
+        this.#trimNodeStart(node, count);
         bubble(node);
       } else {
-        const y = this.#content.split(node, offset, count);
+        const y = this.#splitNode(node, offset, count);
         this.tree.insert_after(node, y);
       }
     } else {
@@ -162,13 +168,13 @@ export class Document {
       let i = 0;
 
       if (offset !== 0) {
-        x = this.#content.split(node, offset, 0);
+        x = this.#splitNode(node, offset, 0);
         this.tree.insert_after(node, x);
       }
 
       const last = find(this.tree.root, end);
       if (last && last.offset !== 0) {
-        const y = this.#content.split(last.node, last.offset, 0);
+        const y = this.#splitNode(last.node, last.offset, 0);
         this.tree.insert_after(last.node, y);
       }
 
@@ -185,20 +191,104 @@ export class Document {
   }
 
   delete2(start: [number, number], end?: [number, number]): void {
-    const i = this.#pos_to_index(start);
+    const i = this.#posToIndex(start);
     if (typeof i !== "number") {
       return;
     }
 
-    this.delete(i, this.#pos_to_index(end));
+    this.delete(i, this.#posToIndex(end));
   }
 
-  #pos_to_index(pos?: [number, number]): number | undefined {
+  #createNode(text: string): Node {
+    const buf = new TextBuffer(text);
+    const buf_index = this.#bufs.push(buf) - 1;
+
+    return create_node(buf_index, 0, buf.text.length, 0, buf.eols.length);
+  }
+
+  #splitNode(x: Node, index: number, gap: number): Node {
+    const buf = this.#bufs[x.buf]!;
+
+    const start = x.slice_start + index + gap;
+    const len = x.slice_len - index - gap;
+
+    this.#resizeNode(x, index);
+    bubble(x);
+
+    const eols_start = buf.indexToLine(start, x.eols_start + x.eols_len);
+    const eols_end = buf.indexToLine(start + len, eols_start);
+    const eols_len = eols_end - eols_start;
+
+    return create_node(x.buf, start, len, eols_start, eols_len);
+  }
+
+  *#readNode(x: Node, offset: number, n: number): Generator<string> {
+    while (!x.nil && (n > 0)) {
+      const count = Math.min(x.slice_len - offset, n);
+
+      yield this.#bufs[x.buf]!.text.slice(
+        x.slice_start + offset,
+        x.slice_start + offset + count,
+      );
+
+      x = successor(x);
+      offset = 0;
+      n -= count;
+    }
+  }
+
+  #isNodeGrowable(x: Node): boolean {
+    const buf = this.#bufs[x.buf]!;
+
+    return (buf.text.length < 100) &&
+      (x.slice_start + x.slice_len === buf.text.length);
+  }
+
+  #growNode(x: Node, text: string): void {
+    this.#bufs[x.buf]!.append(text);
+
+    this.#resizeNode(x, x.slice_len + text.length);
+  }
+
+  #trimNodeStart(x: Node, n: number): void {
+    const buf = this.#bufs[x.buf]!;
+
+    x.slice_start += n;
+    x.slice_len -= n;
+
+    x.eols_start = buf.indexToLine(x.slice_start, x.eols_start);
+
+    const eols_end = buf.indexToLine(
+      x.slice_start + x.slice_len,
+      x.eols_start,
+    );
+
+    x.eols_len = eols_end - x.eols_start;
+  }
+
+  #trimNodeEnd(x: Node, n: number): void {
+    this.#resizeNode(x, x.slice_len - n);
+  }
+
+  #resizeNode(x: Node, len: number): void {
+    const buf = this.#bufs[x.buf]!;
+
+    x.slice_len = len;
+
+    const eols_end = buf.indexToLine(
+      x.slice_start + x.slice_len,
+      x.eols_start,
+    );
+
+    x.eols_len = eols_end - x.eols_start;
+  }
+
+  #posToIndex(pos?: [number, number]): number | undefined {
     if (!pos) {
       return;
     }
 
-    const i = this.#find_line_start(pos[0]);
+    const i = this.#findLineStart(pos[0]);
     if (typeof i !== "number") {
       return;
     }
@@ -206,7 +296,7 @@ export class Document {
     return i + pos[1];
   }
 
-  #find_line_start(ln: number): number | undefined {
+  #findLineStart(ln: number): number | undefined {
     if (ln === 0) {
       return 0;
     }
@@ -225,7 +315,7 @@ export class Document {
       i += x.left.total_len;
 
       if (eol_index < x.eols_len) {
-        const buf = this.#content.buffers[x.buf]!;
+        const buf = this.#bufs[x.buf]!;
         const eol_end = buf.eols[x.eols_start + eol_index]!.end;
         return i + eol_end - x.slice_start;
       }
