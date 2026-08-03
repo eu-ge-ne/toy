@@ -31,7 +31,7 @@ export interface TreeNode {
   eolSlice: Slice;
 }
 
-export function create(
+export function newTreeNode(
   buf: number,
   sliceStart: number,
   sliceLen: number,
@@ -53,67 +53,4 @@ export function create(
     sliceLen,
     eolSlice,
   };
-}
-
-export function find(
-  x: TreeNode,
-  charIndex: number,
-): { node: TreeNode; offset: number } | undefined {
-  while (!x.nil) {
-    if (charIndex < x.left.totalLen) {
-      x = x.left;
-      continue;
-    }
-
-    charIndex -= x.left.totalLen;
-
-    if (charIndex < x.sliceLen) {
-      return { node: x, offset: charIndex };
-    }
-
-    charIndex -= x.sliceLen;
-    x = x.right;
-  }
-}
-
-export function bubbleUpdate(x: TreeNode): void {
-  while (!x.nil) {
-    x.totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
-
-    x.totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
-      x.right.totalEolsLen;
-
-    x = x.p;
-  }
-}
-
-export function minimum(x: TreeNode): TreeNode {
-  while (!x.left.nil) {
-    x = x.left;
-  }
-
-  return x;
-}
-
-export function maximum(x: TreeNode): TreeNode {
-  while (!x.right.nil) {
-    x = x.right;
-  }
-
-  return x;
-}
-
-export function successor(x: TreeNode): TreeNode {
-  if (!x.right.nil) {
-    return minimum(x.right);
-  } else {
-    let y = x.p;
-
-    while (!y.nil && x === y.right) {
-      x = y;
-      y = y.p;
-    }
-
-    return y;
-  }
 }

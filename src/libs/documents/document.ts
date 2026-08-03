@@ -1,6 +1,6 @@
 import { Slice } from "./slice.ts";
 import { TextBuffer } from "./text-buffer.ts";
-import * as node from "./tree/node.ts";
+import { newTreeNode, NIL, TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -30,7 +30,7 @@ export class Document {
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
-    const first = node.find(this.tree.root, start);
+    const first = this.tree.find(start);
     if (!first) {
       return;
     }
@@ -53,7 +53,7 @@ export class Document {
     }
 
     let insert_case = InsertionCase.Root;
-    let p = node.NIL;
+    let p = NIL;
     let x = this.tree.root;
 
     while (!x.nil) {
@@ -69,7 +69,7 @@ export class Document {
       if (i < x.sliceLen) {
         insert_case = InsertionCase.Split;
         p = x;
-        x = node.NIL;
+        x = NIL;
         continue;
       }
 
@@ -82,7 +82,9 @@ export class Document {
 
     if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
       this.#growNode(p, text);
-      node.bubbleUpdate(p);
+
+      this.tree.bubbleUpdate(p);
+
       return;
     }
 
@@ -129,7 +131,7 @@ export class Document {
   }
 
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {
-    const first = node.find(this.tree.root, start);
+    const first = this.tree.find(start);
     if (!first) {
       return;
     }
@@ -142,12 +144,12 @@ export class Document {
         this.tree.delete(first.node);
       } else {
         this.#trimNodeEnd(first.node, count);
-        node.bubbleUpdate(first.node);
+        this.tree.bubbleUpdate(first.node);
       }
     } else if (offset2 < first.node.sliceLen) {
       if (first.offset === 0) {
         this.#trimNodeStart(first.node, count);
-        node.bubbleUpdate(first.node);
+        this.tree.bubbleUpdate(first.node);
       } else {
         const y = this.#splitNode(first.node, first.offset, count);
         this.tree.insertAfter(first.node, y);
@@ -161,7 +163,7 @@ export class Document {
         this.tree.insertAfter(first.node, x);
       }
 
-      const last = node.find(this.tree.root, end);
+      const last = this.tree.find(end);
       if (last && last.offset !== 0) {
         const y = this.#splitNode(last.node, last.offset, 0);
         this.tree.insertAfter(last.node, y);
@@ -170,7 +172,7 @@ export class Document {
       while (!x.nil && (i < count)) {
         i += x.sliceLen;
 
-        const next = node.successor(x);
+        const next = this.tree.successor(x);
 
         this.tree.delete(x);
 
@@ -188,11 +190,11 @@ export class Document {
     this.delete(i, this.#posToIndex(end));
   }
 
-  #createNode(text: string): node.TreeNode {
+  #createNode(text: string): TreeNode {
     const buf = new TextBuffer(text);
     const buf_index = this.#bufs.push(buf) - 1;
 
-    return node.create(
+    return newTreeNode(
       buf_index,
       0,
       buf.text.length,
@@ -200,24 +202,24 @@ export class Document {
     );
   }
 
-  #splitNode(x: node.TreeNode, index: number, gap: number): node.TreeNode {
+  #splitNode(x: TreeNode, index: number, gap: number): TreeNode {
     const buf = this.#bufs[x.buf]!;
 
     const start = x.sliceStart + index + gap;
     const len = x.sliceLen - index - gap;
 
     this.#resizeNode(x, index);
-    node.bubbleUpdate(x);
+    this.tree.bubbleUpdate(x);
 
     const eolSlice = new Slice(
       buf.getEolIndex(start),
       buf.getEolIndex(start + len),
     );
 
-    return node.create(x.buf, start, len, eolSlice);
+    return newTreeNode(x.buf, start, len, eolSlice);
   }
 
-  *#readNode(x: node.TreeNode, offset: number, n: number): Generator<string> {
+  *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
     while (!x.nil && (n > 0)) {
       const count = Math.min(x.sliceLen - offset, n);
 
@@ -226,26 +228,26 @@ export class Document {
         x.sliceStart + offset + count,
       );
 
-      x = node.successor(x);
+      x = this.tree.successor(x);
       offset = 0;
       n -= count;
     }
   }
 
-  #isNodeGrowable(x: node.TreeNode): boolean {
+  #isNodeGrowable(x: TreeNode): boolean {
     const buf = this.#bufs[x.buf]!;
 
     return (buf.text.length < 100) &&
       (x.sliceStart + x.sliceLen === buf.text.length);
   }
 
-  #growNode(x: node.TreeNode, text: string): void {
+  #growNode(x: TreeNode, text: string): void {
     this.#bufs[x.buf]!.append(text);
 
     this.#resizeNode(x, x.sliceLen + text.length);
   }
 
-  #trimNodeStart(x: node.TreeNode, n: number): void {
+  #trimNodeStart(x: TreeNode, n: number): void {
     const buf = this.#bufs[x.buf]!;
 
     x.sliceStart += n;
@@ -257,11 +259,11 @@ export class Document {
     );
   }
 
-  #trimNodeEnd(x: node.TreeNode, n: number): void {
+  #trimNodeEnd(x: TreeNode, n: number): void {
     this.#resizeNode(x, x.sliceLen - n);
   }
 
-  #resizeNode(x: node.TreeNode, len: number): void {
+  #resizeNode(x: TreeNode, len: number): void {
     const buf = this.#bufs[x.buf]!;
 
     x.sliceLen = len;
