@@ -1,4 +1,4 @@
-import { bubble, maximum, minimum, NIL, type TreeNode } from "./node.ts";
+import { bubbleUpdate, maximum, minimum, NIL, type TreeNode } from "./node.ts";
 
 export class Tree {
   root = NIL;
@@ -27,7 +27,7 @@ export class Tree {
     p.left = z;
     z.p = p;
 
-    bubble(z);
+    bubbleUpdate(z);
 
     this.#insertFixup(z);
   }
@@ -36,7 +36,7 @@ export class Tree {
     p.right = z;
     z.p = p;
 
-    bubble(z);
+    bubbleUpdate(z);
 
     this.#insertFixup(z);
   }
@@ -106,12 +106,14 @@ export class Tree {
       x = z.right;
 
       this.#transplant(z, z.right);
-      bubble(z.right.p);
+
+      bubbleUpdate(z.right.p);
     } else if (z.right.nil) {
       x = z.left;
 
       this.#transplant(z, z.left);
-      bubble(z.left.p);
+
+      bubbleUpdate(z.left.p);
     } else {
       y = minimum(z.right);
 
@@ -120,7 +122,8 @@ export class Tree {
 
       if (y !== z.right) {
         this.#transplant(y, y.right);
-        bubble(y.right.p);
+
+        bubbleUpdate(y.right.p);
 
         y.right = z.right;
         y.right.p = y;
@@ -134,7 +137,7 @@ export class Tree {
       y.left.p = y;
       y.red = z.red;
 
-      bubble(y);
+      bubbleUpdate(y);
     }
 
     if (!y_original_color) {
@@ -225,7 +228,7 @@ export class Tree {
     y.left = x;
     x.p = y;
 
-    bubble(x);
+    bubbleUpdate(x);
   }
 
   #rightRotate(y: TreeNode): void {
@@ -249,7 +252,7 @@ export class Tree {
     x.right = y;
     y.p = x;
 
-    bubble(y);
+    bubbleUpdate(y);
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {

@@ -40,7 +40,7 @@ export class TreeNode {
   }
 }
 
-export function bubble(x: TreeNode): void {
+export function bubbleUpdate(x: TreeNode): void {
   while (!x.nil) {
     x.total_len = x.left.total_len + x.slice_len + x.right.total_len;
 

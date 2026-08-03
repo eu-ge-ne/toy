@@ -1,5 +1,5 @@
 import { TextBuffer } from "./text-buffer.ts";
-import { bubble, NIL, successor, TreeNode } from "./tree/node.ts";
+import { bubbleUpdate, NIL, successor, TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -85,7 +85,6 @@ export class Document {
 
     if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
       this.#growNode(p, text);
-      bubble(p);
       return;
     }
 
@@ -146,12 +145,10 @@ export class Document {
         this.tree.delete(node);
       } else {
         this.#trimNodeEnd(node, count);
-        bubble(node);
       }
     } else if (offset2 < node.slice_len) {
       if (offset === 0) {
         this.#trimNodeStart(node, count);
-        bubble(node);
       } else {
         const y = this.#splitNode(node, offset, count);
         this.tree.insertAfter(node, y);
@@ -206,7 +203,6 @@ export class Document {
     const len = x.slice_len - index - gap;
 
     this.#resizeNode(x, index);
-    bubble(x);
 
     const eols_start = buf.indexToLine(start, x.eols_start + x.eols_len);
     const eols_end = buf.indexToLine(start + len, eols_start);
@@ -257,6 +253,8 @@ export class Document {
     );
 
     x.eols_len = eols_end - x.eols_start;
+
+    bubbleUpdate(x);
   }
 
   #trimNodeEnd(x: TreeNode, n: number): void {
@@ -274,6 +272,8 @@ export class Document {
     );
 
     x.eols_len = eols_end - x.eols_start;
+
+    bubbleUpdate(x);
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
