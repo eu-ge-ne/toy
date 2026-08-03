@@ -1,8 +1,8 @@
 export const NIL = {
   nil: true,
   red: false,
-  total_len: 0,
-  total_eols_len: 0,
+  totalLen: 0,
+  totalEolsLen: 0,
 } as TreeNode;
 
 NIL.p = NIL;
@@ -15,21 +15,21 @@ export interface TreeNode {
   p: TreeNode;
   left: TreeNode;
   right: TreeNode;
-  total_len: number;
-  total_eols_len: number;
+  totalLen: number;
+  totalEolsLen: number;
   buf: number;
-  slice_start: number;
-  slice_len: number;
-  eols_start: number;
-  eols_len: number;
+  sliceStart: number;
+  sliceLen: number;
+  eolsStart: number;
+  eolsLen: number;
 }
 
 export function createNode(
   buf: number,
-  slice_start: number,
-  slice_len: number,
-  eols_start: number,
-  eols_len: number,
+  sliceStart: number,
+  sliceLen: number,
+  eolsStart: number,
+  eolsLen: number,
 ): TreeNode {
   return {
     nil: false,
@@ -37,22 +37,22 @@ export function createNode(
     p: NIL,
     left: NIL,
     right: NIL,
-    total_len: slice_len,
-    total_eols_len: eols_len,
+    totalLen: sliceLen,
+    totalEolsLen: eolsLen,
     buf,
-    slice_start,
-    slice_len,
-    eols_start,
-    eols_len,
+    sliceStart,
+    sliceLen,
+    eolsStart,
+    eolsLen,
   };
 }
 
 export function bubbleUpdate(x: TreeNode): void {
   while (!x.nil) {
-    x.total_len = x.left.total_len + x.slice_len + x.right.total_len;
+    x.totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
 
-    x.total_eols_len = x.left.total_eols_len + x.eols_len +
-      x.right.total_eols_len;
+    x.totalEolsLen = x.left.totalEolsLen + x.eolsLen +
+      x.right.totalEolsLen;
 
     x = x.p;
   }

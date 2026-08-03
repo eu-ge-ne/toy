@@ -7,18 +7,18 @@ export class Tree {
     let x = this.root;
 
     while (!x.nil) {
-      if (index < x.left.total_len) {
+      if (index < x.left.totalLen) {
         x = x.left;
         continue;
       }
 
-      index -= x.left.total_len;
+      index -= x.left.totalLen;
 
-      if (index < x.slice_len) {
+      if (index < x.sliceLen) {
         return { node: x, offset: index };
       }
 
-      index -= x.slice_len;
+      index -= x.sliceLen;
       x = x.right;
     }
   }

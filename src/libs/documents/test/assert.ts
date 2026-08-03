@@ -53,7 +53,7 @@ function assertNode(x: TreeNode): void {
     assertNode(x.right);
 
     // 6. slice_len > 0
-    assert(x.slice_len > 0);
+    assert(x.sliceLen > 0);
   }
 }
 
