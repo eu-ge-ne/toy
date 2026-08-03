@@ -44,7 +44,7 @@ export class TreeNode {
     new Slice(0, 0),
   );
 
-  private static DIRTY = new Set<TreeNode>();
+  static #DIRTY = new Set<TreeNode>();
 
   static createFromText(bufs: TextBuffer[], text: string): TreeNode {
     const buf = new TextBuffer(text);
@@ -67,12 +67,12 @@ export class TreeNode {
 
   static updateDirty(): void {
     while (true) {
-      let x = TreeNode.DIRTY.keys().next().value;
+      let x = TreeNode.#DIRTY.keys().next().value;
       if (!x) {
         return;
       }
 
-      TreeNode.DIRTY.delete(x);
+      TreeNode.#DIRTY.delete(x);
 
       while (!x.isNIL) {
         x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
@@ -82,7 +82,7 @@ export class TreeNode {
 
         x = x.p;
 
-        TreeNode.DIRTY.delete(x);
+        TreeNode.#DIRTY.delete(x);
       }
     }
   }
@@ -242,21 +242,17 @@ export class TreeNode {
 
   minimum(): TreeNode {
     let x = this as TreeNode;
-
     while (!x.left.isNIL) {
       x = x.left;
     }
-
     return x;
   }
 
   maximum(): TreeNode {
     let x = this as TreeNode;
-
     while (!x.right.isNIL) {
       x = x.right;
     }
-
     return x;
   }
 
@@ -279,14 +275,14 @@ export class TreeNode {
 
   #setDirty(): void {
     if (!this.isNIL) {
-      TreeNode.DIRTY.add(this);
+      TreeNode.#DIRTY.add(this);
     }
   }
 
-  #resize(bufs: TextBuffer[], newLength: number): void {
+  #resize(bufs: TextBuffer[], newLen: number): void {
     const buf = bufs[this.bufIndex]!;
 
-    this.slice = new Slice(this.slice.start, this.slice.start + newLength);
+    this.slice = new Slice(this.slice.start, this.slice.start + newLen);
 
     this.eolSlice = new Slice(
       this.eolSlice.start,
