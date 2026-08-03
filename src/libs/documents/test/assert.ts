@@ -24,7 +24,7 @@ export function assertRoot(root: TreeNode): void {
   const heights = Array.from(leafs).map((x) => {
     let height = 0;
 
-    while (!x.p.nil) {
+    while (!x.p.isNIL) {
       if (!x.red) {
         height += 1;
       }
@@ -41,7 +41,7 @@ export function assertRoot(root: TreeNode): void {
 
 function assertNode(x: TreeNode): void {
   // 3. Every leaf (NIL) is black.
-  if (x.nil) {
+  if (x.isNIL) {
     assert(!x.red);
   } else {
     // 4. If a node is red, then both its children are black.
@@ -58,8 +58,8 @@ function assertNode(x: TreeNode): void {
 }
 
 function collectLeafs(x: TreeNode, leaf_parents: Set<TreeNode>): void {
-  if (!x.nil) {
-    if (x.left.nil || x.right.nil) {
+  if (!x.isNIL) {
+    if (x.left.isNIL || x.right.isNIL) {
       leaf_parents.add(x);
     }
 

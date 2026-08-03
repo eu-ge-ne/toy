@@ -56,7 +56,7 @@ export class Document {
     let p = TreeNode.NIL;
     let x = this.tree.root;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (i <= x.left.totalLen) {
         insert_case = InsertionCase.Left;
         p = x;
@@ -166,7 +166,7 @@ export class Document {
         this.tree.insertAfter(last.node, y);
       }
 
-      while (!x.nil && (i < count)) {
+      while (!x.isNIL && (i < count)) {
         i += x.slice.length;
 
         const next = x.successor();
@@ -199,21 +199,21 @@ export class Document {
   }
 
   #splitNode(x: TreeNode, offsetInNode: number): TreeNode {
-    const buf = this.#bufs[x.buf]!;
+    const buf = this.#bufs[x.bufIndex]!;
 
     const slice = new Slice(x.slice.start + offsetInNode, x.slice.end);
     const eolSlice = new Slice(buf.getEolIndex(slice.start), x.eolSlice.end);
 
     this.#resizeNode(x, offsetInNode);
 
-    return TreeNode.create(x.buf, slice, eolSlice);
+    return TreeNode.create(x.bufIndex, slice, eolSlice);
   }
 
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
-    while (!x.nil && (n > 0)) {
+    while (!x.isNIL && (n > 0)) {
       const count = Math.min(x.slice.length - offset, n);
 
-      yield this.#bufs[x.buf]!.text.slice(
+      yield this.#bufs[x.bufIndex]!.text.slice(
         x.slice.start + offset,
         x.slice.start + offset + count,
       );
@@ -225,20 +225,20 @@ export class Document {
   }
 
   #isNodeGrowable(x: TreeNode): boolean {
-    const buf = this.#bufs[x.buf]!;
+    const buf = this.#bufs[x.bufIndex]!;
 
     return (buf.text.length < 100) &&
       (x.slice.start + x.slice.length === buf.text.length);
   }
 
   #growNode(x: TreeNode, text: string): void {
-    this.#bufs[x.buf]!.append(text);
+    this.#bufs[x.bufIndex]!.append(text);
 
     this.#resizeNode(x, x.slice.length + text.length);
   }
 
   #trimNodeStart(x: TreeNode, n: number): void {
-    const buf = this.#bufs[x.buf]!;
+    const buf = this.#bufs[x.bufIndex]!;
 
     x.slice = new Slice(x.slice.start + n, x.slice.end);
     x.eolSlice = new Slice(buf.getEolIndex(x.slice.start), x.eolSlice.end);
@@ -251,7 +251,7 @@ export class Document {
   }
 
   #resizeNode(x: TreeNode, len: number): void {
-    const buf = this.#bufs[x.buf]!;
+    const buf = this.#bufs[x.bufIndex]!;
 
     x.slice = new Slice(x.slice.start, x.slice.start + len);
     x.eolSlice = new Slice(x.eolSlice.start, buf.getEolIndex(x.slice.end));
@@ -281,7 +281,7 @@ export class Document {
     let x = this.tree.root;
     let i = 0;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (eol_index < x.left.totalEolsLen) {
         x = x.left;
         continue;
@@ -291,7 +291,7 @@ export class Document {
       i += x.left.totalLen;
 
       if (eol_index < x.eolSlice.length) {
-        const buf = this.#bufs[x.buf]!;
+        const buf = this.#bufs[x.bufIndex]!;
         const eol_end = buf.eols[x.eolSlice.start + eol_index]!.end;
         return i + eol_end - x.slice.start;
       }

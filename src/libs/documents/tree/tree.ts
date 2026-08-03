@@ -6,7 +6,7 @@ export class Tree {
   find(charIndex: number): { node: TreeNode; offset: number } | undefined {
     let x = this.root;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (charIndex < x.left.totalLen) {
         x = x.left;
         continue;
@@ -38,7 +38,7 @@ export class Tree {
   }
 
   insertBefore(p: TreeNode, z: TreeNode): void {
-    if (p.left.nil) {
+    if (p.left.isNIL) {
       this.insertLeft(p, z);
     } else {
       this.insertRight(p.left.maximum(), z);
@@ -46,7 +46,7 @@ export class Tree {
   }
 
   insertAfter(p: TreeNode, z: TreeNode): void {
-    if (p.right.nil) {
+    if (p.right.isNIL) {
       this.insertRight(p, z);
     } else {
       this.insertLeft(p.right.minimum(), z);
@@ -100,11 +100,11 @@ export class Tree {
     let y_original_color = y.red;
     let x: TreeNode;
 
-    if (z.left.nil) {
+    if (z.left.isNIL) {
       x = z.right;
 
       this.#transplant(z, z.right);
-    } else if (z.right.nil) {
+    } else if (z.right.isNIL) {
       x = z.left;
 
       this.#transplant(z, z.left);
@@ -203,13 +203,13 @@ export class Tree {
     const y = x.right;
 
     x.right = y.left;
-    if (!y.left.nil) {
+    if (!y.left.isNIL) {
       y.left.p = x;
     }
 
     y.p = x.p;
 
-    if (x.p.nil) {
+    if (x.p.isNIL) {
       this.root = y;
     } else if (x === x.p.left) {
       x.p.left = y;
@@ -225,13 +225,13 @@ export class Tree {
     const x = y.left;
 
     y.left = x.right;
-    if (!x.right.nil) {
+    if (!x.right.isNIL) {
       x.right.p = y;
     }
 
     x.p = y.p;
 
-    if (y.p.nil) {
+    if (y.p.isNIL) {
       this.root = x;
     } else if (y === y.p.left) {
       y.p.left = x;
@@ -244,7 +244,7 @@ export class Tree {
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {
-    if (u.p.nil) {
+    if (u.p.isNIL) {
       this.root = v;
     } else if (u === u.p.left) {
       u.p.left = v;

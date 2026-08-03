@@ -1,7 +1,7 @@
 import { Slice } from "../slice.ts";
 
 export class TreeNode {
-  #buf: number;
+  readonly #bufIndex: number;
   #red: boolean;
 
   #p: TreeNode;
@@ -16,12 +16,12 @@ export class TreeNode {
 
   private constructor(
     nil: TreeNode | undefined,
-    buf: number,
+    bufIndex: number,
     red: boolean,
     slice: Slice,
     eolSlice: Slice,
   ) {
-    this.#buf = buf;
+    this.#bufIndex = bufIndex;
     this.#red = red;
 
     this.#p = nil ?? this;
@@ -45,18 +45,18 @@ export class TreeNode {
 
   private static DIRTY = new Set<TreeNode>();
 
-  static create(buf: number, slice: Slice, eolSlice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, buf, true, slice, eolSlice);
+  static create(bufIndex: number, slice: Slice, eolSlice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, bufIndex, true, slice, eolSlice);
   }
 
   clone(): TreeNode {
-    if (this.nil) {
+    if (this.isNIL) {
       return this;
     }
 
     const x = new TreeNode(
       TreeNode.NIL,
-      this.#buf,
+      this.#bufIndex,
       this.#red,
       this.#slice,
       this.#eolSlice,
@@ -81,7 +81,7 @@ export class TreeNode {
 
       TreeNode.DIRTY.delete(x);
 
-      while (!x.nil) {
+      while (!x.isNIL) {
         x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
 
         x.#totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
@@ -94,12 +94,12 @@ export class TreeNode {
     }
   }
 
-  get nil(): boolean {
+  get isNIL(): boolean {
     return this === TreeNode.NIL;
   }
 
-  get buf(): number {
-    return this.#buf;
+  get bufIndex(): number {
+    return this.#bufIndex;
   }
 
   get red(): boolean {
@@ -167,7 +167,7 @@ export class TreeNode {
   minimum(): TreeNode {
     let x = this as TreeNode;
 
-    while (!x.left.nil) {
+    while (!x.left.isNIL) {
       x = x.left;
     }
 
@@ -177,7 +177,7 @@ export class TreeNode {
   maximum(): TreeNode {
     let x = this as TreeNode;
 
-    while (!x.right.nil) {
+    while (!x.right.isNIL) {
       x = x.right;
     }
 
@@ -187,12 +187,12 @@ export class TreeNode {
   successor(): TreeNode {
     let x = this as TreeNode;
 
-    if (!x.right.nil) {
+    if (!x.right.isNIL) {
       return this.right.minimum();
     } else {
       let y = x.p;
 
-      while (!y.nil && x === y.right) {
+      while (!y.isNIL && x === y.right) {
         x = y;
         y = y.p;
       }
@@ -202,7 +202,7 @@ export class TreeNode {
   }
 
   #setDirty(): void {
-    if (!this.nil) {
+    if (!this.isNIL) {
       TreeNode.DIRTY.add(this);
     }
   }
