@@ -1,3 +1,4 @@
+import { Slice } from "./slice.ts";
 import { TextBuffer } from "./text-buffer.ts";
 import * as node from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
@@ -191,7 +192,12 @@ export class Document {
     const buf = new TextBuffer(text);
     const buf_index = this.#bufs.push(buf) - 1;
 
-    return node.create(buf_index, 0, buf.text.length, 0, buf.eols.length);
+    return node.create(
+      buf_index,
+      0,
+      buf.text.length,
+      new Slice(0, buf.eols.length),
+    );
   }
 
   #splitNode(x: node.TreeNode, index: number, gap: number): node.TreeNode {
@@ -203,11 +209,12 @@ export class Document {
     this.#resizeNode(x, index);
     node.bubbleUpdate(x);
 
-    const eols_start = buf.indexToLine(start, x.eolsStart + x.eolsLen);
-    const eols_end = buf.indexToLine(start + len, eols_start);
-    const eols_len = eols_end - eols_start;
+    const eolSlice = new Slice(
+      buf.getEolIndex(start),
+      buf.getEolIndex(start + len),
+    );
 
-    return node.create(x.buf, start, len, eols_start, eols_len);
+    return node.create(x.buf, start, len, eolSlice);
   }
 
   *#readNode(x: node.TreeNode, offset: number, n: number): Generator<string> {
@@ -244,14 +251,10 @@ export class Document {
     x.sliceStart += n;
     x.sliceLen -= n;
 
-    x.eolsStart = buf.indexToLine(x.sliceStart, x.eolsStart);
-
-    const eols_end = buf.indexToLine(
-      x.sliceStart + x.sliceLen,
-      x.eolsStart,
+    x.eolSlice = new Slice(
+      buf.getEolIndex(x.sliceStart),
+      x.eolSlice.end,
     );
-
-    x.eolsLen = eols_end - x.eolsStart;
   }
 
   #trimNodeEnd(x: node.TreeNode, n: number): void {
@@ -263,12 +266,10 @@ export class Document {
 
     x.sliceLen = len;
 
-    const eols_end = buf.indexToLine(
-      x.sliceStart + x.sliceLen,
-      x.eolsStart,
+    x.eolSlice = new Slice(
+      x.eolSlice.start,
+      buf.getEolIndex(x.sliceStart + x.sliceLen),
     );
-
-    x.eolsLen = eols_end - x.eolsStart;
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
@@ -302,13 +303,13 @@ export class Document {
       eol_index -= x.left.totalEolsLen;
       i += x.left.totalLen;
 
-      if (eol_index < x.eolsLen) {
+      if (eol_index < x.eolSlice.length) {
         const buf = this.#bufs[x.buf]!;
-        const eol_end = buf.eols[x.eolsStart + eol_index]!.end;
+        const eol_end = buf.eols[x.eolSlice.start + eol_index]!.end;
         return i + eol_end - x.sliceStart;
       }
 
-      eol_index -= x.eolsLen;
+      eol_index -= x.eolSlice.length;
       i += x.sliceLen;
       x = x.right;
     }

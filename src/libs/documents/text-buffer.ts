@@ -17,7 +17,8 @@ export class TextBuffer {
     this.text += text;
   }
 
-  indexToLine(index: number, a = 0): number {
+  getEolIndex(charIndex: number): number {
+    let a = 0;
     let b = this.eols.length - 1;
 
     while (a <= b) {
@@ -25,11 +26,11 @@ export class TextBuffer {
       const start = this.eols[i]!.start;
       const end = this.eols[i]?.end!;
 
-      if (index >= end) {
+      if (charIndex >= end) {
         a = i + 1;
-      } else if (index < start) {
+      } else if (charIndex < start) {
         b = i - 1;
-      } else if (index === start) {
+      } else if (charIndex === start) {
         a = i;
         break;
       } else {
