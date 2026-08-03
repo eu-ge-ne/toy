@@ -124,7 +124,7 @@ export class TreeNode {
 
   set red(x: boolean) {
     this.#red = x;
-    //TreeNode.dirty.add(this);
+    TreeNode.dirty.add(this);
   }
 
   get p(): TreeNode {
@@ -133,7 +133,7 @@ export class TreeNode {
 
   set p(x: TreeNode) {
     this.#p = x;
-    //TreeNode.dirty.add(this);
+    TreeNode.dirty.add(this);
   }
 
   get left(): TreeNode {
