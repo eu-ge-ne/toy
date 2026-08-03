@@ -27,16 +27,12 @@ export class Tree {
     p.left = z;
     z.p = p;
 
-    TreeNode.updateDirty();
-
     this.#insertFixup(z);
   }
 
   insertRight(p: TreeNode, z: TreeNode): void {
     p.right = z;
     z.p = p;
-
-    TreeNode.updateDirty();
 
     this.#insertFixup(z);
   }
@@ -95,6 +91,8 @@ export class Tree {
     }
 
     this.root.red = false;
+
+    TreeNode.updateDirty();
   }
 
   delete(z: TreeNode): void {
@@ -106,14 +104,10 @@ export class Tree {
       x = z.right;
 
       this.#transplant(z, z.right);
-
-      TreeNode.updateDirty();
     } else if (z.right.nil) {
       x = z.left;
 
       this.#transplant(z, z.left);
-
-      TreeNode.updateDirty();
     } else {
       y = this.#minimum(z.right);
 
@@ -122,8 +116,6 @@ export class Tree {
 
       if (y !== z.right) {
         this.#transplant(y, y.right);
-
-        TreeNode.updateDirty();
 
         y.right = z.right;
         y.right.p = y;
@@ -136,13 +128,13 @@ export class Tree {
       y.left = z.left;
       y.left.p = y;
       y.red = z.red;
-
-      TreeNode.updateDirty();
     }
 
     if (!y_original_color) {
       this.#deleteFixup(x);
     }
+
+    TreeNode.updateDirty();
   }
 
   #deleteFixup(x: TreeNode): void {
@@ -227,8 +219,6 @@ export class Tree {
 
     y.left = x;
     x.p = y;
-
-    TreeNode.updateDirty();
   }
 
   #rightRotate(y: TreeNode): void {
@@ -251,8 +241,6 @@ export class Tree {
 
     x.right = y;
     y.p = x;
-
-    TreeNode.updateDirty();
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {
