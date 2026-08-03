@@ -193,7 +193,7 @@ export class Document {
     const slice = new Slice(x.slice.start + offsetInNode, x.slice.end);
     const eolSlice = new Slice(buf.getEolIndex(slice.start), x.eolSlice.end);
 
-    this.#resizeNode(x, offsetInNode);
+    x.resize(this.#bufs, offsetInNode);
 
     return TreeNode.createFromSlice(x.bufIndex, slice, eolSlice);
   }
@@ -223,7 +223,7 @@ export class Document {
   #growNode(x: TreeNode, text: string): void {
     this.#bufs[x.bufIndex]!.append(text);
 
-    this.#resizeNode(x, x.slice.length + text.length);
+    x.resize(this.#bufs, x.slice.length + text.length);
   }
 
   #trimNodeStart(x: TreeNode, n: number): void {
@@ -236,16 +236,7 @@ export class Document {
   }
 
   #trimNodeEnd(x: TreeNode, n: number): void {
-    this.#resizeNode(x, x.slice.length - n);
-  }
-
-  #resizeNode(x: TreeNode, len: number): void {
-    const buf = this.#bufs[x.bufIndex]!;
-
-    x.slice = new Slice(x.slice.start, x.slice.start + len);
-    x.eolSlice = new Slice(x.eolSlice.start, buf.getEolIndex(x.slice.end));
-
-    TreeNode.updateDirty();
+    x.resize(this.#bufs, x.slice.length - n);
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {

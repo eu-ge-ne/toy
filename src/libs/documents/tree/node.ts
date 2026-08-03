@@ -65,6 +65,28 @@ export class TreeNode {
     return new TreeNode(TreeNode.NIL, bufIndex, true, slice, eolSlice);
   }
 
+  static updateDirty(): void {
+    while (true) {
+      let x = TreeNode.DIRTY.keys().next().value;
+      if (!x) {
+        return;
+      }
+
+      TreeNode.DIRTY.delete(x);
+
+      while (!x.isNIL) {
+        x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
+
+        x.#totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
+          x.right.totalEolsLen;
+
+        x = x.p;
+
+        TreeNode.DIRTY.delete(x);
+      }
+    }
+  }
+
   clone(): TreeNode {
     if (this.isNIL) {
       return this;
@@ -88,26 +110,17 @@ export class TreeNode {
     return x;
   }
 
-  static updateDirty(): void {
-    while (true) {
-      let x = TreeNode.DIRTY.keys().next().value;
-      if (!x) {
-        return;
-      }
+  resize(bufs: TextBuffer[], newLength: number): void {
+    const buf = bufs[this.bufIndex]!;
 
-      TreeNode.DIRTY.delete(x);
+    this.slice = new Slice(this.slice.start, this.slice.start + newLength);
 
-      while (!x.isNIL) {
-        x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
+    this.eolSlice = new Slice(
+      this.eolSlice.start,
+      buf.getEolIndex(this.slice.end),
+    );
 
-        x.#totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
-          x.right.totalEolsLen;
-
-        x = x.p;
-
-        TreeNode.DIRTY.delete(x);
-      }
-    }
+    TreeNode.updateDirty();
   }
 
   get isNIL(): boolean {
