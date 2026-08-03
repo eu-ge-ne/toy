@@ -3,6 +3,7 @@ export const NIL = {
   buf: Number.MAX_SAFE_INTEGER,
 
   red: false,
+
   totalLen: 0,
   totalEolsLen: 0,
 } as TreeNode;
@@ -19,8 +20,10 @@ export interface TreeNode {
   p: TreeNode;
   left: TreeNode;
   right: TreeNode;
+
   totalLen: number;
   totalEolsLen: number;
+
   sliceStart: number;
   sliceLen: number;
   eolsStart: number;
@@ -42,8 +45,10 @@ export function createNode(
     p: NIL,
     left: NIL,
     right: NIL,
+
     totalLen: sliceLen,
     totalEolsLen: eolsLen,
+
     sliceStart,
     sliceLen,
     eolsStart,
