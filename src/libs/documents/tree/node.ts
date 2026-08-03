@@ -1,27 +1,41 @@
 import { Slice } from "../slice.ts";
 
 export class TreeNode {
-  p: TreeNode;
-  left: TreeNode;
-  right: TreeNode;
+  #buf: number;
+  #red: boolean;
 
-  totalLen: number;
-  totalEolsLen: number;
+  #p: TreeNode;
+  #left: TreeNode;
+  #right: TreeNode;
+
+  #sliceStart: number;
+  #sliceLen: number;
+  #eolSlice: Slice;
+
+  #totalLen: number;
+  #totalEolsLen: number;
 
   private constructor(
-    public buf: number,
-    public red: boolean,
-    public sliceStart: number,
-    public sliceLen: number,
-    public eolSlice: Slice,
+    buf: number,
+    red: boolean,
+    sliceStart: number,
+    sliceLen: number,
+    eolSlice: Slice,
     nil?: TreeNode,
   ) {
-    this.p = nil ?? this;
-    this.left = nil ?? this;
-    this.right = nil ?? this;
+    this.#buf = buf;
+    this.#red = red;
 
-    this.totalLen = sliceLen;
-    this.totalEolsLen = eolSlice.length;
+    this.#p = nil ?? this;
+    this.#left = nil ?? this;
+    this.#right = nil ?? this;
+
+    this.#sliceStart = sliceStart;
+    this.#sliceLen = sliceLen;
+    this.#eolSlice = eolSlice;
+
+    this.#totalLen = sliceLen;
+    this.#totalEolsLen = eolSlice.length;
   }
 
   static NIL = new TreeNode(
@@ -54,25 +68,101 @@ export class TreeNode {
     }
 
     const x = new TreeNode(
-      this.buf,
-      this.red,
-      this.sliceStart,
-      this.sliceLen,
-      this.eolSlice,
+      this.#buf,
+      this.#red,
+      this.#sliceStart,
+      this.#sliceLen,
+      this.#eolSlice,
       TreeNode.NIL,
     );
 
-    x.p = this.p;
-    x.left = this.left.clone();
-    x.right = this.right.clone();
+    x.#p = this.#p;
+    x.#left = this.#left.clone();
+    x.#right = this.#right.clone();
 
-    x.totalLen = this.totalLen;
-    x.totalEolsLen = this.totalEolsLen;
+    x.#totalLen = this.#totalLen;
+    x.#totalEolsLen = this.#totalEolsLen;
 
     return x;
   }
 
   get nil(): boolean {
     return this === TreeNode.NIL;
+  }
+
+  get buf(): number {
+    return this.#buf;
+  }
+
+  get red(): boolean {
+    return this.#red;
+  }
+
+  set red(x: boolean) {
+    this.#red = x;
+  }
+
+  get p(): TreeNode {
+    return this.#p;
+  }
+
+  set p(x: TreeNode) {
+    this.#p = x;
+  }
+
+  get left(): TreeNode {
+    return this.#left;
+  }
+
+  set left(x: TreeNode) {
+    this.#left = x;
+  }
+
+  get right(): TreeNode {
+    return this.#right;
+  }
+
+  set right(x: TreeNode) {
+    this.#right = x;
+  }
+
+  get sliceStart(): number {
+    return this.#sliceStart;
+  }
+
+  set sliceStart(x: number) {
+    this.#sliceStart = x;
+  }
+
+  get sliceLen(): number {
+    return this.#sliceLen;
+  }
+
+  set sliceLen(x: number) {
+    this.#sliceLen = x;
+  }
+
+  get eolSlice(): Slice {
+    return this.#eolSlice;
+  }
+
+  set eolSlice(x: Slice) {
+    this.#eolSlice = x;
+  }
+
+  get totalLen(): number {
+    return this.#totalLen;
+  }
+
+  set totalLen(x: number) {
+    this.#totalLen = x;
+  }
+
+  get totalEolsLen(): number {
+    return this.#totalEolsLen;
+  }
+
+  set totalEolsLen(x: number) {
+    this.#totalEolsLen = x;
   }
 }
