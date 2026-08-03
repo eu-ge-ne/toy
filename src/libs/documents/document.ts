@@ -1,5 +1,11 @@
 import { TextBuffer } from "./text-buffer.ts";
-import { bubbleUpdate, NIL, successor, TreeNode } from "./tree/node.ts";
+import {
+  bubbleUpdate,
+  createNode,
+  NIL,
+  successor,
+  TreeNode,
+} from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -193,7 +199,7 @@ export class Document {
     const buf = new TextBuffer(text);
     const buf_index = this.#bufs.push(buf) - 1;
 
-    return new TreeNode(buf_index, 0, buf.text.length, 0, buf.eols.length);
+    return createNode(buf_index, 0, buf.text.length, 0, buf.eols.length);
   }
 
   #splitNode(x: TreeNode, index: number, gap: number): TreeNode {
@@ -208,7 +214,7 @@ export class Document {
     const eols_end = buf.indexToLine(start + len, eols_start);
     const eols_len = eols_end - eols_start;
 
-    return new TreeNode(x.buf, start, len, eols_start, eols_len);
+    return createNode(x.buf, start, len, eols_start, eols_len);
   }
 
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
