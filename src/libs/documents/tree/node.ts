@@ -124,7 +124,7 @@ export class TreeNode {
 
   set red(x: boolean) {
     this.#red = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get p(): TreeNode {
@@ -133,7 +133,7 @@ export class TreeNode {
 
   set p(x: TreeNode) {
     this.#p = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get left(): TreeNode {
@@ -142,7 +142,7 @@ export class TreeNode {
 
   set left(x: TreeNode) {
     this.#left = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get right(): TreeNode {
@@ -151,7 +151,7 @@ export class TreeNode {
 
   set right(x: TreeNode) {
     this.#right = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get sliceStart(): number {
@@ -160,7 +160,7 @@ export class TreeNode {
 
   set sliceStart(x: number) {
     this.#sliceStart = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get sliceLen(): number {
@@ -169,7 +169,7 @@ export class TreeNode {
 
   set sliceLen(x: number) {
     this.#sliceLen = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get eolSlice(): Slice {
@@ -178,24 +178,20 @@ export class TreeNode {
 
   set eolSlice(x: Slice) {
     this.#eolSlice = x;
-    TreeNode.dirty.add(this);
+    this.#setDirty();
   }
 
   get totalLen(): number {
     return this.#totalLen;
   }
 
-  set totalLen(x: number) {
-    this.#totalLen = x;
-    TreeNode.dirty.add(this);
-  }
-
   get totalEolsLen(): number {
     return this.#totalEolsLen;
   }
 
-  set totalEolsLen(x: number) {
-    this.#totalEolsLen = x;
-    TreeNode.dirty.add(this);
+  #setDirty(): void {
+    if (!this.nil) {
+      TreeNode.dirty.add(this);
+    }
   }
 }
