@@ -14,11 +14,11 @@ export class Tree {
 
       charIndex -= x.left.totalLen;
 
-      if (charIndex < x.sliceLen) {
+      if (charIndex < x.slice.length) {
         return { node: x, offset: charIndex };
       }
 
-      charIndex -= x.sliceLen;
+      charIndex -= x.slice.length;
       x = x.right;
     }
   }

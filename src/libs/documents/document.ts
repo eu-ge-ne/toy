@@ -66,14 +66,14 @@ export class Document {
 
       i -= x.left.totalLen;
 
-      if (i < x.sliceLen) {
+      if (i < x.slice.length) {
         insert_case = InsertionCase.Split;
         p = x;
         x = TreeNode.NIL;
         continue;
       }
 
-      i -= x.sliceLen;
+      i -= x.slice.length;
 
       insert_case = InsertionCase.Right;
       p = x;
@@ -137,13 +137,13 @@ export class Document {
     const count = end - start;
     const offset2 = first.offset + count;
 
-    if (offset2 === first.node.sliceLen) {
+    if (offset2 === first.node.slice.length) {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
         this.#trimNodeEnd(first.node, count);
       }
-    } else if (offset2 < first.node.sliceLen) {
+    } else if (offset2 < first.node.slice.length) {
       if (first.offset === 0) {
         this.#trimNodeStart(first.node, count);
       } else {
@@ -167,7 +167,7 @@ export class Document {
       }
 
       while (!x.nil && (i < count)) {
-        i += x.sliceLen;
+        i += x.slice.length;
 
         const next = x.successor();
 
@@ -189,12 +189,10 @@ export class Document {
 
   #createNode(text: string): TreeNode {
     const buf = new TextBuffer(text);
-    const buf_index = this.#bufs.push(buf) - 1;
 
     return TreeNode.create(
-      buf_index,
-      0,
-      buf.text.length,
+      this.#bufs.push(buf) - 1,
+      new Slice(0, buf.text.length),
       new Slice(0, buf.eols.length),
     );
   }
@@ -202,26 +200,21 @@ export class Document {
   #splitNode(x: TreeNode, offsetInNode: number): TreeNode {
     const buf = this.#bufs[x.buf]!;
 
-    const start = x.sliceStart + offsetInNode;
-    const len = x.sliceLen - offsetInNode;
+    const slice = new Slice(x.slice.start + offsetInNode, x.slice.end);
+    const eolSlice = new Slice(buf.getEolIndex(slice.start), x.eolSlice.end);
 
     this.#resizeNode(x, offsetInNode);
 
-    const eolSlice = new Slice(
-      buf.getEolIndex(start),
-      buf.getEolIndex(start + len),
-    );
-
-    return TreeNode.create(x.buf, start, len, eolSlice);
+    return TreeNode.create(x.buf, slice, eolSlice);
   }
 
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
     while (!x.nil && (n > 0)) {
-      const count = Math.min(x.sliceLen - offset, n);
+      const count = Math.min(x.slice.length - offset, n);
 
       yield this.#bufs[x.buf]!.text.slice(
-        x.sliceStart + offset,
-        x.sliceStart + offset + count,
+        x.slice.start + offset,
+        x.slice.start + offset + count,
       );
 
       x = x.successor();
@@ -234,39 +227,33 @@ export class Document {
     const buf = this.#bufs[x.buf]!;
 
     return (buf.text.length < 100) &&
-      (x.sliceStart + x.sliceLen === buf.text.length);
+      (x.slice.start + x.slice.length === buf.text.length);
   }
 
   #growNode(x: TreeNode, text: string): void {
     this.#bufs[x.buf]!.append(text);
 
-    this.#resizeNode(x, x.sliceLen + text.length);
+    this.#resizeNode(x, x.slice.length + text.length);
   }
 
   #trimNodeStart(x: TreeNode, n: number): void {
     const buf = this.#bufs[x.buf]!;
 
-    x.sliceStart += n;
-    x.sliceLen -= n;
-
-    x.eolSlice = new Slice(buf.getEolIndex(x.sliceStart), x.eolSlice.end);
+    x.slice = new Slice(x.slice.start + n, x.slice.end);
+    x.eolSlice = new Slice(buf.getEolIndex(x.slice.start), x.eolSlice.end);
 
     TreeNode.updateDirty();
   }
 
   #trimNodeEnd(x: TreeNode, n: number): void {
-    this.#resizeNode(x, x.sliceLen - n);
+    this.#resizeNode(x, x.slice.length - n);
   }
 
   #resizeNode(x: TreeNode, len: number): void {
     const buf = this.#bufs[x.buf]!;
 
-    x.sliceLen = len;
-
-    x.eolSlice = new Slice(
-      x.eolSlice.start,
-      buf.getEolIndex(x.sliceStart + x.sliceLen),
-    );
+    x.slice = new Slice(x.slice.start, x.slice.start + len);
+    x.eolSlice = new Slice(x.eolSlice.start, buf.getEolIndex(x.slice.end));
 
     TreeNode.updateDirty();
   }
@@ -305,11 +292,11 @@ export class Document {
       if (eol_index < x.eolSlice.length) {
         const buf = this.#bufs[x.buf]!;
         const eol_end = buf.eols[x.eolSlice.start + eol_index]!.end;
-        return i + eol_end - x.sliceStart;
+        return i + eol_end - x.slice.start;
       }
 
       eol_index -= x.eolSlice.length;
-      i += x.sliceLen;
+      i += x.slice.length;
       x = x.right;
     }
   }

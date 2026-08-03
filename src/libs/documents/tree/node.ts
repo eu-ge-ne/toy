@@ -8,8 +8,7 @@ export class TreeNode {
   #left: TreeNode;
   #right: TreeNode;
 
-  #sliceStart: number;
-  #sliceLen: number;
+  #slice: Slice;
   #eolSlice: Slice;
 
   #totalLen: number;
@@ -19,8 +18,7 @@ export class TreeNode {
     nil: TreeNode | undefined,
     buf: number,
     red: boolean,
-    sliceStart: number,
-    sliceLen: number,
+    slice: Slice,
     eolSlice: Slice,
   ) {
     this.#buf = buf;
@@ -30,11 +28,10 @@ export class TreeNode {
     this.#left = nil ?? this;
     this.#right = nil ?? this;
 
-    this.#sliceStart = sliceStart;
-    this.#sliceLen = sliceLen;
+    this.#slice = slice;
     this.#eolSlice = eolSlice;
 
-    this.#totalLen = sliceLen;
+    this.#totalLen = slice.length;
     this.#totalEolsLen = eolSlice.length;
   }
 
@@ -42,27 +39,14 @@ export class TreeNode {
     undefined,
     Number.MAX_SAFE_INTEGER,
     false,
-    0,
-    0,
+    new Slice(0, 0),
     new Slice(0, 0),
   );
 
   private static DIRTY = new Set<TreeNode>();
 
-  static create(
-    buf: number,
-    sliceStart: number,
-    sliceLen: number,
-    eolSlice: Slice,
-  ): TreeNode {
-    return new TreeNode(
-      TreeNode.NIL,
-      buf,
-      true,
-      sliceStart,
-      sliceLen,
-      eolSlice,
-    );
+  static create(buf: number, slice: Slice, eolSlice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, buf, true, slice, eolSlice);
   }
 
   clone(): TreeNode {
@@ -74,8 +58,7 @@ export class TreeNode {
       TreeNode.NIL,
       this.#buf,
       this.#red,
-      this.#sliceStart,
-      this.#sliceLen,
+      this.#slice,
       this.#eolSlice,
     );
 
@@ -99,7 +82,7 @@ export class TreeNode {
       TreeNode.DIRTY.delete(x);
 
       while (!x.nil) {
-        x.#totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
+        x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
 
         x.#totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
           x.right.totalEolsLen;
@@ -155,21 +138,12 @@ export class TreeNode {
     this.#setDirty();
   }
 
-  get sliceStart(): number {
-    return this.#sliceStart;
+  get slice(): Slice {
+    return this.#slice;
   }
 
-  set sliceStart(x: number) {
-    this.#sliceStart = x;
-    this.#setDirty();
-  }
-
-  get sliceLen(): number {
-    return this.#sliceLen;
-  }
-
-  set sliceLen(x: number) {
-    this.#sliceLen = x;
+  set slice(x: Slice) {
+    this.#slice = x;
     this.#setDirty();
   }
 
