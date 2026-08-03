@@ -3,6 +3,26 @@ import { bubble, maximum, minimum, NIL, type TreeNode } from "./node.ts";
 export class Tree {
   root = NIL;
 
+  find(index: number): { node: TreeNode; offset: number } | undefined {
+    let x = this.root;
+
+    while (!x.nil) {
+      if (index < x.left.total_len) {
+        x = x.left;
+        continue;
+      }
+
+      index -= x.left.total_len;
+
+      if (index < x.slice_len) {
+        return { node: x, offset: index };
+      }
+
+      index -= x.slice_len;
+      x = x.right;
+    }
+  }
+
   insertLeft(p: TreeNode, z: TreeNode): void {
     p.left = z;
     z.p = p;

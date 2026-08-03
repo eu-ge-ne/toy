@@ -40,27 +40,6 @@ export class TreeNode {
   }
 }
 
-export function find(
-  x: TreeNode,
-  index: number,
-): { node: TreeNode; offset: number } | undefined {
-  while (!x.nil) {
-    if (index < x.left.total_len) {
-      x = x.left;
-      continue;
-    }
-
-    index -= x.left.total_len;
-
-    if (index < x.slice_len) {
-      return { node: x, offset: index };
-    }
-
-    index -= x.slice_len;
-    x = x.right;
-  }
-}
-
 export function bubble(x: TreeNode): void {
   while (!x.nil) {
     x.total_len = x.left.total_len + x.slice_len + x.right.total_len;

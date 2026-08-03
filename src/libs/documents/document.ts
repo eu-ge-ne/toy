@@ -1,5 +1,5 @@
 import { TextBuffer } from "./text-buffer.ts";
-import { bubble, find, NIL, successor, TreeNode } from "./tree/node.ts";
+import { bubble, NIL, successor, TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -31,7 +31,7 @@ export class Document {
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
-    const first = find(this.tree.root, start);
+    const first = this.tree.find(start);
     if (!first) {
       return;
     }
@@ -132,7 +132,7 @@ export class Document {
   }
 
   delete(start: number, end = Number.MAX_SAFE_INTEGER): void {
-    const first = find(this.tree.root, start);
+    const first = this.tree.find(start);
     if (!first) {
       return;
     }
@@ -165,7 +165,7 @@ export class Document {
         this.tree.insertAfter(node, x);
       }
 
-      const last = find(this.tree.root, end);
+      const last = this.tree.find(end);
       if (last && last.offset !== 0) {
         const y = this.#splitNode(last.node, last.offset, 0);
         this.tree.insertAfter(last.node, y);
