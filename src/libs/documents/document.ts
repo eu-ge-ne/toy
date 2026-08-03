@@ -16,7 +16,7 @@ export class Document {
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = this.#createNode(text);
+      this.tree.root = TreeNode.createFromText(this.#bufs, text);
       this.tree.root.red = false;
     }
   }
@@ -86,7 +86,7 @@ export class Document {
       return;
     }
 
-    const child = this.#createNode(text);
+    const child = TreeNode.createFromText(this.#bufs, text);
 
     switch (insert_case) {
       case InsertionCase.Root: {
@@ -187,17 +187,6 @@ export class Document {
     this.delete(i, this.#posToIndex(end));
   }
 
-  #createNode(text: string): TreeNode {
-    const buf = new TextBuffer(text);
-    const i = this.#bufs.push(buf) - 1;
-
-    return TreeNode.create(
-      i,
-      new Slice(0, buf.text.length),
-      new Slice(0, buf.eols.length),
-    );
-  }
-
   #splitNode(x: TreeNode, offsetInNode: number): TreeNode {
     const buf = this.#bufs[x.bufIndex]!;
 
@@ -206,7 +195,7 @@ export class Document {
 
     this.#resizeNode(x, offsetInNode);
 
-    return TreeNode.create(x.bufIndex, slice, eolSlice);
+    return TreeNode.createFromSlice(x.bufIndex, slice, eolSlice);
   }
 
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {

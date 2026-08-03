@@ -1,4 +1,5 @@
 import { Slice } from "../slice.ts";
+import { TextBuffer } from "../text-buffer.ts";
 
 export class TreeNode {
   readonly #bufIndex: number;
@@ -45,7 +46,22 @@ export class TreeNode {
 
   private static DIRTY = new Set<TreeNode>();
 
-  static create(bufIndex: number, slice: Slice, eolSlice: Slice): TreeNode {
+  static createFromText(bufs: TextBuffer[], text: string): TreeNode {
+    const buf = new TextBuffer(text);
+    const i = bufs.push(buf) - 1;
+
+    return TreeNode.createFromSlice(
+      i,
+      new Slice(0, buf.text.length),
+      new Slice(0, buf.eols.length),
+    );
+  }
+
+  static createFromSlice(
+    bufIndex: number,
+    slice: Slice,
+    eolSlice: Slice,
+  ): TreeNode {
     return new TreeNode(TreeNode.NIL, bufIndex, true, slice, eolSlice);
   }
 
