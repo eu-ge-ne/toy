@@ -189,9 +189,10 @@ export class Document {
 
   #createNode(text: string): TreeNode {
     const buf = new TextBuffer(text);
+    const i = this.#bufs.push(buf) - 1;
 
     return TreeNode.create(
-      this.#bufs.push(buf) - 1,
+      i,
       new Slice(0, buf.text.length),
       new Slice(0, buf.eols.length),
     );
