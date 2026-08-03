@@ -110,6 +110,13 @@ export class TreeNode {
     return x;
   }
 
+  isGrowable(bufs: TextBuffer[]): boolean {
+    const buf = bufs[this.bufIndex]!;
+
+    return (buf.text.length < 100) &&
+      (this.slice.start + this.slice.length === buf.text.length);
+  }
+
   append(bufs: TextBuffer[], text: string): void {
     bufs[this.bufIndex]!.append(text);
 

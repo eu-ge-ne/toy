@@ -79,9 +79,8 @@ export class Document {
       x = x.right;
     }
 
-    if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
+    if (insert_case === InsertionCase.Right && p.isGrowable(this.#bufs)) {
       p.append(this.#bufs, text);
-
       return;
     }
 
@@ -199,13 +198,6 @@ export class Document {
       offset = 0;
       n -= count;
     }
-  }
-
-  #isNodeGrowable(x: TreeNode): boolean {
-    const buf = this.#bufs[x.bufIndex]!;
-
-    return (buf.text.length < 100) &&
-      (x.slice.start + x.slice.length === buf.text.length);
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
