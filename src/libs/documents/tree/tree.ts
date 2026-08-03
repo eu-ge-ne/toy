@@ -1,43 +1,43 @@
-import { bubble, maximum, minimum, NIL, type Node } from "./node.ts";
+import * as node from "./node.ts";
 
 export class Tree {
-  root = NIL;
+  root = node.NIL;
 
-  insert_left(p: Node, z: Node): void {
+  insertLeft(p: node.TreeNode, z: node.TreeNode): void {
     p.left = z;
     z.p = p;
 
-    bubble(z);
+    node.bubbleUpdate(z);
 
-    this.#insert_fixup(z);
+    this.#insertFixup(z);
   }
 
-  insert_right(p: Node, z: Node): void {
+  insertRight(p: node.TreeNode, z: node.TreeNode): void {
     p.right = z;
     z.p = p;
 
-    bubble(z);
+    node.bubbleUpdate(z);
 
-    this.#insert_fixup(z);
+    this.#insertFixup(z);
   }
 
-  insert_before(p: Node, z: Node): void {
+  insertBefore(p: node.TreeNode, z: node.TreeNode): void {
     if (p.left.nil) {
-      this.insert_left(p, z);
+      this.insertLeft(p, z);
     } else {
-      this.insert_right(maximum(p.left), z);
+      this.insertRight(node.maximum(p.left), z);
     }
   }
 
-  insert_after(p: Node, z: Node): void {
+  insertAfter(p: node.TreeNode, z: node.TreeNode): void {
     if (p.right.nil) {
-      this.insert_right(p, z);
+      this.insertRight(p, z);
     } else {
-      this.insert_left(minimum(p.right), z);
+      this.insertLeft(node.minimum(p.right), z);
     }
   }
 
-  #insert_fixup(z: Node): void {
+  #insertFixup(z: node.TreeNode): void {
     while (z.p.red) {
       if (z.p === z.p.p.left) {
         const y = z.p.p.right;
@@ -49,11 +49,11 @@ export class Tree {
         } else {
           if (z === z.p.right) {
             z = z.p;
-            this.#left_rotate(z);
+            this.#leftRotate(z);
           }
           z.p.red = false;
           z.p.p.red = true;
-          this.#right_rotate(z.p.p);
+          this.#rightRotate(z.p.p);
         }
       } else {
         const y = z.p.p.left;
@@ -65,11 +65,11 @@ export class Tree {
         } else {
           if (z === z.p.left) {
             z = z.p;
-            this.#right_rotate(z);
+            this.#rightRotate(z);
           }
           z.p.red = false;
           z.p.p.red = true;
-          this.#left_rotate(z.p.p);
+          this.#leftRotate(z.p.p);
         }
       }
     }
@@ -77,30 +77,33 @@ export class Tree {
     this.root.red = false;
   }
 
-  delete(z: Node): void {
+  delete(z: node.TreeNode): void {
     let y = z;
     let y_original_color = y.red;
-    let x: Node;
+    let x: node.TreeNode;
 
     if (z.left.nil) {
       x = z.right;
 
       this.#transplant(z, z.right);
-      bubble(z.right.p);
+
+      node.bubbleUpdate(z.right.p);
     } else if (z.right.nil) {
       x = z.left;
 
       this.#transplant(z, z.left);
-      bubble(z.left.p);
+
+      node.bubbleUpdate(z.left.p);
     } else {
-      y = minimum(z.right);
+      y = node.minimum(z.right);
 
       y_original_color = y.red;
       x = y.right;
 
       if (y !== z.right) {
         this.#transplant(y, y.right);
-        bubble(y.right.p);
+
+        node.bubbleUpdate(y.right.p);
 
         y.right = z.right;
         y.right.p = y;
@@ -114,15 +117,15 @@ export class Tree {
       y.left.p = y;
       y.red = z.red;
 
-      bubble(y);
+      node.bubbleUpdate(y);
     }
 
     if (!y_original_color) {
-      this.#delete_fixup(x);
+      this.#deleteFixup(x);
     }
   }
 
-  #delete_fixup(x: Node): void {
+  #deleteFixup(x: node.TreeNode): void {
     while (x !== this.root && !x.red) {
       if (x === x.p.left) {
         let w = x.p.right;
@@ -130,7 +133,7 @@ export class Tree {
         if (w.red) {
           w.red = false;
           x.p.red = true;
-          this.#left_rotate(x.p);
+          this.#leftRotate(x.p);
           w = x.p.right;
         }
 
@@ -141,14 +144,14 @@ export class Tree {
           if (!w.right.red) {
             w.left.red = false;
             w.red = true;
-            this.#right_rotate(w);
+            this.#rightRotate(w);
             w = x.p.right;
           }
 
           w.red = x.p.red;
           x.p.red = false;
           w.right.red = false;
-          this.#left_rotate(x.p);
+          this.#leftRotate(x.p);
           x = this.root;
         }
       } else {
@@ -157,7 +160,7 @@ export class Tree {
         if (w.red) {
           w.red = false;
           x.p.red = true;
-          this.#right_rotate(x.p);
+          this.#rightRotate(x.p);
           w = x.p.left;
         }
 
@@ -168,14 +171,14 @@ export class Tree {
           if (!w.left.red) {
             w.right.red = false;
             w.red = true;
-            this.#left_rotate(w);
+            this.#leftRotate(w);
             w = x.p.left;
           }
 
           w.red = x.p.red;
           x.p.red = false;
           w.left.red = false;
-          this.#right_rotate(x.p);
+          this.#rightRotate(x.p);
           x = this.root;
         }
       }
@@ -184,7 +187,7 @@ export class Tree {
     x.red = false;
   }
 
-  #left_rotate(x: Node): void {
+  #leftRotate(x: node.TreeNode): void {
     const y = x.right;
 
     x.right = y.left;
@@ -205,10 +208,10 @@ export class Tree {
     y.left = x;
     x.p = y;
 
-    bubble(x);
+    node.bubbleUpdate(x);
   }
 
-  #right_rotate(y: Node): void {
+  #rightRotate(y: node.TreeNode): void {
     const x = y.left;
 
     y.left = x.right;
@@ -229,10 +232,10 @@ export class Tree {
     x.right = y;
     y.p = x;
 
-    bubble(y);
+    node.bubbleUpdate(y);
   }
 
-  #transplant(u: Node, v: Node): void {
+  #transplant(u: node.TreeNode, v: node.TreeNode): void {
     if (u.p.nil) {
       this.root = v;
     } else if (u === u.p.left) {
