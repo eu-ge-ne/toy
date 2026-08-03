@@ -110,17 +110,37 @@ export class TreeNode {
     return x;
   }
 
-  resize(bufs: TextBuffer[], newLength: number): void {
+  append(bufs: TextBuffer[], text: string): void {
+    bufs[this.bufIndex]!.append(text);
+
+    this.#resize(bufs, this.slice.length + text.length);
+  }
+
+  trimStart(bufs: TextBuffer[], n: number): void {
     const buf = bufs[this.bufIndex]!;
 
-    this.slice = new Slice(this.slice.start, this.slice.start + newLength);
-
+    this.slice = new Slice(this.slice.start + n, this.slice.end);
     this.eolSlice = new Slice(
-      this.eolSlice.start,
-      buf.getEolIndex(this.slice.end),
+      buf.getEolIndex(this.slice.start),
+      this.eolSlice.end,
     );
 
     TreeNode.updateDirty();
+  }
+
+  trimEnd(bufs: TextBuffer[], n: number): void {
+    this.#resize(bufs, this.slice.length - n);
+  }
+
+  split(bufs: TextBuffer[], offsetInNode: number): TreeNode {
+    const buf = bufs[this.bufIndex]!;
+
+    const slice = new Slice(this.slice.start + offsetInNode, this.slice.end);
+    const eolSlice = new Slice(buf.getEolIndex(slice.start), this.eolSlice.end);
+
+    this.#resize(bufs, offsetInNode);
+
+    return TreeNode.createFromSlice(this.bufIndex, slice, eolSlice);
   }
 
   get isNIL(): boolean {
@@ -234,5 +254,18 @@ export class TreeNode {
     if (!this.isNIL) {
       TreeNode.DIRTY.add(this);
     }
+  }
+
+  #resize(bufs: TextBuffer[], newLength: number): void {
+    const buf = bufs[this.bufIndex]!;
+
+    this.slice = new Slice(this.slice.start, this.slice.start + newLength);
+
+    this.eolSlice = new Slice(
+      this.eolSlice.start,
+      buf.getEolIndex(this.slice.end),
+    );
+
+    TreeNode.updateDirty();
   }
 }

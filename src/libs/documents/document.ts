@@ -1,4 +1,3 @@
-import { Slice } from "./slice.ts";
 import { TextBuffer } from "./text-buffer.ts";
 import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
@@ -81,7 +80,7 @@ export class Document {
     }
 
     if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
-      this.#growNode(p, text);
+      p.append(this.#bufs, text);
 
       return;
     }
@@ -103,7 +102,7 @@ export class Document {
         break;
       }
       case InsertionCase.Split: {
-        const y = this.#splitNode(p, i);
+        const y = p.split(this.#bufs, i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);
         break;
@@ -141,28 +140,28 @@ export class Document {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
-        this.#trimNodeEnd(first.node, count);
+        first.node.trimEnd(this.#bufs, count);
       }
     } else if (offset2 < first.node.slice.length) {
       if (first.offset === 0) {
-        this.#trimNodeStart(first.node, count);
+        first.node.trimStart(this.#bufs, count);
       } else {
-        const y = this.#splitNode(first.node, first.offset);
+        const y = first.node.split(this.#bufs, first.offset);
         this.tree.insertAfter(first.node, y);
-        this.#trimNodeStart(y, count);
+        y.trimStart(this.#bufs, count);
       }
     } else {
       let x = first.node;
       let i = 0;
 
       if (first.offset !== 0) {
-        x = this.#splitNode(first.node, first.offset);
+        x = first.node.split(this.#bufs, first.offset);
         this.tree.insertAfter(first.node, x);
       }
 
       const last = this.tree.find(end);
       if (last && last.offset !== 0) {
-        const y = this.#splitNode(last.node, last.offset);
+        const y = last.node.split(this.#bufs, last.offset);
         this.tree.insertAfter(last.node, y);
       }
 
@@ -187,17 +186,6 @@ export class Document {
     this.delete(i, this.#posToIndex(end));
   }
 
-  #splitNode(x: TreeNode, offsetInNode: number): TreeNode {
-    const buf = this.#bufs[x.bufIndex]!;
-
-    const slice = new Slice(x.slice.start + offsetInNode, x.slice.end);
-    const eolSlice = new Slice(buf.getEolIndex(slice.start), x.eolSlice.end);
-
-    x.resize(this.#bufs, offsetInNode);
-
-    return TreeNode.createFromSlice(x.bufIndex, slice, eolSlice);
-  }
-
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
     while (!x.isNIL && (n > 0)) {
       const count = Math.min(x.slice.length - offset, n);
@@ -218,25 +206,6 @@ export class Document {
 
     return (buf.text.length < 100) &&
       (x.slice.start + x.slice.length === buf.text.length);
-  }
-
-  #growNode(x: TreeNode, text: string): void {
-    this.#bufs[x.bufIndex]!.append(text);
-
-    x.resize(this.#bufs, x.slice.length + text.length);
-  }
-
-  #trimNodeStart(x: TreeNode, n: number): void {
-    const buf = this.#bufs[x.bufIndex]!;
-
-    x.slice = new Slice(x.slice.start + n, x.slice.end);
-    x.eolSlice = new Slice(buf.getEolIndex(x.slice.start), x.eolSlice.end);
-
-    TreeNode.updateDirty();
-  }
-
-  #trimNodeEnd(x: TreeNode, n: number): void {
-    x.resize(this.#bufs, x.slice.length - n);
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
