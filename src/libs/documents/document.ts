@@ -16,8 +16,9 @@ export const enum InsertionCase {
 }
 
 export class Document {
-  readonly tree: Tree = new Tree();
   readonly #bufs: TextBuffer[] = [];
+
+  readonly tree: Tree = new Tree();
 
   constructor(text?: string) {
     if (text && text.length > 0) {
