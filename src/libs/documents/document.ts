@@ -34,7 +34,7 @@ export class Document {
       return;
     }
 
-    yield* this.#readNode(first.node, first.offset, end - start);
+    yield* first.node.read(this.#bufs, first.offset, end - start);
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
@@ -183,21 +183,6 @@ export class Document {
     }
 
     this.delete(i, this.#posToIndex(end));
-  }
-
-  *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
-    while (!x.isNIL && (n > 0)) {
-      const count = Math.min(x.slice.length - offset, n);
-
-      yield this.#bufs[x.bufIndex]!.text.slice(
-        x.slice.start + offset,
-        x.slice.start + offset + count,
-      );
-
-      x = x.successor();
-      offset = 0;
-      n -= count;
-    }
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {

@@ -110,6 +110,27 @@ export class TreeNode {
     return x;
   }
 
+  *read(
+    bufs: TextBuffer[],
+    offsetInNode: number,
+    n: number,
+  ): Generator<string> {
+    let x = this as TreeNode;
+
+    while (!x.isNIL && (n > 0)) {
+      const count = Math.min(x.slice.length - offsetInNode, n);
+
+      yield bufs[x.bufIndex]!.text.slice(
+        x.slice.start + offsetInNode,
+        x.slice.start + offsetInNode + count,
+      );
+
+      x = x.successor();
+      offsetInNode = 0;
+      n -= count;
+    }
+  }
+
   isGrowable(bufs: TextBuffer[]): boolean {
     const buf = bufs[this.bufIndex]!;
 
