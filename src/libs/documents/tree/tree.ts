@@ -27,7 +27,7 @@ export class Tree {
     p.left = z;
     z.p = p;
 
-    TreeNode.bubbleUpdate();
+    TreeNode.updateDirty();
 
     this.#insertFixup(z);
   }
@@ -36,7 +36,7 @@ export class Tree {
     p.right = z;
     z.p = p;
 
-    TreeNode.bubbleUpdate();
+    TreeNode.updateDirty();
 
     this.#insertFixup(z);
   }
@@ -107,13 +107,13 @@ export class Tree {
 
       this.#transplant(z, z.right);
 
-      TreeNode.bubbleUpdate();
+      TreeNode.updateDirty();
     } else if (z.right.nil) {
       x = z.left;
 
       this.#transplant(z, z.left);
 
-      TreeNode.bubbleUpdate();
+      TreeNode.updateDirty();
     } else {
       y = this.#minimum(z.right);
 
@@ -123,7 +123,7 @@ export class Tree {
       if (y !== z.right) {
         this.#transplant(y, y.right);
 
-        TreeNode.bubbleUpdate();
+        TreeNode.updateDirty();
 
         y.right = z.right;
         y.right.p = y;
@@ -137,7 +137,7 @@ export class Tree {
       y.left.p = y;
       y.red = z.red;
 
-      TreeNode.bubbleUpdate();
+      TreeNode.updateDirty();
     }
 
     if (!y_original_color) {
@@ -228,7 +228,7 @@ export class Tree {
     y.left = x;
     x.p = y;
 
-    TreeNode.bubbleUpdate();
+    TreeNode.updateDirty();
   }
 
   #rightRotate(y: TreeNode): void {
@@ -252,7 +252,7 @@ export class Tree {
     x.right = y;
     y.p = x;
 
-    TreeNode.bubbleUpdate();
+    TreeNode.updateDirty();
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {

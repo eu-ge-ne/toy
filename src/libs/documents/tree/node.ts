@@ -88,7 +88,7 @@ export class TreeNode {
     return x;
   }
 
-  static bubbleUpdate(): void {
+  static updateDirty(): void {
     while (true) {
       let x = TreeNode.dirty.keys().next().value;
       if (!x) {
