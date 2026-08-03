@@ -83,7 +83,7 @@ export class Document {
     if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
       this.#growNode(p, text);
 
-      this.tree.bubbleUpdate(p);
+      TreeNode.bubbleUpdate();
 
       return;
     }
@@ -144,12 +144,14 @@ export class Document {
         this.tree.delete(first.node);
       } else {
         this.#trimNodeEnd(first.node, count);
-        this.tree.bubbleUpdate(first.node);
+
+        TreeNode.bubbleUpdate();
       }
     } else if (offset2 < first.node.sliceLen) {
       if (first.offset === 0) {
         this.#trimNodeStart(first.node, count);
-        this.tree.bubbleUpdate(first.node);
+
+        TreeNode.bubbleUpdate();
       } else {
         const y = this.#splitNode(first.node, first.offset, count);
         this.tree.insertAfter(first.node, y);
@@ -209,7 +211,8 @@ export class Document {
     const len = x.sliceLen - index - gap;
 
     this.#resizeNode(x, index);
-    this.tree.bubbleUpdate(x);
+
+    TreeNode.bubbleUpdate();
 
     const eolSlice = new Slice(
       buf.getEolIndex(start),

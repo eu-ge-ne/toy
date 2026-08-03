@@ -23,22 +23,11 @@ export class Tree {
     }
   }
 
-  bubbleUpdate(x: TreeNode): void {
-    while (!x.nil) {
-      x.totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
-
-      x.totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
-        x.right.totalEolsLen;
-
-      x = x.p;
-    }
-  }
-
   insertLeft(p: TreeNode, z: TreeNode): void {
     p.left = z;
     z.p = p;
 
-    this.bubbleUpdate(z);
+    TreeNode.bubbleUpdate();
 
     this.#insertFixup(z);
   }
@@ -47,7 +36,7 @@ export class Tree {
     p.right = z;
     z.p = p;
 
-    this.bubbleUpdate(z);
+    TreeNode.bubbleUpdate();
 
     this.#insertFixup(z);
   }
@@ -118,13 +107,13 @@ export class Tree {
 
       this.#transplant(z, z.right);
 
-      this.bubbleUpdate(z.right.p);
+      TreeNode.bubbleUpdate();
     } else if (z.right.nil) {
       x = z.left;
 
       this.#transplant(z, z.left);
 
-      this.bubbleUpdate(z.left.p);
+      TreeNode.bubbleUpdate();
     } else {
       y = this.#minimum(z.right);
 
@@ -134,7 +123,7 @@ export class Tree {
       if (y !== z.right) {
         this.#transplant(y, y.right);
 
-        this.bubbleUpdate(y.right.p);
+        TreeNode.bubbleUpdate();
 
         y.right = z.right;
         y.right.p = y;
@@ -148,7 +137,7 @@ export class Tree {
       y.left.p = y;
       y.red = z.red;
 
-      this.bubbleUpdate(y);
+      TreeNode.bubbleUpdate();
     }
 
     if (!y_original_color) {
@@ -239,7 +228,7 @@ export class Tree {
     y.left = x;
     x.p = y;
 
-    this.bubbleUpdate(x);
+    TreeNode.bubbleUpdate();
   }
 
   #rightRotate(y: TreeNode): void {
@@ -263,7 +252,7 @@ export class Tree {
     x.right = y;
     y.p = x;
 
-    this.bubbleUpdate(y);
+    TreeNode.bubbleUpdate();
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {

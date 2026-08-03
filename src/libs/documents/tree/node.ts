@@ -46,6 +46,8 @@ export class TreeNode {
     new Slice(0, 0),
   );
 
+  private static dirty = new Set<TreeNode>();
+
   static create(
     buf: number,
     sliceStart: number,
@@ -86,6 +88,28 @@ export class TreeNode {
     return x;
   }
 
+  static bubbleUpdate(): void {
+    while (true) {
+      let x = TreeNode.dirty.keys().next().value;
+      if (!x) {
+        return;
+      }
+
+      TreeNode.dirty.delete(x);
+
+      while (!x.nil) {
+        x.#totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
+
+        x.#totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
+          x.right.totalEolsLen;
+
+        x = x.p;
+
+        TreeNode.dirty.delete(x);
+      }
+    }
+  }
+
   get nil(): boolean {
     return this === TreeNode.NIL;
   }
@@ -100,6 +124,7 @@ export class TreeNode {
 
   set red(x: boolean) {
     this.#red = x;
+    TreeNode.dirty.add(this);
   }
 
   get p(): TreeNode {
@@ -108,6 +133,7 @@ export class TreeNode {
 
   set p(x: TreeNode) {
     this.#p = x;
+    TreeNode.dirty.add(this);
   }
 
   get left(): TreeNode {
@@ -116,6 +142,7 @@ export class TreeNode {
 
   set left(x: TreeNode) {
     this.#left = x;
+    TreeNode.dirty.add(this);
   }
 
   get right(): TreeNode {
@@ -124,6 +151,7 @@ export class TreeNode {
 
   set right(x: TreeNode) {
     this.#right = x;
+    TreeNode.dirty.add(this);
   }
 
   get sliceStart(): number {
@@ -132,6 +160,7 @@ export class TreeNode {
 
   set sliceStart(x: number) {
     this.#sliceStart = x;
+    TreeNode.dirty.add(this);
   }
 
   get sliceLen(): number {
@@ -140,6 +169,7 @@ export class TreeNode {
 
   set sliceLen(x: number) {
     this.#sliceLen = x;
+    TreeNode.dirty.add(this);
   }
 
   get eolSlice(): Slice {
@@ -148,6 +178,7 @@ export class TreeNode {
 
   set eolSlice(x: Slice) {
     this.#eolSlice = x;
+    TreeNode.dirty.add(this);
   }
 
   get totalLen(): number {
@@ -156,6 +187,7 @@ export class TreeNode {
 
   set totalLen(x: number) {
     this.#totalLen = x;
+    TreeNode.dirty.add(this);
   }
 
   get totalEolsLen(): number {
@@ -164,5 +196,6 @@ export class TreeNode {
 
   set totalEolsLen(x: number) {
     this.#totalEolsLen = x;
+    TreeNode.dirty.add(this);
   }
 }
