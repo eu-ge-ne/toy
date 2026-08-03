@@ -1,5 +1,7 @@
 export const NIL = {
   nil: true,
+  buf: Number.MAX_SAFE_INTEGER,
+
   red: false,
   totalLen: 0,
   totalEolsLen: 0,
@@ -10,14 +12,15 @@ NIL.left = NIL;
 NIL.right = NIL;
 
 export interface TreeNode {
-  nil: boolean;
+  readonly nil: boolean;
+  readonly buf: number;
+
   red: boolean;
   p: TreeNode;
   left: TreeNode;
   right: TreeNode;
   totalLen: number;
   totalEolsLen: number;
-  buf: number;
   sliceStart: number;
   sliceLen: number;
   eolsStart: number;
@@ -33,13 +36,14 @@ export function createNode(
 ): TreeNode {
   return {
     nil: false,
+    buf,
+
     red: true,
     p: NIL,
     left: NIL,
     right: NIL,
     totalLen: sliceLen,
     totalEolsLen: eolsLen,
-    buf,
     sliceStart,
     sliceLen,
     eolsStart,
