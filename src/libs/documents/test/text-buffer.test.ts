@@ -48,7 +48,7 @@ Deno.test("findEolIndex", () => {
   assertThrows(() => buf.indexToLine(3));
 
   assertEquals(buf.indexToLine(4), 1);
-  assertEquals(buf.indexToLine(5, 0), 1);
+  assertEquals(buf.indexToLine(5), 1);
 
   assertEquals(buf.indexToLine(6), 1);
 
@@ -72,5 +72,5 @@ Deno.test("findEolIndex_2", () => {
   assertEquals(buf.indexToLine(6), 3);
   assertEquals(buf.indexToLine(7), 3);
   assertEquals(buf.indexToLine(8), 4);
-  assertEquals(buf.indexToLine(8, 0), 4);
+  assertEquals(buf.indexToLine(8), 4);
 });

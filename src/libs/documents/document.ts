@@ -209,8 +209,8 @@ export class Document {
 
     this.#resizeNode(x, index);
 
-    const eols_start = buf.indexToLine(start, x.eolsStart + x.eolsLen);
-    const eols_end = buf.indexToLine(start + len, eols_start);
+    const eols_start = buf.indexToLine(start);
+    const eols_end = buf.indexToLine(start + len);
     const eols_len = eols_end - eols_start;
 
     return createNode(x.buf, start, len, eols_start, eols_len);
@@ -250,12 +250,9 @@ export class Document {
     x.sliceStart += n;
     x.sliceLen -= n;
 
-    x.eolsStart = buf.indexToLine(x.sliceStart, x.eolsStart);
+    x.eolsStart = buf.indexToLine(x.sliceStart);
 
-    const eols_end = buf.indexToLine(
-      x.sliceStart + x.sliceLen,
-      x.eolsStart,
-    );
+    const eols_end = buf.indexToLine(x.sliceStart + x.sliceLen);
 
     x.eolsLen = eols_end - x.eolsStart;
 
@@ -271,10 +268,7 @@ export class Document {
 
     x.sliceLen = len;
 
-    const eols_end = buf.indexToLine(
-      x.sliceStart + x.sliceLen,
-      x.eolsStart,
-    );
+    const eols_end = buf.indexToLine(x.sliceStart + x.sliceLen);
 
     x.eolsLen = eols_end - x.eolsStart;
 

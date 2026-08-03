@@ -17,7 +17,8 @@ export class TextBuffer {
     this.text += text;
   }
 
-  indexToLine(index: number, a = 0): number {
+  indexToLine(index: number): number {
+    let a = 0;
     let b = this.eols.length - 1;
 
     while (a <= b) {
