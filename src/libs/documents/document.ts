@@ -83,8 +83,6 @@ export class Document {
     if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
       this.#growNode(p, text);
 
-      TreeNode.updateDirty();
-
       return;
     }
 
@@ -144,14 +142,10 @@ export class Document {
         this.tree.delete(first.node);
       } else {
         this.#trimNodeEnd(first.node, count);
-
-        TreeNode.updateDirty();
       }
     } else if (offset2 < first.node.sliceLen) {
       if (first.offset === 0) {
         this.#trimNodeStart(first.node, count);
-
-        TreeNode.updateDirty();
       } else {
         const y = this.#splitNode(first.node, first.offset, count);
         this.tree.insertAfter(first.node, y);
@@ -212,8 +206,6 @@ export class Document {
 
     this.#resizeNode(x, index);
 
-    TreeNode.updateDirty();
-
     const eolSlice = new Slice(
       buf.getEolIndex(start),
       buf.getEolIndex(start + len),
@@ -256,10 +248,9 @@ export class Document {
     x.sliceStart += n;
     x.sliceLen -= n;
 
-    x.eolSlice = new Slice(
-      buf.getEolIndex(x.sliceStart),
-      x.eolSlice.end,
-    );
+    x.eolSlice = new Slice(buf.getEolIndex(x.sliceStart), x.eolSlice.end);
+
+    TreeNode.updateDirty();
   }
 
   #trimNodeEnd(x: TreeNode, n: number): void {
@@ -275,6 +266,8 @@ export class Document {
       x.eolSlice.start,
       buf.getEolIndex(x.sliceStart + x.sliceLen),
     );
+
+    TreeNode.updateDirty();
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
