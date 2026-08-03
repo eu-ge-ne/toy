@@ -189,6 +189,43 @@ export class TreeNode {
     return this.#totalEolsLen;
   }
 
+  minimum(): TreeNode {
+    let x = this as TreeNode;
+
+    while (!x.left.nil) {
+      x = x.left;
+    }
+
+    return x;
+  }
+
+  maximum(): TreeNode {
+    let x = this as TreeNode;
+
+    while (!x.right.nil) {
+      x = x.right;
+    }
+
+    return x;
+  }
+
+  successor(): TreeNode {
+    let x = this as TreeNode;
+
+    if (!x.right.nil) {
+      return this.right.minimum();
+    } else {
+      let y = x.p;
+
+      while (!y.nil && x === y.right) {
+        x = y;
+        y = y.p;
+      }
+
+      return y;
+    }
+  }
+
   #setDirty(): void {
     if (!this.nil) {
       TreeNode.dirty.add(this);

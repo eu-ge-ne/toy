@@ -41,7 +41,7 @@ export class Tree {
     if (p.left.nil) {
       this.insertLeft(p, z);
     } else {
-      this.insertRight(this.#maximum(p.left), z);
+      this.insertRight(p.left.maximum(), z);
     }
   }
 
@@ -49,7 +49,7 @@ export class Tree {
     if (p.right.nil) {
       this.insertRight(p, z);
     } else {
-      this.insertLeft(this.#minimum(p.right), z);
+      this.insertLeft(p.right.minimum(), z);
     }
   }
 
@@ -109,7 +109,7 @@ export class Tree {
 
       this.#transplant(z, z.left);
     } else {
-      y = this.#minimum(z.right);
+      y = z.right.minimum();
 
       y_original_color = y.red;
       x = y.right;
@@ -253,36 +253,5 @@ export class Tree {
     }
 
     v.p = u.p;
-  }
-
-  #minimum(x: TreeNode): TreeNode {
-    while (!x.left.nil) {
-      x = x.left;
-    }
-
-    return x;
-  }
-
-  #maximum(x: TreeNode): TreeNode {
-    while (!x.right.nil) {
-      x = x.right;
-    }
-
-    return x;
-  }
-
-  successor(x: TreeNode): TreeNode {
-    if (!x.right.nil) {
-      return this.#minimum(x.right);
-    } else {
-      let y = x.p;
-
-      while (!y.nil && x === y.right) {
-        x = y;
-        y = y.p;
-      }
-
-      return y;
-    }
   }
 }

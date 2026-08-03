@@ -168,7 +168,7 @@ export class Document {
       while (!x.nil && (i < count)) {
         i += x.sliceLen;
 
-        const next = this.tree.successor(x);
+        const next = x.successor();
 
         this.tree.delete(x);
 
@@ -223,7 +223,7 @@ export class Document {
         x.sliceStart + offset + count,
       );
 
-      x = this.tree.successor(x);
+      x = x.successor();
       offset = 0;
       n -= count;
     }
