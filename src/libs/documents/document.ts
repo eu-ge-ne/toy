@@ -103,7 +103,7 @@ export class Document {
         break;
       }
       case InsertionCase.Split: {
-        const y = this.#splitNode(p, i, 0);
+        const y = this.#splitNode(p, i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);
         break;
@@ -147,21 +147,22 @@ export class Document {
       if (first.offset === 0) {
         this.#trimNodeStart(first.node, count);
       } else {
-        const y = this.#splitNode(first.node, first.offset, count);
+        const y = this.#splitNode(first.node, first.offset);
         this.tree.insertAfter(first.node, y);
+        this.#trimNodeStart(y, count);
       }
     } else {
       let x = first.node;
       let i = 0;
 
       if (first.offset !== 0) {
-        x = this.#splitNode(first.node, first.offset, 0);
+        x = this.#splitNode(first.node, first.offset);
         this.tree.insertAfter(first.node, x);
       }
 
       const last = this.tree.find(end);
       if (last && last.offset !== 0) {
-        const y = this.#splitNode(last.node, last.offset, 0);
+        const y = this.#splitNode(last.node, last.offset);
         this.tree.insertAfter(last.node, y);
       }
 
@@ -198,13 +199,13 @@ export class Document {
     );
   }
 
-  #splitNode(x: TreeNode, index: number, gap: number): TreeNode {
+  #splitNode(x: TreeNode, offsetInNode: number): TreeNode {
     const buf = this.#bufs[x.buf]!;
 
-    const start = x.sliceStart + index + gap;
-    const len = x.sliceLen - index - gap;
+    const start = x.sliceStart + offsetInNode;
+    const len = x.sliceLen - offsetInNode;
 
-    this.#resizeNode(x, index);
+    this.#resizeNode(x, offsetInNode);
 
     const eolSlice = new Slice(
       buf.getEolIndex(start),
