@@ -1,24 +1,6 @@
 import { Slice } from "../slice.ts";
 
-export const NIL = {
-  nil: true,
-  buf: Number.MAX_SAFE_INTEGER,
-
-  red: false,
-
-  totalLen: 0,
-  totalEolsLen: 0,
-} as TreeNode;
-
-NIL.p = NIL;
-NIL.left = NIL;
-NIL.right = NIL;
-
-export interface TreeNode {
-  readonly nil: boolean;
-  readonly buf: number;
-
-  red: boolean;
+export class TreeNode {
   p: TreeNode;
   left: TreeNode;
   right: TreeNode;
@@ -26,31 +8,71 @@ export interface TreeNode {
   totalLen: number;
   totalEolsLen: number;
 
-  sliceStart: number;
-  sliceLen: number;
-  eolSlice: Slice;
-}
+  private constructor(
+    public buf: number,
+    public red: boolean,
+    public sliceStart: number,
+    public sliceLen: number,
+    public eolSlice: Slice,
+    nil?: TreeNode,
+  ) {
+    this.p = nil ?? this;
+    this.left = nil ?? this;
+    this.right = nil ?? this;
 
-export function newTreeNode(
-  buf: number,
-  sliceStart: number,
-  sliceLen: number,
-  eolSlice: Slice,
-): TreeNode {
-  return {
-    nil: false,
-    buf,
+    this.totalLen = sliceLen;
+    this.totalEolsLen = eolSlice.length;
+  }
 
-    red: true,
-    p: NIL,
-    left: NIL,
-    right: NIL,
+  static NIL = new TreeNode(
+    Number.MAX_SAFE_INTEGER,
+    false,
+    0,
+    0,
+    new Slice(0, 0),
+  );
 
-    totalLen: sliceLen,
-    totalEolsLen: eolSlice.length,
+  static create(
+    buf: number,
+    sliceStart: number,
+    sliceLen: number,
+    eolSlice: Slice,
+  ): TreeNode {
+    return new TreeNode(
+      buf,
+      true,
+      sliceStart,
+      sliceLen,
+      eolSlice,
+      TreeNode.NIL,
+    );
+  }
 
-    sliceStart,
-    sliceLen,
-    eolSlice,
-  };
+  clone(): TreeNode {
+    if (this.nil) {
+      return this;
+    }
+
+    const x = new TreeNode(
+      this.buf,
+      this.red,
+      this.sliceStart,
+      this.sliceLen,
+      this.eolSlice,
+      TreeNode.NIL,
+    );
+
+    x.p = this.p;
+    x.left = this.left.clone();
+    x.right = this.right.clone();
+
+    x.totalLen = this.totalLen;
+    x.totalEolsLen = this.totalEolsLen;
+
+    return x;
+  }
+
+  get nil(): boolean {
+    return this === TreeNode.NIL;
+  }
 }

@@ -11,7 +11,7 @@ Deno.test("Undo insert", () => {
   assertEquals(doc.charCount, 5);
   assertRoot(doc.tree.root);
 
-  const a = structuredClone(doc.tree.root);
+  const a = doc.tree.root.clone();
   doc.insert(doc.charCount, "Lorem");
   doc.tree.root = a;
 

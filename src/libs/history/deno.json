@@ -1,4 +1,4 @@
 {
   "name": "@libs/history",
-  "exports": "./history.ts"
+  "exports": "./index.ts"
 }

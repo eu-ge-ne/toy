@@ -1,6 +1,6 @@
 import { Slice } from "./slice.ts";
 import { TextBuffer } from "./text-buffer.ts";
-import { newTreeNode, NIL, TreeNode } from "./tree/node.ts";
+import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -53,7 +53,7 @@ export class Document {
     }
 
     let insert_case = InsertionCase.Root;
-    let p = NIL;
+    let p = TreeNode.NIL;
     let x = this.tree.root;
 
     while (!x.nil) {
@@ -69,7 +69,7 @@ export class Document {
       if (i < x.sliceLen) {
         insert_case = InsertionCase.Split;
         p = x;
-        x = NIL;
+        x = TreeNode.NIL;
         continue;
       }
 
@@ -194,7 +194,7 @@ export class Document {
     const buf = new TextBuffer(text);
     const buf_index = this.#bufs.push(buf) - 1;
 
-    return newTreeNode(
+    return TreeNode.create(
       buf_index,
       0,
       buf.text.length,
@@ -216,7 +216,7 @@ export class Document {
       buf.getEolIndex(start + len),
     );
 
-    return newTreeNode(x.buf, start, len, eolSlice);
+    return TreeNode.create(x.buf, start, len, eolSlice);
   }
 
   *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {

@@ -1,7 +1,7 @@
-import { NIL, TreeNode } from "./node.ts";
+import { TreeNode } from "./node.ts";
 
 export class Tree {
-  root = NIL;
+  root = TreeNode.NIL;
 
   find(charIndex: number): { node: TreeNode; offset: number } | undefined {
     let x = this.root;
