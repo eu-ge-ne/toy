@@ -1,43 +1,43 @@
 import { assertEquals, assertThrows } from "@std/assert";
 
-import { TextBuffer } from "../text-buffer.ts";
+import { Buf } from "../buf.ts";
 
 Deno.test("Read", () => {
-  const buf = new TextBuffer("Lorem ipsum");
+  const buf = new Buf("Lorem ipsum");
 
   assertEquals(buf.text.slice(5, 6), " ");
 });
 
 Deno.test("0 newlines", () => {
-  const buf = new TextBuffer("Lorem ipsum");
+  const buf = new Buf("Lorem ipsum");
 
   assertEquals(buf.eols.length, 0);
   assertEquals([...buf.eols], []);
 });
 
 Deno.test("LF", () => {
-  const buf = new TextBuffer("Lorem \nipsum \n");
+  const buf = new Buf("Lorem \nipsum \n");
 
   assertEquals(buf.eols.length, 2);
   assertEquals([...buf.eols], [{ start: 6, end: 7 }, { start: 13, end: 14 }]);
 });
 
 Deno.test("CRLF", () => {
-  const buf = new TextBuffer("Lorem \r\nipsum \r\n");
+  const buf = new Buf("Lorem \r\nipsum \r\n");
 
   assertEquals(buf.eols.length, 2);
   assertEquals([...buf.eols], [{ start: 6, end: 8 }, { start: 14, end: 16 }]);
 });
 
 Deno.test("LF and CRLF", () => {
-  const buf = new TextBuffer("Lorem \nipsum \r\n");
+  const buf = new Buf("Lorem \nipsum \r\n");
 
   assertEquals(buf.eols.length, 2);
   assertEquals([...buf.eols], [{ start: 6, end: 7 }, { start: 13, end: 15 }]);
 });
 
 Deno.test("findEolIndex", () => {
-  const buf = new TextBuffer("AA\r\nBB\nCC");
+  const buf = new Buf("AA\r\nBB\nCC");
 
   assertEquals(buf.eols.length, 2);
 
@@ -57,7 +57,7 @@ Deno.test("findEolIndex", () => {
 });
 
 Deno.test("findEolIndex_2", () => {
-  const buf = new TextBuffer("1\n2\n3\n4\n5");
+  const buf = new Buf("1\n2\n3\n4\n5");
   //                      01 23 45 67 8
   //                       0  1  2  3
 

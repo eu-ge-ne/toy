@@ -1,6 +1,5 @@
-import { Slice } from "./slice.ts";
-import { TextBuffer } from "./text-buffer.ts";
-import { newTreeNode, NIL, TreeNode } from "./tree/node.ts";
+import { Buf } from "./buf.ts";
+import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
 export const enum InsertionCase {
@@ -12,11 +11,11 @@ export const enum InsertionCase {
 
 export class Document {
   readonly tree: Tree = new Tree();
-  readonly #bufs: TextBuffer[] = [];
+  readonly #bufs: Buf[] = [];
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = this.#createNode(text);
+      this.tree.root = TreeNode.createFromText(this.#bufs, text);
       this.tree.root.red = false;
     }
   }
@@ -35,7 +34,7 @@ export class Document {
       return;
     }
 
-    yield* this.#readNode(first.node, first.offset, end - start);
+    yield* first.node.read(this.#bufs, first.offset, end - start);
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
@@ -53,10 +52,10 @@ export class Document {
     }
 
     let insert_case = InsertionCase.Root;
-    let p = NIL;
+    let p = TreeNode.NIL;
     let x = this.tree.root;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (i <= x.left.totalLen) {
         insert_case = InsertionCase.Left;
         p = x;
@@ -66,29 +65,26 @@ export class Document {
 
       i -= x.left.totalLen;
 
-      if (i < x.sliceLen) {
+      if (i < x.slice.length) {
         insert_case = InsertionCase.Split;
         p = x;
-        x = NIL;
+        x = TreeNode.NIL;
         continue;
       }
 
-      i -= x.sliceLen;
+      i -= x.slice.length;
 
       insert_case = InsertionCase.Right;
       p = x;
       x = x.right;
     }
 
-    if (insert_case === InsertionCase.Right && this.#isNodeGrowable(p)) {
-      this.#growNode(p, text);
-
-      this.tree.bubbleUpdate(p);
-
+    if (insert_case === InsertionCase.Right && p.isGrowable(this.#bufs)) {
+      p.append(this.#bufs, text);
       return;
     }
 
-    const child = this.#createNode(text);
+    const child = TreeNode.createFromText(this.#bufs, text);
 
     switch (insert_case) {
       case InsertionCase.Root: {
@@ -105,7 +101,7 @@ export class Document {
         break;
       }
       case InsertionCase.Split: {
-        const y = this.#splitNode(p, i, 0);
+        const y = p.split(this.#bufs, i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);
         break;
@@ -139,40 +135,39 @@ export class Document {
     const count = end - start;
     const offset2 = first.offset + count;
 
-    if (offset2 === first.node.sliceLen) {
+    if (offset2 === first.node.slice.length) {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
-        this.#trimNodeEnd(first.node, count);
-        this.tree.bubbleUpdate(first.node);
+        first.node.trimEnd(this.#bufs, count);
       }
-    } else if (offset2 < first.node.sliceLen) {
+    } else if (offset2 < first.node.slice.length) {
       if (first.offset === 0) {
-        this.#trimNodeStart(first.node, count);
-        this.tree.bubbleUpdate(first.node);
+        first.node.trimStart(this.#bufs, count);
       } else {
-        const y = this.#splitNode(first.node, first.offset, count);
+        const y = first.node.split(this.#bufs, first.offset);
         this.tree.insertAfter(first.node, y);
+        y.trimStart(this.#bufs, count);
       }
     } else {
       let x = first.node;
       let i = 0;
 
       if (first.offset !== 0) {
-        x = this.#splitNode(first.node, first.offset, 0);
+        x = first.node.split(this.#bufs, first.offset);
         this.tree.insertAfter(first.node, x);
       }
 
       const last = this.tree.find(end);
       if (last && last.offset !== 0) {
-        const y = this.#splitNode(last.node, last.offset, 0);
+        const y = last.node.split(this.#bufs, last.offset);
         this.tree.insertAfter(last.node, y);
       }
 
-      while (!x.nil && (i < count)) {
-        i += x.sliceLen;
+      while (!x.isNIL && (i < count)) {
+        i += x.slice.length;
 
-        const next = this.tree.successor(x);
+        const next = x.successor();
 
         this.tree.delete(x);
 
@@ -188,90 +183,6 @@ export class Document {
     }
 
     this.delete(i, this.#posToIndex(end));
-  }
-
-  #createNode(text: string): TreeNode {
-    const buf = new TextBuffer(text);
-    const buf_index = this.#bufs.push(buf) - 1;
-
-    return newTreeNode(
-      buf_index,
-      0,
-      buf.text.length,
-      new Slice(0, buf.eols.length),
-    );
-  }
-
-  #splitNode(x: TreeNode, index: number, gap: number): TreeNode {
-    const buf = this.#bufs[x.buf]!;
-
-    const start = x.sliceStart + index + gap;
-    const len = x.sliceLen - index - gap;
-
-    this.#resizeNode(x, index);
-    this.tree.bubbleUpdate(x);
-
-    const eolSlice = new Slice(
-      buf.getEolIndex(start),
-      buf.getEolIndex(start + len),
-    );
-
-    return newTreeNode(x.buf, start, len, eolSlice);
-  }
-
-  *#readNode(x: TreeNode, offset: number, n: number): Generator<string> {
-    while (!x.nil && (n > 0)) {
-      const count = Math.min(x.sliceLen - offset, n);
-
-      yield this.#bufs[x.buf]!.text.slice(
-        x.sliceStart + offset,
-        x.sliceStart + offset + count,
-      );
-
-      x = this.tree.successor(x);
-      offset = 0;
-      n -= count;
-    }
-  }
-
-  #isNodeGrowable(x: TreeNode): boolean {
-    const buf = this.#bufs[x.buf]!;
-
-    return (buf.text.length < 100) &&
-      (x.sliceStart + x.sliceLen === buf.text.length);
-  }
-
-  #growNode(x: TreeNode, text: string): void {
-    this.#bufs[x.buf]!.append(text);
-
-    this.#resizeNode(x, x.sliceLen + text.length);
-  }
-
-  #trimNodeStart(x: TreeNode, n: number): void {
-    const buf = this.#bufs[x.buf]!;
-
-    x.sliceStart += n;
-    x.sliceLen -= n;
-
-    x.eolSlice = new Slice(
-      buf.getEolIndex(x.sliceStart),
-      x.eolSlice.end,
-    );
-  }
-
-  #trimNodeEnd(x: TreeNode, n: number): void {
-    this.#resizeNode(x, x.sliceLen - n);
-  }
-
-  #resizeNode(x: TreeNode, len: number): void {
-    const buf = this.#bufs[x.buf]!;
-
-    x.sliceLen = len;
-
-    x.eolSlice = new Slice(
-      x.eolSlice.start,
-      buf.getEolIndex(x.sliceStart + x.sliceLen),
-    );
   }
 
   #posToIndex(pos?: [number, number]): number | undefined {
@@ -296,7 +207,7 @@ export class Document {
     let x = this.tree.root;
     let i = 0;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (eol_index < x.left.totalEolsLen) {
         x = x.left;
         continue;
@@ -306,13 +217,13 @@ export class Document {
       i += x.left.totalLen;
 
       if (eol_index < x.eolSlice.length) {
-        const buf = this.#bufs[x.buf]!;
+        const buf = this.#bufs[x.bufIndex]!;
         const eol_end = buf.eols[x.eolSlice.start + eol_index]!.end;
-        return i + eol_end - x.sliceStart;
+        return i + eol_end - x.slice.start;
       }
 
       eol_index -= x.eolSlice.length;
-      i += x.sliceLen;
+      i += x.slice.length;
       x = x.right;
     }
   }

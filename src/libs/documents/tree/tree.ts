@@ -1,12 +1,12 @@
-import { NIL, TreeNode } from "./node.ts";
+import { TreeNode } from "./node.ts";
 
 export class Tree {
-  root = NIL;
+  root = TreeNode.NIL;
 
   find(charIndex: number): { node: TreeNode; offset: number } | undefined {
     let x = this.root;
 
-    while (!x.nil) {
+    while (!x.isNIL) {
       if (charIndex < x.left.totalLen) {
         x = x.left;
         continue;
@@ -14,31 +14,18 @@ export class Tree {
 
       charIndex -= x.left.totalLen;
 
-      if (charIndex < x.sliceLen) {
+      if (charIndex < x.slice.length) {
         return { node: x, offset: charIndex };
       }
 
-      charIndex -= x.sliceLen;
+      charIndex -= x.slice.length;
       x = x.right;
-    }
-  }
-
-  bubbleUpdate(x: TreeNode): void {
-    while (!x.nil) {
-      x.totalLen = x.left.totalLen + x.sliceLen + x.right.totalLen;
-
-      x.totalEolsLen = x.left.totalEolsLen + x.eolSlice.length +
-        x.right.totalEolsLen;
-
-      x = x.p;
     }
   }
 
   insertLeft(p: TreeNode, z: TreeNode): void {
     p.left = z;
     z.p = p;
-
-    this.bubbleUpdate(z);
 
     this.#insertFixup(z);
   }
@@ -47,24 +34,22 @@ export class Tree {
     p.right = z;
     z.p = p;
 
-    this.bubbleUpdate(z);
-
     this.#insertFixup(z);
   }
 
   insertBefore(p: TreeNode, z: TreeNode): void {
-    if (p.left.nil) {
+    if (p.left.isNIL) {
       this.insertLeft(p, z);
     } else {
-      this.insertRight(this.#maximum(p.left), z);
+      this.insertRight(p.left.maximum(), z);
     }
   }
 
   insertAfter(p: TreeNode, z: TreeNode): void {
-    if (p.right.nil) {
+    if (p.right.isNIL) {
       this.insertRight(p, z);
     } else {
-      this.insertLeft(this.#minimum(p.right), z);
+      this.insertLeft(p.right.minimum(), z);
     }
   }
 
@@ -106,6 +91,8 @@ export class Tree {
     }
 
     this.root.red = false;
+
+    TreeNode.updateDirty();
   }
 
   delete(z: TreeNode): void {
@@ -113,28 +100,22 @@ export class Tree {
     let y_original_color = y.red;
     let x: TreeNode;
 
-    if (z.left.nil) {
+    if (z.left.isNIL) {
       x = z.right;
 
       this.#transplant(z, z.right);
-
-      this.bubbleUpdate(z.right.p);
-    } else if (z.right.nil) {
+    } else if (z.right.isNIL) {
       x = z.left;
 
       this.#transplant(z, z.left);
-
-      this.bubbleUpdate(z.left.p);
     } else {
-      y = this.#minimum(z.right);
+      y = z.right.minimum();
 
       y_original_color = y.red;
       x = y.right;
 
       if (y !== z.right) {
         this.#transplant(y, y.right);
-
-        this.bubbleUpdate(y.right.p);
 
         y.right = z.right;
         y.right.p = y;
@@ -147,13 +128,13 @@ export class Tree {
       y.left = z.left;
       y.left.p = y;
       y.red = z.red;
-
-      this.bubbleUpdate(y);
     }
 
     if (!y_original_color) {
       this.#deleteFixup(x);
     }
+
+    TreeNode.updateDirty();
   }
 
   #deleteFixup(x: TreeNode): void {
@@ -222,13 +203,13 @@ export class Tree {
     const y = x.right;
 
     x.right = y.left;
-    if (!y.left.nil) {
+    if (!y.left.isNIL) {
       y.left.p = x;
     }
 
     y.p = x.p;
 
-    if (x.p.nil) {
+    if (x.p.isNIL) {
       this.root = y;
     } else if (x === x.p.left) {
       x.p.left = y;
@@ -238,21 +219,19 @@ export class Tree {
 
     y.left = x;
     x.p = y;
-
-    this.bubbleUpdate(x);
   }
 
   #rightRotate(y: TreeNode): void {
     const x = y.left;
 
     y.left = x.right;
-    if (!x.right.nil) {
+    if (!x.right.isNIL) {
       x.right.p = y;
     }
 
     x.p = y.p;
 
-    if (y.p.nil) {
+    if (y.p.isNIL) {
       this.root = x;
     } else if (y === y.p.left) {
       y.p.left = x;
@@ -262,12 +241,10 @@ export class Tree {
 
     x.right = y;
     y.p = x;
-
-    this.bubbleUpdate(y);
   }
 
   #transplant(u: TreeNode, v: TreeNode): void {
-    if (u.p.nil) {
+    if (u.p.isNIL) {
       this.root = v;
     } else if (u === u.p.left) {
       u.p.left = v;
@@ -276,36 +253,5 @@ export class Tree {
     }
 
     v.p = u.p;
-  }
-
-  #minimum(x: TreeNode): TreeNode {
-    while (!x.left.nil) {
-      x = x.left;
-    }
-
-    return x;
-  }
-
-  #maximum(x: TreeNode): TreeNode {
-    while (!x.right.nil) {
-      x = x.right;
-    }
-
-    return x;
-  }
-
-  successor(x: TreeNode): TreeNode {
-    if (!x.right.nil) {
-      return this.#minimum(x.right);
-    } else {
-      let y = x.p;
-
-      while (!y.nil && x === y.right) {
-        x = y;
-        y = y.p;
-      }
-
-      return y;
-    }
   }
 }

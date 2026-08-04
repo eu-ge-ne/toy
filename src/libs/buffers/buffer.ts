@@ -22,7 +22,7 @@ export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #doc = new documents.Document();
   readonly #gdoc = new graphemes.Document(this.#doc);
-  readonly #history = new history.History<documents.TreeNode>();
+  readonly #history = new history.History2<documents.TreeNode>();
   #name = "";
 
   constructor() {

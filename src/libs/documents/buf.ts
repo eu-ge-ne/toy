@@ -1,4 +1,4 @@
-export class TextBuffer {
+export class Buf {
   text = "";
   eols: { start: number; end: number }[] = [];
 
