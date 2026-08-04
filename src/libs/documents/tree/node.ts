@@ -1,5 +1,5 @@
+import { Buf } from "../buf.ts";
 import { Slice } from "../slice.ts";
-import { TextBuffer } from "../text-buffer.ts";
 
 export class TreeNode {
   readonly #bufIndex: number;
@@ -46,8 +46,8 @@ export class TreeNode {
 
   static #DIRTY = new Set<TreeNode>();
 
-  static createFromText(bufs: TextBuffer[], text: string): TreeNode {
-    const buf = new TextBuffer(text);
+  static createFromText(bufs: Buf[], text: string): TreeNode {
+    const buf = new Buf(text);
     const i = bufs.push(buf) - 1;
 
     return TreeNode.createFromSlice(
@@ -110,11 +110,7 @@ export class TreeNode {
     return x;
   }
 
-  *read(
-    bufs: TextBuffer[],
-    offsetInNode: number,
-    n: number,
-  ): Generator<string> {
+  *read(bufs: Buf[], offsetInNode: number, n: number): Generator<string> {
     let x = this as TreeNode;
 
     while (!x.isNIL && (n > 0)) {
@@ -131,19 +127,19 @@ export class TreeNode {
     }
   }
 
-  isGrowable(bufs: TextBuffer[]): boolean {
+  isGrowable(bufs: Buf[]): boolean {
     const buf = bufs[this.bufIndex]!;
 
     return (buf.text.length < 100) && (this.slice.end === buf.text.length);
   }
 
-  append(bufs: TextBuffer[], text: string): void {
+  append(bufs: Buf[], text: string): void {
     bufs[this.bufIndex]!.append(text);
 
     this.#resize(bufs, this.slice.length + text.length);
   }
 
-  trimStart(bufs: TextBuffer[], n: number): void {
+  trimStart(bufs: Buf[], n: number): void {
     const buf = bufs[this.bufIndex]!;
 
     this.slice = new Slice(this.slice.start + n, this.slice.end);
@@ -155,11 +151,11 @@ export class TreeNode {
     TreeNode.updateDirty();
   }
 
-  trimEnd(bufs: TextBuffer[], n: number): void {
+  trimEnd(bufs: Buf[], n: number): void {
     this.#resize(bufs, this.slice.length - n);
   }
 
-  split(bufs: TextBuffer[], offsetInNode: number): TreeNode {
+  split(bufs: Buf[], offsetInNode: number): TreeNode {
     const buf = bufs[this.bufIndex]!;
 
     const slice = new Slice(this.slice.start + offsetInNode, this.slice.end);
@@ -279,7 +275,7 @@ export class TreeNode {
     }
   }
 
-  #resize(bufs: TextBuffer[], newLen: number): void {
+  #resize(bufs: Buf[], newLen: number): void {
     const buf = bufs[this.bufIndex]!;
 
     this.slice = new Slice(this.slice.start, this.slice.start + newLen);

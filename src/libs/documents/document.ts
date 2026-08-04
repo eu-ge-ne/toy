@@ -1,4 +1,4 @@
-import { TextBuffer } from "./text-buffer.ts";
+import { Buf } from "./buf.ts";
 import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
@@ -11,7 +11,7 @@ export const enum InsertionCase {
 
 export class Document {
   readonly tree: Tree = new Tree();
-  readonly #bufs: TextBuffer[] = [];
+  readonly #bufs: Buf[] = [];
 
   constructor(text?: string) {
     if (text && text.length > 0) {
