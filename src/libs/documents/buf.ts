@@ -17,7 +17,7 @@ export class Buf {
     this.text += text;
   }
 
-  charToEolIndex(charIndex: number): number {
+  charToLine(charIndex: number): number {
     let a = 0;
     let b = this.eols.length - 1;
 

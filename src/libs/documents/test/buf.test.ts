@@ -41,36 +41,36 @@ Deno.test("charToEolIndex", () => {
 
   assertEquals(buf.eols.length, 2);
 
-  assertEquals(buf.charToEolIndex(0), 0);
-  assertEquals(buf.charToEolIndex(1), 0);
+  assertEquals(buf.charToLine(0), 0);
+  assertEquals(buf.charToLine(1), 0);
 
-  assertEquals(buf.charToEolIndex(2), 0);
-  assertThrows(() => buf.charToEolIndex(3));
+  assertEquals(buf.charToLine(2), 0);
+  assertThrows(() => buf.charToLine(3));
 
-  assertEquals(buf.charToEolIndex(4), 1);
-  assertEquals(buf.charToEolIndex(5), 1);
+  assertEquals(buf.charToLine(4), 1);
+  assertEquals(buf.charToLine(5), 1);
 
-  assertEquals(buf.charToEolIndex(6), 1);
+  assertEquals(buf.charToLine(6), 1);
 
-  assertEquals(buf.charToEolIndex(7), 2);
-  assertEquals(buf.charToEolIndex(8), 2);
+  assertEquals(buf.charToLine(7), 2);
+  assertEquals(buf.charToLine(8), 2);
 });
 
 Deno.test("findEolIndex_2", () => {
   const buf = new Buf("1\n2\n3\n4\n5");
   //                   01 23 45 67 8
-  //                   0  1  2  3
+  //                     0  1  2  3
 
   assertEquals(buf.eols.length, 4);
 
-  assertEquals(buf.charToEolIndex(0), 0);
-  assertEquals(buf.charToEolIndex(1), 0);
-  assertEquals(buf.charToEolIndex(2), 1);
-  assertEquals(buf.charToEolIndex(3), 1);
-  assertEquals(buf.charToEolIndex(4), 2);
-  assertEquals(buf.charToEolIndex(5), 2);
-  assertEquals(buf.charToEolIndex(6), 3);
-  assertEquals(buf.charToEolIndex(7), 3);
-  assertEquals(buf.charToEolIndex(8), 4);
-  assertEquals(buf.charToEolIndex(8), 4);
+  assertEquals(buf.charToLine(0), 0);
+  assertEquals(buf.charToLine(1), 0);
+  assertEquals(buf.charToLine(2), 1);
+  assertEquals(buf.charToLine(3), 1);
+  assertEquals(buf.charToLine(4), 2);
+  assertEquals(buf.charToLine(5), 2);
+  assertEquals(buf.charToLine(6), 3);
+  assertEquals(buf.charToLine(7), 3);
+  assertEquals(buf.charToLine(8), 4);
+  assertEquals(buf.charToLine(8), 4);
 });
