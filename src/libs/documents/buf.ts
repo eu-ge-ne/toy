@@ -23,14 +23,13 @@ export class Buf {
 
     while (a <= b) {
       const i = Math.trunc((a + b) / 2);
-      const start = this.eols[i]!.start;
-      const end = this.eols[i]?.end!;
+      const eol = this.eols[i]!;
 
-      if (charIndex >= end) {
+      if (charIndex >= eol.end) {
         a = i + 1;
-      } else if (charIndex < start) {
+      } else if (charIndex < eol.start) {
         b = i - 1;
-      } else if (charIndex === start) {
+      } else if (charIndex === eol.start) {
         a = i;
         break;
       } else {
