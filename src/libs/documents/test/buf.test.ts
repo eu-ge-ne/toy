@@ -36,41 +36,41 @@ Deno.test("LF and CRLF", () => {
   assertEquals([...buf.eols], [{ start: 6, end: 7 }, { start: 13, end: 15 }]);
 });
 
-Deno.test("findEolIndex", () => {
+Deno.test("charToEolIndex", () => {
   const buf = new Buf("AA\r\nBB\nCC");
 
   assertEquals(buf.eols.length, 2);
 
-  assertEquals(buf.getEolIndex(0), 0);
-  assertEquals(buf.getEolIndex(1), 0);
+  assertEquals(buf.charToEolIndex(0), 0);
+  assertEquals(buf.charToEolIndex(1), 0);
 
-  assertEquals(buf.getEolIndex(2), 0);
-  assertThrows(() => buf.getEolIndex(3));
+  assertEquals(buf.charToEolIndex(2), 0);
+  assertThrows(() => buf.charToEolIndex(3));
 
-  assertEquals(buf.getEolIndex(4), 1);
-  assertEquals(buf.getEolIndex(5), 1);
+  assertEquals(buf.charToEolIndex(4), 1);
+  assertEquals(buf.charToEolIndex(5), 1);
 
-  assertEquals(buf.getEolIndex(6), 1);
+  assertEquals(buf.charToEolIndex(6), 1);
 
-  assertEquals(buf.getEolIndex(7), 2);
-  assertEquals(buf.getEolIndex(8), 2);
+  assertEquals(buf.charToEolIndex(7), 2);
+  assertEquals(buf.charToEolIndex(8), 2);
 });
 
 Deno.test("findEolIndex_2", () => {
   const buf = new Buf("1\n2\n3\n4\n5");
-  //                      01 23 45 67 8
-  //                       0  1  2  3
+  //                   01 23 45 67 8
+  //                   0  1  2  3
 
   assertEquals(buf.eols.length, 4);
 
-  assertEquals(buf.getEolIndex(0), 0);
-  assertEquals(buf.getEolIndex(1), 0);
-  assertEquals(buf.getEolIndex(2), 1);
-  assertEquals(buf.getEolIndex(3), 1);
-  assertEquals(buf.getEolIndex(4), 2);
-  assertEquals(buf.getEolIndex(5), 2);
-  assertEquals(buf.getEolIndex(6), 3);
-  assertEquals(buf.getEolIndex(7), 3);
-  assertEquals(buf.getEolIndex(8), 4);
-  assertEquals(buf.getEolIndex(8), 4);
+  assertEquals(buf.charToEolIndex(0), 0);
+  assertEquals(buf.charToEolIndex(1), 0);
+  assertEquals(buf.charToEolIndex(2), 1);
+  assertEquals(buf.charToEolIndex(3), 1);
+  assertEquals(buf.charToEolIndex(4), 2);
+  assertEquals(buf.charToEolIndex(5), 2);
+  assertEquals(buf.charToEolIndex(6), 3);
+  assertEquals(buf.charToEolIndex(7), 3);
+  assertEquals(buf.charToEolIndex(8), 4);
+  assertEquals(buf.charToEolIndex(8), 4);
 });
