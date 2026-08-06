@@ -17,25 +17,34 @@ export class Buf {
     this.text += text;
   }
 
-  getEolIndex(charIndex: number): number {
+  charToLine(charIndex: number): number {
     let a = 0;
     let b = this.eols.length - 1;
 
     while (a <= b) {
       const i = Math.trunc((a + b) / 2);
-      const start = this.eols[i]!.start;
-      const end = this.eols[i]?.end!;
+      const eol = this.eols[i]!;
 
-      if (charIndex >= end) {
+      if (charIndex >= eol.end) {
         a = i + 1;
-      } else if (charIndex < start) {
-        b = i - 1;
-      } else if (charIndex === start) {
+        continue;
+      }
+
+      if (charIndex < eol.start) {
+        if (i > 0) {
+          b = i - 1;
+          continue;
+        } else {
+          break;
+        }
+      }
+
+      if (charIndex === eol.start) {
         a = i;
         break;
-      } else {
-        throw new Error("Invalid argument");
       }
+
+      throw new Error("Invalid argument");
     }
 
     return a;

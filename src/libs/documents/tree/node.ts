@@ -144,7 +144,7 @@ export class TreeNode {
 
     this.slice = new Slice(this.slice.start + n, this.slice.end);
     this.eolSlice = new Slice(
-      buf.getEolIndex(this.slice.start),
+      buf.charToLine(this.slice.start),
       this.eolSlice.end,
     );
 
@@ -159,7 +159,10 @@ export class TreeNode {
     const buf = bufs[this.bufIndex]!;
 
     const slice = new Slice(this.slice.start + offsetInNode, this.slice.end);
-    const eolSlice = new Slice(buf.getEolIndex(slice.start), this.eolSlice.end);
+    const eolSlice = new Slice(
+      buf.charToLine(slice.start),
+      this.eolSlice.end,
+    );
 
     this.#resize(bufs, offsetInNode);
 
@@ -282,7 +285,7 @@ export class TreeNode {
 
     this.eolSlice = new Slice(
       this.eolSlice.start,
-      buf.getEolIndex(this.slice.end),
+      buf.charToLine(this.slice.end),
     );
 
     TreeNode.updateDirty();
