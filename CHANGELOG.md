@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.31-rc
+## 0.0.31
 
 - Zen mode default is off
 - Dynamic cursor position / selection range in the footer
