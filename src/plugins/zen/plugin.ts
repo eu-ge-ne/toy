@@ -13,16 +13,16 @@ export function Plugin(api: core.API): API {
 }
 
 class Zen {
-  private readonly emitter = new events.SignalEmitter<{
+  readonly #emitter = new events.SignalEmitter<{
     "toggle": () => void;
   }>();
 
-  #enabled = true;
+  #enabled = false;
 
   constructor(private readonly api: core.API) {
   }
 
-  readonly signals = this.emitter.listener;
+  readonly signals = this.#emitter.listener;
 
   get enabled(): boolean {
     return this.#enabled;
@@ -31,7 +31,7 @@ class Zen {
   toggle(): void {
     this.#enabled = !this.#enabled;
 
-    this.emitter.broadcast("toggle");
+    this.#emitter.broadcast("toggle");
 
     this.api.core.resize();
   }

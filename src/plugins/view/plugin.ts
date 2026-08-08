@@ -17,58 +17,59 @@ export function Plugin(api: core.API & themes.API & buffer.API & zen.API): API {
 }
 
 class View {
-  private readonly widget: widgets.Editor;
+  readonly #widget: widgets.Editor;
 
   constructor(
     private readonly api: core.API & themes.API & buffer.API & zen.API,
   ) {
-    this.widget = new widgets.Editor(api.buffer, {
+    this.#widget = new widgets.Editor(api.buffer, {
       multiLine: true,
+      indexEnabled: !api.zen.enabled,
     });
 
     api.core.events.on("input")(async ({ key }) =>
-      this.widget.handleInput(key)
+      this.#widget.handleInput(key)
     );
-    api.core.signals.on("render")(() => this.widget.render());
 
+    api.core.signals.on("render")(() => this.#widget.render());
     api.core.signals.on("resize")(() => {
       const { columns, rows } = Deno.consoleSize();
       if (api.zen.enabled) {
-        this.widget.resize(columns, rows, 0, 0);
+        this.#widget.resize(columns, rows, 0, 0);
       } else {
-        this.widget.resize(columns, rows - 2, 1, 0);
+        this.#widget.resize(columns, rows - 2, 1, 0);
       }
     });
 
-    api.theme.signals.on("change")((x) => this.widget.setTheme(x));
-    api.zen.signals.on("toggle")(() => this.widget.toggleIndex());
+    api.theme.signals.on("change")((x) => this.#widget.setTheme(x));
+    api.zen.signals.on("toggle")(() => this.#widget.toggleIndex());
   }
 
   get cursor(): Cursor {
-    return this.widget.cursor;
+    return this.#widget.cursor;
   }
 
   toggleWhitespace(): void {
-    this.widget.toggleWhitespace();
+    this.#widget.toggleWhitespace();
   }
 
   toggleWrap(): void {
-    this.widget.toggleWrap();
+    this.#widget.toggleWrap();
   }
 
   selectAll(): void {
-    this.widget.cursor.selectAll();
+    this.#widget.cursor.selectAll();
   }
 
   copy(): void {
-    this.widget.copy();
+    this.#widget.copy();
   }
 
   cut(): void {
-    this.widget.cut();
+    this.#widget.cut();
   }
 
   paste(): void {
-    this.widget.paste();
+    this.#widget.paste();
   }
 }

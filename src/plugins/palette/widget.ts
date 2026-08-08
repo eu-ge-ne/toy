@@ -21,7 +21,10 @@ export class PaletteWidget extends widgets.Modal {
       list: new widgets.List<OptionResult>({
         emptyText: "No matching commands",
       }),
-      editor: new widgets.Editor(this.buffer, { multiLine: false }),
+      editor: new widgets.Editor(this.buffer, {
+        multiLine: false,
+        indexEnabled: false,
+      }),
     };
   }
 

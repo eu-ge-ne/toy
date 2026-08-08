@@ -17,6 +17,10 @@ const enum CharColor {
   EmptySelected,
 }
 
+type Params = {
+  indexEnabled: boolean;
+};
+
 export class Content extends Widget {
   #mode = {
     index: false,
@@ -47,8 +51,11 @@ export class Content extends Widget {
   constructor(
     private readonly buffer: buffers.Buffer,
     private readonly cursor: Cursor,
+    params: Params,
   ) {
     super();
+
+    this.#mode.index = params.indexEnabled;
   }
 
   render(): void {
