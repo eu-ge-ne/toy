@@ -2,18 +2,8 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 import * as widgets from "@libs/widgets";
 
-type Pos = {
-  ln: number;
-  col: number;
-};
-
 export class FooterWidget extends widgets.Widget {
-  pos: Pos = { ln: 0, col: 0 };
-  from: Pos = { ln: 0, col: 0 };
-  to: Pos = { ln: 0, col: 0 };
-  lineCount = 0;
-
-  protected override children: {
+  override children: {
     bg: widgets.Bg;
     text: widgets.SingleLineText;
   };
@@ -38,15 +28,6 @@ export class FooterWidget extends widgets.Widget {
     vt.buf.write(vt.cursor.save);
 
     this.children.bg.render();
-
-    const pct = this.lineCount === 0
-      ? 0
-      : ((this.pos.ln / this.lineCount) * 100).toFixed(0);
-
-    this.children.text.value = `${this.pos.ln + 1}:${this.pos.col + 1}  ${
-      this.from.ln + 1
-    }:${this.from.col + 1} - ${this.to.ln + 1}:${this.to.col + 1}  ${pct}% `;
-
     this.children.text.render();
 
     vt.buf.write(vt.cursor.restore);
