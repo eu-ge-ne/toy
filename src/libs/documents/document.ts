@@ -216,13 +216,13 @@ export class Document {
       eol_index -= x.left.totalEolsLen;
       i += x.left.totalLen;
 
-      if (eol_index < x.eolSlice.length) {
+      if (eol_index < x.slice.eolLength) {
         const buf = this.#bufs[x.bufIndex]!;
-        const eol_end = buf.eols[x.eolSlice.start + eol_index]!.end;
+        const eol_end = buf.eols[x.slice.eolStart + eol_index]!.end;
         return i + eol_end - x.slice.start;
       }
 
-      eol_index -= x.eolSlice.length;
+      eol_index -= x.slice.eolLength;
       i += x.slice.length;
       x = x.right;
     }
