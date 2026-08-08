@@ -1,4 +1,3 @@
-import { Buf } from "./buf.ts";
 import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
@@ -11,11 +10,10 @@ export const enum InsertionCase {
 
 export class Document {
   readonly tree: Tree = new Tree();
-  readonly #bufs: Buf[] = [];
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = TreeNode.createFromText(this.#bufs, text);
+      this.tree.root = TreeNode.createFromText(text);
       this.tree.root.red = false;
     }
   }
@@ -34,7 +32,7 @@ export class Document {
       return;
     }
 
-    yield* first.node.read(this.#bufs, first.offset, end - start);
+    yield* first.node.read(first.offset, end - start);
   }
 
   *read2(start: [number, number], end?: [number, number]): Generator<string> {
@@ -51,13 +49,13 @@ export class Document {
       return;
     }
 
-    let insert_case = InsertionCase.Root;
+    let insertCase = InsertionCase.Root;
     let p = TreeNode.NIL;
     let x = this.tree.root;
 
     while (!x.isNIL) {
       if (i <= x.left.totalLen) {
-        insert_case = InsertionCase.Left;
+        insertCase = InsertionCase.Left;
         p = x;
         x = x.left;
         continue;
@@ -66,7 +64,7 @@ export class Document {
       i -= x.left.totalLen;
 
       if (i < x.slice.length) {
-        insert_case = InsertionCase.Split;
+        insertCase = InsertionCase.Split;
         p = x;
         x = TreeNode.NIL;
         continue;
@@ -74,19 +72,19 @@ export class Document {
 
       i -= x.slice.length;
 
-      insert_case = InsertionCase.Right;
+      insertCase = InsertionCase.Right;
       p = x;
       x = x.right;
     }
 
-    if (insert_case === InsertionCase.Right && p.isGrowable(this.#bufs)) {
-      p.append(this.#bufs, text);
+    if (insertCase === InsertionCase.Right && p.isGrowable) {
+      p.append(text);
       return;
     }
 
-    const child = TreeNode.createFromText(this.#bufs, text);
+    const child = TreeNode.createFromText(text);
 
-    switch (insert_case) {
+    switch (insertCase) {
       case InsertionCase.Root: {
         this.tree.root = child;
         this.tree.root.red = false;
@@ -101,7 +99,7 @@ export class Document {
         break;
       }
       case InsertionCase.Split: {
-        const y = p.split(this.#bufs, i);
+        const y = p.split(i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);
         break;
@@ -139,28 +137,28 @@ export class Document {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
-        first.node.trimEnd(this.#bufs, count);
+        first.node.trimEnd(count);
       }
     } else if (offset2 < first.node.slice.length) {
       if (first.offset === 0) {
-        first.node.trimStart(this.#bufs, count);
+        first.node.trimStart(count);
       } else {
-        const y = first.node.split(this.#bufs, first.offset);
+        const y = first.node.split(first.offset);
         this.tree.insertAfter(first.node, y);
-        y.trimStart(this.#bufs, count);
+        y.trimStart(count);
       }
     } else {
       let x = first.node;
       let i = 0;
 
       if (first.offset !== 0) {
-        x = first.node.split(this.#bufs, first.offset);
+        x = first.node.split(first.offset);
         this.tree.insertAfter(first.node, x);
       }
 
       const last = this.tree.find(end);
       if (last && last.offset !== 0) {
-        const y = last.node.split(this.#bufs, last.offset);
+        const y = last.node.split(last.offset);
         this.tree.insertAfter(last.node, y);
       }
 
@@ -190,41 +188,11 @@ export class Document {
       return;
     }
 
-    const i = this.#findLineStart(pos[0]);
+    const i = this.tree.root.findLineStart(pos[0]);
     if (typeof i !== "number") {
       return;
     }
 
     return i + pos[1];
-  }
-
-  #findLineStart(ln: number): number | undefined {
-    if (ln === 0) {
-      return 0;
-    }
-
-    let eol_index = ln - 1;
-    let x = this.tree.root;
-    let i = 0;
-
-    while (!x.isNIL) {
-      if (eol_index < x.left.totalEolsLen) {
-        x = x.left;
-        continue;
-      }
-
-      eol_index -= x.left.totalEolsLen;
-      i += x.left.totalLen;
-
-      if (eol_index < x.slice.eolLength) {
-        const buf = this.#bufs[x.bufIndex]!;
-        const eol_end = buf.eols[x.slice.eolStart + eol_index]!.end;
-        return i + eol_end - x.slice.start;
-      }
-
-      eol_index -= x.slice.eolLength;
-      i += x.slice.length;
-      x = x.right;
-    }
   }
 }
