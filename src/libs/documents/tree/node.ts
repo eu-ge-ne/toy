@@ -129,7 +129,7 @@ export class TreeNode {
   append(bufs: Buf[], text: string): void {
     bufs[this.bufIndex]!.append(text);
 
-    this.#resize(bufs, this.slice.length + text.length);
+    this.resize(bufs, this.slice.length + text.length);
   }
 
   trimStart(bufs: Buf[], n: number): void {
@@ -142,22 +142,27 @@ export class TreeNode {
   }
 
   trimEnd(bufs: Buf[], n: number): void {
-    this.#resize(bufs, this.slice.length - n);
+    this.resize(bufs, this.slice.length - n);
   }
 
   split(bufs: Buf[], offsetInNode: number): TreeNode {
     const buf = bufs[this.bufIndex]!;
 
-    // TODO: clone
-    const slice = Slice.create(
-      buf,
-      this.slice.start + offsetInNode,
-      this.slice.end,
-    );
+    const slice = this.slice.clone();
+    slice.setStart(buf, this.slice.start + offsetInNode);
 
-    this.#resize(bufs, offsetInNode);
+    this.resize(bufs, offsetInNode);
 
     return TreeNode.createFromSlice(this.bufIndex, slice);
+  }
+
+  resize(bufs: Buf[], newLen: number): void {
+    const buf = bufs[this.bufIndex]!;
+
+    this.slice.setEnd(buf, this.slice.start + newLen);
+    this.#setDirty();
+
+    TreeNode.updateDirty();
   }
 
   get isNIL(): boolean {
@@ -247,14 +252,5 @@ export class TreeNode {
 
       return y;
     }
-  }
-
-  #resize(bufs: Buf[], newLen: number): void {
-    const buf = bufs[this.bufIndex]!;
-
-    this.slice.setEnd(buf, this.slice.start + newLen);
-    this.#setDirty();
-
-    TreeNode.updateDirty();
   }
 }
