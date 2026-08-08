@@ -33,6 +33,10 @@ export class TreeNode {
     this.#totalEolsLen = slice.eolLength;
   }
 
+  static create(bufIndex: number, slice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, bufIndex, true, slice);
+  }
+
   static NIL = new TreeNode(
     undefined,
     Number.MAX_SAFE_INTEGER,
@@ -52,11 +56,7 @@ export class TreeNode {
     const buf = new Buf(text);
     const i = bufs.push(buf) - 1;
 
-    return TreeNode.createFromSlice(i, Slice.create(buf, 0, buf.text.length));
-  }
-
-  static createFromSlice(bufIndex: number, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, bufIndex, true, slice);
+    return TreeNode.create(i, Slice.create(buf, 0, buf.text.length));
   }
 
   static updateDirty(): void {
@@ -153,7 +153,7 @@ export class TreeNode {
 
     this.resize(bufs, offsetInNode);
 
-    return TreeNode.createFromSlice(this.bufIndex, slice);
+    return TreeNode.create(this.bufIndex, slice);
   }
 
   resize(bufs: Buf[], newLen: number): void {
