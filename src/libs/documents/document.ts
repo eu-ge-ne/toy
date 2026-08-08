@@ -77,7 +77,7 @@ export class Document {
       x = x.right;
     }
 
-    if (insertCase === InsertionCase.Right && p.isGrowable()) {
+    if (insertCase === InsertionCase.Right && p.isGrowable) {
       p.append(text);
       return;
     }

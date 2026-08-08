@@ -3,13 +3,12 @@ import { Slice } from "../slice.ts";
 
 export class TreeNode {
   readonly #buf: Buf;
-  #red: boolean;
+  readonly #slice: Slice;
 
+  #red: boolean;
   #p: TreeNode;
   #left: TreeNode;
   #right: TreeNode;
-
-  #slice: Slice;
 
   #totalLen: number;
   #totalEolsLen: number;
@@ -17,31 +16,30 @@ export class TreeNode {
   private constructor(
     nil: TreeNode | undefined,
     buf: Buf,
-    red: boolean,
     slice: Slice,
+    red: boolean,
   ) {
     this.#buf = buf;
-    this.#red = red;
+    this.#slice = slice;
 
+    this.#red = red;
     this.#p = nil ?? this;
     this.#left = nil ?? this;
     this.#right = nil ?? this;
-
-    this.#slice = slice;
 
     this.#totalLen = slice.length;
     this.#totalEolsLen = slice.eolLength;
   }
 
   static create(buf: Buf, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, buf, true, slice);
+    return new TreeNode(TreeNode.NIL, buf, slice, true);
   }
 
   static NIL = new TreeNode(
     undefined,
     new Buf(""),
-    false,
     new Slice(0, 0, 0, 0),
+    false,
   );
 
   static #DIRTY = new Set<TreeNode>();
@@ -88,8 +86,8 @@ export class TreeNode {
     const x = new TreeNode(
       TreeNode.NIL,
       this.#buf,
-      this.#red,
       this.#slice.clone(),
+      this.#red,
     );
 
     x.#p = this.#p;
@@ -119,13 +117,8 @@ export class TreeNode {
     }
   }
 
-  isGrowable(): boolean {
-    return (this.#buf.text.length < 100) &&
-      (this.slice.end === this.#buf.text.length);
-  }
-
   append(text: string): void {
-    if (!this.isGrowable()) {
+    if (!this.isGrowable) {
       throw new Error("node is not growable");
     }
 
@@ -163,6 +156,11 @@ export class TreeNode {
 
   get isNIL(): boolean {
     return this === TreeNode.NIL;
+  }
+
+  get isGrowable(): boolean {
+    return (this.#buf.text.length < 100) &&
+      (this.slice.end === this.#buf.text.length);
   }
 
   get red(): boolean {
