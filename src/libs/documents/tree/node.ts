@@ -1,7 +1,9 @@
 import { Buf } from "../buf.ts";
 import { Slice } from "../slice.ts";
+import { Dirty } from "./dirty.ts";
 
 export class TreeNode {
+  readonly #dirty: Dirty;
   readonly #buf: Buf;
   readonly #slice: Slice;
 
@@ -15,10 +17,12 @@ export class TreeNode {
 
   private constructor(
     nil: TreeNode | undefined,
+    dirty: Dirty,
     buf: Buf,
     slice: Slice,
     red: boolean,
   ) {
+    this.#dirty = dirty;
     this.#buf = buf;
     this.#slice = slice;
 
@@ -31,51 +35,22 @@ export class TreeNode {
     this.#totalEolsLen = slice.eolLength;
   }
 
-  static create(buf: Buf, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, buf, slice, true);
+  static create(dirty: Dirty, buf: Buf, slice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, dirty, buf, slice, true);
   }
 
   static NIL = new TreeNode(
     undefined,
+    new Dirty(),
     new Buf(""),
     new Slice(0, 0, 0, 0),
     false,
   );
 
-  static #DIRTY = new Set<TreeNode>();
-
-  #setDirty(): void {
-    if (!this.isNIL) {
-      TreeNode.#DIRTY.add(this);
-    }
-  }
-
-  static createFromText(text: string): TreeNode {
+  static createFromText(dirty: Dirty, text: string): TreeNode {
     const buf = new Buf(text);
 
-    return TreeNode.create(buf, Slice.create(buf, 0, buf.text.length));
-  }
-
-  static updateDirty(): void {
-    while (true) {
-      let x = TreeNode.#DIRTY.keys().next().value;
-      if (!x) {
-        return;
-      }
-
-      TreeNode.#DIRTY.delete(x);
-
-      while (!x.isNIL) {
-        x.#totalLen = x.left.totalLen + x.slice.length + x.right.totalLen;
-
-        x.#totalEolsLen = x.left.totalEolsLen + x.slice.eolLength +
-          x.right.totalEolsLen;
-
-        x = x.p;
-
-        TreeNode.#DIRTY.delete(x);
-      }
-    }
+    return TreeNode.create(dirty, buf, Slice.create(buf, 0, buf.text.length));
   }
 
   clone(): TreeNode {
@@ -85,6 +60,7 @@ export class TreeNode {
 
     const x = new TreeNode(
       TreeNode.NIL,
+      this.#dirty,
       this.#buf,
       this.#slice.clone(),
       this.#red,
@@ -129,9 +105,9 @@ export class TreeNode {
 
   trimStart(n: number): void {
     this.slice.setStart(this.#buf, this.slice.start + n);
-    this.#setDirty();
 
-    TreeNode.updateDirty();
+    this.#dirty.add(this);
+    this.#dirty.cleanup();
   }
 
   trimEnd(n: number): void {
@@ -144,14 +120,22 @@ export class TreeNode {
 
     this.resize(offsetInNode);
 
-    return TreeNode.create(this.#buf, slice);
+    return TreeNode.create(this.#dirty, this.#buf, slice);
   }
 
   resize(newLength: number): void {
     this.slice.setEnd(this.#buf, this.slice.start + newLength);
-    this.#setDirty();
 
-    TreeNode.updateDirty();
+    this.#dirty.add(this);
+    this.#dirty.cleanup();
+  }
+
+  updateTotals(): void {
+    this.#totalLen = this.left.totalLen + this.slice.length +
+      this.right.totalLen;
+
+    this.#totalEolsLen = this.left.totalEolsLen + this.slice.eolLength +
+      this.right.totalEolsLen;
   }
 
   get isNIL(): boolean {
@@ -169,7 +153,8 @@ export class TreeNode {
 
   set red(x: boolean) {
     this.#red = x;
-    this.#setDirty();
+
+    this.#dirty.add(this);
   }
 
   get p(): TreeNode {
@@ -178,7 +163,8 @@ export class TreeNode {
 
   set p(x: TreeNode) {
     this.#p = x;
-    this.#setDirty();
+
+    this.#dirty.add(this);
   }
 
   get left(): TreeNode {
@@ -187,7 +173,8 @@ export class TreeNode {
 
   set left(x: TreeNode) {
     this.#left = x;
-    this.#setDirty();
+
+    this.#dirty.add(this);
   }
 
   get right(): TreeNode {
@@ -196,7 +183,8 @@ export class TreeNode {
 
   set right(x: TreeNode) {
     this.#right = x;
-    this.#setDirty();
+
+    this.#dirty.add(this);
   }
 
   get slice(): Slice {
