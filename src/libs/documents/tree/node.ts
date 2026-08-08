@@ -2,7 +2,7 @@ import { Buf } from "../buf.ts";
 import { Slice } from "../slice.ts";
 
 export class TreeNode {
-  readonly #bufIndex: number;
+  readonly #buf: Buf;
   #red: boolean;
 
   #p: TreeNode;
@@ -16,11 +16,11 @@ export class TreeNode {
 
   private constructor(
     nil: TreeNode | undefined,
-    bufIndex: number,
+    buf: Buf,
     red: boolean,
     slice: Slice,
   ) {
-    this.#bufIndex = bufIndex;
+    this.#buf = buf;
     this.#red = red;
 
     this.#p = nil ?? this;
@@ -33,13 +33,13 @@ export class TreeNode {
     this.#totalEolsLen = slice.eolLength;
   }
 
-  static create(bufIndex: number, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, bufIndex, true, slice);
+  static create(buf: Buf, slice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, buf, true, slice);
   }
 
   static NIL = new TreeNode(
     undefined,
-    Number.MAX_SAFE_INTEGER,
+    new Buf(""),
     false,
     new Slice(0, 0, 0, 0),
   );
@@ -52,11 +52,10 @@ export class TreeNode {
     }
   }
 
-  static createFromText(bufs: Buf[], text: string): TreeNode {
+  static createFromText(text: string): TreeNode {
     const buf = new Buf(text);
-    const i = bufs.push(buf) - 1;
 
-    return TreeNode.create(i, Slice.create(buf, 0, buf.text.length));
+    return TreeNode.create(buf, Slice.create(buf, 0, buf.text.length));
   }
 
   static updateDirty(): void {
@@ -88,7 +87,7 @@ export class TreeNode {
 
     const x = new TreeNode(
       TreeNode.NIL,
-      this.#bufIndex,
+      this.#buf,
       this.#red,
       this.#slice.clone(),
     );
@@ -103,13 +102,13 @@ export class TreeNode {
     return x;
   }
 
-  *read(bufs: Buf[], offsetInNode: number, n: number): Generator<string> {
+  *read(offsetInNode: number, n: number): Generator<string> {
     let x = this as TreeNode;
 
     while (!x.isNIL && (n > 0)) {
       const count = Math.min(x.slice.length - offsetInNode, n);
 
-      yield bufs[x.bufIndex]!.text.slice(
+      yield x.#buf.text.slice(
         x.slice.start + offsetInNode,
         x.slice.start + offsetInNode + count,
       );
@@ -120,46 +119,43 @@ export class TreeNode {
     }
   }
 
-  isGrowable(bufs: Buf[]): boolean {
-    const buf = bufs[this.bufIndex]!;
-
-    return (buf.text.length < 100) && (this.slice.end === buf.text.length);
+  isGrowable(): boolean {
+    return (this.#buf.text.length < 100) &&
+      (this.slice.end === this.#buf.text.length);
   }
 
-  append(bufs: Buf[], text: string): void {
-    bufs[this.bufIndex]!.append(text);
+  append(text: string): void {
+    if (!this.isGrowable()) {
+      throw new Error("node is not growable");
+    }
 
-    this.resize(bufs, this.slice.length + text.length);
+    this.#buf.append(text);
+
+    this.resize(this.slice.length + text.length);
   }
 
-  trimStart(bufs: Buf[], n: number): void {
-    const buf = bufs[this.bufIndex]!;
-
-    this.slice.setStart(buf, this.slice.start + n);
+  trimStart(n: number): void {
+    this.slice.setStart(this.#buf, this.slice.start + n);
     this.#setDirty();
 
     TreeNode.updateDirty();
   }
 
-  trimEnd(bufs: Buf[], n: number): void {
-    this.resize(bufs, this.slice.length - n);
+  trimEnd(n: number): void {
+    this.resize(this.slice.length - n);
   }
 
-  split(bufs: Buf[], offsetInNode: number): TreeNode {
-    const buf = bufs[this.bufIndex]!;
-
+  split(offsetInNode: number): TreeNode {
     const slice = this.slice.clone();
-    slice.setStart(buf, this.slice.start + offsetInNode);
+    slice.setStart(this.#buf, this.slice.start + offsetInNode);
 
-    this.resize(bufs, offsetInNode);
+    this.resize(offsetInNode);
 
-    return TreeNode.create(this.bufIndex, slice);
+    return TreeNode.create(this.#buf, slice);
   }
 
-  resize(bufs: Buf[], newLen: number): void {
-    const buf = bufs[this.bufIndex]!;
-
-    this.slice.setEnd(buf, this.slice.start + newLen);
+  resize(newLength: number): void {
+    this.slice.setEnd(this.#buf, this.slice.start + newLength);
     this.#setDirty();
 
     TreeNode.updateDirty();
@@ -167,10 +163,6 @@ export class TreeNode {
 
   get isNIL(): boolean {
     return this === TreeNode.NIL;
-  }
-
-  get bufIndex(): number {
-    return this.#bufIndex;
   }
 
   get red(): boolean {
@@ -251,6 +243,35 @@ export class TreeNode {
       }
 
       return y;
+    }
+  }
+
+  findLineStart(ln: number): number | undefined {
+    if (ln === 0) {
+      return 0;
+    }
+
+    let eolIndex = ln - 1;
+    let x = this as TreeNode;
+    let i = 0;
+
+    while (!x.isNIL) {
+      if (eolIndex < x.left.totalEolsLen) {
+        x = x.left;
+        continue;
+      }
+
+      eolIndex -= x.left.totalEolsLen;
+      i += x.left.totalLen;
+
+      if (eolIndex < x.slice.eolLength) {
+        const eol_end = x.#buf.eols[x.slice.eolStart + eolIndex]!.end;
+        return i + eol_end - x.slice.start;
+      }
+
+      eolIndex -= x.slice.eolLength;
+      i += x.slice.length;
+      x = x.right;
     }
   }
 }
