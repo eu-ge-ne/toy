@@ -9,11 +9,11 @@ export const enum InsertionCase {
 }
 
 export class Document {
-  readonly tree: Tree = new Tree();
+  readonly tree = new Tree();
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = TreeNode.createFromText(text);
+      this.tree.root = TreeNode.createFromText(this.tree.dirty, text);
       this.tree.root.red = false;
     }
   }
@@ -82,7 +82,7 @@ export class Document {
       return;
     }
 
-    const child = TreeNode.createFromText(text);
+    const child = TreeNode.createFromText(this.tree.dirty, text);
 
     switch (insertCase) {
       case InsertionCase.Root: {
@@ -90,14 +90,17 @@ export class Document {
         this.tree.root.red = false;
         break;
       }
+
       case InsertionCase.Left: {
         this.tree.insertLeft(p, child);
         break;
       }
+
       case InsertionCase.Right: {
         this.tree.insertRight(p, child);
         break;
       }
+
       case InsertionCase.Split: {
         const y = p.split(i);
         this.tree.insertAfter(p, y);
