@@ -15,9 +15,10 @@ import {
   multiLineHandlers,
 } from "./handlers/index.ts";
 
-interface Params {
+type Params = {
   multiLine: boolean;
-}
+  indexEnabled: boolean;
+};
 
 export class Editor extends Widget<Params> {
   private readonly handlers: InputHandler[];
@@ -36,7 +37,9 @@ export class Editor extends Widget<Params> {
 
     this.children = {
       bg: new Bg(),
-      content: new Content(buffer, this.cursor),
+      content: new Content(buffer, this.cursor, {
+        indexEnabled: params.indexEnabled,
+      }),
     };
 
     this.handlers = [

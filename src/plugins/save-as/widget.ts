@@ -17,7 +17,10 @@ export class SaveAsWidget extends widgets.Modal {
       bg: new widgets.Bg(),
       header: new widgets.SingleLineText({ align: "center" }),
       footer: new widgets.SingleLineText({ align: "center" }),
-      editor: new widgets.Editor(this.buffer, { multiLine: false }),
+      editor: new widgets.Editor(this.buffer, {
+        multiLine: false,
+        indexEnabled: false,
+      }),
     };
 
     this.children.header.value = "Save As";
