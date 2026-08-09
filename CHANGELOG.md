@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.32-rc
+
+- Fix new file saving
+
 ## 0.0.31
 
 - Zen mode default is off

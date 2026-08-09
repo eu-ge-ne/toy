@@ -82,6 +82,8 @@ class File {
         this.api.buffer.resetHistory();
 
         this.api.buffer.name = newFileName;
+
+        return;
       } catch (err) {
         const message = Error.isError(err) ? err.message : Deno.inspect(err);
         await this.api.alert.open(message);
