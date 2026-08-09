@@ -52,7 +52,7 @@ export class Editor extends Widget<Params> {
 
     this.#resetHistory();
 
-    buffer.signals.on("buffer.change")(this.#onBufferChange.bind(this));
+    buffer.signals.on("document.change")(this.#onDocumentChange.bind(this));
     buffer.signals.on("history.push")(this.#pushHistory.bind(this));
     buffer.signals.on("history.undo")(this.#undoHistory.bind(this));
     buffer.signals.on("history.redo")(this.#redoHistory.bind(this));
@@ -140,7 +140,7 @@ export class Editor extends Widget<Params> {
     }
   }
 
-  #onBufferChange(change: buffers.BufferChange): void {
+  #onDocumentChange(change: buffers.DocumentChange): void {
     switch (change.type) {
       case "insert":
       case "replace":

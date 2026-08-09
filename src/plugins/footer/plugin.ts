@@ -37,7 +37,7 @@ export function Plugin(
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
 
-  api.buffer.signals.on("buffer.change")(() => {
+  api.buffer.signals.on("document.change")(() => {
     lineCount = api.buffer.lineCount;
 
     update();

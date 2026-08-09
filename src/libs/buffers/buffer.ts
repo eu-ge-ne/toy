@@ -5,14 +5,14 @@ import * as history from "@libs/history";
 
 export type BufferSignals = {
   "name.change": () => void;
-  "buffer.change": (_: BufferChange) => void;
+  "document.change": (_: DocumentChange) => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
   "history.push": () => void;
 };
 
-export type BufferChange = {
+export type DocumentChange = {
   type: "set" | "insert" | "remove" | "replace";
   from: graphemes.Pos;
   to: graphemes.Pos;
@@ -46,7 +46,7 @@ export class Buffer {
   }
 
   get modified(): boolean {
-    return !this.#history.empty;
+    return this.#history.undoCount > 0;
   }
 
   get chunks(): IteratorObject<string> {
@@ -60,7 +60,7 @@ export class Buffer {
     const ln = Math.max(this.lineCount - 1, 0);
     const col = Math.max([...this.cells(ln)].length - 1, 0);
 
-    this.#emitter.broadcast("buffer.change", {
+    this.#emitter.broadcast("document.change", {
       type: "set",
       from: { ln: 0, col: 0 },
       to: { ln, col },
@@ -75,7 +75,7 @@ export class Buffer {
     const ln = Math.max(this.lineCount - 1, 0);
     const col = Math.max([...this.cells(ln)].length - 1, 0);
 
-    this.#emitter.broadcast("buffer.change", {
+    this.#emitter.broadcast("document.change", {
       type: "set",
       from: { ln: 0, col: 0 },
       to: { ln, col },
@@ -104,7 +104,7 @@ export class Buffer {
       to.col = 0;
     }
 
-    this.#emitter.broadcast("buffer.change", {
+    this.#emitter.broadcast("document.change", {
       type: "insert",
       from: pos,
       to,
@@ -119,7 +119,7 @@ export class Buffer {
       col: to.col + 1,
     });
 
-    this.#emitter.broadcast("buffer.change", {
+    this.#emitter.broadcast("document.change", {
       type: "remove",
       from,
       to: from,
@@ -141,7 +141,7 @@ export class Buffer {
       to.col = 0;
     }
 
-    this.#emitter.broadcast("buffer.change", {
+    this.#emitter.broadcast("document.change", {
       type: "replace",
       from,
       to,

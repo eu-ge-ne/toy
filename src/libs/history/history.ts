@@ -1,14 +1,9 @@
 export class History<T extends { clone(): T }> {
-  #entries: T[] = [];
+  #entries!: T[];
   #i!: number;
-
-  get empty(): boolean {
-    return this.#i < 1;
-  }
 
   reset(entry: T): void {
     this.#entries = [entry.clone()];
-
     this.#i = 0;
   }
 
@@ -17,6 +12,10 @@ export class History<T extends { clone(): T }> {
 
     this.#entries[this.#i] = entry.clone();
     this.#entries.length = this.#i + 1;
+  }
+
+  get undoCount(): number {
+    return this.#i;
   }
 
   undo(): T | undefined {
