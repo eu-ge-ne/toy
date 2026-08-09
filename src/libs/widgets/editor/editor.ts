@@ -114,7 +114,7 @@ export class Editor extends Widget<Params> {
     vt.copyToClipboard(vt.sync, this.clipboard);
 
     if (this.cursor.isSelecting) {
-      this.cursor.set(pos, false);
+      this.cursor.set(pos.ln, pos.col, false);
     }
   }
 
@@ -144,22 +144,19 @@ export class Editor extends Widget<Params> {
     switch (change.type) {
       case "insert":
       case "replace":
-        this.cursor.set(change.to, false);
+        this.cursor.set(change.to.ln, change.to.col, false);
         break;
       case "remove":
-        this.cursor.set(change.from, false);
+        this.cursor.set(change.from.ln, change.from.col, false);
         break;
     }
   }
 
   #resetHistory(): void {
     if (this.params.multiLine) {
-      this.cursor.set({ ln: 0, col: 0 }, false);
+      this.cursor.set(0, 0, false);
     } else {
-      this.cursor.set({
-        ln: Number.MAX_SAFE_INTEGER,
-        col: Number.MAX_SAFE_INTEGER,
-      }, false);
+      this.cursor.set(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, false);
     }
 
     this.history.reset(this.cursor.pos);
@@ -172,14 +169,14 @@ export class Editor extends Widget<Params> {
   #undoHistory(): void {
     const entry = this.history.undo();
     if (entry) {
-      this.cursor.set(entry, false);
+      this.cursor.set(entry.ln, entry.col, false);
     }
   }
 
   #redoHistory(): void {
     const entry = this.history.redo();
     if (entry) {
-      this.cursor.set(entry, false);
+      this.cursor.set(entry.ln, entry.col, false);
     }
   }
 }
