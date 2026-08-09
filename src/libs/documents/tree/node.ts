@@ -35,10 +35,6 @@ export class TreeNode {
     this.#totalEolsLen = slice.eolLength;
   }
 
-  static create(dirty: Dirty, buf: Buf, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, dirty, buf, slice, true);
-  }
-
   static NIL = new TreeNode(
     undefined,
     new Dirty(),
@@ -47,10 +43,8 @@ export class TreeNode {
     false,
   );
 
-  static createFromText(dirty: Dirty, text: string): TreeNode {
-    const buf = new Buf(text);
-
-    return TreeNode.create(dirty, buf, Slice.create(buf, 0, buf.text.length));
+  static create(dirty: Dirty, buf: Buf, slice: Slice): TreeNode {
+    return new TreeNode(TreeNode.NIL, dirty, buf, slice, true);
   }
 
   clone(): TreeNode {
@@ -58,7 +52,7 @@ export class TreeNode {
       return this;
     }
 
-    const x = new TreeNode(
+    const node = new TreeNode(
       TreeNode.NIL,
       this.#dirty,
       this.#buf,
@@ -66,14 +60,14 @@ export class TreeNode {
       this.#red,
     );
 
-    x.#p = this.#p;
-    x.#left = this.#left.clone();
-    x.#right = this.#right.clone();
+    node.#p = this.#p;
+    node.#left = this.#left.clone();
+    node.#right = this.#right.clone();
 
-    x.#totalLen = this.#totalLen;
-    x.#totalEolsLen = this.#totalEolsLen;
+    node.#totalLen = this.#totalLen;
+    node.#totalEolsLen = this.#totalEolsLen;
 
-    return x;
+    return node;
   }
 
   *read(offsetInNode: number, n: number): Generator<string> {

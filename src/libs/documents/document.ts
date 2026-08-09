@@ -1,3 +1,5 @@
+import { Buf } from "./buf.ts";
+import { Slice } from "./slice.ts";
 import { TreeNode } from "./tree/node.ts";
 import { Tree } from "./tree/tree.ts";
 
@@ -13,8 +15,13 @@ export class Document {
 
   constructor(text?: string) {
     if (text && text.length > 0) {
-      this.tree.root = TreeNode.createFromText(this.tree.dirty, text);
-      this.tree.root.red = false;
+      const buf = new Buf(text);
+      const slice = Slice.create(buf, 0, buf.text.length);
+
+      const node = TreeNode.create(this.tree.dirty, buf, slice);
+      node.red = false;
+
+      this.tree.root = node;
     }
   }
 
@@ -82,7 +89,12 @@ export class Document {
       return;
     }
 
-    const child = TreeNode.createFromText(this.tree.dirty, text);
+    const buf = new Buf(text);
+    const child = TreeNode.create(
+      this.tree.dirty,
+      buf,
+      Slice.create(buf, 0, buf.text.length),
+    );
 
     switch (insertCase) {
       case InsertionCase.Root: {
