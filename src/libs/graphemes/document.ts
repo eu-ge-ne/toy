@@ -12,20 +12,20 @@ export class Document {
   }
 
   cells(ln: number, extra = false): IteratorObject<Cell> {
-    const chunks = this.document.read2([ln, 0], [ln + 1, 0]);
+    const chunks = this.document.read2(ln, 0, ln + 1, 0);
     return segments(chunks, extra);
   }
 
   read(start: Pos, end: Pos): IteratorObject<string> {
-    return this.document.read2(this.#unitPos(start), this.#unitPos(end));
+    return this.document.read2(...this.#unitPos(start), ...this.#unitPos(end));
   }
 
   insert(pos: Pos, text: string): void {
-    this.document.insert2(this.#unitPos(pos), text);
+    this.document.insert2(...this.#unitPos(pos), text);
   }
 
   delete(start: Pos, end: Pos): void {
-    this.document.delete2(this.#unitPos(start), this.#unitPos(end));
+    this.document.delete2(...this.#unitPos(start), ...this.#unitPos(end));
   }
 
   #unitPos({ ln, col }: Pos): [number, number] {

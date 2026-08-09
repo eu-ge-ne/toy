@@ -42,13 +42,18 @@ export class Document {
     yield* first.node.read(first.offset, end - start);
   }
 
-  *read2(start: [number, number], end?: [number, number]): Generator<string> {
-    const i = this.#posToIndex(start);
+  *read2(
+    startLn: number,
+    startCol: number,
+    endLn?: number,
+    endCol?: number,
+  ): Generator<string> {
+    const i = this.#posToIndex(startLn, startCol);
     if (typeof i !== "number") {
       return;
     }
 
-    yield* this.read(i, this.#posToIndex(end));
+    yield* this.read(i, this.#posToIndex(endLn, endCol));
   }
 
   insert(i: number, text: string): void {
@@ -122,8 +127,8 @@ export class Document {
     }
   }
 
-  insert2(pos: [number, number], text: string): void {
-    const i = this.#posToIndex(pos);
+  insert2(ln: number, col: number, text: string): void {
+    const i = this.#posToIndex(ln, col);
     if (typeof i !== "number") {
       return;
     }
@@ -189,25 +194,30 @@ export class Document {
     }
   }
 
-  delete2(start: [number, number], end?: [number, number]): void {
-    const i = this.#posToIndex(start);
+  delete2(
+    startLn: number,
+    startCol: number,
+    endLn?: number,
+    endCol?: number,
+  ): void {
+    const i = this.#posToIndex(startLn, startCol);
     if (typeof i !== "number") {
       return;
     }
 
-    this.delete(i, this.#posToIndex(end));
+    this.delete(i, this.#posToIndex(endLn, endCol));
   }
 
-  #posToIndex(pos?: [number, number]): number | undefined {
-    if (!pos) {
+  #posToIndex(ln?: number, col?: number): number | undefined {
+    if (typeof ln !== "number" || typeof col !== "number") {
       return;
     }
 
-    const i = this.tree.root.findLineStart(pos[0]);
+    const i = this.tree.root.findLineStart(ln);
     if (typeof i !== "number") {
       return;
     }
 
-    return i + pos[1];
+    return i + col;
   }
 }
