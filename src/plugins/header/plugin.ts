@@ -25,9 +25,15 @@ export function Plugin(
   });
 
   api.buffer.signals.on("name.change")(() => widget.fileName = api.buffer.name);
-  api.buffer.signals.on("buffer.change")(() =>
-    widget.modified = api.buffer.modified
-  );
+
+  api.buffer.signals.on("history.reset")(updateModified);
+  api.buffer.signals.on("history.undo")(updateModified);
+  api.buffer.signals.on("history.redo")(updateModified);
+  api.buffer.signals.on("history.push")(updateModified);
 
   api.theme.signals.on("change")((x) => widget.setTheme(x));
+
+  function updateModified(): void {
+    widget.modified = api.buffer.modified;
+  }
 }

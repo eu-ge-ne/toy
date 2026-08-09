@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.33-rc
+
+- Fix modified flag in the header
+
 ## 0.0.32
 
 - Fix new file saving
