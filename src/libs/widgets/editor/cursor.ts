@@ -1,15 +1,7 @@
 import * as buffers from "@libs/buffers";
 import * as events from "@libs/events";
+import { Pos } from "@libs/pos";
 import * as std from "@libs/std";
-
-export class Pos {
-  constructor(readonly ln: number, readonly col: number) {
-  }
-
-  clone(): Pos {
-    return new Pos(this.ln, this.col);
-  }
-}
 
 export class Cursor {
   readonly #emitter = new events.SignalEmitter<{
