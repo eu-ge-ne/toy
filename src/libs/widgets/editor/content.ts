@@ -254,7 +254,7 @@ export class Content extends Widget {
       }
 
       const color = charColor(
-        this.cursor.isSelected({ ln, col: i }),
+        this.cursor.isSelected(ln, i),
         isVisible,
         this.#mode.whitespace,
       );
