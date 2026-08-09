@@ -2,10 +2,14 @@ import * as buffers from "@libs/buffers";
 import * as events from "@libs/events";
 import * as std from "@libs/std";
 
-export type Pos = {
-  ln: number;
-  col: number;
-};
+export class Pos {
+  constructor(readonly ln: number, readonly col: number) {
+  }
+
+  clone(): Pos {
+    return new Pos(this.ln, this.col);
+  }
+}
 
 export class Cursor {
   private readonly emitter = new events.SignalEmitter<{
