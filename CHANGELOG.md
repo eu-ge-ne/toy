@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.32-rc
+## 0.0.32
 
 - Fix new file saving
 
