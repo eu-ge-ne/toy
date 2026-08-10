@@ -108,17 +108,17 @@ export class TreeNode {
     this.resize(this.slice.charCount - n);
   }
 
-  split(offsetInNode: number): TreeNode {
+  split(i: number): TreeNode {
     const slice = this.slice.clone();
-    slice.setStart(this.#buf, this.slice.start + offsetInNode);
+    slice.setStart(this.#buf, this.slice.start + i);
 
-    this.resize(offsetInNode);
+    this.resize(i);
 
     return TreeNode.create(this.#dirty, this.#buf, slice);
   }
 
-  resize(newLength: number): void {
-    this.slice.setEnd(this.#buf, this.slice.start + newLength);
+  resize(length: number): void {
+    this.slice.setEnd(this.#buf, this.slice.start + length);
 
     this.#dirty.add(this);
     this.#dirty.cleanup();
