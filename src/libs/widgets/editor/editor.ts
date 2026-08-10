@@ -109,7 +109,7 @@ export class Editor extends Widget<Params> {
   copy(): void {
     const { pos, from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+    this.clipboard = [...this.buffer.read(from.ln, from.col, to.ln, to.col)]
       .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
@@ -121,11 +121,11 @@ export class Editor extends Widget<Params> {
   cut(): void {
     const { from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+    this.clipboard = [...this.buffer.read(from.ln, from.col, to.ln, to.col + 1)]
       .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
-    this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
+    this.buffer.remove(from.ln, from.col, to.ln, to.col + 1);
   }
 
   paste(): void {
@@ -134,9 +134,14 @@ export class Editor extends Widget<Params> {
     }
 
     if (this.cursor.isSelecting) {
-      this.buffer.replace(this.cursor.from, this.cursor.to, this.clipboard);
+      const { from, to } = this.cursor;
+      this.buffer.replace(from.ln, from.col, to.ln, to.col, this.clipboard);
     } else {
-      this.buffer.insert(this.cursor.pos, this.clipboard);
+      this.buffer.insert(
+        this.cursor.pos.ln,
+        this.cursor.pos.col,
+        this.clipboard,
+      );
     }
   }
 
@@ -144,10 +149,10 @@ export class Editor extends Widget<Params> {
     switch (change.type) {
       case "insert":
       case "replace":
-        this.cursor.set(change.to.ln, change.to.col, false);
+        this.cursor.set(change.toLn, change.toCol, false);
         break;
       case "remove":
-        this.cursor.set(change.from.ln, change.from.col, false);
+        this.cursor.set(change.fromLn, change.fromCol, false);
         break;
     }
   }

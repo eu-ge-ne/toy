@@ -2,11 +2,6 @@ import * as documents from "@libs/documents";
 
 import { Cell, segments } from "./segmenter.ts";
 
-export interface Pos {
-  ln: number;
-  col: number;
-}
-
 export class Document {
   constructor(private readonly document: documents.Document) {
   }

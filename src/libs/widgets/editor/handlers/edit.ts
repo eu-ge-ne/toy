@@ -13,9 +13,9 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
 
       if (isSelecting) {
-        buffer.replace(from, to, key.text!);
+        buffer.replace(from.ln, from.col, to.ln, to.col, key.text!);
       } else {
-        buffer.insert(pos, key.text!);
+        buffer.insert(pos.ln, pos.col, key.text!);
       }
     }
   },
@@ -29,9 +29,10 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor, buffer } = this.editor;
 
       if (cursor.isSelecting) {
-        buffer.replace(cursor.from, cursor.to, "\t");
+        const { from, to } = cursor;
+        buffer.replace(from.ln, from.col, to.ln, to.col, "\t");
       } else {
-        buffer.insert(cursor.pos, "\t");
+        buffer.insert(cursor.pos.ln, cursor.pos.col, "\t");
       }
     }
   },
@@ -43,7 +44,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
 
     handle(_: kitty.Key): void {
       const { from, to } = this.editor.cursor;
-      this.editor.buffer.remove(from, to);
+      this.editor.buffer.remove(from.ln, from.col, to.ln, to.col);
     }
   },
 
@@ -56,17 +57,17 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
 
       if (isSelecting) {
-        buffer.remove(from, to);
+        buffer.remove(from.ln, from.col, to.ln, to.col);
       } else {
         if (pos.col > 0) {
           const p = { ln: pos.ln, col: pos.col - 1 };
-          buffer.remove(p, p);
+          buffer.remove(p.ln, p.col, p.ln, p.col);
         } else if (pos.ln > 0) {
           const ln = pos.ln - 1;
           const prevLine = buffer.cells(ln);
           const col = [...prevLine].length - 1;
           const p = { ln, col };
-          buffer.remove(p, p);
+          buffer.remove(p.ln, p.col, p.ln, p.col);
         }
       }
     }
