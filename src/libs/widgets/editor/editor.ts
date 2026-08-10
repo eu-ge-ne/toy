@@ -134,7 +134,8 @@ export class Editor extends Widget<Params> {
     }
 
     if (this.cursor.isSelecting) {
-      this.buffer.replace(this.cursor.from, this.cursor.to, this.clipboard);
+      const { from, to } = this.cursor;
+      this.buffer.replace(from.ln, from.col, to.ln, to.col, this.clipboard);
     } else {
       this.buffer.insert(this.cursor.pos, this.clipboard);
     }

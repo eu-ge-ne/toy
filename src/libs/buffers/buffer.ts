@@ -135,25 +135,32 @@ export class Buffer {
     this.#pushHistory();
   }
 
-  replace(from: graphemes.Pos, to: graphemes.Pos, text: string): void {
-    this.#gdoc.delete(from.ln, from.col, to.ln, to.col + 1);
-    this.#gdoc.insert(from.ln, from.col, text);
+  replace(
+    fromLn: number,
+    fromCol: number,
+    toLn: number,
+    toCol: number,
+    text: string,
+  ): void {
+    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#gdoc.insert(fromLn, fromCol, text);
 
-    to = { ln: from.ln, col: from.col };
+    toLn = fromLn;
+    toCol = fromCol;
     const { lns, cols } = graphemes.measure(text);
     if (lns === 0) {
-      to.col += cols;
+      toCol += cols;
     } else {
-      to.ln += lns;
-      to.col = 0;
+      toLn += lns;
+      toCol = 0;
     }
 
     this.#emitter.broadcast("document.change", {
       type: "replace",
-      fromLn: from.ln,
-      fromCol: from.col,
-      toLn: to.ln,
-      toCol: to.col,
+      fromLn,
+      fromCol,
+      toLn,
+      toCol,
     });
 
     this.#pushHistory();

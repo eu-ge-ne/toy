@@ -13,7 +13,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor: { pos, from, to, isSelecting }, buffer } = this.editor;
 
       if (isSelecting) {
-        buffer.replace(from, to, key.text!);
+        buffer.replace(from.ln, from.col, to.ln, to.col, key.text!);
       } else {
         buffer.insert(pos, key.text!);
       }
@@ -29,7 +29,8 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor, buffer } = this.editor;
 
       if (cursor.isSelecting) {
-        buffer.replace(cursor.from, cursor.to, "\t");
+        const { from, to } = cursor;
+        buffer.replace(from.ln, from.col, to.ln, to.col, "\t");
       } else {
         buffer.insert(cursor.pos, "\t");
       }

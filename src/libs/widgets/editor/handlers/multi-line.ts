@@ -73,7 +73,8 @@ export const multiLineHandlers: (new (_: Editor) => InputHandler)[] = [
       const { cursor, buffer } = this.editor;
 
       if (cursor.isSelecting) {
-        buffer.replace(cursor.from, cursor.to, "\n");
+        const { from, to } = cursor;
+        buffer.replace(from.ln, from.col, to.ln, to.col, "\n");
       } else {
         buffer.insert(cursor.pos, "\n");
       }
