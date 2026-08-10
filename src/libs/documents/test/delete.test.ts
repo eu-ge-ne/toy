@@ -192,7 +192,7 @@ Deno.test("Delete removes lines", () => {
   assertEquals(doc.charCount, 5);
   assertEquals(doc.lineCount, 1);
   assertGenerator(doc.read(0), "ipsum");
-  assertGenerator(doc.read2([0, 0], [1, 0]), "ipsum");
+  assertGenerator(doc.read2(0, 0, 1, 0), "ipsum");
   assertRoot(doc.tree.root);
 });
 

@@ -12,23 +12,39 @@ export class Document {
   }
 
   cells(ln: number, extra = false): IteratorObject<Cell> {
-    const chunks = this.document.read2([ln, 0], [ln + 1, 0]);
+    const chunks = this.document.read2(ln, 0, ln + 1, 0);
     return segments(chunks, extra);
   }
 
-  read(start: Pos, end: Pos): IteratorObject<string> {
-    return this.document.read2(this.#unitPos(start), this.#unitPos(end));
+  read(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): IteratorObject<string> {
+    return this.document.read2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
   }
 
-  insert(pos: Pos, text: string): void {
-    this.document.insert2(this.#unitPos(pos), text);
+  insert(ln: number, col: number, text: string): void {
+    this.document.insert2(...this.#unitPos(ln, col), text);
   }
 
-  delete(start: Pos, end: Pos): void {
-    this.document.delete2(this.#unitPos(start), this.#unitPos(end));
+  delete(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): void {
+    this.document.delete2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
   }
 
-  #unitPos({ ln, col }: Pos): [number, number] {
+  #unitPos(ln: number, col: number): [number, number] {
     let unit_col = 0;
     let i = 0;
 
