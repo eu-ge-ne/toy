@@ -9,18 +9,18 @@ export class Tree {
     let x = this.root;
 
     while (!x.isNIL) {
-      if (charIndex < x.left.totalLen) {
+      if (charIndex < x.left.totalCharCount) {
         x = x.left;
         continue;
       }
 
-      charIndex -= x.left.totalLen;
+      charIndex -= x.left.totalCharCount;
 
-      if (charIndex < x.slice.length) {
+      if (charIndex < x.slice.charCount) {
         return { node: x, offset: charIndex };
       }
 
-      charIndex -= x.slice.length;
+      charIndex -= x.slice.charCount;
       x = x.right;
     }
   }

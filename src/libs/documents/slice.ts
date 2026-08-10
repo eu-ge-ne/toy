@@ -21,11 +21,11 @@ export class Slice {
     return new Slice(this.#start, this.#end, this.#eolStart, this.#eolEnd);
   }
 
-  get length(): number {
+  get charCount(): number {
     return this.#end - this.#start;
   }
 
-  get eolLength(): number {
+  get eolCount(): number {
     return this.#eolEnd - this.#eolStart;
   }
 

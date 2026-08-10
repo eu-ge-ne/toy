@@ -12,8 +12,8 @@ export class TreeNode {
   #left: TreeNode;
   #right: TreeNode;
 
-  #totalLen: number;
-  #totalEolsLen: number;
+  #totalCharCount: number;
+  #totalEolCount: number;
 
   private constructor(
     nil: TreeNode | undefined,
@@ -31,8 +31,8 @@ export class TreeNode {
     this.#left = nil ?? this;
     this.#right = nil ?? this;
 
-    this.#totalLen = slice.length;
-    this.#totalEolsLen = slice.eolLength;
+    this.#totalCharCount = slice.charCount;
+    this.#totalEolCount = slice.eolCount;
   }
 
   static NIL = new TreeNode(
@@ -64,8 +64,8 @@ export class TreeNode {
     node.#left = this.#left.clone();
     node.#right = this.#right.clone();
 
-    node.#totalLen = this.#totalLen;
-    node.#totalEolsLen = this.#totalEolsLen;
+    node.#totalCharCount = this.#totalCharCount;
+    node.#totalEolCount = this.#totalEolCount;
 
     return node;
   }
@@ -74,7 +74,7 @@ export class TreeNode {
     let x = this as TreeNode;
 
     while (!x.isNIL && (n > 0)) {
-      const count = Math.min(x.slice.length - offsetInNode, n);
+      const count = Math.min(x.slice.charCount - offsetInNode, n);
 
       yield x.#buf.text.slice(
         x.slice.start + offsetInNode,
@@ -94,7 +94,7 @@ export class TreeNode {
 
     this.#buf.append(text);
 
-    this.resize(this.slice.length + text.length);
+    this.resize(this.slice.charCount + text.length);
   }
 
   trimStart(n: number): void {
@@ -105,7 +105,7 @@ export class TreeNode {
   }
 
   trimEnd(n: number): void {
-    this.resize(this.slice.length - n);
+    this.resize(this.slice.charCount - n);
   }
 
   split(offsetInNode: number): TreeNode {
@@ -125,11 +125,11 @@ export class TreeNode {
   }
 
   updateTotals(): void {
-    this.#totalLen = this.left.totalLen + this.slice.length +
-      this.right.totalLen;
+    this.#totalCharCount = this.left.totalCharCount + this.slice.charCount +
+      this.right.totalCharCount;
 
-    this.#totalEolsLen = this.left.totalEolsLen + this.slice.eolLength +
-      this.right.totalEolsLen;
+    this.#totalEolCount = this.left.totalEolCount + this.slice.eolCount +
+      this.right.totalEolCount;
   }
 
   get isNIL(): boolean {
@@ -185,12 +185,12 @@ export class TreeNode {
     return this.#slice;
   }
 
-  get totalLen(): number {
-    return this.#totalLen;
+  get totalCharCount(): number {
+    return this.#totalCharCount;
   }
 
-  get totalEolsLen(): number {
-    return this.#totalEolsLen;
+  get totalEolCount(): number {
+    return this.#totalEolCount;
   }
 
   minimum(): TreeNode {
@@ -236,21 +236,21 @@ export class TreeNode {
     let i = 0;
 
     while (!x.isNIL) {
-      if (eolIndex < x.left.totalEolsLen) {
+      if (eolIndex < x.left.totalEolCount) {
         x = x.left;
         continue;
       }
 
-      eolIndex -= x.left.totalEolsLen;
-      i += x.left.totalLen;
+      eolIndex -= x.left.totalEolCount;
+      i += x.left.totalCharCount;
 
-      if (eolIndex < x.slice.eolLength) {
+      if (eolIndex < x.slice.eolCount) {
         const eol_end = x.#buf.eols[x.slice.eolStart + eolIndex]!.end;
         return i + eol_end - x.slice.start;
       }
 
-      eolIndex -= x.slice.eolLength;
-      i += x.slice.length;
+      eolIndex -= x.slice.eolCount;
+      i += x.slice.charCount;
       x = x.right;
     }
   }

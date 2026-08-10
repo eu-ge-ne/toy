@@ -26,11 +26,13 @@ export class Document {
   }
 
   get charCount(): number {
-    return this.tree.root.totalLen;
+    return this.tree.root.totalCharCount;
   }
 
   get lineCount(): number {
-    return this.tree.root.totalLen === 0 ? 0 : this.tree.root.totalEolsLen + 1;
+    return this.tree.root.totalCharCount === 0
+      ? 0
+      : this.tree.root.totalEolCount + 1;
   }
 
   *read(start: number, end = Number.MAX_SAFE_INTEGER): Generator<string> {
@@ -66,23 +68,23 @@ export class Document {
     let x = this.tree.root;
 
     while (!x.isNIL) {
-      if (i <= x.left.totalLen) {
+      if (i <= x.left.totalCharCount) {
         insertCase = InsertionCase.Left;
         p = x;
         x = x.left;
         continue;
       }
 
-      i -= x.left.totalLen;
+      i -= x.left.totalCharCount;
 
-      if (i < x.slice.length) {
+      if (i < x.slice.charCount) {
         insertCase = InsertionCase.Split;
         p = x;
         x = TreeNode.NIL;
         continue;
       }
 
-      i -= x.slice.length;
+      i -= x.slice.charCount;
 
       insertCase = InsertionCase.Right;
       p = x;
@@ -153,13 +155,13 @@ export class Document {
     const count = end - start;
     const offset2 = first.offset + count;
 
-    if (offset2 === first.node.slice.length) {
+    if (offset2 === first.node.slice.charCount) {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
         first.node.trimEnd(count);
       }
-    } else if (offset2 < first.node.slice.length) {
+    } else if (offset2 < first.node.slice.charCount) {
       if (first.offset === 0) {
         first.node.trimStart(count);
       } else {
@@ -183,7 +185,7 @@ export class Document {
       }
 
       while (!x.isNIL && (i < count)) {
-        i += x.slice.length;
+        i += x.slice.charCount;
 
         const next = x.successor();
 
