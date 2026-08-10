@@ -14,8 +14,10 @@ export type BufferSignals = {
 
 export type DocumentChange = {
   type: "set" | "insert" | "remove" | "replace";
-  from: graphemes.Pos;
-  to: graphemes.Pos;
+  fromLn: number;
+  fromCol: number;
+  toLn: number;
+  toCol: number;
 };
 
 export class Buffer {
@@ -57,13 +59,15 @@ export class Buffer {
     this.#doc.delete(0);
     this.#doc.insert(0, x);
 
-    const ln = Math.max(this.lineCount - 1, 0);
-    const col = Math.max([...this.cells(ln)].length - 1, 0);
+    const toLn = Math.max(this.lineCount - 1, 0);
+    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
-      from: { ln: 0, col: 0 },
-      to: { ln, col },
+      fromLn: 0,
+      fromCol: 0,
+      toLn,
+      toCol,
     });
 
     this.resetHistory();
@@ -72,13 +76,15 @@ export class Buffer {
   async load(text: AsyncIterable<string>): Promise<void> {
     await this.#doc.load(text);
 
-    const ln = Math.max(this.lineCount - 1, 0);
-    const col = Math.max([...this.cells(ln)].length - 1, 0);
+    const toLn = Math.max(this.lineCount - 1, 0);
+    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
-      from: { ln: 0, col: 0 },
-      to: { ln, col },
+      fromLn: 0,
+      fromCol: 0,
+      toLn,
+      toCol,
     });
 
     this.resetHistory();
@@ -106,8 +112,10 @@ export class Buffer {
 
     this.#emitter.broadcast("document.change", {
       type: "insert",
-      from: pos,
-      to,
+      fromLn: pos.ln,
+      fromCol: pos.col,
+      toLn: to.ln,
+      toCol: to.col,
     });
 
     this.#pushHistory();
@@ -118,8 +126,10 @@ export class Buffer {
 
     this.#emitter.broadcast("document.change", {
       type: "remove",
-      from,
-      to: from,
+      fromLn: from.ln,
+      fromCol: from.col,
+      toLn: to.ln,
+      toCol: to.col,
     });
 
     this.#pushHistory();
@@ -140,8 +150,10 @@ export class Buffer {
 
     this.#emitter.broadcast("document.change", {
       type: "replace",
-      from,
-      to,
+      fromLn: from.ln,
+      fromCol: from.col,
+      toLn: to.ln,
+      toCol: to.col,
     });
 
     this.#pushHistory();

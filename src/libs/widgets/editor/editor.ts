@@ -144,10 +144,10 @@ export class Editor extends Widget<Params> {
     switch (change.type) {
       case "insert":
       case "replace":
-        this.cursor.set(change.to.ln, change.to.col, false);
+        this.cursor.set(change.toLn, change.toCol, false);
         break;
       case "remove":
-        this.cursor.set(change.from.ln, change.from.col, false);
+        this.cursor.set(change.fromLn, change.fromCol, false);
         break;
     }
   }
