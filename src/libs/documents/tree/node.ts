@@ -70,26 +70,26 @@ export class TreeNode {
     return node;
   }
 
-  *read(offsetInNode: number, n: number): Generator<string> {
-    let x = this as TreeNode;
+  *read(start: number, n: number): Generator<string> {
+    let cur = this as TreeNode;
 
-    while (!x.isNIL && (n > 0)) {
-      const count = Math.min(x.slice.charCount - offsetInNode, n);
+    while (!cur.isNIL && (n > 0)) {
+      const count = Math.min(cur.slice.charCount - start, n);
+      const s = cur.slice.start + start;
+      const e = s + count;
 
-      yield x.#buf.text.slice(
-        x.slice.start + offsetInNode,
-        x.slice.start + offsetInNode + count,
-      );
+      yield cur.#buf.text.slice(s, e);
 
-      x = x.successor();
-      offsetInNode = 0;
+      start = 0;
       n -= count;
+
+      cur = cur.successor();
     }
   }
 
   append(text: string): void {
     if (!this.isGrowable) {
-      throw new Error("node is not growable");
+      throw new Error("TreeNode is not growable");
     }
 
     this.#buf.append(text);
@@ -137,8 +137,7 @@ export class TreeNode {
   }
 
   get isGrowable(): boolean {
-    return (this.#buf.text.length < 100) &&
-      (this.slice.end === this.#buf.text.length);
+    return this.#buf.isGrowable && (this.slice.end === this.#buf.text.length);
   }
 
   get red(): boolean {

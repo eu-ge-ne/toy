@@ -6,11 +6,19 @@ export class Buf {
     this.append(text);
   }
 
+  get isGrowable(): boolean {
+    return this.text.length < 100;
+  }
+
   append(text: string): void {
-    for (const x of text.matchAll(/\r?\n/gm)) {
+    if (!this.isGrowable) {
+      throw new Error("Buf is not growable");
+    }
+
+    for (const m of text.matchAll(/\r?\n/gm)) {
       this.eols.push({
-        start: this.text.length + x.index,
-        end: this.text.length + x.index + x[0].length,
+        start: this.text.length + m.index,
+        end: this.text.length + m.index + m[0].length,
       });
     }
 
