@@ -109,7 +109,7 @@ export class Editor extends Widget<Params> {
   copy(): void {
     const { pos, from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+    this.clipboard = [...this.buffer.read(from.ln, from.col, to.ln, to.col)]
       .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
@@ -121,11 +121,11 @@ export class Editor extends Widget<Params> {
   cut(): void {
     const { from, to } = this.cursor;
 
-    this.clipboard = [...this.buffer.read(from, { ln: to.ln, col: to.col + 1 })]
+    this.clipboard = [...this.buffer.read(from.ln, from.col, to.ln, to.col + 1)]
       .join("");
     vt.copyToClipboard(vt.sync, this.clipboard);
 
-    this.buffer.remove(from, { ln: to.ln, col: to.col + 1 });
+    this.buffer.remove(from.ln, from.col, to.ln, to.col + 1);
   }
 
   paste(): void {
@@ -137,7 +137,11 @@ export class Editor extends Widget<Params> {
       const { from, to } = this.cursor;
       this.buffer.replace(from.ln, from.col, to.ln, to.col, this.clipboard);
     } else {
-      this.buffer.insert(this.cursor.pos, this.clipboard);
+      this.buffer.insert(
+        this.cursor.pos.ln,
+        this.cursor.pos.col,
+        this.clipboard,
+      );
     }
   }
 

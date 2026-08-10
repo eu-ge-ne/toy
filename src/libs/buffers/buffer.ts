@@ -90,46 +90,52 @@ export class Buffer {
     this.resetHistory();
   }
 
-  read(start: graphemes.Pos, end: graphemes.Pos): IteratorObject<string> {
-    return this.#gdoc.read(start.ln, start.col, end.ln, end.col);
+  read(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): IteratorObject<string> {
+    return this.#gdoc.read(startLn, startCol, endLn, endCol);
   }
 
   cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
     return this.#gdoc.cells(ln, extra);
   }
 
-  insert(pos: graphemes.Pos, text: string): void {
-    this.#gdoc.insert(pos.ln, pos.col, text);
+  insert(ln: number, col: number, text: string): void {
+    this.#gdoc.insert(ln, col, text);
 
-    const to = { ln: pos.ln, col: pos.col };
+    let toLn = ln;
+    let toCol = col;
     const { lns, cols } = graphemes.measure(text);
     if (lns === 0) {
-      to.col += cols;
+      toCol += cols;
     } else {
-      to.ln += lns;
-      to.col = 0;
+      toLn += lns;
+      toCol = 0;
     }
 
     this.#emitter.broadcast("document.change", {
       type: "insert",
-      fromLn: pos.ln,
-      fromCol: pos.col,
-      toLn: to.ln,
-      toCol: to.col,
+      fromLn: ln,
+      fromCol: col,
+      toLn: toLn,
+      toCol: toCol,
     });
 
     this.#pushHistory();
   }
 
-  remove(from: graphemes.Pos, to: graphemes.Pos): void {
-    this.#gdoc.delete(from.ln, from.col, to.ln, to.col + 1);
+  remove(fromLn: number, fromCol: number, toLn: number, toCol: number): void {
+    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
 
     this.#emitter.broadcast("document.change", {
       type: "remove",
-      fromLn: from.ln,
-      fromCol: from.col,
-      toLn: to.ln,
-      toCol: to.col,
+      fromLn,
+      fromCol,
+      toLn,
+      toCol,
     });
 
     this.#pushHistory();
