@@ -52,8 +52,8 @@ function assertNode(x: TreeNode): void {
     assertNode(x.left);
     assertNode(x.right);
 
-    // 6. slice_len > 0
-    assert(x.slice.length > 0);
+    // 6. slice.charCount > 0
+    assert(x.slice.charCount > 0);
   }
 }
 
