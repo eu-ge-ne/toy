@@ -15,11 +15,34 @@ export class Buf {
       throw new Error("Buf is not growable");
     }
 
+    const l = this.text.length;
+
+    /*
     for (const m of text.matchAll(/\r?\n/gm)) {
       this.eols.push({
-        start: this.text.length + m.index,
-        end: this.text.length + m.index + m[0].length,
+        start: l + m.index,
+        end: l + m.index + m[0].length,
       });
+    }
+    */
+
+    let i = 0;
+
+    while (true) {
+      let start = text.indexOf("\n", i);
+      if (start < 0) {
+        break;
+      }
+
+      const end = start + 1;
+
+      if (text[start - 1] === "\r") {
+        start -= 1;
+      }
+
+      this.eols.push({ start: l + start, end: l + end });
+
+      i = end;
     }
 
     this.text += text;
