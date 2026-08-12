@@ -1,7 +1,7 @@
 import { Buf } from "./buf.ts";
+import { TreeNode } from "./node.ts";
 import { Slice } from "./slice.ts";
-import { TreeNode } from "./tree/node.ts";
-import { Tree } from "./tree/tree.ts";
+import { Tree } from "./tree.ts";
 
 export const enum InsertionCase {
   Root,

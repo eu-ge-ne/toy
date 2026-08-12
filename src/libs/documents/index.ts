@@ -1,2 +1,2 @@
 export { Document } from "./document.ts";
-export type { TreeNode } from "./tree/node.ts";
+export type { TreeNode } from "./node.ts";
