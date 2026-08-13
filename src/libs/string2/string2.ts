@@ -3,13 +3,6 @@ import { Node } from "./node.ts";
 import { Slice } from "./slice.ts";
 import { Tree } from "./tree.ts";
 
-export const enum InsertionCase {
-  Root,
-  Left,
-  Right,
-  Split,
-}
-
 export class String2 {
   readonly tree = new Tree();
 
@@ -63,13 +56,20 @@ export class String2 {
       return;
     }
 
-    let insertCase = InsertionCase.Root;
+    const enum InsertCase {
+      Root,
+      Left,
+      Right,
+      Split,
+    }
+
+    let insertCase = InsertCase.Root;
     let p = Node.NIL;
     let x = this.tree.root;
 
     while (!x.isNIL) {
       if (i <= x.left.totalCharCount) {
-        insertCase = InsertionCase.Left;
+        insertCase = InsertCase.Left;
         p = x;
         x = x.left;
         continue;
@@ -78,7 +78,7 @@ export class String2 {
       i -= x.left.totalCharCount;
 
       if (i < x.slice.charCount) {
-        insertCase = InsertionCase.Split;
+        insertCase = InsertCase.Split;
         p = x;
         x = Node.NIL;
         continue;
@@ -86,12 +86,12 @@ export class String2 {
 
       i -= x.slice.charCount;
 
-      insertCase = InsertionCase.Right;
+      insertCase = InsertCase.Right;
       p = x;
       x = x.right;
     }
 
-    if (insertCase === InsertionCase.Right && p.isGrowable) {
+    if (insertCase === InsertCase.Right && p.isGrowable) {
       p.append(text);
       return;
     }
@@ -104,23 +104,23 @@ export class String2 {
     );
 
     switch (insertCase) {
-      case InsertionCase.Root: {
+      case InsertCase.Root: {
         this.tree.root = child;
         this.tree.root.red = false;
         break;
       }
 
-      case InsertionCase.Left: {
+      case InsertCase.Left: {
         this.tree.insertLeft(p, child);
         break;
       }
 
-      case InsertionCase.Right: {
+      case InsertCase.Right: {
         this.tree.insertRight(p, child);
         break;
       }
 
-      case InsertionCase.Split: {
+      case InsertCase.Split: {
         const y = p.split(i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);
