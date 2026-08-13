@@ -49,6 +49,10 @@ export class Buf {
   }
 
   charToLine(charIndex: number): number {
+    if (this.eols.length === 0) {
+      return 0;
+    }
+
     let a = 0;
     let b = this.eols.length - 1;
 
