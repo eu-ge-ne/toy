@@ -1,9 +1,9 @@
-import { TreeNode } from "./node.ts";
+import { Node } from "./node.ts";
 
 export class Dirty {
-  #set = new Set<TreeNode>();
+  #set = new Set<Node>();
 
-  add(node: TreeNode): void {
+  add(node: Node): void {
     if (node.isNIL) {
       return;
     }

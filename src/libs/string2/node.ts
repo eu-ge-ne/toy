@@ -2,21 +2,21 @@ import { Buf } from "./buf.ts";
 import { Dirty } from "./dirty.ts";
 import { Slice } from "./slice.ts";
 
-export class TreeNode {
+export class Node {
   readonly #dirty: Dirty;
   readonly #buf: Buf;
   readonly #slice: Slice;
 
   #red: boolean;
-  #p: TreeNode;
-  #left: TreeNode;
-  #right: TreeNode;
+  #p: Node;
+  #left: Node;
+  #right: Node;
 
   #totalCharCount: number;
   #totalEolCount: number;
 
   private constructor(
-    nil: TreeNode | undefined,
+    nil: Node | undefined,
     dirty: Dirty,
     buf: Buf,
     slice: Slice,
@@ -35,7 +35,7 @@ export class TreeNode {
     this.#totalEolCount = slice.eolCount;
   }
 
-  static NIL = new TreeNode(
+  static NIL = new Node(
     undefined,
     new Dirty(),
     new Buf(""),
@@ -43,17 +43,17 @@ export class TreeNode {
     false,
   );
 
-  static create(dirty: Dirty, buf: Buf, slice: Slice): TreeNode {
-    return new TreeNode(TreeNode.NIL, dirty, buf, slice, true);
+  static create(dirty: Dirty, buf: Buf, slice: Slice): Node {
+    return new Node(Node.NIL, dirty, buf, slice, true);
   }
 
-  clone(): TreeNode {
+  clone(): Node {
     if (this.isNIL) {
       return this;
     }
 
-    const node = new TreeNode(
-      TreeNode.NIL,
+    const node = new Node(
+      Node.NIL,
       this.#dirty,
       this.#buf,
       this.#slice.clone(),
@@ -71,7 +71,7 @@ export class TreeNode {
   }
 
   *read(start: number, n: number): Generator<string> {
-    let cur = this as TreeNode;
+    let cur = this as Node;
 
     while (!cur.isNIL && (n > 0)) {
       const count = Math.min(cur.slice.charCount - start, n);
@@ -108,13 +108,13 @@ export class TreeNode {
     this.resize(this.slice.charCount - n);
   }
 
-  split(i: number): TreeNode {
+  split(i: number): Node {
     const slice = this.slice.clone();
     slice.setStart(this.#buf, this.slice.start + i);
 
     this.resize(i);
 
-    return TreeNode.create(this.#dirty, this.#buf, slice);
+    return Node.create(this.#dirty, this.#buf, slice);
   }
 
   resize(length: number): void {
@@ -133,7 +133,7 @@ export class TreeNode {
   }
 
   get isNIL(): boolean {
-    return this === TreeNode.NIL;
+    return this === Node.NIL;
   }
 
   get isGrowable(): boolean {
@@ -150,31 +150,31 @@ export class TreeNode {
     this.#dirty.add(this);
   }
 
-  get p(): TreeNode {
+  get p(): Node {
     return this.#p;
   }
 
-  set p(x: TreeNode) {
+  set p(x: Node) {
     this.#p = x;
 
     this.#dirty.add(this);
   }
 
-  get left(): TreeNode {
+  get left(): Node {
     return this.#left;
   }
 
-  set left(x: TreeNode) {
+  set left(x: Node) {
     this.#left = x;
 
     this.#dirty.add(this);
   }
 
-  get right(): TreeNode {
+  get right(): Node {
     return this.#right;
   }
 
-  set right(x: TreeNode) {
+  set right(x: Node) {
     this.#right = x;
 
     this.#dirty.add(this);
@@ -192,24 +192,24 @@ export class TreeNode {
     return this.#totalEolCount;
   }
 
-  minimum(): TreeNode {
-    let x = this as TreeNode;
+  minimum(): Node {
+    let x = this as Node;
     while (!x.left.isNIL) {
       x = x.left;
     }
     return x;
   }
 
-  maximum(): TreeNode {
-    let x = this as TreeNode;
+  maximum(): Node {
+    let x = this as Node;
     while (!x.right.isNIL) {
       x = x.right;
     }
     return x;
   }
 
-  successor(): TreeNode {
-    let x = this as TreeNode;
+  successor(): Node {
+    let x = this as Node;
 
     if (!x.right.isNIL) {
       return this.right.minimum();
@@ -231,7 +231,7 @@ export class TreeNode {
     }
 
     let eolIndex = ln - 1;
-    let x = this as TreeNode;
+    let x = this as Node;
     let i = 0;
 
     while (!x.isNIL) {

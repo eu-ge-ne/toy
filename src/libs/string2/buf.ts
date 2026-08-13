@@ -7,7 +7,7 @@ export class Buf {
   }
 
   get isGrowable(): boolean {
-    return this.text.length < 100;
+    return this.text.length < 1024;
   }
 
   append(text: string): void {

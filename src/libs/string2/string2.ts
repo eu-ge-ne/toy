@@ -1,5 +1,5 @@
 import { Buf } from "./buf.ts";
-import { TreeNode } from "./node.ts";
+import { Node } from "./node.ts";
 import { Slice } from "./slice.ts";
 import { Tree } from "./tree.ts";
 
@@ -10,7 +10,7 @@ export const enum InsertionCase {
   Split,
 }
 
-export class Document {
+export class String2 {
   readonly tree = new Tree();
 
   constructor(text?: string) {
@@ -18,7 +18,7 @@ export class Document {
       const buf = new Buf(text);
       const slice = Slice.create(buf, 0, buf.text.length);
 
-      const node = TreeNode.create(this.tree.dirty, buf, slice);
+      const node = Node.create(this.tree.dirty, buf, slice);
       node.red = false;
 
       this.tree.root = node;
@@ -64,7 +64,7 @@ export class Document {
     }
 
     let insertCase = InsertionCase.Root;
-    let p = TreeNode.NIL;
+    let p = Node.NIL;
     let x = this.tree.root;
 
     while (!x.isNIL) {
@@ -80,7 +80,7 @@ export class Document {
       if (i < x.slice.charCount) {
         insertCase = InsertionCase.Split;
         p = x;
-        x = TreeNode.NIL;
+        x = Node.NIL;
         continue;
       }
 
@@ -97,7 +97,7 @@ export class Document {
     }
 
     const buf = new Buf(text);
-    const child = TreeNode.create(
+    const child = Node.create(
       this.tree.dirty,
       buf,
       Slice.create(buf, 0, buf.text.length),
