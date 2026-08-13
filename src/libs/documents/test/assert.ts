@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 
-import type { TreeNode } from "../tree/node.ts";
+import type { TreeNode } from "../node.ts";
 
 export function assertGenerator(
   actual: Generator<string>,

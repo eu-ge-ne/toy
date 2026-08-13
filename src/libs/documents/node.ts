@@ -1,6 +1,6 @@
-import { Buf } from "../buf.ts";
-import { Slice } from "../slice.ts";
+import { Buf } from "./buf.ts";
 import { Dirty } from "./dirty.ts";
+import { Slice } from "./slice.ts";
 
 export class TreeNode {
   readonly #dirty: Dirty;
