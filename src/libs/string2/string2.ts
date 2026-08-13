@@ -1,16 +1,9 @@
 import { Buf } from "./buf.ts";
-import { TreeNode } from "./node.ts";
+import { Node } from "./node.ts";
 import { Slice } from "./slice.ts";
 import { Tree } from "./tree.ts";
 
-export const enum InsertionCase {
-  Root,
-  Left,
-  Right,
-  Split,
-}
-
-export class Document {
+export class String2 {
   readonly tree = new Tree();
 
   constructor(text?: string) {
@@ -18,7 +11,7 @@ export class Document {
       const buf = new Buf(text);
       const slice = Slice.create(buf, 0, buf.text.length);
 
-      const node = TreeNode.create(this.tree.dirty, buf, slice);
+      const node = Node.create(this.tree.dirty, buf, slice);
       node.red = false;
 
       this.tree.root = node;
@@ -63,13 +56,20 @@ export class Document {
       return;
     }
 
-    let insertCase = InsertionCase.Root;
-    let p = TreeNode.NIL;
+    const enum InsertCase {
+      Root,
+      Left,
+      Right,
+      Split,
+    }
+
+    let insertCase = InsertCase.Root;
+    let p = Node.NIL;
     let x = this.tree.root;
 
     while (!x.isNIL) {
       if (i <= x.left.totalCharCount) {
-        insertCase = InsertionCase.Left;
+        insertCase = InsertCase.Left;
         p = x;
         x = x.left;
         continue;
@@ -78,49 +78,49 @@ export class Document {
       i -= x.left.totalCharCount;
 
       if (i < x.slice.charCount) {
-        insertCase = InsertionCase.Split;
+        insertCase = InsertCase.Split;
         p = x;
-        x = TreeNode.NIL;
+        x = Node.NIL;
         continue;
       }
 
       i -= x.slice.charCount;
 
-      insertCase = InsertionCase.Right;
+      insertCase = InsertCase.Right;
       p = x;
       x = x.right;
     }
 
-    if (insertCase === InsertionCase.Right && p.isGrowable) {
+    if (insertCase === InsertCase.Right && p.isGrowable) {
       p.append(text);
       return;
     }
 
     const buf = new Buf(text);
-    const child = TreeNode.create(
+    const child = Node.create(
       this.tree.dirty,
       buf,
       Slice.create(buf, 0, buf.text.length),
     );
 
     switch (insertCase) {
-      case InsertionCase.Root: {
+      case InsertCase.Root: {
         this.tree.root = child;
         this.tree.root.red = false;
         break;
       }
 
-      case InsertionCase.Left: {
+      case InsertCase.Left: {
         this.tree.insertLeft(p, child);
         break;
       }
 
-      case InsertionCase.Right: {
+      case InsertCase.Right: {
         this.tree.insertRight(p, child);
         break;
       }
 
-      case InsertionCase.Split: {
+      case InsertCase.Split: {
         const y = p.split(i);
         this.tree.insertAfter(p, y);
         this.tree.insertBefore(y, child);

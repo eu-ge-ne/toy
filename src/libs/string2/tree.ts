@@ -1,11 +1,11 @@
 import { Dirty } from "./dirty.ts";
-import { TreeNode } from "./node.ts";
+import { Node } from "./node.ts";
 
 export class Tree {
   readonly dirty = new Dirty();
-  root = TreeNode.NIL;
+  root = Node.NIL;
 
-  find(charIndex: number): { node: TreeNode; offset: number } | undefined {
+  find(charIndex: number): { node: Node; offset: number } | undefined {
     let x = this.root;
 
     while (!x.isNIL) {
@@ -25,21 +25,21 @@ export class Tree {
     }
   }
 
-  insertLeft(p: TreeNode, z: TreeNode): void {
+  insertLeft(p: Node, z: Node): void {
     p.left = z;
     z.p = p;
 
     this.#insertFixup(z);
   }
 
-  insertRight(p: TreeNode, z: TreeNode): void {
+  insertRight(p: Node, z: Node): void {
     p.right = z;
     z.p = p;
 
     this.#insertFixup(z);
   }
 
-  insertBefore(p: TreeNode, z: TreeNode): void {
+  insertBefore(p: Node, z: Node): void {
     if (p.left.isNIL) {
       this.insertLeft(p, z);
     } else {
@@ -47,7 +47,7 @@ export class Tree {
     }
   }
 
-  insertAfter(p: TreeNode, z: TreeNode): void {
+  insertAfter(p: Node, z: Node): void {
     if (p.right.isNIL) {
       this.insertRight(p, z);
     } else {
@@ -55,7 +55,7 @@ export class Tree {
     }
   }
 
-  #insertFixup(z: TreeNode): void {
+  #insertFixup(z: Node): void {
     while (z.p.red) {
       if (z.p === z.p.p.left) {
         const y = z.p.p.right;
@@ -97,10 +97,10 @@ export class Tree {
     this.dirty.cleanup();
   }
 
-  delete(z: TreeNode): void {
+  delete(z: Node): void {
     let y = z;
     let y_original_color = y.red;
-    let x: TreeNode;
+    let x: Node;
 
     if (z.left.isNIL) {
       x = z.right;
@@ -139,7 +139,7 @@ export class Tree {
     this.dirty.cleanup();
   }
 
-  #deleteFixup(x: TreeNode): void {
+  #deleteFixup(x: Node): void {
     while (x !== this.root && !x.red) {
       if (x === x.p.left) {
         let w = x.p.right;
@@ -201,7 +201,7 @@ export class Tree {
     x.red = false;
   }
 
-  #leftRotate(x: TreeNode): void {
+  #leftRotate(x: Node): void {
     const y = x.right;
 
     x.right = y.left;
@@ -223,7 +223,7 @@ export class Tree {
     x.p = y;
   }
 
-  #rightRotate(y: TreeNode): void {
+  #rightRotate(y: Node): void {
     const x = y.left;
 
     y.left = x.right;
@@ -245,7 +245,7 @@ export class Tree {
     y.p = x;
   }
 
-  #transplant(u: TreeNode, v: TreeNode): void {
+  #transplant(u: Node, v: Node): void {
     if (u.p.isNIL) {
       this.root = v;
     } else if (u === u.p.left) {

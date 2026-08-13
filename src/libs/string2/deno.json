@@ -1,4 +1,4 @@
 {
-  "name": "@libs/documents",
+  "name": "@libs/string2",
   "exports": "./index.ts"
 }

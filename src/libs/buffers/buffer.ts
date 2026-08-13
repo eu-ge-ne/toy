@@ -1,7 +1,7 @@
-import * as documents from "@libs/documents";
 import * as events from "@libs/events";
 import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
+import { Node, String2 } from "@libs/string2";
 
 export type BufferSignals = {
   "name.change": () => void;
@@ -22,9 +22,9 @@ export type DocumentChange = {
 
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
-  readonly #doc = new documents.Document();
-  readonly #gdoc = new graphemes.Document(this.#doc);
-  readonly #history = new history.History<documents.TreeNode>();
+  readonly #str = new String2();
+  readonly #gdoc = new graphemes.Document(this.#str);
+  readonly #history = new history.History<Node>();
   #name = "";
 
   constructor() {
@@ -44,7 +44,7 @@ export class Buffer {
   }
 
   get lineCount(): number {
-    return this.#doc.lineCount;
+    return this.#str.lineCount;
   }
 
   get modified(): boolean {
@@ -52,12 +52,12 @@ export class Buffer {
   }
 
   get chunks(): IteratorObject<string> {
-    return this.#doc.read(0);
+    return this.#str.read(0);
   }
 
   set chunks(x: string) {
-    this.#doc.delete(0);
-    this.#doc.insert(0, x);
+    this.#str.delete(0);
+    this.#str.insert(0, x);
 
     const toLn = Math.max(this.lineCount - 1, 0);
     const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
@@ -74,7 +74,7 @@ export class Buffer {
   }
 
   async load(text: AsyncIterable<string>): Promise<void> {
-    await this.#doc.load(text);
+    await this.#str.load(text);
 
     const toLn = Math.max(this.lineCount - 1, 0);
     const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
@@ -173,7 +173,7 @@ export class Buffer {
   }
 
   resetHistory(): void {
-    this.#history.reset(this.#doc.tree.root);
+    this.#history.reset(this.#str.tree.root);
 
     this.#emitter.broadcast("history.reset");
   }
@@ -184,7 +184,7 @@ export class Buffer {
       return;
     }
 
-    this.#doc.tree.root = entry;
+    this.#str.tree.root = entry;
 
     this.#emitter.broadcast("history.undo");
   }
@@ -195,13 +195,13 @@ export class Buffer {
       return;
     }
 
-    this.#doc.tree.root = entry;
+    this.#str.tree.root = entry;
 
     this.#emitter.broadcast("history.redo");
   }
 
   #pushHistory(): void {
-    this.#history.push(this.#doc.tree.root);
+    this.#history.push(this.#str.tree.root);
 
     this.#emitter.broadcast("history.push");
   }

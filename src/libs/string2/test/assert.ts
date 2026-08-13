@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 
-import type { TreeNode } from "../node.ts";
+import type { Node } from "../node.ts";
 
 export function assertGenerator(
   actual: Generator<string>,
@@ -9,7 +9,7 @@ export function assertGenerator(
   assertEquals(actual.reduce((a, x) => a + x, ""), expected);
 }
 
-export function assertRoot(root: TreeNode): void {
+export function assertRoot(root: Node): void {
   // 1. Every node is either red or black.
   // 2. The root is black.
   assert(!root.red);
@@ -18,7 +18,7 @@ export function assertRoot(root: TreeNode): void {
 
   // 5. For each node, all simple paths from the node to descendant leaves
   // contain the same number of black nodes.
-  const leafs = new Set<TreeNode>();
+  const leafs = new Set<Node>();
   collectLeafs(root, leafs);
 
   const heights = Array.from(leafs).map((x) => {
@@ -39,7 +39,7 @@ export function assertRoot(root: TreeNode): void {
   }
 }
 
-function assertNode(x: TreeNode): void {
+function assertNode(x: Node): void {
   // 3. Every leaf (NIL) is black.
   if (x.isNIL) {
     assert(!x.red);
@@ -57,7 +57,7 @@ function assertNode(x: TreeNode): void {
   }
 }
 
-function collectLeafs(x: TreeNode, leaf_parents: Set<TreeNode>): void {
+function collectLeafs(x: Node, leaf_parents: Set<Node>): void {
   if (!x.isNIL) {
     if (x.left.isNIL || x.right.isNIL) {
       leaf_parents.add(x);
