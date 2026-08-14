@@ -5,8 +5,8 @@ export class Node {
   readonly #buf: Buf;
   readonly #slice: Slice;
 
-  #red: boolean;
-  #p: Node;
+  red: boolean;
+  p: Node;
   #left: Node;
   #right: Node;
 
@@ -22,8 +22,8 @@ export class Node {
     this.#buf = buf;
     this.#slice = slice;
 
-    this.#red = red;
-    this.#p = nil ?? this;
+    this.red = red;
+    this.p = nil ?? this;
     this.#left = nil ?? this;
     this.#right = nil ?? this;
 
@@ -47,9 +47,9 @@ export class Node {
       return this;
     }
 
-    const node = new Node(Node.NIL, this.#buf, this.#slice.clone(), this.#red);
+    const node = new Node(Node.NIL, this.#buf, this.#slice.clone(), this.red);
 
-    node.#p = this.#p;
+    node.p = this.p;
     node.#left = this.#left.clone();
     node.#right = this.#right.clone();
 
@@ -117,27 +117,6 @@ export class Node {
 
   get isGrowable(): boolean {
     return this.#buf.isGrowable && (this.slice.end === this.#buf.text.length);
-  }
-
-  get red(): boolean {
-    return this.#red;
-  }
-
-  set red(x: boolean) {
-    this.#red = x;
-
-    // TODO
-    //this.#updateTotals();
-  }
-
-  get p(): Node {
-    return this.#p;
-  }
-
-  set p(x: Node) {
-    this.#p = x;
-
-    //this.#updateTotals();
   }
 
   get left(): Node {
