@@ -1,9 +1,7 @@
 import { Buf } from "./buf.ts";
-import { Dirty } from "./dirty.ts";
 import { Slice } from "./slice.ts";
 
 export class Node {
-  readonly #dirty: Dirty;
   readonly #buf: Buf;
   readonly #slice: Slice;
 
@@ -17,12 +15,10 @@ export class Node {
 
   private constructor(
     nil: Node | undefined,
-    dirty: Dirty,
     buf: Buf,
     slice: Slice,
     red: boolean,
   ) {
-    this.#dirty = dirty;
     this.#buf = buf;
     this.#slice = slice;
 
@@ -37,14 +33,13 @@ export class Node {
 
   static NIL = new Node(
     undefined,
-    new Dirty(),
     new Buf(""),
     new Slice(0, 0, 0, 0),
     false,
   );
 
-  static create(dirty: Dirty, buf: Buf, slice: Slice): Node {
-    return new Node(Node.NIL, dirty, buf, slice, true);
+  static create(buf: Buf, slice: Slice): Node {
+    return new Node(Node.NIL, buf, slice, true);
   }
 
   clone(): Node {
@@ -52,13 +47,7 @@ export class Node {
       return this;
     }
 
-    const node = new Node(
-      Node.NIL,
-      this.#dirty,
-      this.#buf,
-      this.#slice.clone(),
-      this.#red,
-    );
+    const node = new Node(Node.NIL, this.#buf, this.#slice.clone(), this.#red);
 
     node.#p = this.#p;
     node.#left = this.#left.clone();
@@ -100,8 +89,7 @@ export class Node {
   trimStart(n: number): void {
     this.slice.setStart(this.#buf, this.slice.start + n);
 
-    this.#dirty.add(this);
-    this.#dirty.cleanup();
+    this.#updateTotals();
   }
 
   trimEnd(n: number): void {
@@ -114,22 +102,13 @@ export class Node {
 
     this.resize(i);
 
-    return Node.create(this.#dirty, this.#buf, slice);
+    return Node.create(this.#buf, slice);
   }
 
   resize(length: number): void {
     this.slice.setEnd(this.#buf, this.slice.start + length);
 
-    this.#dirty.add(this);
-    this.#dirty.cleanup();
-  }
-
-  updateTotals(): void {
-    this.#totalCharCount = this.left.totalCharCount + this.slice.charCount +
-      this.right.totalCharCount;
-
-    this.#totalEolCount = this.left.totalEolCount + this.slice.eolCount +
-      this.right.totalEolCount;
+    this.#updateTotals();
   }
 
   get isNIL(): boolean {
@@ -147,7 +126,8 @@ export class Node {
   set red(x: boolean) {
     this.#red = x;
 
-    this.#dirty.add(this);
+    // TODO
+    //this.#updateTotals();
   }
 
   get p(): Node {
@@ -157,7 +137,7 @@ export class Node {
   set p(x: Node) {
     this.#p = x;
 
-    this.#dirty.add(this);
+    //this.#updateTotals();
   }
 
   get left(): Node {
@@ -167,7 +147,7 @@ export class Node {
   set left(x: Node) {
     this.#left = x;
 
-    this.#dirty.add(this);
+    this.#updateTotals();
   }
 
   get right(): Node {
@@ -177,7 +157,7 @@ export class Node {
   set right(x: Node) {
     this.#right = x;
 
-    this.#dirty.add(this);
+    this.#updateTotals();
   }
 
   get slice(): Slice {
@@ -251,6 +231,20 @@ export class Node {
       eolIndex -= x.slice.eolCount;
       i += x.slice.charCount;
       x = x.right;
+    }
+  }
+
+  #updateTotals(): void {
+    let x = this as Node;
+
+    while (!x.isNIL) {
+      x.#totalCharCount = x.left.totalCharCount + x.slice.charCount +
+        x.right.totalCharCount;
+
+      x.#totalEolCount = x.left.totalEolCount + x.slice.eolCount +
+        x.right.totalEolCount;
+
+      x = x.p;
     }
   }
 }
