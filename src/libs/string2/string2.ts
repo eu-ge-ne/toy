@@ -11,7 +11,7 @@ export class String2 {
       const buf = new Buf(text);
       const slice = Slice.create(buf, 0, buf.text.length);
 
-      const node = Node.create(this.tree.dirty, buf, slice);
+      const node = Node.create(buf, slice);
       node.red = false;
 
       this.tree.root = node;
@@ -97,11 +97,7 @@ export class String2 {
     }
 
     const buf = new Buf(text);
-    const child = Node.create(
-      this.tree.dirty,
-      buf,
-      Slice.create(buf, 0, buf.text.length),
-    );
+    const child = Node.create(buf, Slice.create(buf, 0, buf.text.length));
 
     switch (insertCase) {
       case InsertCase.Root: {

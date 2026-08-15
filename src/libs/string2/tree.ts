@@ -1,8 +1,6 @@
-import { Dirty } from "./dirty.ts";
 import { Node } from "./node.ts";
 
 export class Tree {
-  readonly dirty = new Dirty();
   root = Node.NIL;
 
   find(charIndex: number): { node: Node; offset: number } | undefined {
@@ -93,8 +91,6 @@ export class Tree {
     }
 
     this.root.red = false;
-
-    this.dirty.cleanup();
   }
 
   delete(z: Node): void {
@@ -135,8 +131,6 @@ export class Tree {
     if (!y_original_color) {
       this.#deleteFixup(x);
     }
-
-    this.dirty.cleanup();
   }
 
   #deleteFixup(x: Node): void {
