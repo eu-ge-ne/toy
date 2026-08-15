@@ -112,7 +112,7 @@ export class Node {
 
     this.#buf.append(text);
 
-    this.resize(this.charCount + text.length);
+    this.#resize(this.charCount + text.length);
   }
 
   trimStart(n: number): void {
@@ -120,20 +120,16 @@ export class Node {
   }
 
   trimEnd(n: number): void {
-    this.resize(this.charCount - n);
+    this.#resize(this.charCount - n);
   }
 
   split(i: number): Node {
     const start = this.#start + i;
     const end = this.#end;
 
-    this.resize(i);
+    this.#resize(i);
 
     return Node.create(this.#buf, start, end);
-  }
-
-  resize(length: number): void {
-    this.end = this.start + length;
   }
 
   get isNIL(): boolean {
@@ -272,6 +268,10 @@ export class Node {
       i += x.charCount;
       x = x.right;
     }
+  }
+
+  #resize(length: number): void {
+    this.end = this.start + length;
   }
 
   #updateTotals(): void {
