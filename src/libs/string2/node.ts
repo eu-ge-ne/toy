@@ -1,9 +1,12 @@
 import { Buf } from "./buf.ts";
-import { Slice } from "./slice.ts";
 
 export class Node {
   readonly #buf: Buf;
-  readonly #slice: Slice;
+
+  #start = 0;
+  #end = 0;
+  #eolStart = 0;
+  #eolEnd = 0;
 
   red: boolean;
   p: Node;
@@ -16,30 +19,48 @@ export class Node {
   private constructor(
     nil: Node | undefined,
     buf: Buf,
-    slice: Slice,
+    start: number,
+    end: number,
+    eolStart: number,
+    eolEnd: number,
     red: boolean,
   ) {
     this.#buf = buf;
-    this.#slice = slice;
+
+    this.#start = start;
+    this.#end = end;
+    this.#eolStart = eolStart;
+    this.#eolEnd = eolEnd;
 
     this.red = red;
     this.p = nil ?? this;
     this.#left = nil ?? this;
     this.#right = nil ?? this;
 
-    this.#totalCharCount = slice.charCount;
-    this.#totalEolCount = slice.eolCount;
+    this.#totalCharCount = this.charCount;
+    this.#totalEolCount = this.eolCount;
   }
 
   static NIL = new Node(
     undefined,
     new Buf(""),
-    new Slice(0, 0, 0, 0),
+    0,
+    0,
+    0,
+    0,
     false,
   );
 
-  static create(buf: Buf, slice: Slice): Node {
-    return new Node(Node.NIL, buf, slice, true);
+  static create(buf: Buf, start: number, end: number): Node {
+    return new Node(
+      Node.NIL,
+      buf,
+      start,
+      end,
+      buf.charToLine(start),
+      buf.charToLine(end),
+      true,
+    );
   }
 
   clone(): Node {
@@ -47,7 +68,15 @@ export class Node {
       return this;
     }
 
-    const node = new Node(Node.NIL, this.#buf, this.#slice.clone(), this.red);
+    const node = new Node(
+      Node.NIL,
+      this.#buf,
+      this.#start,
+      this.#end,
+      this.#eolStart,
+      this.#eolEnd,
+      this.red,
+    );
 
     node.p = this.p;
     node.#left = this.#left.clone();
@@ -63,8 +92,8 @@ export class Node {
     let cur = this as Node;
 
     while (!cur.isNIL && (n > 0)) {
-      const count = Math.min(cur.slice.charCount - start, n);
-      const s = cur.slice.start + start;
+      const count = Math.min(cur.charCount - start, n);
+      const s = cur.start + start;
       const e = s + count;
 
       yield cur.#buf.text.slice(s, e);
@@ -83,32 +112,28 @@ export class Node {
 
     this.#buf.append(text);
 
-    this.resize(this.slice.charCount + text.length);
+    this.resize(this.charCount + text.length);
   }
 
   trimStart(n: number): void {
-    this.slice.setStart(this.#buf, this.slice.start + n);
-
-    this.#updateTotals();
+    this.start = this.start + n;
   }
 
   trimEnd(n: number): void {
-    this.resize(this.slice.charCount - n);
+    this.resize(this.charCount - n);
   }
 
   split(i: number): Node {
-    const slice = this.slice.clone();
-    slice.setStart(this.#buf, this.slice.start + i);
+    const start = this.#start + i;
+    const end = this.#end;
 
     this.resize(i);
 
-    return Node.create(this.#buf, slice);
+    return Node.create(this.#buf, start, end);
   }
 
   resize(length: number): void {
-    this.slice.setEnd(this.#buf, this.slice.start + length);
-
-    this.#updateTotals();
+    this.end = this.start + length;
   }
 
   get isNIL(): boolean {
@@ -116,7 +141,7 @@ export class Node {
   }
 
   get isGrowable(): boolean {
-    return this.#buf.isGrowable && (this.slice.end === this.#buf.text.length);
+    return this.#buf.isGrowable && (this.end === this.#buf.text.length);
   }
 
   get left(): Node {
@@ -139,8 +164,44 @@ export class Node {
     this.#updateTotals();
   }
 
-  get slice(): Slice {
-    return this.#slice;
+  get charCount(): number {
+    return this.#end - this.#start;
+  }
+
+  get eolCount(): number {
+    return this.#eolEnd - this.#eolStart;
+  }
+
+  get start(): number {
+    return this.#start;
+  }
+
+  set start(x: number) {
+    this.#start = x;
+
+    this.#eolStart = this.#buf.charToLine(x);
+
+    this.#updateTotals();
+  }
+
+  get end(): number {
+    return this.#end;
+  }
+
+  set end(x: number) {
+    this.#end = x;
+
+    this.#eolEnd = this.#buf.charToLine(x);
+
+    this.#updateTotals();
+  }
+
+  get eolStart(): number {
+    return this.#eolStart;
+  }
+
+  get eolEnd(): number {
+    return this.#eolEnd;
   }
 
   get totalCharCount(): number {
@@ -202,13 +263,13 @@ export class Node {
       eolIndex -= x.left.totalEolCount;
       i += x.left.totalCharCount;
 
-      if (eolIndex < x.slice.eolCount) {
-        const eol_end = x.#buf.eols[x.slice.eolStart + eolIndex]!.end;
-        return i + eol_end - x.slice.start;
+      if (eolIndex < x.eolCount) {
+        const eol_end = x.#buf.eols[x.eolStart + eolIndex]!.end;
+        return i + eol_end - x.start;
       }
 
-      eolIndex -= x.slice.eolCount;
-      i += x.slice.charCount;
+      eolIndex -= x.eolCount;
+      i += x.charCount;
       x = x.right;
     }
   }
@@ -217,10 +278,10 @@ export class Node {
     let x = this as Node;
 
     while (!x.isNIL) {
-      x.#totalCharCount = x.left.totalCharCount + x.slice.charCount +
+      x.#totalCharCount = x.left.totalCharCount + x.charCount +
         x.right.totalCharCount;
 
-      x.#totalEolCount = x.left.totalEolCount + x.slice.eolCount +
+      x.#totalEolCount = x.left.totalEolCount + x.eolCount +
         x.right.totalEolCount;
 
       x = x.p;

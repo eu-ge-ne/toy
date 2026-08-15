@@ -53,7 +53,7 @@ function assertNode(x: Node): void {
     assertNode(x.right);
 
     // 6. slice.charCount > 0
-    assert(x.slice.charCount > 0);
+    assert(x.charCount > 0);
   }
 }
 
