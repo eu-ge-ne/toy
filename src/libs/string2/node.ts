@@ -89,19 +89,19 @@ export class Node {
   }
 
   *read(start: number, n: number): Generator<string> {
-    let cur = this as Node;
+    let x = this as Node;
 
-    while (!cur.isNIL && (n > 0)) {
-      const count = Math.min(cur.charCount - start, n);
-      const s = cur.start + start;
+    while (!x.isNIL && (n > 0)) {
+      const count = Math.min(x.charCount - start, n);
+      const s = x.start + start;
       const e = s + count;
 
-      yield cur.#buf.text.slice(s, e);
+      yield x.#buf.text.slice(s, e);
 
       start = 0;
       n -= count;
 
-      cur = cur.successor();
+      x = x.successor();
     }
   }
 
