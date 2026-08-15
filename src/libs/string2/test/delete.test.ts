@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
 
 import { String2 } from "../string2.ts";
-import { assertGenerator, assertRoot } from "./assert.ts";
+import { assertGenerator, assertRoot, range } from "./helpers.ts";
 
 const EXPECTED =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
@@ -110,41 +110,41 @@ function testDeleteMiddle(str: String2, n: number): void {
   assertRoot(str.tree.root);
 }
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the beginning of a text`, () => {
+Deno.test.each(range(10))(
+  "Delete %i chars from the beginning of a text",
+  (n) => {
     testDeleteHead(newStr(), n);
-  });
-}
+  },
+);
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the beginning of a text reversed`, () => {
+Deno.test.each(range(10))(
+  "Delete %i chars from the beginning of a text reversed",
+  (n) => {
     testDeleteHead(newStrReversed(), n);
-  });
-}
+  },
+);
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the end of a text`, () => {
-    testDeleteTail(newStr(), n);
-  });
-}
+Deno.test.each(range(10))("Delete %i chars from the end of a text", (n) => {
+  testDeleteTail(newStr(), n);
+});
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the end of a text reversed`, () => {
+Deno.test.each(range(10))(
+  "Delete %i chars from the end of a text reversed",
+  (n) => {
     testDeleteTail(newStrReversed(), n);
-  });
-}
+  },
+);
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the middle of a text`, () => {
-    testDeleteMiddle(newStr(), n);
-  });
-}
+Deno.test.each(range(10))("Delete %i chars from the middle of a text", (n) => {
+  testDeleteMiddle(newStr(), n);
+});
 
-for (let n = 1; n <= 10; n += 1) {
-  Deno.test(`Delete ${n} chars from the middle of text reversed`, () => {
+Deno.test.each(range(10))(
+  "Delete %i chars from the middle of text reversed",
+  (n) => {
     testDeleteMiddle(newStrReversed(), n);
-  });
-}
+  },
+);
 
 Deno.test("Delete splitting nodes", () => {
   const str = new String2(EXPECTED);
