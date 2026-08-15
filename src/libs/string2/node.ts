@@ -174,7 +174,6 @@ export class Node {
 
   set start(x: number) {
     this.#start = x;
-
     this.#eolStart = this.#buf.charToLine(x);
 
     this.#updateTotals();
@@ -186,7 +185,6 @@ export class Node {
 
   set end(x: number) {
     this.#end = x;
-
     this.#eolEnd = this.#buf.charToLine(x);
 
     this.#updateTotals();
@@ -210,17 +208,21 @@ export class Node {
 
   minimum(): Node {
     let x = this as Node;
+
     while (!x.left.isNIL) {
       x = x.left;
     }
+
     return x;
   }
 
   maximum(): Node {
     let x = this as Node;
+
     while (!x.right.isNIL) {
       x = x.right;
     }
+
     return x;
   }
 
