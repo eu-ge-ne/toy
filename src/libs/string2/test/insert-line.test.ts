@@ -1,5 +1,5 @@
 import { String2 } from "../string2.ts";
-import { assertGenerator, assertRoot } from "./assert.ts";
+import { assertGenerator, assertRoot } from "./helpers.ts";
 
 Deno.test("Insert into 0 line", () => {
   const str = new String2();

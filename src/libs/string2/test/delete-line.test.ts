@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
 
 import { String2 } from "../string2.ts";
-import { assertGenerator, assertRoot } from "./assert.ts";
+import { assertGenerator, assertRoot } from "./helpers.ts";
 
 Deno.test("Delete line", () => {
   const str = new String2("Lorem \nipsum \ndolor \nsit \namet ");

@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
 
 import { String2 } from "../string2.ts";
-import { assertGenerator, assertRoot } from "./assert.ts";
+import { assertGenerator, assertRoot } from "./helpers.ts";
 
 Deno.test("Insert into the end", () => {
   const str = new String2();

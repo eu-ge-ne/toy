@@ -2,6 +2,10 @@ import { assert, assertEquals } from "@std/assert";
 
 import type { Node } from "../node.ts";
 
+export function range(n: number): number[] {
+  return [...Array(n).keys().map((x) => x + 1)];
+}
+
 export function assertGenerator(
   actual: Generator<string>,
   expected: string,
