@@ -1,6 +1,5 @@
 import { Buf } from "./buf.ts";
 import { Node } from "./node.ts";
-import { Slice } from "./slice.ts";
 import { Tree } from "./tree.ts";
 
 export class String2 {
@@ -9,9 +8,8 @@ export class String2 {
   constructor(text?: string) {
     if (text && text.length > 0) {
       const buf = new Buf(text);
-      const slice = Slice.create(buf, 0, buf.text.length);
 
-      const node = Node.create(buf, slice);
+      const node = Node.create(buf, 0, buf.text.length);
       node.red = false;
 
       this.tree.root = node;
@@ -77,14 +75,14 @@ export class String2 {
 
       i -= x.left.totalCharCount;
 
-      if (i < x.slice.charCount) {
+      if (i < x.charCount) {
         insertCase = InsertCase.Split;
         p = x;
         x = Node.NIL;
         continue;
       }
 
-      i -= x.slice.charCount;
+      i -= x.charCount;
 
       insertCase = InsertCase.Right;
       p = x;
@@ -97,7 +95,7 @@ export class String2 {
     }
 
     const buf = new Buf(text);
-    const child = Node.create(buf, Slice.create(buf, 0, buf.text.length));
+    const child = Node.create(buf, 0, buf.text.length);
 
     switch (insertCase) {
       case InsertCase.Root: {
@@ -151,13 +149,13 @@ export class String2 {
     const count = end - start;
     const offset2 = first.offset + count;
 
-    if (offset2 === first.node.slice.charCount) {
+    if (offset2 === first.node.charCount) {
       if (first.offset === 0) {
         this.tree.delete(first.node);
       } else {
         first.node.trimEnd(count);
       }
-    } else if (offset2 < first.node.slice.charCount) {
+    } else if (offset2 < first.node.charCount) {
       if (first.offset === 0) {
         first.node.trimStart(count);
       } else {
@@ -181,7 +179,7 @@ export class String2 {
       }
 
       while (!x.isNIL && (i < count)) {
-        i += x.slice.charCount;
+        i += x.charCount;
 
         const next = x.successor();
 
