@@ -58,29 +58,6 @@ export class Content extends Widget {
     this.#mode.index = params.indexEnabled;
   }
 
-  render(): void {
-    let indexWidth = 0;
-    if (this.#mode.index && (this.buffer.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
-    }
-
-    const textWidth = this.width - indexWidth;
-
-    graphemes.settings.width = this.#mode.wrap
-      ? textWidth
-      : Number.MAX_SAFE_INTEGER;
-    graphemes.settings.y = this.#cursorY = this.y;
-    graphemes.settings.x = this.#cursorX = this.x + indexWidth;
-
-    if (this.width >= indexWidth) {
-      this.#scrollV();
-      this.#scrollH(textWidth);
-      this.#renderLines(indexWidth);
-    }
-
-    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
-  }
-
   setTheme(theme: themes.Theme): void {
     this.#color.bg = new Uint8Array(theme.bgMain);
     this.#color.void = new Uint8Array(theme.bgDark0);
@@ -118,6 +95,32 @@ export class Content extends Widget {
 
   toggleIndex(): void {
     this.#mode.index = !this.#mode.index;
+  }
+
+  render(): void {
+    let indexWidth = 0;
+    if (this.#mode.index && (this.buffer.lineCount > 0)) {
+      indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
+    }
+
+    const textWidth = this.width - indexWidth;
+
+    graphemes.settings.width = this.#mode.wrap
+      ? textWidth
+      : Number.MAX_SAFE_INTEGER;
+    graphemes.settings.y = this.y;
+    graphemes.settings.x = this.x + indexWidth;
+
+    this.#cursorY = this.y;
+    this.#cursorX = this.x + indexWidth;
+
+    if (this.width >= indexWidth) {
+      this.#scrollV();
+      this.#scrollH(textWidth);
+      this.#renderLines(indexWidth);
+    }
+
+    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
   #renderLines(indexWidth: number): void {
