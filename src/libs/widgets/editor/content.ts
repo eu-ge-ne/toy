@@ -115,68 +115,12 @@ export class Content extends Widget {
     this.#cursorX = this.x + indexWidth;
 
     if (this.width >= indexWidth) {
-      this.#scrollV();
       this.#scrollH(textWidth);
+      this.#scrollV();
       this.#renderLines(indexWidth);
     }
 
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
-  }
-
-  #renderLines(indexWidth: number): void {
-    let row = this.y;
-
-    for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.buffer.lineCount) {
-        row = this.#renderLine(indexWidth, ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#color.void);
-        vt.clearLine(vt.buf, this.width);
-      }
-
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
-    }
-  }
-
-  #scrollV(): void {
-    const deltaLn = this.cursor.pos.ln - this.#scrollLn;
-
-    // Above?
-    if (deltaLn <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
-      return;
-    }
-
-    // Below?
-
-    if (deltaLn > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
-    }
-
-    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.cells(ln).reduce(
-        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-        1,
-      )
-    );
-
-    let i = 0;
-    let height = std.sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.#scrollLn += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.#cursorY += xs[i]!;
-      i += 1;
-    }
   }
 
   #scrollH(textWidth: number): void {
@@ -216,6 +160,62 @@ export class Content extends Widget {
     }
 
     this.#cursorX += width;
+  }
+
+  #scrollV(): void {
+    const deltaLn = this.cursor.pos.ln - this.#scrollLn;
+
+    // Above?
+    if (deltaLn <= 0) {
+      this.#scrollLn = this.cursor.pos.ln;
+      return;
+    }
+
+    // Below?
+
+    if (deltaLn > this.height) {
+      this.#scrollLn = this.cursor.pos.ln - this.height;
+    }
+
+    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
+      this.buffer.cells(ln).reduce(
+        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
+        1,
+      )
+    );
+
+    let i = 0;
+    let height = std.sum(xs);
+
+    while (height > this.height) {
+      height -= xs[i]!;
+      this.#scrollLn += 1;
+      i += 1;
+    }
+
+    while (i < xs.length - 1) {
+      this.#cursorY += xs[i]!;
+      i += 1;
+    }
+  }
+
+  #renderLines(indexWidth: number): void {
+    let row = this.y;
+
+    for (let ln = this.#scrollLn;; ln += 1) {
+      if (ln < this.buffer.lineCount) {
+        row = this.#renderLine(indexWidth, ln, row);
+      } else {
+        vt.cursor.set(vt.buf, row, this.x);
+        vt.buf.write(this.#color.void);
+        vt.clearLine(vt.buf, this.width);
+      }
+
+      row += 1;
+      if (row >= this.y + this.height) {
+        break;
+      }
+    }
   }
 
   #renderLine(indexWidth: number, ln: number, row: number): number {
