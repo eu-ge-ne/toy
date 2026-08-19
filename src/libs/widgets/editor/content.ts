@@ -124,9 +124,7 @@ export class Content extends Widget {
   }
 
   #scrollH(textWidth: number): void {
-    const cell =
-      this.buffer.cells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
-        .next().value;
+    const cell = this.buffer.cell(this.cursor.pos.ln, this.cursor.pos.col);
     if (cell) {
       this.#cursorY += cell.ln;
     }

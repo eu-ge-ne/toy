@@ -99,6 +99,10 @@ export class Buffer {
     return this.#gdoc.read(startLn, startCol, endLn, endCol);
   }
 
+  cell(ln: number, col: number): graphemes.Cell | undefined {
+    return this.cells(ln, true).drop(col).next().value;
+  }
+
   cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
     return this.#gdoc.cells(ln, extra);
   }
