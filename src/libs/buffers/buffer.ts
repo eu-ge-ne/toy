@@ -33,8 +33,6 @@ const sgr = new Intl.Segmenter();
 export class Buffer {
   static settings = {
     width: Number.MAX_SAFE_INTEGER,
-    y: 0,
-    x: 0,
   };
 
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
@@ -131,11 +129,7 @@ export class Buffer {
         seg.gr = graphemes.graphemes.get(segment);
 
         if (seg.gr.width < 0) {
-          seg.gr.width = vt.wchar(
-            Buffer.settings.y,
-            Buffer.settings.x,
-            seg.gr.bytes,
-          );
+          seg.gr.width = vt.wchar(seg.gr.bytes);
         }
 
         w += seg.gr.width;
@@ -325,7 +319,7 @@ function measure(text: string): { lns: number; cols: number } {
     const gr = graphemes.graphemes.get(segment);
 
     if (gr.width < 0) {
-      gr.width = vt.wchar(Buffer.settings.y, Buffer.settings.x, gr.bytes);
+      gr.width = vt.wchar(gr.bytes);
     }
 
     if (gr.isEol) {
