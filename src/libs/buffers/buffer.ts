@@ -1,5 +1,5 @@
 import * as events from "@libs/events";
-import * as graphemes from "@libs/graphemes";
+import { Grapheme, graphemes } from "@libs/graphemes";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
 import * as vt from "@libs/vt";
@@ -23,7 +23,7 @@ export type DocumentChange = {
 
 type Cell = {
   i: number;
-  gr: graphemes.Grapheme;
+  gr: Grapheme;
   ln: number;
   col: number;
 };
@@ -115,7 +115,7 @@ export class Buffer {
 
     const seg: Cell = {
       i: 0,
-      gr: undefined as unknown as graphemes.Grapheme,
+      gr: undefined as unknown as Grapheme,
       ln: 0,
       col: 0,
     };
@@ -124,7 +124,7 @@ export class Buffer {
 
     for (const chunk of chunks) {
       for (const { segment } of sgr.segment(chunk)) {
-        seg.gr = graphemes.graphemes.get(segment);
+        seg.gr = graphemes.get(segment);
 
         if (seg.gr.width < 0) {
           seg.gr.width = vt.wchar(seg.gr.bytes);
@@ -145,7 +145,7 @@ export class Buffer {
     }
 
     if (extra) {
-      seg.gr = graphemes.graphemes.get(" ");
+      seg.gr = graphemes.get(" ");
 
       w += seg.gr.width;
       if (w > this.wrapWidth) {
@@ -290,7 +290,7 @@ export class Buffer {
   }
 
   #unitPos(ln: number, col: number): [number, number] {
-    let unit_col = 0;
+    let unitCol = 0;
     let i = 0;
 
     for (const { gr } of this.cells(ln)) {
@@ -299,13 +299,13 @@ export class Buffer {
       }
 
       if (i < col) {
-        unit_col += gr.char.length;
+        unitCol += gr.char.length;
       }
 
       i += 1;
     }
 
-    return [ln, unit_col];
+    return [ln, unitCol];
   }
 }
 
@@ -314,7 +314,7 @@ function measure(text: string): { lns: number; cols: number } {
   let cols = 0;
 
   for (const { segment } of sgr.segment(text)) {
-    const gr = graphemes.graphemes.get(segment);
+    const gr = graphemes.get(segment);
 
     if (gr.width < 0) {
       gr.width = vt.wchar(gr.bytes);
