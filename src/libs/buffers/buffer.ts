@@ -107,7 +107,10 @@ export class Buffer {
     endLn: number,
     endCol: number,
   ): IteratorObject<string> {
-    return this.#read(startLn, startCol, endLn, endCol);
+    return this.#str.read2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
   }
 
   *cells(ln: number, extra = false): Generator<Cell> {
@@ -259,18 +262,6 @@ export class Buffer {
     this.#history.push(this.#str.tree.root);
 
     this.#emitter.broadcast("history.push");
-  }
-
-  #read(
-    startLn: number,
-    startCol: number,
-    endLn: number,
-    endCol: number,
-  ): IteratorObject<string> {
-    return this.#str.read2(
-      ...this.#unitPos(startLn, startCol),
-      ...this.#unitPos(endLn, endCol),
-    );
   }
 
   #insert(ln: number, col: number, text: string): void {
