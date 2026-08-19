@@ -23,7 +23,6 @@ export type DocumentChange = {
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #str = new String2();
-  readonly #gdoc = new graphemes.Document(this.#str);
   readonly #history = new history.History<Node>();
   #name = "";
 
@@ -96,15 +95,15 @@ export class Buffer {
     endLn: number,
     endCol: number,
   ): IteratorObject<string> {
-    return this.#gdoc.read(startLn, startCol, endLn, endCol);
+    return this.#read(startLn, startCol, endLn, endCol);
   }
 
   cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
-    return this.#gdoc.cells(ln, extra);
+    return this.#cells(ln, extra);
   }
 
   insert(ln: number, col: number, text: string): void {
-    this.#gdoc.insert(ln, col, text);
+    this.#insert(ln, col, text);
 
     let toLn = ln;
     let toCol = col;
@@ -128,7 +127,7 @@ export class Buffer {
   }
 
   remove(fromLn: number, fromCol: number, toLn: number, toCol: number): void {
-    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
 
     this.#emitter.broadcast("document.change", {
       type: "remove",
@@ -148,8 +147,8 @@ export class Buffer {
     toCol: number,
     text: string,
   ): void {
-    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
-    this.#gdoc.insert(fromLn, fromCol, text);
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#insert(fromLn, fromCol, text);
 
     toLn = fromLn;
     toCol = fromCol;
@@ -204,5 +203,57 @@ export class Buffer {
     this.#history.push(this.#str.tree.root);
 
     this.#emitter.broadcast("history.push");
+  }
+
+  #cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
+    const chunks = this.#str.read2(ln, 0, ln + 1, 0);
+    return graphemes.segments(chunks, extra);
+  }
+
+  #read(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): IteratorObject<string> {
+    return this.#str.read2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
+  }
+
+  #insert(ln: number, col: number, text: string): void {
+    this.#str.insert2(...this.#unitPos(ln, col), text);
+  }
+
+  #delete(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): void {
+    this.#str.delete2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
+  }
+
+  #unitPos(ln: number, col: number): [number, number] {
+    let unit_col = 0;
+    let i = 0;
+
+    for (const { gr } of this.#cells(ln)) {
+      if (i === col) {
+        break;
+      }
+
+      if (i < col) {
+        unit_col += gr.char.length;
+      }
+
+      i += 1;
+    }
+
+    return [ln, unit_col];
   }
 }
