@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
@@ -66,11 +65,15 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    graphemes.settings.width = this.#mode.wrap
+    this.buffer.wrapWidth = this.#mode.wrap
       ? textWidth
       : Number.MAX_SAFE_INTEGER;
-    graphemes.settings.y = this.#cursorY = this.y;
-    graphemes.settings.x = this.#cursorX = this.x + indexWidth;
+
+    vt.wcharParams.y = this.y;
+    vt.wcharParams.x = this.x + indexWidth;
+
+    this.#cursorY = this.y;
+    this.#cursorX = this.x + indexWidth;
 
     if (this.width >= indexWidth) {
       this.#scrollV();
@@ -155,7 +158,7 @@ export class Content extends Widget {
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.cells(ln).reduce(
+      this.buffer.lineCells(ln).reduce(
         (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
         1,
       )
@@ -178,7 +181,7 @@ export class Content extends Widget {
 
   #scrollH(textWidth: number): void {
     const cell =
-      this.buffer.cells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
+      this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
         .next().value;
     if (cell) {
       this.#cursorY += cell.ln;
@@ -195,7 +198,7 @@ export class Content extends Widget {
 
     // After?
 
-    const xs = this.buffer.cells(this.cursor.pos.ln, true)
+    const xs = this.buffer.lineCells(this.cursor.pos.ln, true)
       .drop(this.cursor.pos.col - deltaCol)
       .take(deltaCol)
       .map((x) => x.gr.width)
@@ -220,7 +223,8 @@ export class Content extends Widget {
     let currentColor = CharColor.Undefined;
 
     for (
-      const { gr: { width, isVisible, bytes }, i, col } of this.buffer.cells(ln)
+      const { gr: { width, isVisible, bytes }, i, col } of this.buffer
+        .lineCells(ln)
     ) {
       if (col === 0) {
         if (i > 0) {

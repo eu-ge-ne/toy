@@ -8,8 +8,13 @@ export const cprReq = CSI("6n");
 
 const dec = new TextDecoder();
 
-export function wchar(y: number, x: number, bytes: Uint8Array): number {
-  set(sync, y, x);
+export const wcharParams = {
+  y: 0,
+  x: 0,
+};
+
+export function wchar(bytes: Uint8Array): number {
+  set(sync, wcharParams.y, wcharParams.x);
   sync.write(bytes);
   sync.write(cprReq);
 
@@ -63,5 +68,5 @@ export function wchar(y: number, x: number, bytes: Uint8Array): number {
     return [Number.parseInt(col), j2 + 1];
   });
 
-  return x1 - 1 - x;
+  return x1 - 1 - wcharParams.x;
 }

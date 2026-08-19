@@ -1,7 +1,8 @@
 import * as events from "@libs/events";
-import * as graphemes from "@libs/graphemes";
+import { Grapheme, graphemes } from "@libs/graphemes";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
+import * as vt from "@libs/vt";
 
 export type BufferSignals = {
   "name.change": () => void;
@@ -20,16 +21,26 @@ export type DocumentChange = {
   toCol: number;
 };
 
+type Cell = {
+  i: number;
+  gr: Grapheme;
+  ln: number;
+  col: number;
+};
+
+const sgr = new Intl.Segmenter();
+
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #str = new String2();
-  readonly #gdoc = new graphemes.Document(this.#str);
   readonly #history = new history.History<Node>();
   #name = "";
 
   constructor() {
     this.resetHistory();
   }
+
+  wrapWidth = Number.MAX_SAFE_INTEGER;
 
   readonly signals = this.#emitter.listener;
 
@@ -60,7 +71,7 @@ export class Buffer {
     this.#str.insert(0, x);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
+    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -77,7 +88,7 @@ export class Buffer {
     await this.#str.load(text);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
+    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -96,19 +107,64 @@ export class Buffer {
     endLn: number,
     endCol: number,
   ): IteratorObject<string> {
-    return this.#gdoc.read(startLn, startCol, endLn, endCol);
+    return this.#str.read2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
   }
 
-  cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
-    return this.#gdoc.cells(ln, extra);
+  *lineCells(ln: number, extra = false): Generator<Cell> {
+    const seg: Cell = {
+      i: 0,
+      gr: undefined as unknown as Grapheme,
+      ln: 0,
+      col: 0,
+    };
+
+    let w = 0;
+
+    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
+      for (const { segment } of sgr.segment(chunk)) {
+        seg.gr = graphemes.get(segment);
+
+        if (seg.gr.width < 0) {
+          seg.gr.width = vt.wchar(seg.gr.bytes);
+        }
+
+        w += seg.gr.width;
+        if (w > this.wrapWidth) {
+          w = seg.gr.width;
+          seg.ln += 1;
+          seg.col = 0;
+        }
+
+        yield seg;
+
+        seg.i += 1;
+        seg.col += 1;
+      }
+    }
+
+    if (extra) {
+      seg.gr = graphemes.get(" ");
+
+      w += seg.gr.width;
+      if (w > this.wrapWidth) {
+        w = seg.gr.width;
+        seg.ln += 1;
+        seg.col = 0;
+      }
+
+      yield seg;
+    }
   }
 
   insert(ln: number, col: number, text: string): void {
-    this.#gdoc.insert(ln, col, text);
+    this.#insert(ln, col, text);
 
     let toLn = ln;
     let toCol = col;
-    const { lns, cols } = graphemes.measure(text);
+    const { lns, cols } = measure(text);
     if (lns === 0) {
       toCol += cols;
     } else {
@@ -128,7 +184,7 @@ export class Buffer {
   }
 
   remove(fromLn: number, fromCol: number, toLn: number, toCol: number): void {
-    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
 
     this.#emitter.broadcast("document.change", {
       type: "remove",
@@ -148,12 +204,12 @@ export class Buffer {
     toCol: number,
     text: string,
   ): void {
-    this.#gdoc.delete(fromLn, fromCol, toLn, toCol + 1);
-    this.#gdoc.insert(fromLn, fromCol, text);
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#insert(fromLn, fromCol, text);
 
     toLn = fromLn;
     toCol = fromCol;
-    const { lns, cols } = graphemes.measure(text);
+    const { lns, cols } = measure(text);
     if (lns === 0) {
       toCol += cols;
     } else {
@@ -205,4 +261,61 @@ export class Buffer {
 
     this.#emitter.broadcast("history.push");
   }
+
+  #insert(ln: number, col: number, text: string): void {
+    this.#str.insert2(...this.#unitPos(ln, col), text);
+  }
+
+  #delete(
+    startLn: number,
+    startCol: number,
+    endLn: number,
+    endCol: number,
+  ): void {
+    this.#str.delete2(
+      ...this.#unitPos(startLn, startCol),
+      ...this.#unitPos(endLn, endCol),
+    );
+  }
+
+  #unitPos(ln: number, col: number): [number, number] {
+    let unitCol = 0;
+    let i = 0;
+
+    for (const { gr } of this.lineCells(ln)) {
+      if (i === col) {
+        break;
+      }
+
+      if (i < col) {
+        unitCol += gr.char.length;
+      }
+
+      i += 1;
+    }
+
+    return [ln, unitCol];
+  }
+}
+
+function measure(text: string): { lns: number; cols: number } {
+  let lns = 0;
+  let cols = 0;
+
+  for (const { segment } of sgr.segment(text)) {
+    const gr = graphemes.get(segment);
+
+    if (gr.width < 0) {
+      gr.width = vt.wchar(gr.bytes);
+    }
+
+    if (gr.isEol) {
+      lns += 1;
+      cols = 0;
+    } else {
+      cols += 1;
+    }
+  }
+
+  return { lns, cols };
 }

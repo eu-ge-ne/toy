@@ -64,7 +64,7 @@ export const editHandlers: (new (_: Editor) => InputHandler)[] = [
           buffer.remove(p.ln, p.col, p.ln, p.col);
         } else if (pos.ln > 0) {
           const ln = pos.ln - 1;
-          const prevLine = buffer.cells(ln);
+          const prevLine = buffer.lineCells(ln);
           const col = [...prevLine].length - 1;
           const p = { ln, col };
           buffer.remove(p.ln, p.col, p.ln, p.col);
