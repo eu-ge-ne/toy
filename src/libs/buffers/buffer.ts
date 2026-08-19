@@ -71,7 +71,7 @@ export class Buffer {
     this.#str.insert(0, x);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
+    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -88,7 +88,7 @@ export class Buffer {
     await this.#str.load(text);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.cells(toLn)].length - 1, 0);
+    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -113,7 +113,7 @@ export class Buffer {
     );
   }
 
-  *cells(ln: number, extra = false): Generator<Cell> {
+  *lineCells(ln: number, extra = false): Generator<Cell> {
     const seg: Cell = {
       i: 0,
       gr: undefined as unknown as Grapheme,
@@ -282,7 +282,7 @@ export class Buffer {
     let unitCol = 0;
     let i = 0;
 
-    for (const { gr } of this.cells(ln)) {
+    for (const { gr } of this.lineCells(ln)) {
       if (i === col) {
         break;
       }
