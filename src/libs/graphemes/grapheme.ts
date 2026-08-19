@@ -1,4 +1,4 @@
-const EOL_RE = /\r?\n/gm;
+const EOL_RE = /\r?\n/;
 const RE_LETTER = /\p{Letter}/v;
 const RE_SEPARATOR = /\p{Separator}/v;
 const RE_OTHER = /\p{Other}/v;

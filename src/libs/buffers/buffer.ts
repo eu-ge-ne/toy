@@ -2,7 +2,6 @@ import * as events from "@libs/events";
 import { Grapheme, graphemes } from "@libs/graphemes";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
-import * as vt from "@libs/vt";
 
 export type BufferSignals = {
   "name.change": () => void;
@@ -126,10 +125,6 @@ export class Buffer {
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
         seg.gr = graphemes.get(segment);
-
-        if (seg.gr.width < 0) {
-          seg.gr.width = vt.wchar(seg.gr.bytes);
-        }
 
         w += seg.gr.width;
         if (w > this.wrapWidth) {
@@ -304,10 +299,6 @@ function measure(text: string): { lns: number; cols: number } {
 
   for (const { segment } of sgr.segment(text)) {
     const gr = graphemes.get(segment);
-
-    if (gr.width < 0) {
-      gr.width = vt.wchar(gr.bytes);
-    }
 
     if (gr.isEol) {
       lns += 1;

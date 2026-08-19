@@ -1,3 +1,5 @@
+import * as vt from "@libs/vt";
+
 import { Grapheme } from "./grapheme.ts";
 
 const enc = new TextEncoder();
@@ -17,7 +19,10 @@ export class Pool {
     let gr = this.#pool.get(char);
 
     if (!gr) {
-      gr = new Grapheme(char, enc.encode(char), -1);
+      const bytes = enc.encode(char);
+      const width = vt.wchar(bytes);
+
+      gr = new Grapheme(char, bytes, width);
 
       this.#pool.set(char, gr);
     }
