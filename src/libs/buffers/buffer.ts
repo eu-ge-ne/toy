@@ -31,10 +31,6 @@ type Cell = {
 const sgr = new Intl.Segmenter();
 
 export class Buffer {
-  static settings = {
-    width: Number.MAX_SAFE_INTEGER,
-  };
-
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #str = new String2();
   readonly #history = new history.History<Node>();
@@ -43,6 +39,8 @@ export class Buffer {
   constructor() {
     this.resetHistory();
   }
+
+  wrapWidth = Number.MAX_SAFE_INTEGER;
 
   readonly signals = this.#emitter.listener;
 
@@ -133,7 +131,7 @@ export class Buffer {
         }
 
         w += seg.gr.width;
-        if (w > Buffer.settings.width) {
+        if (w > this.wrapWidth) {
           w = seg.gr.width;
           seg.ln += 1;
           seg.col = 0;
@@ -150,7 +148,7 @@ export class Buffer {
       seg.gr = graphemes.graphemes.get(" ");
 
       w += seg.gr.width;
-      if (w > Buffer.settings.width) {
+      if (w > this.wrapWidth) {
         w = seg.gr.width;
         seg.ln += 1;
         seg.col = 0;

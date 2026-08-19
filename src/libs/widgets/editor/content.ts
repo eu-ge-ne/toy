@@ -65,7 +65,7 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    buffers.Buffer.settings.width = this.#mode.wrap
+    this.buffer.wrapWidth = this.#mode.wrap
       ? textWidth
       : Number.MAX_SAFE_INTEGER;
 
