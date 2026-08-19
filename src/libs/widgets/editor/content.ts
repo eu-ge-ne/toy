@@ -1,5 +1,4 @@
 import * as buffers from "@libs/buffers";
-import * as graphemes from "@libs/graphemes";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
@@ -66,11 +65,11 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    graphemes.settings.width = this.#mode.wrap
+    buffers.settings.width = this.#mode.wrap
       ? textWidth
       : Number.MAX_SAFE_INTEGER;
-    graphemes.settings.y = this.#cursorY = this.y;
-    graphemes.settings.x = this.#cursorX = this.x + indexWidth;
+    buffers.settings.y = this.#cursorY = this.y;
+    buffers.settings.x = this.#cursorX = this.x + indexWidth;
 
     if (this.width >= indexWidth) {
       this.#scrollV();

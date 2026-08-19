@@ -1,7 +1,8 @@
 import * as events from "@libs/events";
-import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
+
+import { Cell, measure, segments } from "./segmenter.ts";
 
 export type BufferSignals = {
   "name.change": () => void;
@@ -98,7 +99,7 @@ export class Buffer {
     return this.#read(startLn, startCol, endLn, endCol);
   }
 
-  cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
+  cells(ln: number, extra = false): IteratorObject<Cell> {
     return this.#cells(ln, extra);
   }
 
@@ -107,7 +108,7 @@ export class Buffer {
 
     let toLn = ln;
     let toCol = col;
-    const { lns, cols } = graphemes.measure(text);
+    const { lns, cols } = measure(text);
     if (lns === 0) {
       toCol += cols;
     } else {
@@ -152,7 +153,7 @@ export class Buffer {
 
     toLn = fromLn;
     toCol = fromCol;
-    const { lns, cols } = graphemes.measure(text);
+    const { lns, cols } = measure(text);
     if (lns === 0) {
       toCol += cols;
     } else {
@@ -205,9 +206,9 @@ export class Buffer {
     this.#emitter.broadcast("history.push");
   }
 
-  #cells(ln: number, extra = false): IteratorObject<graphemes.Cell> {
+  #cells(ln: number, extra = false): IteratorObject<Cell> {
     const chunks = this.#str.read2(ln, 0, ln + 1, 0);
-    return graphemes.segments(chunks, extra);
+    return segments(chunks, extra);
   }
 
   #read(
