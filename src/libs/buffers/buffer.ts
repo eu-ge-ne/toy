@@ -4,8 +4,6 @@ import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
 import * as vt from "@libs/vt";
 
-import { Cell, measure, settings } from "./segmenter.ts";
-
 export type BufferSignals = {
   "name.change": () => void;
   "document.change": (_: DocumentChange) => void;
@@ -23,9 +21,22 @@ export type DocumentChange = {
   toCol: number;
 };
 
+type Cell = {
+  i: number;
+  gr: graphemes.Grapheme;
+  ln: number;
+  col: number;
+};
+
 const sgr = new Intl.Segmenter();
 
 export class Buffer {
+  static settings = {
+    width: Number.MAX_SAFE_INTEGER,
+    y: 0,
+    x: 0,
+  };
+
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
   readonly #str = new String2();
   readonly #history = new history.History<Node>();
@@ -120,11 +131,15 @@ export class Buffer {
         seg.gr = graphemes.graphemes.get(segment);
 
         if (seg.gr.width < 0) {
-          seg.gr.width = vt.wchar(settings.y, settings.x, seg.gr.bytes);
+          seg.gr.width = vt.wchar(
+            Buffer.settings.y,
+            Buffer.settings.x,
+            seg.gr.bytes,
+          );
         }
 
         w += seg.gr.width;
-        if (w > settings.width) {
+        if (w > Buffer.settings.width) {
           w = seg.gr.width;
           seg.ln += 1;
           seg.col = 0;
@@ -141,7 +156,7 @@ export class Buffer {
       seg.gr = graphemes.graphemes.get(" ");
 
       w += seg.gr.width;
-      if (w > settings.width) {
+      if (w > Buffer.settings.width) {
         w = seg.gr.width;
         seg.ln += 1;
         seg.col = 0;
@@ -300,4 +315,26 @@ export class Buffer {
 
     return [ln, unit_col];
   }
+}
+
+function measure(text: string): { lns: number; cols: number } {
+  let lns = 0;
+  let cols = 0;
+
+  for (const { segment } of sgr.segment(text)) {
+    const gr = graphemes.graphemes.get(segment);
+
+    if (gr.width < 0) {
+      gr.width = vt.wchar(Buffer.settings.y, Buffer.settings.x, gr.bytes);
+    }
+
+    if (gr.isEol) {
+      lns += 1;
+      cols = 0;
+    } else {
+      cols += 1;
+    }
+  }
+
+  return { lns, cols };
 }

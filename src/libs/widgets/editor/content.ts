@@ -65,11 +65,11 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    buffers.settings.width = this.#mode.wrap
+    buffers.Buffer.settings.width = this.#mode.wrap
       ? textWidth
       : Number.MAX_SAFE_INTEGER;
-    buffers.settings.y = this.#cursorY = this.y;
-    buffers.settings.x = this.#cursorX = this.x + indexWidth;
+    buffers.Buffer.settings.y = this.#cursorY = this.y;
+    buffers.Buffer.settings.x = this.#cursorX = this.x + indexWidth;
 
     if (this.width >= indexWidth) {
       this.#scrollV();
