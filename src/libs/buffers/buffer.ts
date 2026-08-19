@@ -114,8 +114,6 @@ export class Buffer {
   }
 
   *cells(ln: number, extra = false): Generator<Cell> {
-    const chunks = this.#str.read2(ln, 0, ln + 1, 0);
-
     const seg: Cell = {
       i: 0,
       gr: undefined as unknown as Grapheme,
@@ -125,7 +123,7 @@ export class Buffer {
 
     let w = 0;
 
-    for (const chunk of chunks) {
+    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
         seg.gr = graphemes.get(segment);
 
