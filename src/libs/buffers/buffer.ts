@@ -1,8 +1,10 @@
 import * as events from "@libs/events";
+import * as graphemes from "@libs/graphemes";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
+import * as vt from "@libs/vt";
 
-import { Cell, measure, segments } from "./segmenter.ts";
+import { Cell, measure, settings } from "./segmenter.ts";
 
 export type BufferSignals = {
   "name.change": () => void;
@@ -20,6 +22,8 @@ export type DocumentChange = {
   toLn: number;
   toCol: number;
 };
+
+const sgr = new Intl.Segmenter();
 
 export class Buffer {
   readonly #emitter = new events.SignalEmitter<BufferSignals>();
@@ -99,8 +103,52 @@ export class Buffer {
     return this.#read(startLn, startCol, endLn, endCol);
   }
 
-  cells(ln: number, extra = false): IteratorObject<Cell> {
-    return this.#cells(ln, extra);
+  *cells(ln: number, extra = false): Generator<Cell> {
+    const chunks = this.#str.read2(ln, 0, ln + 1, 0);
+
+    const seg: Cell = {
+      i: 0,
+      gr: undefined as unknown as graphemes.Grapheme,
+      ln: 0,
+      col: 0,
+    };
+
+    let w = 0;
+
+    for (const chunk of chunks) {
+      for (const { segment } of sgr.segment(chunk)) {
+        seg.gr = graphemes.graphemes.get(segment);
+
+        if (seg.gr.width < 0) {
+          seg.gr.width = vt.wchar(settings.y, settings.x, seg.gr.bytes);
+        }
+
+        w += seg.gr.width;
+        if (w > settings.width) {
+          w = seg.gr.width;
+          seg.ln += 1;
+          seg.col = 0;
+        }
+
+        yield seg;
+
+        seg.i += 1;
+        seg.col += 1;
+      }
+    }
+
+    if (extra) {
+      seg.gr = graphemes.graphemes.get(" ");
+
+      w += seg.gr.width;
+      if (w > settings.width) {
+        w = seg.gr.width;
+        seg.ln += 1;
+        seg.col = 0;
+      }
+
+      yield seg;
+    }
   }
 
   insert(ln: number, col: number, text: string): void {
@@ -206,11 +254,6 @@ export class Buffer {
     this.#emitter.broadcast("history.push");
   }
 
-  #cells(ln: number, extra = false): IteratorObject<Cell> {
-    const chunks = this.#str.read2(ln, 0, ln + 1, 0);
-    return segments(chunks, extra);
-  }
-
   #read(
     startLn: number,
     startCol: number,
@@ -243,7 +286,7 @@ export class Buffer {
     let unit_col = 0;
     let i = 0;
 
-    for (const { gr } of this.#cells(ln)) {
+    for (const { gr } of this.cells(ln)) {
       if (i === col) {
         break;
       }
