@@ -1,5 +1,5 @@
 import * as events from "@libs/events";
-import { Grapheme, graphemes } from "@libs/graphemes";
+import * as grapheme from "@libs/grapheme";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
 
@@ -22,7 +22,7 @@ export type DocumentChange = {
 
 type Cell = {
   i: number;
-  gr: Grapheme;
+  gr: grapheme.Grapheme;
   ln: number;
   col: number;
 };
@@ -115,7 +115,7 @@ export class Buffer {
   *lineCells(ln: number, extra = false): Generator<Cell> {
     const seg: Cell = {
       i: 0,
-      gr: undefined as unknown as Grapheme,
+      gr: undefined as unknown as grapheme.Grapheme,
       ln: 0,
       col: 0,
     };
@@ -124,7 +124,7 @@ export class Buffer {
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
-        seg.gr = graphemes.get(segment);
+        seg.gr = grapheme.pool.get(segment);
 
         w += seg.gr.width;
         if (w > this.wrapWidth) {
@@ -141,7 +141,7 @@ export class Buffer {
     }
 
     if (extra) {
-      seg.gr = graphemes.get(" ");
+      seg.gr = grapheme.pool.get(" ");
 
       w += seg.gr.width;
       if (w > this.wrapWidth) {
@@ -298,7 +298,7 @@ function measure(text: string): { lns: number; cols: number } {
   let cols = 0;
 
   for (const { segment } of sgr.segment(text)) {
-    const gr = graphemes.get(segment);
+    const gr = grapheme.pool.get(segment);
 
     if (gr.isEol) {
       lns += 1;

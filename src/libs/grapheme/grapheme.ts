@@ -1,4 +1,4 @@
-const EOL_RE = /\r?\n/;
+const RE_EOL = /\r?\n/;
 const RE_LETTER = /\p{Letter}/v;
 const RE_SEPARATOR = /\p{Separator}/v;
 const RE_OTHER = /\p{Other}/v;
@@ -19,6 +19,6 @@ export class Grapheme {
     this.isSeparator = RE_SEPARATOR.test(char);
     this.isOther = RE_OTHER.test(char);
     this.isVisible = !this.isSeparator && !this.isOther;
-    this.isEol = EOL_RE.test(char);
+    this.isEol = RE_EOL.test(char);
   }
 }
