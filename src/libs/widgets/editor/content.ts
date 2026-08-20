@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 import * as std from "@libs/std";
 import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
@@ -48,7 +48,7 @@ export class Content extends Widget {
   #cursorX = 0;
 
   constructor(
-    private readonly buffer: buffers.Buffer,
+    private readonly buffer: Buffer,
     private readonly cursor: Cursor,
     params: Params,
   ) {

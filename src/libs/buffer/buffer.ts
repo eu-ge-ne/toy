@@ -1,18 +1,18 @@
 import * as events from "@libs/events";
-import * as grapheme from "@libs/grapheme";
+import { Grapheme, GRAPHEMES } from "@libs/grapheme";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
 
 export type BufferSignals = {
   "name.change": () => void;
-  "document.change": (_: DocumentChange) => void;
+  "document.change": (_: BufferChange) => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
   "history.push": () => void;
 };
 
-export type DocumentChange = {
+export type BufferChange = {
   type: "set" | "insert" | "remove" | "replace";
   fromLn: number;
   fromCol: number;
@@ -20,9 +20,9 @@ export type DocumentChange = {
   toCol: number;
 };
 
-type Cell = {
+type BufferCell = {
   i: number;
-  gr: grapheme.Grapheme;
+  gr: Grapheme;
   ln: number;
   col: number;
 };
@@ -112,10 +112,10 @@ export class Buffer {
     );
   }
 
-  *lineCells(ln: number, extra = false): Generator<Cell> {
-    const seg: Cell = {
+  *lineCells(ln: number, extra = false): Generator<BufferCell> {
+    const seg: BufferCell = {
       i: 0,
-      gr: undefined as unknown as grapheme.Grapheme,
+      gr: undefined as unknown as Grapheme,
       ln: 0,
       col: 0,
     };
@@ -124,7 +124,7 @@ export class Buffer {
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
-        seg.gr = grapheme.pool.get(segment);
+        seg.gr = GRAPHEMES.get(segment);
 
         w += seg.gr.width;
         if (w > this.wrapWidth) {
@@ -141,7 +141,7 @@ export class Buffer {
     }
 
     if (extra) {
-      seg.gr = grapheme.pool.get(" ");
+      seg.gr = GRAPHEMES.get(" ");
 
       w += seg.gr.width;
       if (w > this.wrapWidth) {
@@ -298,7 +298,7 @@ function measure(text: string): { lns: number; cols: number } {
   let cols = 0;
 
   for (const { segment } of sgr.segment(text)) {
-    const gr = grapheme.pool.get(segment);
+    const gr = GRAPHEMES.get(segment);
 
     if (gr.isEol) {
       lns += 1;

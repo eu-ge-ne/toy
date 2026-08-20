@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer, BufferChange } from "@libs/buffer";
 import * as history from "@libs/history";
 import * as kitty from "@libs/kitty";
 import * as themes from "@libs/themes";
@@ -30,7 +30,7 @@ export class Editor extends Widget<Params> {
     content: Content;
   };
 
-  constructor(readonly buffer: buffers.Buffer, params: Params) {
+  constructor(readonly buffer: Buffer, params: Params) {
     super(params);
 
     this.cursor = new Cursor(buffer);
@@ -145,7 +145,7 @@ export class Editor extends Widget<Params> {
     }
   }
 
-  #onDocumentChange(change: buffers.DocumentChange): void {
+  #onDocumentChange(change: BufferChange): void {
     switch (change.type) {
       case "insert":
       case "replace":

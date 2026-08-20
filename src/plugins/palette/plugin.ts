@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 
 import * as buffer from "@plugins/buffer";
 import * as core from "@plugins/core";
@@ -31,7 +31,7 @@ export function Plugin(
 }
 
 class Palette {
-  private readonly buffer = new buffers.Buffer();
+  private readonly buffer = new Buffer();
   private readonly widget = new PaletteWidget(this.buffer);
 
   constructor(

@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 import * as events from "@libs/events";
 import * as std from "@libs/std";
 
@@ -18,7 +18,7 @@ export class Cursor {
 
   #selStart = new Pos(0, 0);
 
-  constructor(private readonly buffer: buffers.Buffer) {
+  constructor(private readonly buffer: Buffer) {
   }
 
   readonly signals = this.#emitter.listener;
