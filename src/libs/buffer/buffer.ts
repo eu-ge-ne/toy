@@ -112,45 +112,49 @@ export class Buffer {
     );
   }
 
+  #cell: BufferCell = {
+    i: 0,
+    gr: undefined as unknown as Grapheme,
+    ln: 0,
+    col: 0,
+  };
+
   *lineCells(ln: number, extra = false): Generator<BufferCell> {
-    const seg: BufferCell = {
-      i: 0,
-      gr: undefined as unknown as Grapheme,
-      ln: 0,
-      col: 0,
-    };
+    this.#cell.i = 0;
+    this.#cell.ln = 0;
+    this.#cell.col = 0;
 
     let w = 0;
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
-        seg.gr = GRAPHEMES.get(segment);
+        this.#cell.gr = GRAPHEMES.get(segment);
 
-        w += seg.gr.width;
+        w += this.#cell.gr.width;
         if (w > this.wrapWidth) {
-          w = seg.gr.width;
-          seg.ln += 1;
-          seg.col = 0;
+          w = this.#cell.gr.width;
+          this.#cell.ln += 1;
+          this.#cell.col = 0;
         }
 
-        yield seg;
+        yield this.#cell;
 
-        seg.i += 1;
-        seg.col += 1;
+        this.#cell.i += 1;
+        this.#cell.col += 1;
       }
     }
 
     if (extra) {
-      seg.gr = GRAPHEMES.get(" ");
+      this.#cell.gr = GRAPHEMES.get(" ");
 
-      w += seg.gr.width;
+      w += this.#cell.gr.width;
       if (w > this.wrapWidth) {
-        w = seg.gr.width;
-        seg.ln += 1;
-        seg.col = 0;
+        w = this.#cell.gr.width;
+        this.#cell.ln += 1;
+        this.#cell.col = 0;
       }
 
-      yield seg;
+      yield this.#cell;
     }
   }
 
