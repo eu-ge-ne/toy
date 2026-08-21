@@ -1,11 +1,11 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 
 export type API = {
-  buffer: buffers.Buffer;
+  buffer: Buffer;
 };
 
 export function Plugin(): API {
   return {
-    buffer: new buffers.Buffer(),
+    buffer: new Buffer(),
   };
 }

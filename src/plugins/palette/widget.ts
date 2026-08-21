@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
@@ -13,7 +13,7 @@ export class PaletteWidget extends widgets.Modal {
     list: widgets.List<OptionResult>;
   };
 
-  constructor(private readonly buffer: buffers.Buffer) {
+  constructor(private readonly buffer: Buffer) {
     super();
 
     this.children = {

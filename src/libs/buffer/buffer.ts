@@ -1,18 +1,18 @@
 import * as events from "@libs/events";
-import * as grapheme from "@libs/grapheme";
+import { Grapheme, GRAPHEMES } from "@libs/grapheme";
 import * as history from "@libs/history";
 import { Node, String2 } from "@libs/string2";
 
 export type BufferSignals = {
   "name.change": () => void;
-  "document.change": (_: DocumentChange) => void;
+  "document.change": (_: BufferChange) => void;
   "history.reset": () => void;
   "history.undo": () => void;
   "history.redo": () => void;
   "history.push": () => void;
 };
 
-export type DocumentChange = {
+export type BufferChange = {
   type: "set" | "insert" | "remove" | "replace";
   fromLn: number;
   fromCol: number;
@@ -20,9 +20,9 @@ export type DocumentChange = {
   toCol: number;
 };
 
-type Cell = {
+type BufferCell = {
   i: number;
-  gr: grapheme.Grapheme;
+  gr: Grapheme;
   ln: number;
   col: number;
 };
@@ -112,45 +112,49 @@ export class Buffer {
     );
   }
 
-  *lineCells(ln: number, extra = false): Generator<Cell> {
-    const seg: Cell = {
-      i: 0,
-      gr: undefined as unknown as grapheme.Grapheme,
-      ln: 0,
-      col: 0,
-    };
+  #cell: BufferCell = {
+    i: 0,
+    gr: undefined as unknown as Grapheme,
+    ln: 0,
+    col: 0,
+  };
+
+  *lineCells(ln: number, extra = false): Generator<BufferCell> {
+    this.#cell.i = 0;
+    this.#cell.ln = 0;
+    this.#cell.col = 0;
 
     let w = 0;
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
-        seg.gr = grapheme.pool.get(segment);
+        this.#cell.gr = GRAPHEMES.get(segment);
 
-        w += seg.gr.width;
+        w += this.#cell.gr.width;
         if (w > this.wrapWidth) {
-          w = seg.gr.width;
-          seg.ln += 1;
-          seg.col = 0;
+          w = this.#cell.gr.width;
+          this.#cell.ln += 1;
+          this.#cell.col = 0;
         }
 
-        yield seg;
+        yield this.#cell;
 
-        seg.i += 1;
-        seg.col += 1;
+        this.#cell.i += 1;
+        this.#cell.col += 1;
       }
     }
 
     if (extra) {
-      seg.gr = grapheme.pool.get(" ");
+      this.#cell.gr = GRAPHEMES.get(" ");
 
-      w += seg.gr.width;
+      w += this.#cell.gr.width;
       if (w > this.wrapWidth) {
-        w = seg.gr.width;
-        seg.ln += 1;
-        seg.col = 0;
+        w = this.#cell.gr.width;
+        this.#cell.ln += 1;
+        this.#cell.col = 0;
       }
 
-      yield seg;
+      yield this.#cell;
     }
   }
 
@@ -298,7 +302,7 @@ function measure(text: string): { lns: number; cols: number } {
   let cols = 0;
 
   for (const { segment } of sgr.segment(text)) {
-    const gr = grapheme.pool.get(segment);
+    const gr = GRAPHEMES.get(segment);
 
     if (gr.isEol) {
       lns += 1;

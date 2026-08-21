@@ -32,7 +32,7 @@ class Pool {
   }
 }
 
-export const pool = new Pool({
+export const GRAPHEMES = new Pool({
   "\u0000": ["␀", 1],
   "\u0001": ["␁", 1],
   "\u0002": ["␂", 1],

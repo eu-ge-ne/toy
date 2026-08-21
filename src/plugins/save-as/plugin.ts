@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 import * as std from "@libs/std";
 
 import * as core from "@plugins/core";
@@ -17,7 +17,7 @@ export function Plugin(api: core.API & themes.API): API {
 }
 
 class SaveAs {
-  private readonly buffer = new buffers.Buffer();
+  private readonly buffer = new Buffer();
   private readonly widget = new SaveAsWidget(this.buffer);
 
   constructor(private readonly api: core.API & themes.API) {

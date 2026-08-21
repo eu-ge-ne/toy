@@ -1,4 +1,4 @@
-import * as buffers from "@libs/buffers";
+import { Buffer } from "@libs/buffer";
 import * as themes from "@libs/themes";
 import * as widgets from "@libs/widgets";
 
@@ -10,7 +10,7 @@ export class SaveAsWidget extends widgets.Modal {
     footer: widgets.SingleLineText;
   };
 
-  constructor(private readonly buffer: buffers.Buffer) {
+  constructor(private readonly buffer: Buffer) {
     super();
 
     this.children = {
