@@ -158,6 +158,13 @@ export class Buffer {
     }
   }
 
+  lineHeight(ln: number): number {
+    return this.lineCells(ln).reduce(
+      (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
+      1,
+    );
+  }
+
   insert(ln: number, col: number, text: string): void {
     this.#insert(ln, col, text);
 

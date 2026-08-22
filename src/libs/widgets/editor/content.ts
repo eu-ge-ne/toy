@@ -168,12 +168,8 @@ export class Content extends Widget {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
-    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.lineCells(ln).reduce(
-        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-        1,
-      )
-    );
+    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+      .map((ln) => this.buffer.lineHeight(ln));
 
     let i = 0;
     let height = std.sum(xs);
