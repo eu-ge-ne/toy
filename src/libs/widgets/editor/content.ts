@@ -33,13 +33,6 @@ export class Content extends Widget {
     },
   };
 
-  #indexWidth = 0;
-  #textWidth = 0;
-  #scrollLn = 0;
-  #scrollCol = 0;
-  #cursorY = 0;
-  #cursorX = 0;
-
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
@@ -88,6 +81,13 @@ export class Content extends Widget {
   toggleIndex(): void {
     this.#mode.index = !this.#mode.index;
   }
+
+  #indexWidth = 0;
+  #textWidth = 0;
+  #scrollLn = 0;
+  #scrollCol = 0;
+  #cursorY = 0;
+  #cursorX = 0;
 
   get #vScrollDelta(): number {
     return this.cursor.pos.ln - this.#scrollLn;
