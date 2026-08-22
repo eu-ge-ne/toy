@@ -107,11 +107,10 @@ export class Content extends Widget {
     this.#cursorY = this.y;
     this.#cursorX = this.x + this.#indexWidth;
 
-    if (this.width >= this.#indexWidth) {
-      this.#scrollH();
-      this.#scrollV();
-      this.#renderLines();
-    }
+    this.#scrollH();
+
+    this.#scrollV();
+    this.#renderLines();
 
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
