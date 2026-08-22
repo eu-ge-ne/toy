@@ -154,17 +154,14 @@ export class Content extends Widget {
   }
 
   #scrollV(): void {
-    const deltaLn = this.cursor.pos.ln - this.#scrollLn;
+    const scrollDelta = this.cursor.pos.ln - this.#scrollLn;
 
-    // Above?
-    if (deltaLn <= 0) {
+    if (scrollDelta <= 0) {
       this.#scrollLn = this.cursor.pos.ln;
       return;
     }
 
-    // Below?
-
-    if (deltaLn > this.height) {
+    if (scrollDelta > this.height) {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
