@@ -4,19 +4,10 @@ import * as themes from "@libs/themes";
 import * as vt from "@libs/vt";
 
 import { Widget } from "../widget.ts";
+import { CharColor, charColor } from "./color.ts";
 import { Cursor } from "./cursor.ts";
 
-const enum CharColor {
-  Undefined,
-  Visible,
-  Whitespace,
-  Empty,
-  VisibleSelected,
-  WhitespaceSelected,
-  EmptySelected,
-}
-
-type Params = {
+type ContentParams = {
   indexEnabled: boolean;
 };
 
@@ -42,6 +33,8 @@ export class Content extends Widget {
     },
   };
 
+  #indexWidth = 0;
+  #textWidth = 0;
   #scrollLn = 0;
   #scrollCol = 0;
   #cursorY = 0;
@@ -50,38 +43,11 @@ export class Content extends Widget {
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
-    params: Params,
+    params: ContentParams,
   ) {
     super();
 
     this.#mode.index = params.indexEnabled;
-  }
-
-  render(): void {
-    let indexWidth = 0;
-    if (this.#mode.index && (this.buffer.lineCount > 0)) {
-      indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
-    }
-
-    const textWidth = this.width - indexWidth;
-
-    this.buffer.wrapWidth = this.#mode.wrap
-      ? textWidth
-      : Number.MAX_SAFE_INTEGER;
-
-    vt.wcharParams.y = this.y;
-    vt.wcharParams.x = this.x + indexWidth;
-
-    this.#cursorY = this.y;
-    this.#cursorX = this.x + indexWidth;
-
-    if (this.width >= indexWidth) {
-      this.#scrollV();
-      this.#scrollH(textWidth);
-      this.#renderLines(indexWidth);
-    }
-
-    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
   setTheme(theme: themes.Theme): void {
@@ -123,63 +89,43 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
-  #renderLines(indexWidth: number): void {
-    let row = this.y;
-
-    for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.buffer.lineCount) {
-        row = this.#renderLine(indexWidth, ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#color.void);
-        vt.clearLine(vt.buf, this.width);
-      }
-
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
-    }
+  get #vScrollDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
   }
 
-  #scrollV(): void {
-    const deltaLn = this.cursor.pos.ln - this.#scrollLn;
-
-    // Above?
-    if (deltaLn <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
-      return;
+  render(): void {
+    this.#indexWidth = 0;
+    if (this.#mode.index && (this.buffer.lineCount > 0)) {
+      this.#indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
     }
 
-    // Below?
+    this.#textWidth = this.width - this.#indexWidth;
 
-    if (deltaLn > this.height) {
+    this.buffer.width = this.#mode.wrap
+      ? this.#textWidth
+      : Number.MAX_SAFE_INTEGER;
+
+    vt.wcharParams.y = this.y;
+    vt.wcharParams.x = this.x + this.#indexWidth;
+
+    this.#cursorY = this.y;
+    this.#cursorX = this.x + this.#indexWidth;
+
+    this.#scrollH();
+
+    if (this.#vScrollDelta <= 0) {
+      this.#scrollLn = this.cursor.pos.ln;
+    } else if (this.#vScrollDelta > this.height) {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
-    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1).map((ln) =>
-      this.buffer.lineCells(ln).reduce(
-        (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-        1,
-      )
-    );
+    this.#scrollV();
+    this.#renderLines();
 
-    let i = 0;
-    let height = std.sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.#scrollLn += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.#cursorY += xs[i]!;
-      i += 1;
-    }
+    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
-  #scrollH(textWidth: number): void {
+  #scrollH(): void {
     const cell =
       this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
         .next().value;
@@ -207,7 +153,7 @@ export class Content extends Widget {
     let width = std.sum(xs);
 
     for (const w of xs) {
-      if (width < textWidth) {
+      if (width < this.#textWidth) {
         break;
       }
 
@@ -218,7 +164,49 @@ export class Content extends Widget {
     this.#cursorX += width;
   }
 
-  #renderLine(indexWidth: number, ln: number, row: number): number {
+  #scrollV(): void {
+    if (this.#vScrollDelta <= 0) {
+      return;
+    }
+
+    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+      .map((ln) => this.buffer.lineHeight(ln));
+
+    let i = 0;
+    let height = std.sum(xs);
+
+    while (height > this.height) {
+      height -= xs[i]!;
+      this.#scrollLn += 1;
+      i += 1;
+    }
+
+    while (i < xs.length - 1) {
+      this.#cursorY += xs[i]!;
+      i += 1;
+    }
+  }
+
+  #renderLines(): void {
+    let row = this.y;
+
+    for (let ln = this.#scrollLn;; ln += 1) {
+      if (ln < this.buffer.lineCount) {
+        row = this.#renderLine(ln, row);
+      } else {
+        vt.cursor.set(vt.buf, row, this.x);
+        vt.buf.write(this.#color.void);
+        vt.clearLine(vt.buf, this.width);
+      }
+
+      row += 1;
+      if (row >= this.y + this.height) {
+        break;
+      }
+    }
+  }
+
+  #renderLine(ln: number, row: number): number {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
@@ -236,21 +224,21 @@ export class Content extends Widget {
 
         vt.cursor.set(vt.buf, row, this.x);
 
-        if (indexWidth > 0) {
+        if (this.#indexWidth > 0) {
           if (i === 0) {
             vt.buf.write(this.#color.index);
             vt.writeText(
               vt.buf,
-              [indexWidth],
-              `${ln + 1} `.padStart(indexWidth),
+              [this.#indexWidth],
+              `${ln + 1} `.padStart(this.#indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
-            vt.writeSpaces(vt.buf, indexWidth);
+            vt.writeSpaces(vt.buf, this.#indexWidth);
           }
         }
 
-        availableWidth = this.width - indexWidth;
+        availableWidth = this.width - this.#indexWidth;
       }
 
       if ((col < this.#scrollCol) || (width > availableWidth)) {
@@ -274,29 +262,5 @@ export class Content extends Widget {
     }
 
     return row;
-  }
-}
-
-function charColor(
-  isSelected: boolean,
-  isVisible: boolean,
-  whitespaceEnabled: boolean,
-): CharColor {
-  if (isSelected) {
-    if (isVisible) {
-      return CharColor.VisibleSelected;
-    } else if (whitespaceEnabled) {
-      return CharColor.WhitespaceSelected;
-    } else {
-      return CharColor.EmptySelected;
-    }
-  } else {
-    if (isVisible) {
-      return CharColor.Visible;
-    } else if (whitespaceEnabled) {
-      return CharColor.Whitespace;
-    } else {
-      return CharColor.Empty;
-    }
   }
 }
