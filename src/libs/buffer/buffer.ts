@@ -39,9 +39,9 @@ export class Buffer {
     this.resetHistory();
   }
 
-  wrapWidth = Number.MAX_SAFE_INTEGER;
-
   readonly signals = this.#emitter.listener;
+
+  width = Number.MAX_SAFE_INTEGER;
 
   get name(): string {
     return this.#name;
@@ -131,7 +131,7 @@ export class Buffer {
         this.#cell.gr = GRAPHEMES.get(segment);
 
         w += this.#cell.gr.width;
-        if (w > this.wrapWidth) {
+        if (w > this.width) {
           w = this.#cell.gr.width;
           this.#cell.ln += 1;
           this.#cell.col = 0;
@@ -148,7 +148,7 @@ export class Buffer {
       this.#cell.gr = GRAPHEMES.get(" ");
 
       w += this.#cell.gr.width;
-      if (w > this.wrapWidth) {
+      if (w > this.width) {
         w = this.#cell.gr.width;
         this.#cell.ln += 1;
         this.#cell.col = 0;

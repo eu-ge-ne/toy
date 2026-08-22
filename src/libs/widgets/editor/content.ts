@@ -95,9 +95,7 @@ export class Content extends Widget {
 
     const textWidth = this.width - indexWidth;
 
-    this.buffer.wrapWidth = this.#mode.wrap
-      ? textWidth
-      : Number.MAX_SAFE_INTEGER;
+    this.buffer.width = this.#mode.wrap ? textWidth : Number.MAX_SAFE_INTEGER;
 
     vt.wcharParams.y = this.y;
     vt.wcharParams.x = this.x + indexWidth;
