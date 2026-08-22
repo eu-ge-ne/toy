@@ -89,6 +89,10 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
+  get #vScrollDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
+  }
+
   render(): void {
     this.#indexWidth = 0;
     if (this.#mode.index && (this.buffer.lineCount > 0)) {
@@ -108,6 +112,12 @@ export class Content extends Widget {
     this.#cursorX = this.x + this.#indexWidth;
 
     this.#scrollH();
+
+    if (this.#vScrollDelta <= 0) {
+      this.#scrollLn = this.cursor.pos.ln;
+    } else if (this.#vScrollDelta > this.height) {
+      this.#scrollLn = this.cursor.pos.ln - this.height;
+    }
 
     this.#scrollV();
     this.#renderLines();
@@ -155,15 +165,8 @@ export class Content extends Widget {
   }
 
   #scrollV(): void {
-    const scrollDelta = this.cursor.pos.ln - this.#scrollLn;
-
-    if (scrollDelta <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
+    if (this.#vScrollDelta <= 0) {
       return;
-    }
-
-    if (scrollDelta > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
     const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
