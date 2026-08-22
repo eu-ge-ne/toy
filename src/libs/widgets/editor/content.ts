@@ -33,13 +33,6 @@ export class Content extends Widget {
     },
   };
 
-  #indexWidth = 0;
-  #textWidth = 0;
-  #scrollLn = 0;
-  #scrollCol = 0;
-  #cursorY = 0;
-  #cursorX = 0;
-
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
@@ -89,6 +82,13 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
+  #indexWidth = 0;
+  #textWidth = 0;
+  #scrollLn = 0;
+  #scrollCol = 0;
+  #cursorY = 0;
+  #cursorX = 0;
+
   get #vScrollDelta(): number {
     return this.cursor.pos.ln - this.#scrollLn;
   }
@@ -112,13 +112,6 @@ export class Content extends Widget {
     this.#cursorX = this.x + this.#indexWidth;
 
     this.#scrollH();
-
-    if (this.#vScrollDelta <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
-    } else if (this.#vScrollDelta > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
-    }
-
     this.#scrollV();
     this.#renderLines();
 
@@ -166,28 +159,32 @@ export class Content extends Widget {
 
   #scrollV(): void {
     if (this.#vScrollDelta <= 0) {
-      return;
-    }
-
-    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-      .map((ln) => this.buffer.lineHeight(ln));
-
-    let i = 0;
-    let height = std.sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.#scrollLn += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.#cursorY += xs[i]!;
-      i += 1;
+      this.#scrollLn = this.cursor.pos.ln;
+    } else if (this.#vScrollDelta > this.height) {
+      this.#scrollLn = this.cursor.pos.ln - this.height;
     }
   }
 
   #renderLines(): void {
+    if (this.#vScrollDelta > 0) {
+      const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+        .map((ln) => this.buffer.lineHeight(ln));
+
+      let i = 0;
+      let height = std.sum(xs);
+
+      while (height > this.height) {
+        height -= xs[i]!;
+        this.#scrollLn += 1;
+        i += 1;
+      }
+
+      while (i < xs.length - 1) {
+        this.#cursorY += xs[i]!;
+        i += 1;
+      }
+    }
+
     let row = this.y;
 
     for (let ln = this.#scrollLn;; ln += 1) {
