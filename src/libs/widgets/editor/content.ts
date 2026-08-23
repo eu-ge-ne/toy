@@ -214,20 +214,20 @@ export class Content extends Widget {
 
     const cells = this.buffer.lineCells(ln);
 
-    let y1 = startY;
+    let y = startY;
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
     for (const cell of cells) {
       if (cell.col === 0) {
         if (cell.i > 0) {
-          if ((y1 + 1) >= endY) {
+          if ((y + 1) >= endY) {
             break;
           }
-          y1 += 1;
+          y += 1;
         }
 
-        vt.cursor.set(vt.buf, y1, this.x);
+        vt.cursor.set(vt.buf, y, this.x);
 
         if (this.#indexWidth > 0) {
           if (cell.i === 0) {
@@ -268,6 +268,6 @@ export class Content extends Widget {
       availableWidth -= cell.gr.width;
     }
 
-    return y1 - startY + 1;
+    return y - startY + 1;
   }
 }
