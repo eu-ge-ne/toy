@@ -197,17 +197,17 @@ export class Content extends Widget {
     let ln = this.#scrollLn;
 
     while (y < endY) {
-      y = this.#renderLine(ln, y) + 1;
+      y = this.#renderLn(y, ln) + 1;
       ln += 1;
     }
   }
 
-  #renderLine(ln: number, row: number): number {
+  #renderLn(y: number, ln: number): number {
     if (ln >= this.buffer.lineCount) {
-      vt.cursor.set(vt.buf, row, this.x);
+      vt.cursor.set(vt.buf, y, this.x);
       vt.buf.write(this.#color.void);
       vt.clearLine(vt.buf, this.width);
-      return row;
+      return y;
     }
 
     let availableWidth = 0;
@@ -216,13 +216,13 @@ export class Content extends Widget {
     for (const { gr, i, col } of this.buffer.lineCells(ln)) {
       if (col === 0) {
         if (i > 0) {
-          row += 1;
-          if (row >= this.y + this.height) {
-            return row;
+          y += 1;
+          if (y >= this.y + this.height) {
+            return y;
           }
         }
 
-        vt.cursor.set(vt.buf, row, this.x);
+        vt.cursor.set(vt.buf, y, this.x);
 
         if (this.#indexWidth > 0) {
           if (i === 0) {
@@ -261,6 +261,6 @@ export class Content extends Widget {
       availableWidth -= gr.width;
     }
 
-    return row;
+    return y;
   }
 }
