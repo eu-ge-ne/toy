@@ -213,10 +213,7 @@ export class Content extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    for (
-      const { gr: { width, isVisible, bytes }, i, col } of this.buffer
-        .lineCells(ln)
-    ) {
+    for (const { gr, i, col } of this.buffer.lineCells(ln)) {
       if (col === 0) {
         if (i > 0) {
           row += 1;
@@ -244,13 +241,13 @@ export class Content extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (width > availableWidth)) {
+      if ((col < this.#scrollCol) || (gr.width > availableWidth)) {
         continue;
       }
 
       const color = charColor(
         this.cursor.isSelected(ln, i),
-        isVisible,
+        gr.isVisible,
         this.#mode.whitespace,
       );
 
@@ -259,9 +256,9 @@ export class Content extends Widget {
         vt.buf.write(this.#color.char[color]);
       }
 
-      vt.buf.write(bytes);
+      vt.buf.write(gr.bytes);
 
-      availableWidth -= width;
+      availableWidth -= gr.width;
     }
 
     return row;
