@@ -212,11 +212,11 @@ export class Content extends Widget {
 
     const endY = this.y + this.height;
 
-    const cells = this.buffer.lineCells(ln);
-
     let y = startY;
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
+
+    const cells = this.buffer.lineCells(ln);
 
     for (const cell of cells) {
       if (cell.col === 0) {
