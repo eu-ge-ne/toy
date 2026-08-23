@@ -197,35 +197,40 @@ export class Content extends Widget {
     let ln = this.#scrollLn;
 
     while (y < endY) {
-      y = this.#renderLn(y, ln) + 1;
+      y += this.#renderLn(y, ln);
       ln += 1;
     }
   }
 
-  #renderLn(y: number, ln: number): number {
+  #renderLn(startY: number, ln: number): number {
     if (ln >= this.buffer.lineCount) {
-      vt.cursor.set(vt.buf, y, this.x);
+      vt.cursor.set(vt.buf, startY, this.x);
       vt.buf.write(this.#color.void);
       vt.clearLine(vt.buf, this.width);
-      return y;
+      return 1;
     }
 
+    const endY = this.y + this.height;
+
+    const cells = this.buffer.lineCells(ln);
+
+    let y1 = startY;
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    for (const { gr, i, col } of this.buffer.lineCells(ln)) {
-      if (col === 0) {
-        if (i > 0) {
-          y += 1;
-          if (y >= this.y + this.height) {
-            return y;
+    for (const cell of cells) {
+      if (cell.col === 0) {
+        if (cell.i > 0) {
+          if ((y1 + 1) >= endY) {
+            break;
           }
+          y1 += 1;
         }
 
-        vt.cursor.set(vt.buf, y, this.x);
+        vt.cursor.set(vt.buf, y1, this.x);
 
         if (this.#indexWidth > 0) {
-          if (i === 0) {
+          if (cell.i === 0) {
             vt.buf.write(this.#color.index);
             vt.writeText(
               vt.buf,
@@ -241,26 +246,28 @@ export class Content extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (gr.width > availableWidth)) {
+      if ((cell.col < this.#scrollCol) || (cell.gr.width > availableWidth)) {
         continue;
       }
 
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        gr.isVisible,
-        this.#mode.whitespace,
-      );
+      {
+        const color = charColor(
+          this.cursor.isSelected(ln, cell.i),
+          cell.gr.isVisible,
+          this.#mode.whitespace,
+        );
 
-      if (color !== currentColor) {
-        currentColor = color;
-        vt.buf.write(this.#color.char[color]);
+        if (color !== currentColor) {
+          currentColor = color;
+          vt.buf.write(this.#color.char[color]);
+        }
       }
 
-      vt.buf.write(gr.bytes);
+      vt.buf.write(cell.gr.bytes);
 
-      availableWidth -= gr.width;
+      availableWidth -= cell.gr.width;
     }
 
-    return y;
+    return y1 - startY + 1;
   }
 }
