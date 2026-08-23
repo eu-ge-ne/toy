@@ -189,25 +189,27 @@ export class Content extends Widget {
       }
     }
 
-    let row = this.y;
+    // TODO:
 
-    for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.buffer.lineCount) {
-        row = this.#renderLine(ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#color.void);
-        vt.clearLine(vt.buf, this.width);
-      }
+    const endY = this.y + this.height;
 
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
-      }
+    let y = this.y;
+    let ln = this.#scrollLn;
+
+    while (y < endY) {
+      y = this.#renderLine(ln, y) + 1;
+      ln += 1;
     }
   }
 
   #renderLine(ln: number, row: number): number {
+    if (ln >= this.buffer.lineCount) {
+      vt.cursor.set(vt.buf, row, this.x);
+      vt.buf.write(this.#color.void);
+      vt.clearLine(vt.buf, this.width);
+      return row;
+    }
+
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
