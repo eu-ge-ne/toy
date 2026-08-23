@@ -223,8 +223,9 @@ export class Content extends Widget {
         if (cell.i > 0) {
           if ((y + 1) >= endY) {
             break;
+          } else {
+            y += 1;
           }
-          y += 1;
         }
 
         vt.cursor.set(vt.buf, y, this.x);
