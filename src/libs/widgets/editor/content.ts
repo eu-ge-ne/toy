@@ -89,21 +89,8 @@ export class Content extends Widget {
   #cursorY = 0;
   #cursorX = 0;
 
-  get #vScrollDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
-  }
-
   render(): void {
-    this.#indexWidth = 0;
-    if (this.#mode.index && (this.buffer.lineCount > 0)) {
-      this.#indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
-    }
-
-    this.#textWidth = this.width - this.#indexWidth;
-
-    this.buffer.width = this.#mode.wrap
-      ? this.#textWidth
-      : Number.MAX_SAFE_INTEGER;
+    this.#updateWidth();
 
     vt.wcharParams.y = this.y;
     vt.wcharParams.x = this.x + this.#indexWidth;
@@ -116,6 +103,19 @@ export class Content extends Widget {
     this.#renderLines();
 
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
+  }
+
+  #updateWidth(): void {
+    this.#indexWidth = 0;
+    if (this.#mode.index && (this.buffer.lineCount > 0)) {
+      this.#indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
+    }
+
+    this.#textWidth = this.width - this.#indexWidth;
+
+    this.buffer.width = this.#mode.wrap
+      ? this.#textWidth
+      : Number.MAX_SAFE_INTEGER;
   }
 
   #scrollH(): void {
@@ -163,6 +163,10 @@ export class Content extends Widget {
     } else if (this.#vScrollDelta > this.height) {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
+  }
+
+  get #vScrollDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
   }
 
   #renderLines(): void {
