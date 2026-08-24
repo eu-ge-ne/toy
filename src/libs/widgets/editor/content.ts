@@ -33,13 +33,6 @@ export class Content extends Widget {
     },
   };
 
-  #indexWidth = 0;
-  #textWidth = 0;
-  #scrollLn = 0;
-  #scrollCol = 0;
-  #cursorY = 0;
-  #cursorX = 0;
-
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
@@ -89,11 +82,30 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
-  get #vScrollDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
-  }
+  #indexWidth = 0;
+  #textWidth = 0;
+  #scrollLn = 0;
+  #scrollCol = 0;
+  #cursorY = 0;
+  #cursorX = 0;
 
   render(): void {
+    this.#updateWidth();
+
+    vt.wcharParams.y = this.y;
+    vt.wcharParams.x = this.x + this.#indexWidth;
+
+    this.#cursorY = this.y;
+    this.#cursorX = this.x + this.#indexWidth;
+
+    this.#scrollH();
+    this.#scrollV();
+    this.#renderLines();
+
+    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
+  }
+
+  #updateWidth(): void {
     this.#indexWidth = 0;
     if (this.#mode.index && (this.buffer.lineCount > 0)) {
       this.#indexWidth = Math.trunc(Math.log10(this.buffer.lineCount)) + 3;
@@ -104,25 +116,6 @@ export class Content extends Widget {
     this.buffer.width = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
-
-    vt.wcharParams.y = this.y;
-    vt.wcharParams.x = this.x + this.#indexWidth;
-
-    this.#cursorY = this.y;
-    this.#cursorX = this.x + this.#indexWidth;
-
-    this.#scrollH();
-
-    if (this.#vScrollDelta <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
-    } else if (this.#vScrollDelta > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
-    }
-
-    this.#scrollV();
-    this.#renderLines();
-
-    vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
   #scrollH(): void {
@@ -166,66 +159,79 @@ export class Content extends Widget {
 
   #scrollV(): void {
     if (this.#vScrollDelta <= 0) {
-      return;
+      this.#scrollLn = this.cursor.pos.ln;
+    } else if (this.#vScrollDelta > this.height) {
+      this.#scrollLn = this.cursor.pos.ln - this.height;
     }
+  }
 
-    const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-      .map((ln) => this.buffer.lineHeight(ln));
-
-    let i = 0;
-    let height = std.sum(xs);
-
-    while (height > this.height) {
-      height -= xs[i]!;
-      this.#scrollLn += 1;
-      i += 1;
-    }
-
-    while (i < xs.length - 1) {
-      this.#cursorY += xs[i]!;
-      i += 1;
-    }
+  get #vScrollDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
   }
 
   #renderLines(): void {
-    let row = this.y;
+    if (this.#vScrollDelta > 0) {
+      const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+        .map((ln) => this.buffer.lineHeight(ln));
 
-    for (let ln = this.#scrollLn;; ln += 1) {
-      if (ln < this.buffer.lineCount) {
-        row = this.#renderLine(ln, row);
-      } else {
-        vt.cursor.set(vt.buf, row, this.x);
-        vt.buf.write(this.#color.void);
-        vt.clearLine(vt.buf, this.width);
+      let i = 0;
+      let height = std.sum(xs);
+
+      while (height > this.height) {
+        height -= xs[i]!;
+        this.#scrollLn += 1;
+        i += 1;
       }
 
-      row += 1;
-      if (row >= this.y + this.height) {
-        break;
+      while (i < xs.length - 1) {
+        this.#cursorY += xs[i]!;
+        i += 1;
       }
+    }
+
+    // TODO:
+
+    const endY = this.y + this.height;
+
+    let y = this.y;
+    let ln = this.#scrollLn;
+
+    while (y < endY) {
+      y += this.#renderLn(y, ln);
+      ln += 1;
     }
   }
 
-  #renderLine(ln: number, row: number): number {
+  #renderLn(startY: number, ln: number): number {
+    if (ln >= this.buffer.lineCount) {
+      vt.cursor.set(vt.buf, startY, this.x);
+      vt.buf.write(this.#color.void);
+      vt.clearLine(vt.buf, this.width);
+      return 1;
+    }
+
+    const endY = this.y + this.height;
+
+    let y = startY;
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    for (
-      const { gr: { width, isVisible, bytes }, i, col } of this.buffer
-        .lineCells(ln)
-    ) {
-      if (col === 0) {
-        if (i > 0) {
-          row += 1;
-          if (row >= this.y + this.height) {
-            return row;
+    const cells = this.buffer.lineCells(ln);
+
+    for (const cell of cells) {
+      if (cell.col === 0) {
+        if (cell.i > 0) {
+          if ((y + 1) >= endY) {
+            break;
+          } else {
+            y += 1;
           }
         }
 
-        vt.cursor.set(vt.buf, row, this.x);
+        vt.cursor.set(vt.buf, y, this.x);
 
         if (this.#indexWidth > 0) {
-          if (i === 0) {
+          if (cell.i === 0) {
             vt.buf.write(this.#color.index);
             vt.writeText(
               vt.buf,
@@ -241,26 +247,28 @@ export class Content extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (width > availableWidth)) {
+      if ((cell.col < this.#scrollCol) || (cell.gr.width > availableWidth)) {
         continue;
       }
 
-      const color = charColor(
-        this.cursor.isSelected(ln, i),
-        isVisible,
-        this.#mode.whitespace,
-      );
+      {
+        const color = charColor(
+          this.cursor.isSelected(ln, cell.i),
+          cell.gr.isVisible,
+          this.#mode.whitespace,
+        );
 
-      if (color !== currentColor) {
-        currentColor = color;
-        vt.buf.write(this.#color.char[color]);
+        if (color !== currentColor) {
+          currentColor = color;
+          vt.buf.write(this.#color.char[color]);
+        }
       }
 
-      vt.buf.write(bytes);
+      vt.buf.write(cell.gr.bytes);
 
-      availableWidth -= width;
+      availableWidth -= cell.gr.width;
     }
 
-    return row;
+    return y - startY + 1;
   }
 }
