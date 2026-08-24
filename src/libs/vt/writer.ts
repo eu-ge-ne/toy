@@ -4,7 +4,7 @@ export interface Writer {
   write(_: Uint8Array): void;
 }
 
-export const sync = new class SyncWriter implements Writer {
+class SyncWriter implements Writer {
   static #bsuBytes = CSI("?2026h");
   static #esuBytes = CSI("?2026l");
   #c = 0;
@@ -28,12 +28,15 @@ export const sync = new class SyncWriter implements Writer {
       this.write(SyncWriter.#esuBytes);
     }
   }
-}();
+}
 
-export const buf = new class BufWriter implements Writer {
+class BufWriter implements Writer {
   #buf = new ArrayBuffer(1024 * 64, { maxByteLength: 1024 * 1024 * 64 });
   #bytes = new Uint8Array(this.#buf);
   #i = 0;
+
+  constructor(private flushWriter: Writer) {
+  }
 
   write(chunk: Uint8Array): void {
     const j = this.#i + chunk.byteLength;
@@ -45,7 +48,10 @@ export const buf = new class BufWriter implements Writer {
   }
 
   flush(): void {
-    sync.write(this.#bytes.subarray(0, this.#i));
+    this.flushWriter.write(this.#bytes.subarray(0, this.#i));
     this.#i = 0;
   }
-}();
+}
+
+export const sync = new SyncWriter();
+export const buf = new BufWriter(sync);
