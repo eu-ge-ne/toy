@@ -122,11 +122,7 @@ export class Content extends Widget {
     const cell =
       this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
         .next().value;
-    if (cell) {
-      this.#cursorY += cell.ln;
-    }
-
-    const col = cell?.col ?? 0; // col = f(cursor.col)
+    const col = cell?.col ?? 0;
     const deltaCol = col - this.#scrollCol;
 
     // Before?
@@ -170,22 +166,32 @@ export class Content extends Widget {
   }
 
   #renderLines(): void {
-    if (this.#vScrollDelta > 0) {
-      const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-        .map((ln) => this.buffer.lineHeight(ln));
+    {
+      if (this.#vScrollDelta > 0) {
+        const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+          .map((ln) => this.buffer.lineHeight(ln));
 
-      let i = 0;
-      let height = std.sum(xs);
+        let i = 0;
+        let height = std.sum(xs);
 
-      while (height > this.height) {
-        height -= xs[i]!;
-        this.#scrollLn += 1;
-        i += 1;
+        while (height > this.height) {
+          height -= xs[i]!;
+          this.#scrollLn += 1;
+          i += 1;
+        }
+
+        while (i < xs.length - 1) {
+          this.#cursorY += xs[i]!;
+          i += 1;
+        }
       }
 
-      while (i < xs.length - 1) {
-        this.#cursorY += xs[i]!;
-        i += 1;
+      const cell = this.buffer.lineCells(this.cursor.pos.ln, true).drop(
+        this.cursor.pos.col,
+      )
+        .next().value;
+      if (cell) {
+        this.#cursorY += cell.ln;
       }
     }
 
