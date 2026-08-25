@@ -176,15 +176,6 @@ export class Buffer {
   }
 
   lineWidth(ln: number, startCol: number, endCol: number): number[] {
-    // TODO: was true, can be false?
-    /*
-    const ww = this.lineCells(ln, false)
-      .drop(startCol)
-      .take(endCol - startCol)
-      .map((x) => x.gr.width)
-      .toArray();
-    */
-
     const ww: number[] = [];
 
     this.scanLine(ln, false, (gr, i) => {
