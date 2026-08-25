@@ -119,6 +119,38 @@ export class Buffer {
     col: 0,
   };
 
+  scanLineCells(
+    startLn: number,
+    cb: (i: number, ln: number, col: number, gr: Grapheme) => true | undefined,
+  ): void {
+    let i = 0;
+    let ln = 0;
+    let col = 0;
+    let gr: Grapheme;
+
+    let w = 0;
+
+    for (const chunk of this.#str.read2(startLn, 0, startLn + 1, 0)) {
+      for (const { segment } of sgr.segment(chunk)) {
+        gr = GRAPHEMES.get(segment);
+
+        w += gr.width;
+        if (w > this.width) {
+          w = gr.width;
+          ln += 1;
+          col = 0;
+        }
+
+        if (cb(i, ln, col, gr)) {
+          break;
+        }
+
+        i += 1;
+        col += 1;
+      }
+    }
+  }
+
   *lineCells(ln: number, extra = false): Generator<BufferCell> {
     this.#cell.i = 0;
     this.#cell.ln = 0;

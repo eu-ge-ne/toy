@@ -202,8 +202,8 @@ export class Window extends Widget {
     }
   }
 
-  #renderLn(startY: number, ln: number): number {
-    if (ln >= this.buffer.lineCount) {
+  #renderLn(startY: number, startLn: number): number {
+    if (startLn >= this.buffer.lineCount) {
       vt.cursor.set(vt.buf, startY, this.x);
       vt.buf.write(this.#color.void);
       vt.clearLine(vt.buf, this.width);
@@ -216,13 +216,11 @@ export class Window extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const cells = this.buffer.lineCells(ln);
-
-    for (const cell of cells) {
-      if (cell.col === 0) {
-        if (cell.i > 0) {
+    this.buffer.scanLineCells(startLn, (i, _, col, gr) => {
+      if (col === 0) {
+        if (i > 0) {
           if ((y + 1) >= endY) {
-            break;
+            return true;
           } else {
             y += 1;
           }
@@ -231,12 +229,12 @@ export class Window extends Widget {
         vt.cursor.set(vt.buf, y, this.x);
 
         if (this.#indexWidth > 0) {
-          if (cell.i === 0) {
+          if (i === 0) {
             vt.buf.write(this.#color.index);
             vt.writeText(
               vt.buf,
               [this.#indexWidth],
-              `${ln + 1} `.padStart(this.#indexWidth),
+              `${startLn + 1} `.padStart(this.#indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
@@ -247,14 +245,14 @@ export class Window extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((cell.col < this.#scrollCol) || (cell.gr.width > availableWidth)) {
-        continue;
+      if ((col < this.#scrollCol) || (gr.width > availableWidth)) {
+        return;
       }
 
       {
         const color = charColor(
-          this.cursor.isSelected(ln, cell.i),
-          cell.gr.isVisible,
+          this.cursor.isSelected(startLn, i),
+          gr.isVisible,
           this.#mode.whitespace,
         );
 
@@ -264,10 +262,10 @@ export class Window extends Widget {
         }
       }
 
-      vt.buf.write(cell.gr.bytes);
+      vt.buf.write(gr.bytes);
 
-      availableWidth -= cell.gr.width;
-    }
+      availableWidth -= gr.width;
+    });
 
     return y - startY + 1;
   }
