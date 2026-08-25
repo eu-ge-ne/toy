@@ -117,9 +117,8 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col =
-      this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col)?.wrapCol ??
-        0;
+    const col = this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col)
+      ?.wrapCol ?? 0;
     const deltaCol = col - this.#scrollCol;
 
     let width = 0;
@@ -127,11 +126,11 @@ export class Window extends Widget {
     if (deltaCol <= 0) {
       this.#scrollCol = col;
     } else {
-      const ww = this.buffer.lineCells(this.cursor.pos.ln, true)
-        .drop(this.cursor.pos.col - deltaCol)
-        .take(deltaCol)
-        .map((x) => x.gr.width)
-        .toArray();
+      const ww = this.buffer.lineWidth(
+        this.cursor.pos.ln,
+        this.#scrollCol,
+        col,
+      );
 
       width = std.sum(ww);
 
