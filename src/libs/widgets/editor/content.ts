@@ -82,28 +82,19 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
-  #indexWidth = 0;
-  #textWidth = 0;
-  #scrollLn = 0;
-  #scrollCol = 0;
-  #cursorY = 0;
-  #cursorX = 0;
-
   render(): void {
     this.#updateWidth();
 
-    vt.wcharParams.y = this.y;
-    vt.wcharParams.x = this.x + this.#indexWidth;
+    this.#scrollX();
+    this.#scrollY();
 
-    this.#cursorY = this.y;
-    this.#cursorX = this.x + this.#indexWidth;
-
-    this.#scrollH();
-    this.#scrollV();
     this.#renderLines();
 
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
+
+  #indexWidth = 0;
+  #textWidth = 0;
 
   #updateWidth(): void {
     this.#indexWidth = 0;
@@ -116,60 +107,59 @@ export class Content extends Widget {
     this.buffer.width = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
+
+    vt.wcharParams.y = this.y;
+    vt.wcharParams.x = this.x + this.#indexWidth;
   }
 
-  #scrollH(): void {
+  #scrollCol = 0;
+  #cursorX = 0;
+
+  #scrollX(): void {
     const cell =
       this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
         .next().value;
-    if (cell) {
-      this.#cursorY += cell.ln;
-    }
-
-    const col = cell?.col ?? 0; // col = f(cursor.col)
+    const col = cell?.col ?? 0;
     const deltaCol = col - this.#scrollCol;
 
-    // Before?
+    let width = 0;
+
     if (deltaCol <= 0) {
       this.#scrollCol = col;
-      return;
-    }
+    } else {
+      const xs = this.buffer.lineCells(this.cursor.pos.ln, true)
+        .drop(this.cursor.pos.col - deltaCol)
+        .take(deltaCol)
+        .map((x) => x.gr.width)
+        .toArray();
 
-    // After?
+      width = std.sum(xs);
 
-    const xs = this.buffer.lineCells(this.cursor.pos.ln, true)
-      .drop(this.cursor.pos.col - deltaCol)
-      .take(deltaCol)
-      .map((x) => x.gr.width)
-      .toArray();
+      for (const w of xs) {
+        if (width < this.#textWidth) {
+          break;
+        }
 
-    let width = std.sum(xs);
-
-    for (const w of xs) {
-      if (width < this.#textWidth) {
-        break;
+        this.#scrollCol += 1;
+        width -= w;
       }
-
-      this.#scrollCol += 1;
-      width -= w;
     }
 
-    this.#cursorX += width;
+    this.#cursorX = this.x + this.#indexWidth + width;
   }
 
-  #scrollV(): void {
+  #scrollLn = 0;
+  #cursorY = 0;
+
+  #scrollY(): void {
     if (this.#vScrollDelta <= 0) {
       this.#scrollLn = this.cursor.pos.ln;
     } else if (this.#vScrollDelta > this.height) {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
-  }
 
-  get #vScrollDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
-  }
+    this.#cursorY = this.y;
 
-  #renderLines(): void {
     if (this.#vScrollDelta > 0) {
       const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
         .map((ln) => this.buffer.lineHeight(ln));
@@ -189,8 +179,20 @@ export class Content extends Widget {
       }
     }
 
-    // TODO:
+    const cell = this.buffer.lineCells(this.cursor.pos.ln, true).drop(
+      this.cursor.pos.col,
+    )
+      .next().value;
+    if (cell) {
+      this.#cursorY += cell.ln;
+    }
+  }
 
+  get #vScrollDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
+  }
+
+  #renderLines(): void {
     const endY = this.y + this.height;
 
     let y = this.y;
