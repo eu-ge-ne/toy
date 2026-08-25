@@ -121,6 +121,7 @@ export class Buffer {
 
   scanLineCells(
     startLn: number,
+    extra: boolean,
     cb: (gr: Grapheme, i: number, ln: number, col: number) => true | undefined,
   ): void {
     let i = 0;
@@ -148,6 +149,19 @@ export class Buffer {
         i += 1;
         col += 1;
       }
+    }
+
+    if (extra) {
+      gr = GRAPHEMES.get(" ");
+
+      w += gr.width;
+      if (w > this.width) {
+        w = gr.width;
+        ln += 1;
+        col = 0;
+      }
+
+      cb(gr, i, ln, col);
     }
   }
 
@@ -319,7 +333,7 @@ export class Buffer {
   #unitPos(ln: number, col: number): [number, number] {
     let unitCol = 0;
 
-    this.scanLineCells(ln, (gr, i) => {
+    this.scanLineCells(ln, false, (gr, i) => {
       if (i === col) {
         return true;
       }

@@ -216,7 +216,7 @@ export class Window extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    this.buffer.scanLineCells(startLn, (gr, i, _, col) => {
+    this.buffer.scanLineCells(startLn, false, (gr, i, _, col) => {
       if (col === 0) {
         if (i > 0) {
           if ((y + 1) >= endY) {
