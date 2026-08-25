@@ -82,6 +82,13 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
+  #indexWidth = 0;
+  #textWidth = 0;
+  #scrollCol = 0;
+  #scrollLn = 0;
+  #cursorX = 0;
+  #cursorY = 0;
+
   render(): void {
     this.#updateWidth();
 
@@ -92,9 +99,6 @@ export class Content extends Widget {
 
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
-
-  #indexWidth = 0;
-  #textWidth = 0;
 
   #updateWidth(): void {
     this.#indexWidth = 0;
@@ -111,9 +115,6 @@ export class Content extends Widget {
     vt.wcharParams.y = this.y;
     vt.wcharParams.x = this.x + this.#indexWidth;
   }
-
-  #scrollCol = 0;
-  #cursorX = 0;
 
   #scrollX(): void {
     const cell =
@@ -147,9 +148,6 @@ export class Content extends Widget {
 
     this.#cursorX = this.x + this.#indexWidth + width;
   }
-
-  #scrollLn = 0;
-  #cursorY = 0;
 
   #scrollY(): void {
     if (this.#vScrollDelta <= 0) {
