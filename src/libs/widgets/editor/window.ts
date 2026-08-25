@@ -118,7 +118,7 @@ export class Window extends Widget {
 
   #scrollX(): void {
     const col = this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col)
-      ?.wrapCol ?? 0;
+      ?.wrapCol ?? this.cursor.pos.col;
 
     let width = 0;
 
