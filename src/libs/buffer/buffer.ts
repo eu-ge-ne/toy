@@ -119,17 +119,17 @@ export class Buffer {
     col: 0,
   };
 
-  scanLineCells(
+  scanLine(
     startLn: number,
     extra: boolean,
     cb: (gr: Grapheme, i: number, ln: number, col: number) => true | undefined,
   ): void {
+    let w = 0;
+
+    let gr: Grapheme;
     let i = 0;
     let ln = 0;
     let col = 0;
-    let gr: Grapheme;
-
-    let w = 0;
 
     for (const chunk of this.#str.read2(startLn, 0, startLn + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
@@ -205,10 +205,15 @@ export class Buffer {
   }
 
   lineHeight(ln: number): number {
-    return this.lineCells(ln).reduce(
-      (a, { i, col }) => a + (i > 0 && col === 0 ? 1 : 0),
-      1,
-    );
+    let h = 1;
+
+    this.scanLine(ln, false, (_, i, __, col) => {
+      if (col === 0 && i > 0) {
+        h += 1;
+      }
+    });
+
+    return h;
   }
 
   insert(ln: number, col: number, text: string): void {
@@ -333,7 +338,7 @@ export class Buffer {
   #unitPos(ln: number, col: number): [number, number] {
     let unitCol = 0;
 
-    this.scanLineCells(ln, false, (gr, i) => {
+    this.scanLine(ln, false, (gr, i) => {
       if (i === col) {
         return true;
       }
