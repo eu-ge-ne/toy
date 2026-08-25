@@ -199,9 +199,12 @@ export class Buffer {
   };
 
   findCell(ln: number, col: number): BufferCell | undefined {
-    // TODO: was true, can be false?
+    let cell: BufferCell | undefined;
+
     this.scanLine(ln, false, (gr, i, wrapLn, wrapCol) => {
       if (i === col) {
+        cell = this.#cell;
+
         this.#cell.gr = gr;
         this.#cell.i = i;
         this.#cell.wrapLn = wrapLn;
@@ -210,7 +213,7 @@ export class Buffer {
       }
     });
 
-    return this.#cell;
+    return cell;
   }
 
   *lineCells(ln: number, extra = false): Generator<BufferCell> {
