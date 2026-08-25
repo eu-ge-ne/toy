@@ -32,14 +32,7 @@ export class Cursor {
     const old = this.pos;
 
     ln = std.clamp(ln, 0, Math.max(this.buffer.lineCount - 1, 0));
-    let maxCol = 0;
-    for (const { gr } of this.buffer.lineCells(ln)) {
-      if (gr.isEol) {
-        break;
-      }
-      maxCol += 1;
-    }
-    col = std.clamp(col, 0, maxCol);
+    col = std.clamp(col, 0, this.buffer.lineCursorMaxCol(ln));
 
     this.pos = new Pos(ln, col);
 

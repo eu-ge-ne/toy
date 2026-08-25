@@ -163,6 +163,21 @@ export class Buffer {
     }
   }
 
+  lineCursorMaxCol(ln: number): number {
+    let eolFound = false;
+    let col = -1;
+
+    this.scanLine(ln, false, (gr, i) => {
+      col = i;
+      if (gr.isEol) {
+        eolFound = true;
+        return true;
+      }
+    });
+
+    return eolFound ? col : col + 1;
+  }
+
   lineHeight(ln: number): number {
     let h = 0;
 
