@@ -128,15 +128,15 @@ export class Content extends Widget {
     if (deltaCol <= 0) {
       this.#scrollCol = col;
     } else {
-      const xs = this.buffer.lineCells(this.cursor.pos.ln, true)
+      const ww = this.buffer.lineCells(this.cursor.pos.ln, true)
         .drop(this.cursor.pos.col - deltaCol)
         .take(deltaCol)
         .map((x) => x.gr.width)
         .toArray();
 
-      width = std.sum(xs);
+      width = std.sum(ww);
 
-      for (const w of xs) {
+      for (const w of ww) {
         if (width < this.#textWidth) {
           break;
         }
