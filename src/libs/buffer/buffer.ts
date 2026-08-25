@@ -165,6 +165,18 @@ export class Buffer {
     }
   }
 
+  lineHeight(ln: number): number {
+    let h = 1;
+
+    this.scanLine(ln, false, (_, i, __, col) => {
+      if (col === 0 && i > 0) {
+        h += 1;
+      }
+    });
+
+    return h;
+  }
+
   *lineCells(ln: number, extra = false): Generator<BufferCell> {
     this.#cell.i = 0;
     this.#cell.ln = 0;
@@ -202,18 +214,6 @@ export class Buffer {
 
       yield this.#cell;
     }
-  }
-
-  lineHeight(ln: number): number {
-    let h = 1;
-
-    this.scanLine(ln, false, (_, i, __, col) => {
-      if (col === 0 && i > 0) {
-        h += 1;
-      }
-    });
-
-    return h;
   }
 
   insert(ln: number, col: number, text: string): void {
