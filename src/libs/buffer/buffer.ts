@@ -23,8 +23,8 @@ export type BufferChange = {
 type BufferCell = {
   i: number;
   gr: Grapheme;
-  ln: number;
-  col: number;
+  wrapLn: number;
+  wrapCol: number;
 };
 
 const sgr = new Intl.Segmenter();
@@ -41,7 +41,7 @@ export class Buffer {
 
   readonly signals = this.#emitter.listener;
 
-  width = Number.MAX_SAFE_INTEGER;
+  wrapWidth = Number.MAX_SAFE_INTEGER;
 
   get name(): string {
     return this.#name;
@@ -112,64 +112,62 @@ export class Buffer {
     );
   }
 
-  #cell: BufferCell = {
-    i: 0,
-    gr: undefined as unknown as Grapheme,
-    ln: 0,
-    col: 0,
-  };
-
   scanLine(
-    startLn: number,
-    extra: boolean,
-    cb: (gr: Grapheme, i: number, ln: number, col: number) => true | undefined,
+    ln: number,
+    extraChar: boolean,
+    cb: (
+      gr: Grapheme,
+      i: number,
+      wrapLn: number,
+      wrapCol: number,
+    ) => true | undefined,
   ): void {
-    let w = 0;
-
     let gr: Grapheme;
     let i = 0;
-    let ln = 0;
-    let col = 0;
+    let wrapLn = 0;
+    let wrapCol = 0;
 
-    for (const chunk of this.#str.read2(startLn, 0, startLn + 1, 0)) {
+    let currentWidth = 0;
+
+    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const { segment } of sgr.segment(chunk)) {
         gr = GRAPHEMES.get(segment);
 
-        w += gr.width;
-        if (w > this.width) {
-          w = gr.width;
-          ln += 1;
-          col = 0;
+        currentWidth += gr.width;
+        if (currentWidth > this.wrapWidth) {
+          currentWidth = gr.width;
+          wrapLn += 1;
+          wrapCol = 0;
         }
 
-        if (cb(gr, i, ln, col)) {
+        if (cb(gr, i, wrapLn, wrapCol)) {
           break;
         }
 
         i += 1;
-        col += 1;
+        wrapCol += 1;
       }
     }
 
-    if (extra) {
+    if (extraChar) {
       gr = GRAPHEMES.get(" ");
 
-      w += gr.width;
-      if (w > this.width) {
-        w = gr.width;
-        ln += 1;
-        col = 0;
+      currentWidth += gr.width;
+      if (currentWidth > this.wrapWidth) {
+        currentWidth = gr.width;
+        wrapLn += 1;
+        wrapCol = 0;
       }
 
-      cb(gr, i, ln, col);
+      cb(gr, i, wrapLn, wrapCol);
     }
   }
 
   lineHeight(ln: number): number {
-    let h = 1;
+    let h = 0;
 
-    this.scanLine(ln, false, (_, i, __, col) => {
-      if (col === 0 && i > 0) {
+    this.scanLine(ln, false, (_gr, _i, _ln, col) => {
+      if (col === 0) {
         h += 1;
       }
     });
@@ -177,10 +175,42 @@ export class Buffer {
     return h;
   }
 
+  lineWidth(ln: number, startCol: number, endCol: number): number[] {
+    const ww = this.lineCells(ln, true)
+      .drop(startCol)
+      .take(endCol - startCol)
+      .map((x) => x.gr.width)
+      .toArray();
+
+    return ww;
+  }
+
+  #cell: BufferCell = {
+    gr: undefined as unknown as Grapheme,
+    i: 0,
+    wrapLn: 0,
+    wrapCol: 0,
+  };
+
+  findCell(ln: number, col: number): BufferCell | undefined {
+    // TODO: was true, can be false?
+    this.scanLine(ln, false, (gr, i, wrapLn, wrapCol) => {
+      if (i === col) {
+        this.#cell.gr = gr;
+        this.#cell.i = i;
+        this.#cell.wrapLn = wrapLn;
+        this.#cell.wrapCol = wrapCol;
+        return true;
+      }
+    });
+
+    return this.#cell;
+  }
+
   *lineCells(ln: number, extra = false): Generator<BufferCell> {
     this.#cell.i = 0;
-    this.#cell.ln = 0;
-    this.#cell.col = 0;
+    this.#cell.wrapLn = 0;
+    this.#cell.wrapCol = 0;
 
     let w = 0;
 
@@ -189,16 +219,16 @@ export class Buffer {
         this.#cell.gr = GRAPHEMES.get(segment);
 
         w += this.#cell.gr.width;
-        if (w > this.width) {
+        if (w > this.wrapWidth) {
           w = this.#cell.gr.width;
-          this.#cell.ln += 1;
-          this.#cell.col = 0;
+          this.#cell.wrapLn += 1;
+          this.#cell.wrapCol = 0;
         }
 
         yield this.#cell;
 
         this.#cell.i += 1;
-        this.#cell.col += 1;
+        this.#cell.wrapCol += 1;
       }
     }
 
@@ -206,10 +236,10 @@ export class Buffer {
       this.#cell.gr = GRAPHEMES.get(" ");
 
       w += this.#cell.gr.width;
-      if (w > this.width) {
+      if (w > this.wrapWidth) {
         w = this.#cell.gr.width;
-        this.#cell.ln += 1;
-        this.#cell.col = 0;
+        this.#cell.wrapLn += 1;
+        this.#cell.wrapCol = 0;
       }
 
       yield this.#cell;

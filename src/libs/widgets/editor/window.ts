@@ -108,7 +108,7 @@ export class Window extends Widget {
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    this.buffer.width = this.#mode.wrap
+    this.buffer.wrapWidth = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
@@ -117,10 +117,9 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const cell =
-      this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
-        .next().value;
-    const col = cell?.col ?? 0;
+    const col =
+      this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col)?.wrapCol ??
+        0;
     const deltaCol = col - this.#scrollCol;
 
     let width = 0;
@@ -177,12 +176,9 @@ export class Window extends Widget {
       }
     }
 
-    const cell = this.buffer.lineCells(this.cursor.pos.ln, true).drop(
-      this.cursor.pos.col,
-    )
-      .next().value;
+    const cell = this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col);
     if (cell) {
-      this.#cursorY += cell.ln;
+      this.#cursorY += cell.wrapLn;
     }
   }
 
