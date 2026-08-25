@@ -7,11 +7,11 @@ import { Widget } from "../widget.ts";
 import { CharColor, charColor } from "./color.ts";
 import { Cursor } from "./cursor.ts";
 
-type ContentParams = {
+type WindowParams = {
   indexEnabled: boolean;
 };
 
-export class Content extends Widget {
+export class Window extends Widget {
   #mode = {
     index: false,
     whitespace: false,
@@ -36,7 +36,7 @@ export class Content extends Widget {
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
-    params: ContentParams,
+    params: WindowParams,
   ) {
     super();
 
