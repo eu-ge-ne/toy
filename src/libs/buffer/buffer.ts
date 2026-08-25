@@ -70,7 +70,7 @@ export class Buffer {
     this.#str.insert(0, x);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
+    const toCol = Math.max(this.lineLength(toLn) - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -87,7 +87,7 @@ export class Buffer {
     await this.#str.load(text);
 
     const toLn = Math.max(this.lineCount - 1, 0);
-    const toCol = Math.max([...this.lineCells(toLn)].length - 1, 0);
+    const toCol = Math.max(this.lineLength(toLn) - 1, 0);
 
     this.#emitter.broadcast("document.change", {
       type: "set",
@@ -176,6 +176,16 @@ export class Buffer {
     });
 
     return eolFound ? col : col + 1;
+  }
+
+  lineLength(ln: number): number {
+    let length = 0;
+
+    this.scanLine(ln, false, (_, i) => {
+      length = i + 1;
+    });
+
+    return length;
   }
 
   lineHeight(ln: number): number {
