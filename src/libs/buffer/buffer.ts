@@ -112,7 +112,7 @@ export class Buffer {
     );
   }
 
-  scanLine(
+  scanLineWrap(
     ln: number,
     cb: (
       gr: Grapheme,
@@ -153,7 +153,7 @@ export class Buffer {
     let eolFound = false;
     let col = -1;
 
-    this.scanLine(ln, (gr, i) => {
+    this.scanLineWrap(ln, (gr, i) => {
       col = i;
       if (gr.isEol) {
         eolFound = true;
@@ -167,7 +167,7 @@ export class Buffer {
   lineLength(ln: number): number {
     let length = 0;
 
-    this.scanLine(ln, (_, i) => {
+    this.scanLineWrap(ln, (_, i) => {
       length = i + 1;
     });
 
@@ -177,7 +177,7 @@ export class Buffer {
   lineHeight(ln: number): number {
     let h = 0;
 
-    this.scanLine(ln, (_gr, _i, _ln, col) => {
+    this.scanLineWrap(ln, (_gr, _i, _ln, col) => {
       if (col === 0) {
         h += 1;
       }
@@ -189,7 +189,7 @@ export class Buffer {
   lineWidth(ln: number, startCol: number, endCol: number): number[] {
     const ww: number[] = [];
 
-    this.scanLine(ln, (gr, i) => {
+    this.scanLineWrap(ln, (gr, i) => {
       if (i < startCol) {
         return;
       }
@@ -212,7 +212,7 @@ export class Buffer {
   findCell(ln: number, col: number): BufferCell | undefined {
     let cell: BufferCell | undefined;
 
-    this.scanLine(ln, (gr, i, wrapLn, wrapCol) => {
+    this.scanLineWrap(ln, (gr, i, wrapLn, wrapCol) => {
       if (i === col) {
         cell = this.#cell;
 
@@ -349,7 +349,7 @@ export class Buffer {
   #unitPos(ln: number, col: number): [number, number] {
     let unitCol = 0;
 
-    this.scanLine(ln, (gr, i) => {
+    this.scanLineWrap(ln, (gr, i) => {
       if (i === col) {
         return true;
       }
