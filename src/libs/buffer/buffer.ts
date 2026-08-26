@@ -361,22 +361,15 @@ export class Buffer {
   }
 
   #unitPos(ln: number, col: number): [number, number] {
-    let i = 0;
     let unitCol = 0;
 
-    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
-      for (const x of sgr.segment(chunk)) {
-        if (i === col) {
-          break;
-        }
-
-        if (i < col) {
-          unitCol += x.segment.length;
-        }
-
-        i += 1;
+    this.#scanLine(ln, (gr, i) => {
+      if (i === col) {
+        return true;
       }
-    }
+
+      unitCol += gr.char.length;
+    });
 
     return [ln, unitCol];
   }
