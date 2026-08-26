@@ -105,6 +105,103 @@ export class Buffer {
     );
   }
 
+  insert(ln: number, col: number, text: string): void {
+    this.#insert(ln, col, text);
+
+    let toLn = ln;
+    let toCol = col;
+    const { lns, cols } = measure(text);
+    if (lns === 0) {
+      toCol += cols;
+    } else {
+      toLn += lns;
+      toCol = 0;
+    }
+
+    this.#emitter.broadcast("document.change", {
+      type: "insert",
+      fromLn: ln,
+      fromCol: col,
+      toLn: toLn,
+      toCol: toCol,
+    });
+
+    this.#pushHistory();
+  }
+
+  remove(fromLn: number, fromCol: number, toLn: number, toCol: number): void {
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
+
+    this.#emitter.broadcast("document.change", {
+      type: "remove",
+      fromLn,
+      fromCol,
+      toLn,
+      toCol,
+    });
+
+    this.#pushHistory();
+  }
+
+  replace(
+    fromLn: number,
+    fromCol: number,
+    toLn: number,
+    toCol: number,
+    text: string,
+  ): void {
+    this.#delete(fromLn, fromCol, toLn, toCol + 1);
+    this.#insert(fromLn, fromCol, text);
+
+    toLn = fromLn;
+    toCol = fromCol;
+    const { lns, cols } = measure(text);
+    if (lns === 0) {
+      toCol += cols;
+    } else {
+      toLn += lns;
+      toCol = 0;
+    }
+
+    this.#emitter.broadcast("document.change", {
+      type: "replace",
+      fromLn,
+      fromCol,
+      toLn,
+      toCol,
+    });
+
+    this.#pushHistory();
+  }
+
+  resetHistory(): void {
+    this.#history.reset(this.#str.tree.root);
+
+    this.#emitter.broadcast("history.reset");
+  }
+
+  undoHistory(): void {
+    const entry = this.#history.undo();
+    if (!entry) {
+      return;
+    }
+
+    this.#str.tree.root = entry;
+
+    this.#emitter.broadcast("history.undo");
+  }
+
+  redoHistory(): void {
+    const entry = this.#history.redo();
+    if (!entry) {
+      return;
+    }
+
+    this.#str.tree.root = entry;
+
+    this.#emitter.broadcast("history.redo");
+  }
+
   scanLineWrap(
     ln: number,
     cb: (
@@ -219,103 +316,6 @@ export class Buffer {
     });
 
     return r;
-  }
-
-  insert(ln: number, col: number, text: string): void {
-    this.#insert(ln, col, text);
-
-    let toLn = ln;
-    let toCol = col;
-    const { lns, cols } = measure(text);
-    if (lns === 0) {
-      toCol += cols;
-    } else {
-      toLn += lns;
-      toCol = 0;
-    }
-
-    this.#emitter.broadcast("document.change", {
-      type: "insert",
-      fromLn: ln,
-      fromCol: col,
-      toLn: toLn,
-      toCol: toCol,
-    });
-
-    this.#pushHistory();
-  }
-
-  remove(fromLn: number, fromCol: number, toLn: number, toCol: number): void {
-    this.#delete(fromLn, fromCol, toLn, toCol + 1);
-
-    this.#emitter.broadcast("document.change", {
-      type: "remove",
-      fromLn,
-      fromCol,
-      toLn,
-      toCol,
-    });
-
-    this.#pushHistory();
-  }
-
-  replace(
-    fromLn: number,
-    fromCol: number,
-    toLn: number,
-    toCol: number,
-    text: string,
-  ): void {
-    this.#delete(fromLn, fromCol, toLn, toCol + 1);
-    this.#insert(fromLn, fromCol, text);
-
-    toLn = fromLn;
-    toCol = fromCol;
-    const { lns, cols } = measure(text);
-    if (lns === 0) {
-      toCol += cols;
-    } else {
-      toLn += lns;
-      toCol = 0;
-    }
-
-    this.#emitter.broadcast("document.change", {
-      type: "replace",
-      fromLn,
-      fromCol,
-      toLn,
-      toCol,
-    });
-
-    this.#pushHistory();
-  }
-
-  resetHistory(): void {
-    this.#history.reset(this.#str.tree.root);
-
-    this.#emitter.broadcast("history.reset");
-  }
-
-  undoHistory(): void {
-    const entry = this.#history.undo();
-    if (!entry) {
-      return;
-    }
-
-    this.#str.tree.root = entry;
-
-    this.#emitter.broadcast("history.undo");
-  }
-
-  redoHistory(): void {
-    const entry = this.#history.redo();
-    if (!entry) {
-      return;
-    }
-
-    this.#str.tree.root = entry;
-
-    this.#emitter.broadcast("history.redo");
   }
 
   #pushHistory(): void {
