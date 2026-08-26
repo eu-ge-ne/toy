@@ -112,29 +112,6 @@ export class Buffer {
     );
   }
 
-  scanLine(
-    ln: number,
-    cb: (
-      gr: Grapheme,
-      i: number,
-    ) => true | undefined,
-  ): void {
-    let gr: Grapheme;
-    let i = 0;
-
-    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
-      for (const { segment } of sgr.segment(chunk)) {
-        gr = GRAPHEMES.get(segment);
-
-        if (cb(gr, i)) {
-          break;
-        }
-
-        i += 1;
-      }
-    }
-  }
-
   scanLineWrap(
     ln: number,
     cb: (
@@ -369,18 +346,46 @@ export class Buffer {
     );
   }
 
+  scanLine(
+    ln: number,
+    cb: (
+      gr: Grapheme,
+      i: number,
+    ) => true | undefined,
+  ): void {
+    let gr: Grapheme;
+    let i = 0;
+
+    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
+      for (const { segment } of sgr.segment(chunk)) {
+        gr = GRAPHEMES.get(segment);
+
+        if (cb(gr, i)) {
+          break;
+        }
+
+        i += 1;
+      }
+    }
+  }
+
   #unitPos(ln: number, col: number): [number, number] {
+    let i = 0;
     let unitCol = 0;
 
-    this.scanLine(ln, (gr, i) => {
-      if (i === col) {
-        return true;
-      }
+    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
+      for (const x of sgr.segment(chunk)) {
+        if (i === col) {
+          break;
+        }
 
-      if (i < col) {
-        unitCol += gr.char.length;
+        if (i < col) {
+          unitCol += x.segment.length;
+        }
+
+        i += 1;
       }
-    });
+    }
 
     return [ln, unitCol];
   }
