@@ -84,6 +84,7 @@ export class Window extends Widget {
 
   #indexWidth = 0;
   #textWidth = 0;
+  #wrapWidth = 0;
   #scrollCol = 0;
   #scrollLn = 0;
   #cursorX = 0;
@@ -108,7 +109,7 @@ export class Window extends Widget {
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    this.buffer.wrapWidth = this.#mode.wrap
+    this.#wrapWidth = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
@@ -117,9 +118,11 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col =
-      this.buffer.getWrapCol(this.cursor.pos.ln, this.cursor.pos.col) ??
-        this.cursor.pos.col;
+    const col = this.buffer.getWrapCol(
+      this.#wrapWidth,
+      this.cursor.pos.ln,
+      this.cursor.pos.col,
+    ) ?? this.cursor.pos.col;
 
     let width = 0;
 
@@ -158,7 +161,7 @@ export class Window extends Widget {
 
     if (this.#vScrollDelta > 0) {
       const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-        .map((ln) => this.buffer.lineWrapHeight(ln));
+        .map((ln) => this.buffer.lineWrapHeight(this.#wrapWidth, ln));
 
       let i = 0;
       let height = std.sum(xs);
@@ -176,6 +179,7 @@ export class Window extends Widget {
     }
 
     const wrapLn = this.buffer.getWrapLn(
+      this.#wrapWidth,
       this.cursor.pos.ln,
       this.cursor.pos.col,
     );
@@ -214,7 +218,7 @@ export class Window extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    this.buffer.scanLineWrap(startLn, (gr, i, _, wrapCol) => {
+    this.buffer.scanLineWrap(this.#wrapWidth, startLn, (gr, i, _, wrapCol) => {
       if (wrapCol === 0) {
         if (i > 0) {
           if ((y + 1) >= endY) {
