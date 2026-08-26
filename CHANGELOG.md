@@ -3,6 +3,7 @@
 ## 0.0.33-rc
 
 - Fix modified flag in the header
+- Optimize rendering performance
 
 ## 0.0.32
 
