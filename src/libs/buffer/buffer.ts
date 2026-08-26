@@ -392,8 +392,8 @@ function measure(text: string): { lns: number; cols: number } {
   let lns = 0;
   let cols = 0;
 
-  for (const { segment } of sgr.segment(text)) {
-    const gr = GRAPHEMES.get(segment);
+  for (const x of sgr.segment(text)) {
+    const gr = GRAPHEMES.get(x.segment);
 
     if (gr.isEol) {
       lns += 1;
