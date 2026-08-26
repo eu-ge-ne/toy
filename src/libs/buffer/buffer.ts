@@ -241,45 +241,6 @@ export class Buffer {
     return cell;
   }
 
-  *lineCells(ln: number, extra = false): Generator<BufferCell> {
-    this.#cell.i = 0;
-    this.#cell.wrapLn = 0;
-    this.#cell.wrapCol = 0;
-
-    let w = 0;
-
-    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
-      for (const { segment } of sgr.segment(chunk)) {
-        this.#cell.gr = GRAPHEMES.get(segment);
-
-        w += this.#cell.gr.width;
-        if (w > this.wrapWidth) {
-          w = this.#cell.gr.width;
-          this.#cell.wrapLn += 1;
-          this.#cell.wrapCol = 0;
-        }
-
-        yield this.#cell;
-
-        this.#cell.i += 1;
-        this.#cell.wrapCol += 1;
-      }
-    }
-
-    if (extra) {
-      this.#cell.gr = GRAPHEMES.get(" ");
-
-      w += this.#cell.gr.width;
-      if (w > this.wrapWidth) {
-        w = this.#cell.gr.width;
-        this.#cell.wrapLn += 1;
-        this.#cell.wrapCol = 0;
-      }
-
-      yield this.#cell;
-    }
-  }
-
   insert(ln: number, col: number, text: string): void {
     this.#insert(ln, col, text);
 
