@@ -34,8 +34,6 @@ export class Buffer {
 
   readonly signals = this.#emitter.listener;
 
-  wrapWidth = Number.MAX_SAFE_INTEGER;
-
   get name(): string {
     return this.#name;
   }
@@ -203,6 +201,7 @@ export class Buffer {
   }
 
   scanLineWrap(
+    wrapWidth: number,
     ln: number,
     cb: (
       gr: Grapheme,
@@ -223,7 +222,7 @@ export class Buffer {
         gr = GRAPHEMES.get(x.segment);
 
         currentWidth += gr.width;
-        if (currentWidth > this.wrapWidth) {
+        if (currentWidth > wrapWidth) {
           currentWidth = gr.width;
           wrapLn += 1;
           wrapCol = 0;
@@ -280,10 +279,10 @@ export class Buffer {
     return ww;
   }
 
-  lineWrapHeight(ln: number): number {
+  lineWrapHeight(wrapWidth: number, ln: number): number {
     let h = 0;
 
-    this.scanLineWrap(ln, (_, __, ___, col) => {
+    this.scanLineWrap(wrapWidth, ln, (_, __, ___, col) => {
       if (col === 0) {
         h += 1;
       }
@@ -292,10 +291,10 @@ export class Buffer {
     return h;
   }
 
-  getWrapLn(ln: number, col: number): number | undefined {
+  getWrapLn(wrapWidth: number, ln: number, col: number): number | undefined {
     let r: number | undefined;
 
-    this.scanLineWrap(ln, (_, i, wrapLn) => {
+    this.scanLineWrap(wrapWidth, ln, (_, i, wrapLn) => {
       if (i === col) {
         r = wrapLn;
         return true;
@@ -305,10 +304,10 @@ export class Buffer {
     return r;
   }
 
-  getWrapCol(ln: number, col: number): number | undefined {
+  getWrapCol(wrapWidth: number, ln: number, col: number): number | undefined {
     let r: number | undefined;
 
-    this.scanLineWrap(ln, (_, i, __, wrapCol) => {
+    this.scanLineWrap(wrapWidth, ln, (_, i, __, wrapCol) => {
       if (i === col) {
         r = wrapCol;
         return true;
