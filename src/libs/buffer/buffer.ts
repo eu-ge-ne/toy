@@ -129,8 +129,8 @@ export class Buffer {
     let currentWidth = 0;
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
-      for (const { segment } of sgr.segment(chunk)) {
-        gr = GRAPHEMES.get(segment);
+      for (const x of sgr.segment(chunk)) {
+        gr = GRAPHEMES.get(x.segment);
 
         currentWidth += gr.width;
         if (currentWidth > this.wrapWidth) {
