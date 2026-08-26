@@ -214,8 +214,8 @@ export class Window extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    this.buffer.scanLineWrap(startLn, (gr, i, _, col) => {
-      if (col === 0) {
+    this.buffer.scanLineWrap(startLn, (gr, i, _, wrapCol) => {
+      if (wrapCol === 0) {
         if (i > 0) {
           if ((y + 1) >= endY) {
             return true;
@@ -243,7 +243,7 @@ export class Window extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((col < this.#scrollCol) || (gr.width > availableWidth)) {
+      if ((wrapCol < this.#scrollCol) || (gr.width > availableWidth)) {
         return;
       }
 
