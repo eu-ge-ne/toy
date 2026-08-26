@@ -143,18 +143,18 @@ export class Buffer {
   }
 
   lineCursorMaxCol(ln: number): number {
-    let eolFound = false;
+    let foundEol = false;
     let col = -1;
 
     this.#scanLine(ln, (gr, i) => {
       col = i;
       if (gr.isEol) {
-        eolFound = true;
+        foundEol = true;
         return true;
       }
     });
 
-    return eolFound ? col : col + 1;
+    return foundEol ? col : col + 1;
   }
 
   lineLength(ln: number): number {
