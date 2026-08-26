@@ -20,13 +20,6 @@ export type BufferChange = {
   toCol: number;
 };
 
-type BufferCell = {
-  i: number;
-  gr: Grapheme;
-  wrapLn: number;
-  wrapCol: number;
-};
-
 const sgr = new Intl.Segmenter();
 
 export class Buffer {
@@ -202,29 +195,30 @@ export class Buffer {
     return ww;
   }
 
-  #cell: BufferCell = {
-    gr: undefined as unknown as Grapheme,
-    i: 0,
-    wrapLn: 0,
-    wrapCol: 0,
-  };
+  getWrapLn(ln: number, col: number): number | undefined {
+    let r: number | undefined;
 
-  findCell(ln: number, col: number): BufferCell | undefined {
-    let cell: BufferCell | undefined;
-
-    this.scanLineWrap(ln, (gr, i, wrapLn, wrapCol) => {
+    this.scanLineWrap(ln, (_, i, wrapLn) => {
       if (i === col) {
-        cell = this.#cell;
-
-        this.#cell.gr = gr;
-        this.#cell.i = i;
-        this.#cell.wrapLn = wrapLn;
-        this.#cell.wrapCol = wrapCol;
+        r = wrapLn;
         return true;
       }
     });
 
-    return cell;
+    return r;
+  }
+
+  getWrapCol(ln: number, col: number): number | undefined {
+    let r: number | undefined;
+
+    this.scanLineWrap(ln, (_, i, __, wrapCol) => {
+      if (i === col) {
+        r = wrapCol;
+        return true;
+      }
+    });
+
+    return r;
   }
 
   insert(ln: number, col: number, text: string): void {

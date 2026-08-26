@@ -117,8 +117,9 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col = this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col)
-      ?.wrapCol ?? this.cursor.pos.col;
+    const col =
+      this.buffer.getWrapCol(this.cursor.pos.ln, this.cursor.pos.col) ??
+        this.cursor.pos.col;
 
     let width = 0;
 
@@ -174,9 +175,12 @@ export class Window extends Widget {
       }
     }
 
-    const cell = this.buffer.findCell(this.cursor.pos.ln, this.cursor.pos.col);
-    if (cell) {
-      this.#cursorY += cell.wrapLn;
+    const wrapLn = this.buffer.getWrapLn(
+      this.cursor.pos.ln,
+      this.cursor.pos.col,
+    );
+    if (typeof wrapLn !== "undefined") {
+      this.#cursorY += wrapLn;
     }
   }
 
