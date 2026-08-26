@@ -177,7 +177,7 @@ export class Buffer {
   lineHeight(ln: number): number {
     let h = 0;
 
-    this.scanLineWrap(ln, (_gr, _i, _ln, col) => {
+    this.scanLineWrap(ln, (_, __, ___, col) => {
       if (col === 0) {
         h += 1;
       }
