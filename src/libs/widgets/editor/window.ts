@@ -7,11 +7,11 @@ import { Widget } from "../widget.ts";
 import { CharColor, charColor } from "./color.ts";
 import { Cursor } from "./cursor.ts";
 
-type ContentParams = {
+type WindowParams = {
   indexEnabled: boolean;
 };
 
-export class Content extends Widget {
+export class Window extends Widget {
   #mode = {
     index: false,
     whitespace: false,
@@ -36,7 +36,7 @@ export class Content extends Widget {
   constructor(
     private readonly buffer: Buffer,
     private readonly cursor: Cursor,
-    params: ContentParams,
+    params: WindowParams,
   ) {
     super();
 
@@ -82,6 +82,13 @@ export class Content extends Widget {
     this.#mode.index = !this.#mode.index;
   }
 
+  #indexWidth = 0;
+  #textWidth = 0;
+  #scrollCol = 0;
+  #scrollLn = 0;
+  #cursorX = 0;
+  #cursorY = 0;
+
   render(): void {
     this.#updateWidth();
 
@@ -93,9 +100,6 @@ export class Content extends Widget {
     vt.cursor.set(vt.buf, this.#cursorY, this.#cursorX);
   }
 
-  #indexWidth = 0;
-  #textWidth = 0;
-
   #updateWidth(): void {
     this.#indexWidth = 0;
     if (this.#mode.index && (this.buffer.lineCount > 0)) {
@@ -104,7 +108,7 @@ export class Content extends Widget {
 
     this.#textWidth = this.width - this.#indexWidth;
 
-    this.buffer.width = this.#mode.wrap
+    this.buffer.wrapWidth = this.#mode.wrap
       ? this.#textWidth
       : Number.MAX_SAFE_INTEGER;
 
@@ -112,30 +116,25 @@ export class Content extends Widget {
     vt.wcharParams.x = this.x + this.#indexWidth;
   }
 
-  #scrollCol = 0;
-  #cursorX = 0;
-
   #scrollX(): void {
-    const cell =
-      this.buffer.lineCells(this.cursor.pos.ln, true).drop(this.cursor.pos.col)
-        .next().value;
-    const col = cell?.col ?? 0;
-    const deltaCol = col - this.#scrollCol;
+    const col =
+      this.buffer.getWrapCol(this.cursor.pos.ln, this.cursor.pos.col) ??
+        this.cursor.pos.col;
 
     let width = 0;
 
-    if (deltaCol <= 0) {
+    if (col <= this.#scrollCol) {
       this.#scrollCol = col;
     } else {
-      const xs = this.buffer.lineCells(this.cursor.pos.ln, true)
-        .drop(this.cursor.pos.col - deltaCol)
-        .take(deltaCol)
-        .map((x) => x.gr.width)
-        .toArray();
+      const ww = this.buffer.lineGraphemesWidths(
+        this.cursor.pos.ln,
+        this.#scrollCol,
+        col,
+      );
 
-      width = std.sum(xs);
+      width = std.sum(ww);
 
-      for (const w of xs) {
+      for (const w of ww) {
         if (width < this.#textWidth) {
           break;
         }
@@ -148,9 +147,6 @@ export class Content extends Widget {
     this.#cursorX = this.x + this.#indexWidth + width;
   }
 
-  #scrollLn = 0;
-  #cursorY = 0;
-
   #scrollY(): void {
     if (this.#vScrollDelta <= 0) {
       this.#scrollLn = this.cursor.pos.ln;
@@ -162,7 +158,7 @@ export class Content extends Widget {
 
     if (this.#vScrollDelta > 0) {
       const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-        .map((ln) => this.buffer.lineHeight(ln));
+        .map((ln) => this.buffer.lineWrapHeight(ln));
 
       let i = 0;
       let height = std.sum(xs);
@@ -179,12 +175,12 @@ export class Content extends Widget {
       }
     }
 
-    const cell = this.buffer.lineCells(this.cursor.pos.ln, true).drop(
+    const wrapLn = this.buffer.getWrapLn(
+      this.cursor.pos.ln,
       this.cursor.pos.col,
-    )
-      .next().value;
-    if (cell) {
-      this.#cursorY += cell.ln;
+    );
+    if (typeof wrapLn !== "undefined") {
+      this.#cursorY += wrapLn;
     }
   }
 
@@ -204,8 +200,8 @@ export class Content extends Widget {
     }
   }
 
-  #renderLn(startY: number, ln: number): number {
-    if (ln >= this.buffer.lineCount) {
+  #renderLn(startY: number, startLn: number): number {
+    if (startLn >= this.buffer.lineCount) {
       vt.cursor.set(vt.buf, startY, this.x);
       vt.buf.write(this.#color.void);
       vt.clearLine(vt.buf, this.width);
@@ -218,13 +214,11 @@ export class Content extends Widget {
     let availableWidth = 0;
     let currentColor = CharColor.Undefined;
 
-    const cells = this.buffer.lineCells(ln);
-
-    for (const cell of cells) {
-      if (cell.col === 0) {
-        if (cell.i > 0) {
+    this.buffer.scanLineWrap(startLn, (gr, i, _, wrapCol) => {
+      if (wrapCol === 0) {
+        if (i > 0) {
           if ((y + 1) >= endY) {
-            break;
+            return true;
           } else {
             y += 1;
           }
@@ -233,12 +227,12 @@ export class Content extends Widget {
         vt.cursor.set(vt.buf, y, this.x);
 
         if (this.#indexWidth > 0) {
-          if (cell.i === 0) {
+          if (i === 0) {
             vt.buf.write(this.#color.index);
             vt.writeText(
               vt.buf,
               [this.#indexWidth],
-              `${ln + 1} `.padStart(this.#indexWidth),
+              `${startLn + 1} `.padStart(this.#indexWidth),
             );
           } else {
             vt.buf.write(this.#color.bg);
@@ -249,14 +243,14 @@ export class Content extends Widget {
         availableWidth = this.width - this.#indexWidth;
       }
 
-      if ((cell.col < this.#scrollCol) || (cell.gr.width > availableWidth)) {
-        continue;
+      if ((wrapCol < this.#scrollCol) || (gr.width > availableWidth)) {
+        return;
       }
 
       {
         const color = charColor(
-          this.cursor.isSelected(ln, cell.i),
-          cell.gr.isVisible,
+          this.cursor.isSelected(startLn, i),
+          gr.isVisible,
           this.#mode.whitespace,
         );
 
@@ -266,10 +260,10 @@ export class Content extends Widget {
         }
       }
 
-      vt.buf.write(cell.gr.bytes);
+      vt.buf.write(gr.bytes);
 
-      availableWidth -= cell.gr.width;
-    }
+      availableWidth -= gr.width;
+    });
 
     return y - startY + 1;
   }

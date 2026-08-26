@@ -6,29 +6,48 @@ import { Grapheme } from "./grapheme.ts";
 const enc = new TextEncoder();
 
 class Pool {
-  #pool = new Map<string, Grapheme>();
+  #bmp = new Array<Grapheme | undefined>(65536);
+  #other = new Map<string, Grapheme>();
 
   constructor(pool: Record<string, [string, number]>) {
-    for (const [seg, [b, w]] of Object.entries(pool)) {
-      const gr = new Grapheme(seg, enc.encode(b), w);
+    for (const [char, [bytes, width]] of Object.entries(pool)) {
+      const gr = new Grapheme(char, enc.encode(bytes), width);
 
-      this.#pool.set(seg, gr);
+      if (char.length === 1) {
+        this.#bmp[char.charCodeAt(0)] = gr;
+      } else {
+        this.#other.set(char, gr);
+      }
     }
   }
 
   get(char: string): Grapheme {
-    let gr = this.#pool.get(char);
+    if (char.length === 1) {
+      const code = char.charCodeAt(0);
+      let gr = this.#bmp[code];
 
-    if (!gr) {
-      const bytes = enc.encode(char);
-      const width = vt.wchar(bytes);
+      if (!gr) {
+        gr = this.#grapheme(char);
+        this.#bmp[code] = gr;
+      }
 
-      gr = new Grapheme(char, bytes, width);
+      return gr;
+    } else {
+      let gr = this.#other.get(char);
 
-      this.#pool.set(char, gr);
+      if (!gr) {
+        gr = this.#grapheme(char);
+        this.#other.set(char, gr);
+      }
+
+      return gr;
     }
+  }
 
-    return gr;
+  #grapheme(char: string): Grapheme {
+    const bytes = enc.encode(char);
+    const width = vt.wchar(bytes);
+    return new Grapheme(char, bytes, width);
   }
 }
 

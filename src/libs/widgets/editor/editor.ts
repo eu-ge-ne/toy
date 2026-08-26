@@ -6,7 +6,6 @@ import * as vt from "@libs/vt";
 
 import { Bg } from "../bg/bg.ts";
 import { Widget } from "../widget.ts";
-import { Content } from "./content.ts";
 import { Cursor, Pos } from "./cursor.ts";
 import {
   cursorHandlers,
@@ -14,30 +13,31 @@ import {
   InputHandler,
   multiLineHandlers,
 } from "./handlers/index.ts";
+import { Window } from "./window.ts";
 
-type Params = {
+type EditorParams = {
   multiLine: boolean;
   indexEnabled: boolean;
 };
 
-export class Editor extends Widget<Params> {
+export class Editor extends Widget<EditorParams> {
   private readonly handlers: InputHandler[];
   private readonly history = new history.History<Pos>();
   private clipboard = "";
 
   protected override children: {
     bg: Bg;
-    content: Content;
+    window: Window;
   };
 
-  constructor(readonly buffer: Buffer, params: Params) {
+  constructor(readonly buffer: Buffer, params: EditorParams) {
     super(params);
 
     this.cursor = new Cursor(buffer);
 
     this.children = {
       bg: new Bg(),
-      content: new Content(buffer, this.cursor, {
+      window: new Window(buffer, this.cursor, {
         indexEnabled: params.indexEnabled,
       }),
     };
@@ -62,39 +62,33 @@ export class Editor extends Widget<Params> {
   readonly cursor: Cursor;
 
   protected override resizeChildren(): void {
-    const { bg, content } = this.children;
-
-    bg.resize(this.width, this.height, this.y, this.x);
-    content.resize(this.width, this.height, this.y, this.x);
+    this.children.bg.resize(this.width, this.height, this.y, this.x);
+    this.children.window.resize(this.width, this.height, this.y, this.x);
   }
 
   render(): void {
-    const { bg, content } = this.children;
-
     vt.buf.write(vt.cursor.save);
 
-    bg.render();
-    content.render();
+    this.children.bg.render();
+    this.children.window.render();
   }
 
   setTheme(theme: themes.Theme): void {
-    const { bg, content } = this.children;
-
-    bg.color = new Uint8Array(theme.bgMain);
-    content.setTheme(theme);
+    this.children.bg.color = new Uint8Array(theme.bgMain);
+    this.children.window.setTheme(theme);
   }
 
   toggleWrap(): void {
-    this.children.content.toggleWrap();
+    this.children.window.toggleWrap();
     this.cursor.home(false);
   }
 
   toggleWhitespace(): void {
-    this.children.content.toggleWhitespace();
+    this.children.window.toggleWhitespace();
   }
 
   toggleIndex(): void {
-    this.children.content.toggleIndex();
+    this.children.window.toggleIndex();
   }
 
   handleInput(key: kitty.Key): void {
