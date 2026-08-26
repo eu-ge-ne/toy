@@ -176,7 +176,7 @@ export class Buffer {
     let eolFound = false;
     let col = -1;
 
-    this.scanLineWrap(ln, (gr, i) => {
+    this.scanLine(ln, (gr, i) => {
       col = i;
       if (gr.isEol) {
         eolFound = true;
@@ -190,7 +190,7 @@ export class Buffer {
   lineLength(ln: number): number {
     let length = 0;
 
-    this.scanLineWrap(ln, (_, i) => {
+    this.scanLine(ln, (_, i) => {
       length = i + 1;
     });
 
@@ -212,7 +212,7 @@ export class Buffer {
   lineWidth(ln: number, startCol: number, endCol: number): number[] {
     const ww: number[] = [];
 
-    this.scanLineWrap(ln, (gr, i) => {
+    this.scanLine(ln, (gr, i) => {
       if (i < startCol) {
         return;
       }
