@@ -264,19 +264,7 @@ export class Buffer {
     return length;
   }
 
-  lineHeight(ln: number): number {
-    let h = 0;
-
-    this.scanLineWrap(ln, (_, __, ___, col) => {
-      if (col === 0) {
-        h += 1;
-      }
-    });
-
-    return h;
-  }
-
-  lineWidth(ln: number, startCol: number, endCol: number): number[] {
+  lineGraphemesWidths(ln: number, startCol: number, endCol: number): number[] {
     const ww: number[] = [];
 
     this.#scanLine(ln, (gr, i) => {
@@ -290,6 +278,18 @@ export class Buffer {
     });
 
     return ww;
+  }
+
+  lineWrapHeight(ln: number): number {
+    let h = 0;
+
+    this.scanLineWrap(ln, (_, __, ___, col) => {
+      if (col === 0) {
+        h += 1;
+      }
+    });
+
+    return h;
   }
 
   getWrapLn(ln: number, col: number): number | undefined {

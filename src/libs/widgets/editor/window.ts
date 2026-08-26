@@ -126,7 +126,7 @@ export class Window extends Widget {
     if (col <= this.#scrollCol) {
       this.#scrollCol = col;
     } else {
-      const ww = this.buffer.lineWidth(
+      const ww = this.buffer.lineGraphemesWidths(
         this.cursor.pos.ln,
         this.#scrollCol,
         col,
@@ -158,7 +158,7 @@ export class Window extends Widget {
 
     if (this.#vScrollDelta > 0) {
       const xs = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-        .map((ln) => this.buffer.lineHeight(ln));
+        .map((ln) => this.buffer.lineWrapHeight(ln));
 
       let i = 0;
       let height = std.sum(xs);
