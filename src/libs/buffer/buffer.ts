@@ -214,16 +214,15 @@ export class Buffer {
     let i = 0;
     let wrapLn = 0;
     let wrapCol = 0;
-
-    let currentWidth = 0;
+    let w = 0;
 
     for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
       for (const x of sgr.segment(chunk)) {
         gr = GRAPHEMES.get(x.segment);
 
-        currentWidth += gr.width;
-        if (currentWidth > wrapWidth) {
-          currentWidth = gr.width;
+        w += gr.width;
+        if (w > wrapWidth) {
+          w = gr.width;
           wrapLn += 1;
           wrapCol = 0;
         }
