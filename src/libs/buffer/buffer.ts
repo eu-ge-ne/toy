@@ -288,7 +288,7 @@ export class Buffer {
     return { ln, col };
   }
 
-  lineGraphemesWidths(ln: number, startCol: number, endCol: number): number[] {
+  lineWidths(ln: number, startCol: number, endCol: number): number[] {
     const ww: number[] = [];
 
     this.#scanLine(ln, (gr, i) => {
@@ -304,7 +304,7 @@ export class Buffer {
     return ww;
   }
 
-  lineWrapHeight(wrapWidth: number, ln: number): number {
+  lineHeight(wrapWidth: number, ln: number): number {
     let h = 0;
 
     this.scanLineWrap(wrapWidth, ln, (_, __, ___, col) => {
