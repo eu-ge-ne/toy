@@ -118,11 +118,11 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col = this.buffer.getWrapCol(
+    const col = this.buffer.getWrapCell(
       this.#wrapWidth,
       this.cursor.pos.ln,
       this.cursor.pos.col,
-    ) ?? this.cursor.pos.col;
+    )?.col ?? this.cursor.pos.col;
 
     let width = 0;
 
@@ -178,11 +178,11 @@ export class Window extends Widget {
       }
     }
 
-    const wrapLn = this.buffer.getWrapLn(
+    const wrapLn = this.buffer.getWrapCell(
       this.#wrapWidth,
       this.cursor.pos.ln,
       this.cursor.pos.col,
-    );
+    )?.ln;
     if (typeof wrapLn !== "undefined") {
       this.#cursorY += wrapLn;
     }

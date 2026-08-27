@@ -213,39 +213,56 @@ export class Buffer {
 
   scanLineWrap(
     wrapWidth: number,
-    ln: number,
+    ln0: number,
     cb: (
       gr: Grapheme,
       i: number,
-      wrapLn: number,
-      wrapCol: number,
+      ln: number,
+      col: number,
     ) => true | undefined,
   ): void {
     let gr: Grapheme;
     let i = 0;
-    let wrapLn = 0;
-    let wrapCol = 0;
+    let ln = 0;
+    let col = 0;
     let w = 0;
 
-    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
+    for (const chunk of this.#str.read2(ln0, 0, ln0 + 1, 0)) {
       for (const x of sgr.segment(chunk)) {
         gr = GRAPHEMES.get(x.segment);
 
         w += gr.width;
         if (w > wrapWidth) {
           w = gr.width;
-          wrapLn += 1;
-          wrapCol = 0;
+          ln += 1;
+          col = 0;
         }
 
-        if (cb(gr, i, wrapLn, wrapCol)) {
+        if (cb(gr, i, ln, col)) {
           break;
         }
 
         i += 1;
-        wrapCol += 1;
+        col += 1;
       }
     }
+  }
+
+  getWrapCell(
+    wrapWidth: number,
+    ln0: number,
+    col0: number,
+  ): { ln: number; col: number } | undefined {
+    let r: { ln: number; col: number } | undefined;
+
+    this.scanLineWrap(wrapWidth, ln0, (_, i, ln, col) => {
+      if (i === col0) {
+        r = { ln, col };
+        return true;
+      }
+    });
+
+    return r;
   }
 
   clampCursor(ln: number, col: number): { ln: number; col: number } {
@@ -297,32 +314,6 @@ export class Buffer {
     });
 
     return h;
-  }
-
-  getWrapLn(wrapWidth: number, ln: number, col: number): number | undefined {
-    let r: number | undefined;
-
-    this.scanLineWrap(wrapWidth, ln, (_, i, wrapLn) => {
-      if (i === col) {
-        r = wrapLn;
-        return true;
-      }
-    });
-
-    return r;
-  }
-
-  getWrapCol(wrapWidth: number, ln: number, col: number): number | undefined {
-    let r: number | undefined;
-
-    this.scanLineWrap(wrapWidth, ln, (_, i, __, wrapCol) => {
-      if (i === col) {
-        r = wrapCol;
-        return true;
-      }
-    });
-
-    return r;
   }
 
   #pushHistory(): void {
