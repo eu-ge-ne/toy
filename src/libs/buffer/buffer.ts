@@ -75,6 +75,16 @@ export class Buffer {
     this.resetHistory();
   }
 
+  lineLength(ln: number): number {
+    let length = 0;
+
+    this.#scanLine(ln, (_, i) => {
+      length = i + 1;
+    });
+
+    return length;
+  }
+
   async load(text: AsyncIterable<string>): Promise<void> {
     await this.#str.load(text);
 
@@ -259,16 +269,6 @@ export class Buffer {
     col = std.clamp(col, 0, maxCol);
 
     return { ln, col };
-  }
-
-  lineLength(ln: number): number {
-    let length = 0;
-
-    this.#scanLine(ln, (_, i) => {
-      length = i + 1;
-    });
-
-    return length;
   }
 
   lineGraphemesWidths(ln: number, startCol: number, endCol: number): number[] {
