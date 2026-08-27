@@ -1,6 +1,7 @@
 import * as events from "@libs/events";
 import { Grapheme, GRAPHEMES } from "@libs/grapheme";
 import * as history from "@libs/history";
+import * as std from "@libs/std";
 import { Node, String2 } from "@libs/string2";
 
 export type BufferSignals = {
@@ -237,19 +238,27 @@ export class Buffer {
     }
   }
 
-  lineCursorMaxCol(ln: number): number {
+  clampCursor(ln: number, col: number): { ln: number; col: number } {
+    ln = std.clamp(ln, 0, Math.max(this.lineCount - 1, 0));
+
     let foundEol = false;
-    let col = -1;
+    let maxCol = -1;
 
     this.#scanLine(ln, (gr, i) => {
-      col = i;
+      maxCol = i;
       if (gr.isEol) {
         foundEol = true;
         return true;
       }
     });
 
-    return foundEol ? col : col + 1;
+    if (!foundEol) {
+      maxCol += 1;
+    }
+
+    col = std.clamp(col, 0, maxCol);
+
+    return { ln, col };
   }
 
   lineLength(ln: number): number {
