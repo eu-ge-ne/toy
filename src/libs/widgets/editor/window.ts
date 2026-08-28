@@ -150,49 +150,27 @@ export class Window extends Widget {
     this.#cursorX = this.x + this.#indexWidth + width;
   }
 
-  get #scrollYDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
-  }
-
   #scrollY(): void {
     const { ln: curLn, col: curCol } = this.cursor.pos;
 
-    if (this.#scrollYDelta <= 0) {
+    if (curLn < this.#scrollLn) {
       this.#scrollLn = curLn;
-    } else if (this.#scrollYDelta > this.height) {
+    } else if (curLn - this.#scrollLn > this.height) {
       this.#scrollLn = curLn - this.height;
     }
 
-    this.#cursorY = this.y;
+    let dY = 0;
+    for (let ln = this.#scrollLn; ln < curLn; ln += 1) {
+      dY += this.buffer.lineHeight(this.#wrapWidth, ln);
+    }
+    dY += this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln ?? 0;
 
-    if (this.#scrollYDelta > 0) {
-      const hh: number[] = Array(this.#scrollYDelta);
-      let height = 0;
-
-      for (let i = 0; i < this.#scrollYDelta; i += 1) {
-        const h = this.buffer.lineHeight(this.#wrapWidth, this.#scrollLn + i);
-        hh[i] = h;
-        height += h;
-      }
-
-      let i = 0;
-
-      while (height > this.height) {
-        height -= hh[i]!;
-        this.#scrollLn += 1;
-        i += 1;
-      }
-
-      while (i < hh.length - 1) {
-        this.#cursorY += hh[i]!;
-        i += 1;
-      }
+    while (dY >= this.height && this.#scrollLn < curLn) {
+      dY -= this.buffer.lineHeight(this.#wrapWidth, this.#scrollLn);
+      this.#scrollLn += 1;
     }
 
-    const wrapLn = this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln;
-    if (typeof wrapLn !== "undefined") {
-      this.#cursorY += wrapLn;
-    }
+    this.#cursorY = this.y + dY;
   }
 
   #renderLines(): void {
