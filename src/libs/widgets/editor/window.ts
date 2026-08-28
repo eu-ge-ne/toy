@@ -118,22 +118,22 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col = this.buffer.getLineWrapCell(
-      this.#wrapWidth,
-      this.cursor.pos.ln,
-      this.cursor.pos.col,
-    )?.col ?? this.cursor.pos.col;
+    const { ln: curLn, col: curCol } = this.cursor.pos;
+
+    const col =
+      this.buffer.getLineWrapCell(this.#wrapWidth, curLn, curCol)?.col ??
+        curCol;
 
     let width = 0;
 
     if (col <= this.#scrollCol) {
       this.#scrollCol = col;
     } else {
-      const ww = this.buffer.lineWidths(
-        this.cursor.pos.ln,
-        this.#scrollCol,
-        col,
-      );
+      if (col - this.#scrollCol > this.#textWidth) {
+        this.#scrollCol = col - this.#textWidth;
+      }
+
+      const ww = this.buffer.lineWidths(curLn, this.#scrollCol, col);
 
       width = std.sum(ww);
 
