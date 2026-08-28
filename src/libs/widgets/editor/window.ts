@@ -124,27 +124,22 @@ export class Window extends Widget {
       this.buffer.getLineWrapCell(this.#wrapWidth, curLn, curCol)?.col ??
         curCol;
 
-    let width = 0;
-
     if (col <= this.#scrollCol) {
       this.#scrollCol = col;
-    } else {
-      if (col - this.#scrollCol > this.#textWidth) {
-        this.#scrollCol = col - this.#textWidth;
+    } else if (col - this.#scrollCol > this.#textWidth) {
+      this.#scrollCol = col - this.#textWidth;
+    }
+
+    const ww = this.buffer.lineWidths(curLn, this.#scrollCol, col);
+    let width = std.sum(ww);
+
+    for (const w of ww) {
+      if (width < this.#textWidth) {
+        break;
       }
 
-      const ww = this.buffer.lineWidths(curLn, this.#scrollCol, col);
-
-      width = std.sum(ww);
-
-      for (const w of ww) {
-        if (width < this.#textWidth) {
-          break;
-        }
-
-        this.#scrollCol += 1;
-        width -= w;
-      }
+      this.#scrollCol += 1;
+      width -= w;
     }
 
     this.#cursorX = this.x + this.#indexWidth + width;

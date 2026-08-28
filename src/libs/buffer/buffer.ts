@@ -277,6 +277,22 @@ export class Buffer {
     return h;
   }
 
+  lineWidths(ln: number, startCol: number, endCol: number): number[] {
+    const ww: number[] = [];
+
+    this.#scanLine(ln, (gr, i) => {
+      if (i < startCol) {
+        return;
+      }
+      if (i >= endCol) {
+        return true;
+      }
+      ww.push(gr.width);
+    });
+
+    return ww;
+  }
+
   clampCursor(ln: number, col: number): { ln: number; col: number } {
     ln = std.clamp(ln, 0, Math.max(this.lineCount - 1, 0));
 
@@ -298,22 +314,6 @@ export class Buffer {
     col = std.clamp(col, 0, maxCol);
 
     return { ln, col };
-  }
-
-  lineWidths(ln: number, startCol: number, endCol: number): number[] {
-    const ww: number[] = [];
-
-    this.#scanLine(ln, (gr, i) => {
-      if (i < startCol) {
-        return;
-      }
-      if (i >= endCol) {
-        return true;
-      }
-      ww.push(gr.width);
-    });
-
-    return ww;
   }
 
   #pushHistory(): void {
