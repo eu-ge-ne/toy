@@ -248,7 +248,7 @@ export class Buffer {
     }
   }
 
-  getWrapCell(
+  getLineWrapCell(
     wrapWidth: number,
     ln0: number,
     col0: number,
@@ -263,6 +263,18 @@ export class Buffer {
     });
 
     return r;
+  }
+
+  getLineWrapHeight(wrapWidth: number, ln0: number): number {
+    let h = 0;
+
+    this.scanLineWrap(wrapWidth, ln0, (_, __, ln, col) => {
+      if (col === 0) {
+        h = ln + 1;
+      }
+    });
+
+    return h;
   }
 
   clampCursor(ln: number, col: number): { ln: number; col: number } {
@@ -302,18 +314,6 @@ export class Buffer {
     });
 
     return ww;
-  }
-
-  lineHeight(wrapWidth: number, ln: number): number {
-    let h = 0;
-
-    this.scanLineWrap(wrapWidth, ln, (_, __, ___, col) => {
-      if (col === 0) {
-        h += 1;
-      }
-    });
-
-    return h;
   }
 
   #pushHistory(): void {

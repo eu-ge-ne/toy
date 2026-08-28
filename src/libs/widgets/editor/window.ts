@@ -118,7 +118,7 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col = this.buffer.getWrapCell(
+    const col = this.buffer.getLineWrapCell(
       this.#wrapWidth,
       this.cursor.pos.ln,
       this.cursor.pos.col,
@@ -160,10 +160,11 @@ export class Window extends Widget {
     }
 
     let newScrollLn = curLn;
-    let dY = this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln ?? 0;
+    let dY = this.buffer.getLineWrapCell(this.#wrapWidth, curLn, curCol)?.ln ??
+      0;
 
     for (let ln = curLn - 1; ln >= this.#scrollLn; ln -= 1) {
-      const h = this.buffer.lineHeight(this.#wrapWidth, ln);
+      const h = this.buffer.getLineWrapHeight(this.#wrapWidth, ln);
 
       if (dY + h >= this.height) {
         break;
