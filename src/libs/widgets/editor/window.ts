@@ -159,17 +159,21 @@ export class Window extends Widget {
       this.#scrollLn = curLn - this.height;
     }
 
-    let dY = 0;
-    for (let ln = this.#scrollLn; ln < curLn; ln += 1) {
-      dY += this.buffer.lineHeight(this.#wrapWidth, ln);
-    }
-    dY += this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln ?? 0;
+    let newScrollLn = curLn;
+    let dY = this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln ?? 0;
 
-    while (dY >= this.height && this.#scrollLn < curLn) {
-      dY -= this.buffer.lineHeight(this.#wrapWidth, this.#scrollLn);
-      this.#scrollLn += 1;
+    for (let ln = curLn - 1; ln >= this.#scrollLn; ln -= 1) {
+      const h = this.buffer.lineHeight(this.#wrapWidth, ln);
+
+      if (dY + h >= this.height) {
+        break;
+      }
+
+      dY += h;
+      newScrollLn = ln;
     }
 
+    this.#scrollLn = newScrollLn;
     this.#cursorY = this.y + dY;
   }
 
