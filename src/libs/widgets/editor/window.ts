@@ -166,11 +166,16 @@ export class Window extends Widget {
     this.#cursorY = this.y;
 
     if (this.#scrollYDelta > 0) {
-      const hh = std.range(this.#scrollLn, curLn + 1)
-        .map((ln) => this.buffer.lineHeight(this.#wrapWidth, ln));
+      const hh: number[] = Array(this.#scrollYDelta);
+      let height = 0;
+
+      for (let i = 0; i < this.#scrollYDelta; i += 1) {
+        const h = this.buffer.lineHeight(this.#wrapWidth, this.#scrollLn + i);
+        hh[i] = h;
+        height += h;
+      }
 
       let i = 0;
-      let height = std.sum(hh);
 
       while (height > this.height) {
         height -= hh[i]!;
