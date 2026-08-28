@@ -150,16 +150,20 @@ export class Window extends Widget {
     this.#cursorX = this.x + this.#indexWidth + width;
   }
 
+  get #scrollYDelta(): number {
+    return this.cursor.pos.ln - this.#scrollLn;
+  }
+
   #scrollY(): void {
-    if (this.#vScrollDelta <= 0) {
+    if (this.#scrollYDelta <= 0) {
       this.#scrollLn = this.cursor.pos.ln;
-    } else if (this.#vScrollDelta > this.height) {
+    } else if (this.#scrollYDelta > this.height) {
       this.#scrollLn = this.cursor.pos.ln - this.height;
     }
 
     this.#cursorY = this.y;
 
-    if (this.#vScrollDelta > 0) {
+    if (this.#scrollYDelta > 0) {
       const hh = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
         .map((ln) => this.buffer.lineHeight(this.#wrapWidth, ln));
 
@@ -186,10 +190,6 @@ export class Window extends Widget {
     if (typeof wrapLn !== "undefined") {
       this.#cursorY += wrapLn;
     }
-  }
-
-  get #vScrollDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
   }
 
   #renderLines(): void {
