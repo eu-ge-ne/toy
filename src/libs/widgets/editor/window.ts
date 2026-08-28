@@ -155,16 +155,18 @@ export class Window extends Widget {
   }
 
   #scrollY(): void {
+    const { ln: curLn, col: curCol } = this.cursor.pos;
+
     if (this.#scrollYDelta <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
+      this.#scrollLn = curLn;
     } else if (this.#scrollYDelta > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
+      this.#scrollLn = curLn - this.height;
     }
 
     this.#cursorY = this.y;
 
     if (this.#scrollYDelta > 0) {
-      const hh = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
+      const hh = std.range(this.#scrollLn, curLn + 1)
         .map((ln) => this.buffer.lineHeight(this.#wrapWidth, ln));
 
       let i = 0;
@@ -182,11 +184,7 @@ export class Window extends Widget {
       }
     }
 
-    const wrapLn = this.buffer.getWrapCell(
-      this.#wrapWidth,
-      this.cursor.pos.ln,
-      this.cursor.pos.col,
-    )?.ln;
+    const wrapLn = this.buffer.getWrapCell(this.#wrapWidth, curLn, curCol)?.ln;
     if (typeof wrapLn !== "undefined") {
       this.#cursorY += wrapLn;
     }
