@@ -1,6 +1,5 @@
 import { Buffer } from "@libs/buffer";
 import * as events from "@libs/events";
-import * as std from "@libs/std";
 
 export class Pos {
   constructor(readonly ln: number, readonly col: number) {
@@ -28,12 +27,10 @@ export class Cursor {
   from = new Pos(0, 0);
   to = new Pos(0, 0);
 
-  set(ln: number, col: number, select: boolean): boolean {
+  set(newLn: number, newCol: number, select: boolean): boolean {
     const old = this.pos;
 
-    ln = std.clamp(ln, 0, Math.max(this.buffer.lineCount - 1, 0));
-    col = std.clamp(col, 0, this.buffer.lineCursorMaxCol(ln));
-
+    const { ln, col } = this.buffer.clampCursor(newLn, newCol);
     this.pos = new Pos(ln, col);
 
     if (!select) {

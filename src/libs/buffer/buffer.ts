@@ -1,6 +1,7 @@
 import * as events from "@libs/events";
 import { Grapheme, GRAPHEMES } from "@libs/grapheme";
 import * as history from "@libs/history";
+import * as std from "@libs/std";
 import { Node, String2 } from "@libs/string2";
 
 export type BufferSignals = {
@@ -72,6 +73,16 @@ export class Buffer {
     });
 
     this.resetHistory();
+  }
+
+  lineLength(ln: number): number {
+    let length = 0;
+
+    this.#scanLine(ln, (_, i) => {
+      length = i + 1;
+    });
+
+    return length;
   }
 
   async load(text: AsyncIterable<string>): Promise<void> {
@@ -202,68 +213,82 @@ export class Buffer {
 
   scanLineWrap(
     wrapWidth: number,
-    ln: number,
+    ln0: number,
     cb: (
       gr: Grapheme,
       i: number,
-      wrapLn: number,
-      wrapCol: number,
+      ln: number,
+      col: number,
     ) => true | undefined,
   ): void {
     let gr: Grapheme;
     let i = 0;
-    let wrapLn = 0;
-    let wrapCol = 0;
+    let ln = 0;
+    let col = 0;
+    let w = 0;
 
-    let currentWidth = 0;
-
-    for (const chunk of this.#str.read2(ln, 0, ln + 1, 0)) {
+    for (const chunk of this.#str.read2(ln0, 0, ln0 + 1, 0)) {
       for (const x of sgr.segment(chunk)) {
         gr = GRAPHEMES.get(x.segment);
 
-        currentWidth += gr.width;
-        if (currentWidth > wrapWidth) {
-          currentWidth = gr.width;
-          wrapLn += 1;
-          wrapCol = 0;
+        w += gr.width;
+        if (w > wrapWidth) {
+          w = gr.width;
+          ln += 1;
+          col = 0;
         }
 
-        if (cb(gr, i, wrapLn, wrapCol)) {
+        if (cb(gr, i, ln, col)) {
           break;
         }
 
         i += 1;
-        wrapCol += 1;
+        col += 1;
       }
     }
   }
 
-  lineCursorMaxCol(ln: number): number {
+  getWrapCell(
+    wrapWidth: number,
+    ln0: number,
+    col0: number,
+  ): { ln: number; col: number } | undefined {
+    let r: { ln: number; col: number } | undefined;
+
+    this.scanLineWrap(wrapWidth, ln0, (_, i, ln, col) => {
+      if (i === col0) {
+        r = { ln, col };
+        return true;
+      }
+    });
+
+    return r;
+  }
+
+  clampCursor(ln: number, col: number): { ln: number; col: number } {
+    ln = std.clamp(ln, 0, Math.max(this.lineCount - 1, 0));
+
     let foundEol = false;
-    let col = -1;
+    let maxCol = -1;
 
     this.#scanLine(ln, (gr, i) => {
-      col = i;
+      maxCol = i;
       if (gr.isEol) {
         foundEol = true;
         return true;
       }
     });
 
-    return foundEol ? col : col + 1;
+    if (!foundEol) {
+      maxCol += 1;
+    }
+
+    col = std.clamp(col, 0, maxCol);
+
+    return { ln, col };
   }
 
-  lineLength(ln: number): number {
-    let length = 0;
-
-    this.#scanLine(ln, (_, i) => {
-      length = i + 1;
-    });
-
-    return length;
-  }
-
-  lineGraphemesWidths(ln: number, startCol: number, endCol: number): number[] {
+  lineWidths(ln: number, startCol: number, endCol: number): number[] {
     const ww: number[] = [];
 
     this.#scanLine(ln, (gr, i) => {
@@ -279,7 +304,7 @@ export class Buffer {
     return ww;
   }
 
-  lineWrapHeight(wrapWidth: number, ln: number): number {
+  lineHeight(wrapWidth: number, ln: number): number {
     let h = 0;
 
     this.scanLineWrap(wrapWidth, ln, (_, __, ___, col) => {
@@ -289,32 +314,6 @@ export class Buffer {
     });
 
     return h;
-  }
-
-  getWrapLn(wrapWidth: number, ln: number, col: number): number | undefined {
-    let r: number | undefined;
-
-    this.scanLineWrap(wrapWidth, ln, (_, i, wrapLn) => {
-      if (i === col) {
-        r = wrapLn;
-        return true;
-      }
-    });
-
-    return r;
-  }
-
-  getWrapCol(wrapWidth: number, ln: number, col: number): number | undefined {
-    let r: number | undefined;
-
-    this.scanLineWrap(wrapWidth, ln, (_, i, __, wrapCol) => {
-      if (i === col) {
-        r = wrapCol;
-        return true;
-      }
-    });
-
-    return r;
   }
 
   #pushHistory(): void {
