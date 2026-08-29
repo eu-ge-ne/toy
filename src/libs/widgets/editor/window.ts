@@ -130,7 +130,10 @@ export class Window extends Widget {
       this.#scrollCol = col - this.#textWidth;
     }
 
+    // TODO: optimize
+
     const ww = this.buffer.lineWidths(curLn, this.#scrollCol, col);
+
     let width = std.sum(ww);
 
     for (const w of ww) {
