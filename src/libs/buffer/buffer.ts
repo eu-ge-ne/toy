@@ -248,7 +248,7 @@ export class Buffer {
     }
   }
 
-  getWrapCell(
+  getLineWrapCell(
     wrapWidth: number,
     ln0: number,
     col0: number,
@@ -263,6 +263,34 @@ export class Buffer {
     });
 
     return r;
+  }
+
+  getLineWrapHeight(wrapWidth: number, ln0: number): number {
+    let h = 0;
+
+    this.scanLineWrap(wrapWidth, ln0, (_, __, ln, col) => {
+      if (col === 0) {
+        h = ln + 1;
+      }
+    });
+
+    return h;
+  }
+
+  lineWidths(ln: number, startCol: number, endCol: number): number[] {
+    const ww: number[] = [];
+
+    this.#scanLine(ln, (gr, i) => {
+      if (i < startCol) {
+        return;
+      }
+      if (i >= endCol) {
+        return true;
+      }
+      ww.push(gr.width);
+    });
+
+    return ww;
   }
 
   clampCursor(ln: number, col: number): { ln: number; col: number } {
@@ -286,34 +314,6 @@ export class Buffer {
     col = std.clamp(col, 0, maxCol);
 
     return { ln, col };
-  }
-
-  lineWidths(ln: number, startCol: number, endCol: number): number[] {
-    const ww: number[] = [];
-
-    this.#scanLine(ln, (gr, i) => {
-      if (i < startCol) {
-        return;
-      }
-      if (i >= endCol) {
-        return true;
-      }
-      ww.push(gr.width);
-    });
-
-    return ww;
-  }
-
-  lineHeight(wrapWidth: number, ln: number): number {
-    let h = 0;
-
-    this.scanLineWrap(wrapWidth, ln, (_, __, ___, col) => {
-      if (col === 0) {
-        h += 1;
-      }
-    });
-
-    return h;
   }
 
   #pushHistory(): void {

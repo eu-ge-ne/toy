@@ -118,78 +118,62 @@ export class Window extends Widget {
   }
 
   #scrollX(): void {
-    const col = this.buffer.getWrapCell(
-      this.#wrapWidth,
-      this.cursor.pos.ln,
-      this.cursor.pos.col,
-    )?.col ?? this.cursor.pos.col;
+    const { ln: curLn, col: curCol } = this.cursor.pos;
 
-    let width = 0;
+    const col =
+      this.buffer.getLineWrapCell(this.#wrapWidth, curLn, curCol)?.col ??
+        curCol;
 
     if (col <= this.#scrollCol) {
       this.#scrollCol = col;
-    } else {
-      const ww = this.buffer.lineWidths(
-        this.cursor.pos.ln,
-        this.#scrollCol,
-        col,
-      );
+    } else if (col - this.#scrollCol > this.#textWidth) {
+      this.#scrollCol = col - this.#textWidth;
+    }
 
-      width = std.sum(ww);
+    // TODO: optimize
 
-      for (const w of ww) {
-        if (width < this.#textWidth) {
-          break;
-        }
+    const ww = this.buffer.lineWidths(curLn, this.#scrollCol, col);
 
-        this.#scrollCol += 1;
-        width -= w;
+    let width = std.sum(ww);
+
+    for (const w of ww) {
+      if (width < this.#textWidth) {
+        break;
       }
+
+      this.#scrollCol += 1;
+      width -= w;
     }
 
     this.#cursorX = this.x + this.#indexWidth + width;
   }
 
   #scrollY(): void {
-    if (this.#vScrollDelta <= 0) {
-      this.#scrollLn = this.cursor.pos.ln;
-    } else if (this.#vScrollDelta > this.height) {
-      this.#scrollLn = this.cursor.pos.ln - this.height;
+    const { ln: curLn, col: curCol } = this.cursor.pos;
+
+    if (curLn < this.#scrollLn) {
+      this.#scrollLn = curLn;
+    } else if (curLn - this.#scrollLn > this.height) {
+      this.#scrollLn = curLn - this.height;
     }
 
-    this.#cursorY = this.y;
+    let newScrollLn = curLn;
+    let dY = this.buffer.getLineWrapCell(this.#wrapWidth, curLn, curCol)?.ln ??
+      0;
 
-    if (this.#vScrollDelta > 0) {
-      const hh = std.range(this.#scrollLn, this.cursor.pos.ln + 1)
-        .map((ln) => this.buffer.lineHeight(this.#wrapWidth, ln));
+    for (let ln = curLn - 1; ln >= this.#scrollLn; ln -= 1) {
+      const h = this.buffer.getLineWrapHeight(this.#wrapWidth, ln);
 
-      let i = 0;
-      let height = std.sum(hh);
-
-      while (height > this.height) {
-        height -= hh[i]!;
-        this.#scrollLn += 1;
-        i += 1;
+      if (dY + h >= this.height) {
+        break;
       }
 
-      while (i < hh.length - 1) {
-        this.#cursorY += hh[i]!;
-        i += 1;
-      }
+      dY += h;
+      newScrollLn = ln;
     }
 
-    const wrapLn = this.buffer.getWrapCell(
-      this.#wrapWidth,
-      this.cursor.pos.ln,
-      this.cursor.pos.col,
-    )?.ln;
-    if (typeof wrapLn !== "undefined") {
-      this.#cursorY += wrapLn;
-    }
-  }
-
-  get #vScrollDelta(): number {
-    return this.cursor.pos.ln - this.#scrollLn;
+    this.#scrollLn = newScrollLn;
+    this.#cursorY = this.y + dY;
   }
 
   #renderLines(): void {
